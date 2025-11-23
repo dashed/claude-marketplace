@@ -1,0 +1,50 @@
+# Dockerfile for running tmux skill tests
+# Based on Python slim for pytest support + bash tests
+
+FROM python:3.12-slim-bookworm
+
+# Build arguments for user/group IDs (allows matching host user)
+ARG UID=1000
+ARG GID=1000
+
+# Install system dependencies
+# - tmux: The tool we're testing
+# - bash: Required for test scripts (already included in base)
+# - curl: For downloading uv installer
+# - ca-certificates: For HTTPS (already included in base)
+# - jq: For JSON validation in tests
+# - locales: For UTF-8 support (already configured in base)
+# - procps: For process checking (ps command)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    tmux \
+    curl \
+    ca-certificates \
+    jq \
+    procps \
+    && rm -rf /var/lib/apt/lists/*
+
+# Download and install uv (Python package manager)
+ADD https://astral.sh/uv/install.sh /uv-installer.sh
+RUN sh /uv-installer.sh && rm /uv-installer.sh
+
+# Move uv to system path (available to all users)
+RUN mv /root/.local/bin/uv /usr/local/bin/ && \
+    mv /root/.local/bin/uvx /usr/local/bin/
+
+# Create test user (non-root)
+RUN groupadd -g ${GID} testuser && \
+    useradd -m -u ${UID} -g ${GID} -s /bin/bash testuser
+
+# Copy minimal tmux config for tests
+COPY tests/fixtures/tmux.test.conf /etc/tmux.test.conf
+
+# Set up environment for tests
+ENV TMUX_CONF=/etc/tmux.test.conf
+ENV TMPDIR=/tmp
+
+# Switch to test user
+USER testuser
+WORKDIR /workspace
+
+# Default command: bash (allows interactive debugging)
+CMD ["/bin/bash"]

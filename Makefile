@@ -1,4 +1,4 @@
-.PHONY: help sync validate validate-strict validate-yaml validate-json validate-structure clean test lint format
+.PHONY: help sync validate validate-strict validate-yaml validate-json validate-structure clean test test-tmux-build test-tmux test-tmux-local test-tmux-shell lint format
 
 # Default target
 .DEFAULT_GOAL := help
@@ -67,6 +67,53 @@ test: ## Run pytest tests
 test-cov: ## Run tests with coverage report
 	@echo "$(CYAN)Running tests with coverage...$(NC)"
 	@uv run pytest tests/ -v --cov=scripts --cov-report=html --cov-report=term
+
+# Docker configuration for tmux tests
+DOCKER_IMAGE := tmux-tests
+DOCKER_RUN_OPTS ?= --rm -t
+DOCKER_RUN := docker run $(DOCKER_RUN_OPTS) -v $(PWD):/workspace:ro -w /workspace $(DOCKER_IMAGE)
+
+test-tmux-build: ## Build Docker image for tmux tests
+	@echo "$(CYAN)Building Docker image for tmux tests...$(NC)"
+	docker build -f tests/Dockerfile.tests -t $(DOCKER_IMAGE) .
+	@echo "$(GREEN)✓ Docker image built: $(DOCKER_IMAGE)$(NC)"
+
+test-tmux: test-tmux-build ## Run all tmux tool tests in Docker
+	@echo "$(CYAN)Running all tmux tests in Docker...$(NC)"
+	@echo ""
+	@echo "$(YELLOW)Running pane-health.sh tests...$(NC)"
+	$(DOCKER_RUN) tests/bash/test-pane-health.sh
+	@echo ""
+	@echo "$(YELLOW)Running wait-for-text.sh tests...$(NC)"
+	$(DOCKER_RUN) tests/bash/test-wait-for-text.sh
+	@echo ""
+	@echo "$(YELLOW)Running find-sessions.sh tests...$(NC)"
+	$(DOCKER_RUN) tests/bash/test-find-sessions.sh
+	@echo ""
+	@echo "$(GREEN)✓ All tmux tests passed$(NC)"
+
+test-tmux/%: test-tmux-build ## Run specific tmux test (e.g., make test-tmux/pane-health)
+	@echo "$(CYAN)Running tmux test: $*$(NC)"
+	$(DOCKER_RUN) tests/bash/test-$*.sh
+
+test-tmux-local: ## Run tmux tests locally (without Docker)
+	@echo "$(CYAN)Running tmux tests locally...$(NC)"
+	@echo ""
+	@echo "$(YELLOW)Running pane-health.sh tests...$(NC)"
+	tests/bash/test-pane-health.sh
+	@echo ""
+	@echo "$(YELLOW)Running wait-for-text.sh tests...$(NC)"
+	tests/bash/test-wait-for-text.sh
+	@echo ""
+	@echo "$(YELLOW)Running find-sessions.sh tests...$(NC)"
+	tests/bash/test-find-sessions.sh
+	@echo ""
+	@echo "$(GREEN)✓ All tmux tests passed$(NC)"
+
+test-tmux-shell: test-tmux-build ## Open interactive shell in tmux test container
+	@echo "$(CYAN)Opening shell in tmux test container...$(NC)"
+	@echo "$(YELLOW)Run tests with: ./tests/bash/test-*.sh$(NC)"
+	@docker run --rm -it -v $(PWD):/workspace:ro -w /workspace $(DOCKER_IMAGE) /bin/bash
 
 lint: ## Run linting checks (ruff)
 	@echo "$(CYAN)Running linting checks...$(NC)"

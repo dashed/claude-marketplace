@@ -38,3 +38,10 @@ dist/
 # OS
 .DS_Store
 Thumbs.db
+
+# Docker
+.dockerignore
+
+# Test artifacts
+tests/**/__pycache__/
+tests/**/.pytest_cache/
