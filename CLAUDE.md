@@ -132,21 +132,62 @@ Each skill in the marketplace has its own changelog located in `./changelogs/`.
 - Removing a skill → Add "Removed" entry in main CHANGELOG.md
 
 **Relationship to Main CHANGELOG.md**:
-- `CHANGELOG.md`: Marketplace-level changes (validation system, tooling, infrastructure)
+- `CHANGELOG.md`: Marketplace-level changes (validation system, tooling, infrastructure, patterns)
 - `changelogs/*.md`: Individual skill changes from marketplace perspective
+- **Both**: When skill changes establish/demonstrate marketplace patterns or organizational improvements
 
-**Example**:
+**When to Update Both**:
+
+Update ONLY `changelogs/<skill-name>.md`:
+- Bug fixes in skill documentation
+- Minor wording improvements
+- Version updates without structural changes
+
+Update BOTH `CHANGELOG.md` AND `changelogs/<skill-name>.md`:
+- Implementing new organizational patterns (e.g., progressive disclosure with references/)
+- Structural improvements that serve as examples for other skills
+- Significant skill enhancements that impact marketplace quality
+
+Update ONLY `CHANGELOG.md`:
+- Adding new validation rules
+- Updating tooling (Makefile, schemas)
+- Infrastructure changes
+- Adding/removing skills (high-level only)
+
+**Example of updating both**:
+
+*CHANGELOG.md*:
 ```markdown
-## [1.0.0] - 2025-11-23
-
-### Added
-- Initial addition to marketplace from source repository
-- Version metadata and plugin configuration
-- Author and license information
+## [Unreleased]
 
 ### Changed
-- Enhanced skill description for better discovery
+- git-absorb skill: Implemented progressive disclosure pattern with references/ directory
+- git-absorb skill: Added comprehensive reference documentation
 ```
+
+*changelogs/git-absorb.md*:
+```markdown
+## [Unreleased]
+
+### Changed
+- Implemented progressive disclosure pattern with references/ directory
+- Added references/advanced-usage.md with comprehensive flag reference (13 flags, 7 patterns)
+- Added references/configuration.md with all 7 configuration options
+- Updated SKILL.md to be leaner (269 → 232 lines, 14% reduction)
+```
+
+**Example of individual skill change only**:
+
+*changelogs/skill-name.md* (only):
+```markdown
+## [1.0.1] - 2025-11-24
+
+### Changed
+- Fixed typo in configuration example
+- Updated installation instructions for clarity
+```
+
+No CHANGELOG.md entry needed for minor documentation fixes.
 
 See `./changelogs/README.md` for complete documentation.
 

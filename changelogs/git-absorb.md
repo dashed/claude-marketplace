@@ -4,6 +4,15 @@ All notable changes to the git-absorb skill in this marketplace will be document
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Changed
+- Implemented progressive disclosure pattern with references/ directory
+- Added references/advanced-usage.md with comprehensive flag reference (13 flags documented, 7 usage patterns)
+- Added references/configuration.md with all 7 configuration options and examples
+- Updated SKILL.md to be leaner (269 → 232 lines, 14% reduction) with references to detailed documentation
+- Moved ANALYSIS.md to top-level marketplace references/ (not useful for Claude during skill execution)
+
 ## [1.0.0] - 2025-11-23
 
 ### Added

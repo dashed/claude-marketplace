@@ -145,77 +145,41 @@ git absorb --and-rebase
 
 ## Advanced Usage
 
-### Specify Base Commit
+For comprehensive coverage of all flags and advanced patterns, see [references/advanced-usage.md](references/advanced-usage.md).
 
-By default, git-absorb considers the last 10 commits. To specify a different range:
+**Key flags:**
+- `--base <commit>`: Specify range (e.g., `--base main`)
+- `--dry-run`: Preview without making changes
+- `--force`: Skip safety checks
+- `--one-fixup-per-commit`: Generate one fixup per target commit
+- `--verbose`: See detailed output
 
+**Example:**
 ```bash
-git absorb --base main
+git absorb --base main --dry-run --verbose
 ```
-
-This considers all commits since branching from `main`.
-
-### Dry Run
-
-Preview what would happen without making changes:
-
-```bash
-git absorb --dry-run
-```
-
-### Force Through Conflicts
-
-If some changes can't be absorbed cleanly:
-
-```bash
-git absorb --force
-```
-
-Unabsorbable changes remain staged for manual handling.
 
 ## Configuration
 
-git-absorb supports several configuration options via `.gitconfig`. These are the most important ones:
+For complete configuration reference with all options, see [references/configuration.md](references/configuration.md).
 
-### Increase Stack Size (Critical)
+**Most important configuration:**
 
-If you see this warning:
-```
-WARN stack limit reached, limit: 10
-```
-
-Increase the stack size in your `.gitconfig`:
+If you see "WARN stack limit reached, limit: 10", increase the stack size:
 
 ```bash
-git config absorb.maxStack 50
-```
-
-Or set it globally:
-
-```bash
-git config --global absorb.maxStack 50
+git config absorb.maxStack 50  # Local
+git config --global absorb.maxStack 50  # Global
 ```
 
 By default, git-absorb only searches the last 10 commits. For larger feature branches, increase this to 50 or higher.
 
-### Other Useful Configurations
+**Other useful configs:**
+- `oneFixupPerCommit`: One fixup per commit instead of per hunk
+- `autoStageIfNothingStaged`: Auto-stage all changes if nothing staged
+- `forceAuthor`: Allow absorbing into teammates' commits
 
-**Auto-stage all changes** when nothing is staged (convenience feature):
-```bash
-git config absorb.autoStageIfNothingStaged true
-```
-
-**One fixup per commit** instead of per hunk (cleaner history):
-```bash
-git config absorb.oneFixupPerCommit true
-```
-
-**Allow absorbing into teammates' commits**:
-```bash
-git config absorb.forceAuthor true
-```
-
-For a complete list of configuration options, see the [official documentation](https://github.com/tummychow/git-absorb/blob/master/Documentation/git-absorb.adoc#configuration).
+See [references/configuration.md](references/configuration.md) for details and all 7 configuration options.
 
 ## Recovery
 
