@@ -41,13 +41,20 @@
       "name": "tmux",
       "version": "1.0.0",
       "source": "./plugins/tmux",
-      "description": "Remote control tmux sessions for interactive CLIs (python, gdb, etc.) by sending keystrokes and scraping pane output.",
+      "description": "Remote control tmux sessions for interactive CLIs (python, gdb, etc.) by sending keystrokes and scraping pane output. Use when debugging applications, running interactive REPLs (Python, gdb, ipdb, psql, mysql, node), automating terminal workflows, or when user mentions tmux, debugging, or interactive shells.",
       "author": {
-        "name": "Armin Ronacher"
+        "name": "Alberto Leal"
       },
-      "repository": "https://github.com/mitsuhiko/agent-commands/tree/main/skills/tmux",
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/tmux",
       "license": "Vibecoded",
-      "keywords": ["tmux", "terminal", "multiplexer", "interactive", "debugging", "repl"],
+      "keywords": [
+        "tmux",
+        "terminal",
+        "multiplexer",
+        "interactive",
+        "debugging",
+        "repl"
+      ],
       "strict": false,
       "skills": ["./"]
     }

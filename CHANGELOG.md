@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - git-absorb skill: Added important default behaviors section explaining author filtering and stack size limits
 - git-absorb skill: Added configuration section with critical maxStack setting and other useful options
 - git-absorb skill: Enhanced troubleshooting with stack limit warning solutions
+- tmux skill: Enhanced description with "Use when..." clause and trigger terms for improved skill discovery
 
 ## [0.1.0] - 2025-11-22
 
