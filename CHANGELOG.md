@@ -7,11 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2025-11-23
+
 ### Added
+- skill-reviewer skill: Systematic quality review framework with 10-point checklist
+- skill-reviewer skill: Review workflow for new skills, updates, and audits
 - skill-reviewer skill: Ownership metadata pattern with Version section (version, date, maintainer, changelog link)
 - skill-reviewer skill: Testing/verification guidance pattern with Quick Verification section
 - skill-reviewer skill: Comprehensive references/examples.md with 4 sample reviews (1,460 words)
 - skill-reviewer skill: Sample reviews demonstrating simple, complex, quick audit, and before/after improvement patterns
+- skill-reviewer skill: Progressive disclosure structure with 5 reference documents (7,459 words total)
 
 ### Changed
 - skill-reviewer skill: Enhanced SKILL.md with ownership and testing sections (718 → 888 words, 59% of budget)
@@ -132,7 +137,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/dashed/claude-marketplace/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/dashed/claude-marketplace/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/dashed/claude-marketplace/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/dashed/claude-marketplace/compare/v0.1.0...v0.2.0
