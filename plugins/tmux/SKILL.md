@@ -12,8 +12,13 @@ Use tmux as a programmable terminal multiplexer for interactive work. Works on L
 
 The session registry eliminates repetitive socket/target specification through automatic session tracking (~80% reduction in boilerplate):
 
+**IMPORTANT**: Before creating a new session, ALWAYS check existing sessions first to avoid name conflicts:
+
 ```bash
-# Create and register a Python REPL session
+# Check existing sessions to ensure name is available
+./tools/list-sessions.sh
+
+# Create and register a Python REPL session (choose a unique name)
 ./tools/create-session.sh -n claude-python --python
 
 # Send commands using session name (auto-lookup socket/target)
@@ -157,6 +162,8 @@ Manual cleanup (when not using registry):
 ## Helper: create-session.sh
 
 `./tools/create-session.sh` creates and registers new tmux sessions with automatic registry integration.
+
+**IMPORTANT**: Before creating a session, ALWAYS run `./tools/list-sessions.sh` to check for existing sessions and ensure your chosen name is unique.
 
 ```bash
 ./tools/create-session.sh -n <name> [--python|--gdb|--shell] [options]

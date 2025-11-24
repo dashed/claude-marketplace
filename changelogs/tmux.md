@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.2.3] - 2025-11-23
+
+### Changed
+- Enhanced SKILL.md with requirement to check existing sessions before creating new ones
+- Added IMPORTANT notes in Quickstart and Helper: create-session.sh sections to run list-sessions.sh first
+- Improved workflow safety by mandating session name conflict checking to prevent accidental overwrites
+
 ## [1.2.2] - 2025-11-23
 
 ### Added
