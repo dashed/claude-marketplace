@@ -46,3 +46,22 @@ python_version = "3.10"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
+
+[dependency-groups]
+dev = [
+    "ty>=0.0.1a27",
+]
+
+[tool.ty]
+# Type checking configuration
+
+[[tool.ty.overrides]]
+# Validators use dynamic dictionaries extensively; relax some checks
+include = ["scripts/validators/*.py"]
+
+[tool.ty.overrides.rules]
+# These rules are too strict for dynamic dict operations in validators
+unsupported-operator = "ignore"         # Allow += on dict values
+invalid-argument-type = "ignore"        # Allow dynamic dict value types
+possibly-missing-attribute = "ignore"   # Allow .append on dict values
+invalid-parameter-default = "error"     # Keep this strict

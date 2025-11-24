@@ -14,7 +14,7 @@ console = Console()
 
 
 def run_validator(
-    script: str, description: str, args: list[str] = None, is_shell_command: bool = False
+    script: str, description: str, args: list[str] | None = None, is_shell_command: bool = False
 ) -> Dict[str, Any]:
     """
     Run a validation script and capture results.

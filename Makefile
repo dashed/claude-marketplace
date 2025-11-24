@@ -1,4 +1,4 @@
-.PHONY: help sync validate validate-strict validate-yaml validate-json validate-structure clean test test-tmux-build test-tmux test-tmux-local test-tmux-shell test-session-registry test-session-registry-local test-registry test-create-session test-list-sessions test-cleanup-sessions test-session-integration lint lint-python lint-python-fix lint-shellcheck lint-shellcheck-strict lint-fix format format-check
+.PHONY: help sync validate validate-strict validate-yaml validate-json validate-structure clean test test-tmux-build test-tmux test-tmux-local test-tmux-shell test-session-registry test-session-registry-local test-registry test-create-session test-list-sessions test-cleanup-sessions test-session-integration lint lint-python lint-python-fix lint-shellcheck lint-shellcheck-strict lint-fix type-check format format-check
 
 # Default target
 .DEFAULT_GOAL := help
@@ -189,6 +189,10 @@ lint-shellcheck-strict: ## Run shellcheck on all bash scripts (fail on issues)
 
 lint-fix: lint-python-fix ## Fix linting issues automatically (Python only)
 
+type-check: ## Run type checking with ty
+	@echo "$(CYAN)Running type checks with ty...$(NC)"
+	@uv run ty check scripts/ tests/
+
 format: ## Format code with black
 	@echo "$(CYAN)Formatting code with black...$(NC)"
 	@uv run black scripts/ tests/
@@ -211,7 +215,7 @@ clean: ## Clean up generated files
 	@echo "$(GREEN)✓ Cleaned up$(NC)"
 
 # CI/CD target for continuous integration
-ci: validate-strict test lint format-check test-tmux ## Run all CI/CD checks (strict mode)
+ci: validate-strict test lint type-check format-check test-tmux ## Run all CI/CD checks (strict mode)
 	@echo "$(GREEN)✓ All CI/CD checks passed$(NC)"
 
 # Quick check target for development
