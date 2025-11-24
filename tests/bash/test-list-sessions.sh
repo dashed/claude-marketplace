@@ -350,6 +350,103 @@ test_statistics() {
     fi
 }
 
+test_time_ago() {
+    echo -e "\n${YELLOW}Testing time_ago() UTC timestamp parsing${NC}"
+
+    # Source time_utils library to get time_ago function
+    TIME_UTILS="$TOOLS_DIR/lib/time_utils.sh"
+    # shellcheck source=../../plugins/tmux/tools/lib/time_utils.sh
+    source "$TIME_UTILS"
+
+    # Fixed NOW for deterministic testing
+    # 2024-11-23T21:00:00Z = 1732395600 epoch
+    export NOW_EPOCH=1732395600
+
+    # Test 21: Parse UTC timestamp with 'Z' suffix (seconds ago)
+    local result
+    result=$(time_ago "2024-11-23T20:59:30Z")  # 30 seconds ago
+    if [[ "$result" == "30s ago" ]]; then
+        pass "time_ago() parses Z timestamp for seconds"
+    else
+        fail "time_ago() seconds parsing" "30s ago" "$result"
+    fi
+
+    # Test 22: Parse UTC timestamp with 'Z' suffix (minutes ago)
+    result=$(time_ago "2024-11-23T20:34:00Z")  # 26 minutes ago
+    if [[ "$result" == "26m ago" ]]; then
+        pass "time_ago() parses Z timestamp for minutes"
+    else
+        fail "time_ago() minutes parsing" "26m ago" "$result"
+    fi
+
+    # Test 23: Parse UTC timestamp with 'Z' suffix (hours ago)
+    result=$(time_ago "2024-11-23T16:00:00Z")  # 5 hours ago
+    if [[ "$result" == "5h ago" ]]; then
+        pass "time_ago() parses Z timestamp for hours"
+    else
+        fail "time_ago() hours parsing" "5h ago" "$result"
+    fi
+
+    # Test 24: Parse UTC timestamp with 'Z' suffix (days ago)
+    result=$(time_ago "2024-11-16T21:00:00Z")  # 7 days ago
+    if [[ "$result" == "7d ago" ]]; then
+        pass "time_ago() parses Z timestamp for days"
+    else
+        fail "time_ago() days parsing" "7d ago" "$result"
+    fi
+
+    # Test 25: Parse UTC timestamp with '+0000' suffix
+    result=$(time_ago "2024-11-23T20:34:00+0000")  # 26 minutes ago
+    if [[ "$result" == "26m ago" ]]; then
+        pass "time_ago() parses +0000 timestamp format"
+    else
+        fail "time_ago() +0000 parsing" "26m ago" "$result"
+    fi
+
+    # Test 26: UTC midnight boundary (ensures no local TZ shift)
+    # 2024-11-23T00:05:00Z is 20h 55m before our NOW (21:00:00Z)
+    result=$(time_ago "2024-11-23T00:05:00Z")  # 20h 55m = 20 hours ago
+    if [[ "$result" == "20h ago" ]]; then
+        pass "time_ago() handles UTC midnight boundary correctly"
+    else
+        fail "time_ago() midnight boundary" "20h ago" "$result"
+    fi
+
+    # Test 27: Invalid timestamp returns "unknown"
+    result=$(time_ago "invalid-timestamp")
+    if [[ "$result" == "unknown" ]]; then
+        pass "time_ago() returns 'unknown' for invalid timestamp"
+    else
+        fail "time_ago() invalid handling" "unknown" "$result"
+    fi
+
+    # Test 28: Empty timestamp returns "unknown"
+    result=$(time_ago "")
+    if [[ "$result" == "unknown" ]]; then
+        pass "time_ago() returns 'unknown' for empty timestamp"
+    else
+        fail "time_ago() empty handling" "unknown" "$result"
+    fi
+
+    # Test 29: Timestamp exactly at NOW
+    result=$(time_ago "2024-11-23T21:00:00Z")  # 0 seconds ago
+    if [[ "$result" == "0s ago" ]]; then
+        pass "time_ago() handles timestamp exactly at NOW"
+    else
+        fail "time_ago() NOW handling" "0s ago" "$result"
+    fi
+
+    # Test 30: Very recent timestamp (less than 60s)
+    result=$(time_ago "2024-11-23T20:59:45Z")  # 15 seconds ago
+    if [[ "$result" == "15s ago" ]]; then
+        pass "time_ago() handles very recent timestamps"
+    else
+        fail "time_ago() recent handling" "15s ago" "$result"
+    fi
+
+    unset NOW_EPOCH
+}
+
 #------------------------------------------------------------------------------
 # Run all tests
 #------------------------------------------------------------------------------
@@ -366,6 +463,7 @@ test_json_fields
 test_table_output_format
 test_pid_handling
 test_statistics
+test_time_ago
 
 #------------------------------------------------------------------------------
 # Summary

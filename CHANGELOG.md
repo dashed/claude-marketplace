@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.1] - 2025-11-23
+
+### Added
+- tmux skill: lib/time_utils.sh library for time utility functions (time_ago() for ISO 8601 to human-readable conversion)
+- tmux skill: Comprehensive test suite for time_ago() function with 10 new tests covering UTC parsing, time intervals, and edge cases
+
+### Fixed
+- tmux skill: UTC timezone bug in time_ago() where 'Z' suffix was interpreted as local time instead of UTC on macOS
+- tmux skill: Empty array bug in list-sessions.sh when using set -u with no registered sessions
+
+### Changed
+- tmux skill: Extracted time_ago() to lib/time_utils.sh for better testability and reusability
+- tmux skill: Version bumped to 1.2.2
+
 ## [0.6.0] - 2025-11-23
 
 ### Changed
@@ -149,7 +163,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.6.1...HEAD
+[0.6.1]: https://github.com/dashed/claude-marketplace/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/dashed/claude-marketplace/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/dashed/claude-marketplace/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/dashed/claude-marketplace/compare/v0.3.0...v0.4.0

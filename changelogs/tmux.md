@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.2.2] - 2025-11-23
+
+### Added
+- lib/time_utils.sh library with time_ago() function for converting ISO 8601 timestamps to human-readable format
+- Comprehensive test suite for time_ago() function with 10 new tests (tests 21-30 in test-list-sessions.sh)
+- Test coverage for UTC 'Z' suffix parsing, '+0000' format, time intervals (seconds/minutes/hours/days), UTC midnight boundary, invalid/empty timestamps, and edge cases
+- NOW_EPOCH environment variable support in time_ago() for deterministic testing
+
+### Fixed
+- UTC timezone bug in time_ago() function where 'Z' suffix was matched as literal character but interpreted as local time instead of UTC on macOS
+- Cross-platform UTC timestamp parsing now uses TZ=UTC with %z format on macOS and proper fallbacks for Linux
+- Empty array bug in list-sessions.sh when using set -u with no registered sessions (sessions_with_health[@] expansion)
+
+### Changed
+- Extracted time_ago() function from list-sessions.sh to lib/time_utils.sh library for better testability and reusability
+- list-sessions.sh now sources lib/time_utils.sh for time formatting functionality
+- Test infrastructure now sources time_utils.sh directly for isolated unit testing of time functions
+
 ## [1.2.1] - 2025-11-23
 
 ### Changed

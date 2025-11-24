@@ -18,10 +18,12 @@
 
 set -euo pipefail
 
-# Get script directory to source registry library
+# Get script directory to source libraries
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=lib/registry.sh
 source "$SCRIPT_DIR/lib/registry.sh"
+# shellcheck source=lib/time_utils.sh
+source "$SCRIPT_DIR/lib/time_utils.sh"
 
 # Path to pane-health tool
 PANE_HEALTH="$SCRIPT_DIR/pane-health.sh"
@@ -80,35 +82,6 @@ Exit codes:
   0  - Success
   1  - Error
 EOF
-}
-
-# Get human-readable time ago from ISO8601 timestamp
-time_ago() {
-  local timestamp="$1"
-
-  # Convert ISO8601 to epoch (cross-platform)
-  local ts_epoch
-  ts_epoch=$(date -j -f "%Y-%m-%dT%H:%M:%SZ" "$timestamp" "+%s" 2>/dev/null || \
-             date -d "$timestamp" "+%s" 2>/dev/null || echo "0")
-
-  if [[ "$ts_epoch" == "0" ]]; then
-    echo "unknown"
-    return
-  fi
-
-  local now_epoch
-  now_epoch=$(date "+%s")
-  local diff=$((now_epoch - ts_epoch))
-
-  if [[ $diff -lt 60 ]]; then
-    echo "${diff}s ago"
-  elif [[ $diff -lt 3600 ]]; then
-    echo "$((diff / 60))m ago"
-  elif [[ $diff -lt 86400 ]]; then
-    echo "$((diff / 3600))h ago"
-  else
-    echo "$((diff / 86400))d ago"
-  fi
 }
 
 # Get health status for a session
@@ -211,7 +184,7 @@ if [[ "$output_format" == "json" ]]; then
   echo "  \"sessions\": ["
 
   first=true
-  for session_info in "${sessions_with_health[@]}"; do
+  for session_info in "${sessions_with_health[@]+"${sessions_with_health[@]}"}"; do
     IFS='|' read -r name socket target status pid created type <<< "$session_info"
 
     if [[ "$first" == false ]]; then
@@ -256,7 +229,7 @@ else
     "----" "------" "------" "------" "---" "-------"
 
   # Print sessions
-  for session_info in "${sessions_with_health[@]}"; do
+  for session_info in "${sessions_with_health[@]+"${sessions_with_health[@]}"}"; do
     IFS='|' read -r name socket target status pid created type <<< "$session_info"
 
     # Get basename of socket for cleaner output
