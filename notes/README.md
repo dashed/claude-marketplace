@@ -31,11 +31,14 @@ notes/
 ### [git-absorb](./git-absorb/)
 Automatically fold uncommitted changes into appropriate commits on a feature branch.
 
-### [tmux](./tmux/)
-Remote control tmux sessions for interactive CLIs (Python, gdb, etc.) by sending keystrokes and scraping pane output.
-
 ### [skill-creator](./skill-creator/)
 Tool for creating and managing Agent Skills.
+
+### [skill-reviewer](./skill-reviewer/)
+Review and ensure Agent Skills maintain high quality standards.
+
+### [tmux](./tmux/)
+Remote control tmux sessions for interactive CLIs (Python, gdb, etc.) by sending keystrokes and scraping pane output.
 
 ## Relationship to Other Documentation
 
