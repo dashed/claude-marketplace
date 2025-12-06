@@ -1,6 +1,6 @@
 ---
 name: tmux
-description: "Remote control tmux sessions for interactive CLIs (python, gdb, etc.) by sending keystrokes and scraping pane output. Use when debugging applications, running interactive REPLs (Python, gdb, ipdb, psql, mysql, node), automating terminal workflows, or when user mentions tmux, debugging, or interactive shells."
+description: "Remote control tmux sessions for interactive CLIs (python, gdb, git add -p, etc.) by sending keystrokes and scraping pane output. Use when debugging applications, running interactive REPLs (Python, gdb, ipdb, psql, mysql, node), automating terminal workflows, interactive git commands (git add -p, git stash -p, git rebase -i), or when user mentions tmux, debugging, or interactive shells."
 license: Vibecoded
 ---
 
@@ -149,6 +149,7 @@ For long-running commands, poll for completion text (`"Type quit to exit"`, `"Pr
 
 - **Python REPL**: Use `./tools/create-session.sh -n my-python --python`; wait for `^>>>`; send code; interrupt with `C-c`. The `--python` flag automatically sets `PYTHON_BASIC_REPL=1`.
 - **gdb**: Use `./tools/create-session.sh -n my-gdb --gdb`; disable paging with safe-send; break with `C-c`; issue `bt`, `info locals`, etc.; exit via `quit` then confirm `y`.
+- **Interactive git** (`git add -p`, `git stash -p`, `git checkout -p`, `git reset -p`): Use `./tools/create-session.sh -n my-git --shell`; run the git command; wait for hunk prompt pattern `\?\s*$`; send single-letter responses (`y` stage, `n` skip, `s` split, `q` quit). Each response requires Enter.
 - **Other TTY apps** (ipdb, psql, mysql, node, bash): Use `./tools/create-session.sh -n my-session --shell`; poll for prompt; send literal text and Enter.
 
 ## Cleanup
@@ -439,6 +440,14 @@ tools/kill-session.sh -s claude-python --dry-run
     def add(self, x):
         self.result += x
         return self" -w ">>>"
+
+# Interactive git add -p workflow (stage specific hunks)
+./tools/create-session.sh -n claude-git --shell
+./tools/safe-send.sh -s claude-git -c "git add -p" -w "\?" -T 10
+./tools/safe-send.sh -s claude-git -c "y" -w "\?"    # Stage this hunk
+./tools/safe-send.sh -s claude-git -c "n" -w "\?"    # Skip this hunk
+./tools/safe-send.sh -s claude-git -c "s" -w "\?"    # Split into smaller hunks
+./tools/safe-send.sh -s claude-git -c "q"            # Quit interactive mode
 
 # Explicit socket/target (backward compatible)
 SOCKET_DIR=${TMPDIR:-/tmp}/claude-tmux-sockets

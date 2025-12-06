@@ -212,6 +212,30 @@
       ],
       "strict": false,
       "skills": ["./"]
+    },
+    {
+      "name": "zellij",
+      "version": "1.0.0",
+      "source": "./plugins/zellij",
+      "description": "Terminal workspace and multiplexer for interactive CLI sessions. Use when managing terminal sessions, running interactive REPLs, debugging, automating terminal workflows, or when user mentions zellij, floating panes, or session layouts. Simpler alternative to tmux.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/zellij",
+      "license": "MIT",
+      "keywords": [
+        "zellij",
+        "terminal",
+        "multiplexer",
+        "workspace",
+        "panes",
+        "tabs",
+        "layouts",
+        "interactive",
+        "sessions"
+      ],
+      "strict": false,
+      "skills": ["./"]
     }
   ]
 }

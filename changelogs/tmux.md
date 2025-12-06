@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- Interactive git recipe for `git add -p`, `git stash -p`, `git checkout -p`, `git reset -p` workflows
+- git add -p example in safe-send.sh documentation showing complete interactive staging workflow
+
+### Changed
+- Updated skill description to include interactive git commands as trigger conditions
+
 ## [1.4.0] - 2025-11-23
 
 ### Added
