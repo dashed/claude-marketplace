@@ -24,6 +24,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - git-chain skill: references/rebase-options.md with all rebase flags, conflict handling, recovery
 - git-chain skill: references/merge-options.md with all merge flags, strategies, reporting
 - git-chain skill: references/chain-management.md with setup, navigation, organization
+- playwright skill: Browser automation with Playwright for Python using uv inline scripts
+- playwright skill: Scripts for common operations (check_setup.py, screenshot.py, navigate.py, fill_form.py, evaluate.py)
+- playwright skill: Comprehensive reference documentation (api-reference.md, selectors.md, custom-scripts.md, troubleshooting.md)
+- playwright skill: Modern locator API patterns (get_by_role, get_by_label, etc.)
+- playwright skill: PEP 723 inline script metadata for self-contained scripts
 
 ## [0.8.0] - 2025-11-23
 

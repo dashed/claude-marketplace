@@ -1,4 +1,4 @@
-.PHONY: help sync validate validate-strict validate-yaml validate-json validate-structure clean test test-tmux-build test-tmux test-tmux-local test-tmux-shell test-session-registry test-session-registry-local test-registry test-create-session test-list-sessions test-cleanup-sessions test-session-integration lint lint-python lint-python-fix lint-shellcheck lint-shellcheck-strict lint-fix type-check format format-check
+.PHONY: help sync validate validate-strict validate-yaml validate-json validate-structure clean test test-tmux-build test-tmux test-tmux-local test-tmux-shell test-session-registry test-session-registry-local test-registry test-create-session test-list-sessions test-cleanup-sessions test-session-integration test-playwright-build test-playwright test-playwright-local test-playwright-shell lint lint-python lint-python-fix lint-shellcheck lint-shellcheck-strict lint-fix type-check format format-check format-playwright format-playwright-check lint-playwright
 
 # Default target
 .DEFAULT_GOAL := help
@@ -23,7 +23,7 @@ help: ## Show this help message
 	@grep -E '^test.*:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(CYAN)%-30s$(NC) %s\n", $$1, $$2}'
 	@echo ""
 	@echo "$(GREEN)Development:$(NC)"
-	@grep -E '^(lint|format|clean):.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(CYAN)%-30s$(NC) %s\n", $$1, $$2}'
+	@grep -E '^(lint|format|clean)(-[a-z]+)*:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(CYAN)%-30s$(NC) %s\n", $$1, $$2}'
 	@echo ""
 
 sync: ## Sync dependencies with uv (manual - uv run does this automatically)
@@ -161,6 +161,30 @@ test-tmux-shell: test-tmux-build ## Open interactive shell in tmux test containe
 	@echo "$(YELLOW)Run tests with: ./tests/bash/test-*.sh$(NC)"
 	@docker run --rm -it -v $(PWD):/workspace:ro -w /workspace $(DOCKER_IMAGE) /bin/bash
 
+# Playwright test configuration
+PLAYWRIGHT_DOCKER_IMAGE := playwright-tests
+PLAYWRIGHT_DOCKER_RUN := docker run --rm -t -v $(PWD):/workspace:ro -w /workspace $(PLAYWRIGHT_DOCKER_IMAGE)
+
+test-playwright-build: ## Build Docker image for playwright tests
+	@echo "$(CYAN)Building Docker image for playwright tests...$(NC)"
+	docker build -f tests/Dockerfile.playwright -t $(PLAYWRIGHT_DOCKER_IMAGE) .
+	@echo "$(GREEN)✓ Docker image built: $(PLAYWRIGHT_DOCKER_IMAGE)$(NC)"
+
+test-playwright: test-playwright-build ## Run playwright tests in Docker
+	@echo "$(CYAN)Running playwright tests in Docker...$(NC)"
+	$(PLAYWRIGHT_DOCKER_RUN) tests/bash/test-playwright.sh
+	@echo "$(GREEN)✓ Playwright tests passed$(NC)"
+
+test-playwright-local: ## Run playwright tests locally (requires browser installed)
+	@echo "$(CYAN)Running playwright tests locally...$(NC)"
+	@echo "$(YELLOW)Note: Requires playwright browsers to be installed$(NC)"
+	tests/bash/test-playwright.sh
+	@echo "$(GREEN)✓ Playwright tests passed$(NC)"
+
+test-playwright-shell: test-playwright-build ## Open interactive shell in playwright test container
+	@echo "$(CYAN)Opening shell in playwright test container...$(NC)"
+	@docker run --rm -it -v $(PWD):/workspace:ro -w /workspace $(PLAYWRIGHT_DOCKER_IMAGE) /bin/bash
+
 lint: ## Run all linting checks (ruff + shellcheck)
 	@echo "$(CYAN)Running all linting checks...$(NC)"
 	@$(MAKE) lint-python
@@ -203,6 +227,22 @@ format: ## Format code with black
 format-check: ## Check code formatting without making changes
 	@echo "$(CYAN)Checking code formatting...$(NC)"
 	@uv run black --check scripts/ tests/
+
+# Playwright Python scripts
+PLAYWRIGHT_SCRIPTS := plugins/playwright/scripts
+
+format-playwright: ## Format playwright scripts with ruff
+	@echo "$(CYAN)Formatting playwright scripts with ruff...$(NC)"
+	@uv run ruff format $(PLAYWRIGHT_SCRIPTS)/
+	@echo "$(GREEN)✓ Playwright scripts formatted$(NC)"
+
+format-playwright-check: ## Check playwright script formatting
+	@echo "$(CYAN)Checking playwright script formatting...$(NC)"
+	@uv run ruff format --check $(PLAYWRIGHT_SCRIPTS)/
+
+lint-playwright: ## Type check playwright scripts with ty
+	@echo "$(CYAN)Type checking playwright scripts with ty...$(NC)"
+	@uv run ty check $(PLAYWRIGHT_SCRIPTS)/
 
 clean: ## Clean up generated files
 	@echo "$(CYAN)Cleaning up...$(NC)"

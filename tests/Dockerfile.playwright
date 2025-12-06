@@ -1,0 +1,13 @@
+# Dockerfile for Playwright integration tests
+# Based on Microsoft's official Playwright Python image with browsers pre-installed
+
+FROM mcr.microsoft.com/playwright/python:v1.56.0-noble
+
+# Install uv for running PEP 723 inline scripts
+RUN pip install uv
+
+# Set working directory
+WORKDIR /workspace
+
+# Default command
+CMD ["/bin/bash"]
