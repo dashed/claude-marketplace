@@ -4,13 +4,15 @@ Common issues and solutions when using Playwright.
 
 ## Browser Installation Issues
 
+> **Claude: Do not run browser installation commands directly.** Suggest these commands to the user and let them run manually.
+
 ### "Executable doesn't exist" / "Browser not found"
 
 **Cause**: Playwright browser binaries not installed.
 
-**Solution**:
+**Solution** (suggest to user, do not run directly):
 ```bash
-# Install Chromium (recommended)
+# Install Chromium (recommended, ~200MB)
 uv run --with playwright playwright install chromium
 
 # Install all browsers

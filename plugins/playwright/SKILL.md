@@ -17,7 +17,9 @@ Playwright enables browser automation for web testing, screenshots, form filling
 
 ## Setup (First Time Only)
 
-Install browser binaries:
+> **Claude: Do not run browser installation commands directly.** Suggest these commands to the user and let them run manually. This is a one-time setup that downloads ~200MB of browser binaries.
+
+Suggest the user run:
 
 ```bash
 # Install Chromium (recommended, ~200MB)
@@ -25,8 +27,10 @@ uv run --with playwright playwright install chromium
 
 # Or install all browsers
 uv run --with playwright playwright install
+```
 
-# Verify installation
+To verify installation:
+```bash
 uv run /path/to/plugins/playwright/scripts/check_setup.py
 ```
 
@@ -209,7 +213,7 @@ uv run --with playwright playwright show-trace /tmp/trace.zip
 
 ### "Browser not found"
 
-Install browser binaries:
+Suggest the user install browser binaries (do not run directly):
 ```bash
 uv run --with playwright playwright install chromium
 ```
