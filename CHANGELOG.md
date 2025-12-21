@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- jj skill: Working copy snapshot trigger explanation (when snapshots occur, how to force them)
+- jj skill: Binary file conflict resolution using `jj restore --from`
+- jj skill: Multi-parent (merge) conflict resolution workflow
+- jj skill: Colocated Mode Deep Dive section (git status interpretation, index sync issues)
+- jj skill: Bookmark gotchas (--allow-backwards, * suffix meaning, create vs set)
+- jj skill: Common Pitfalls section (push flag combinations, working copy on merges)
+- jj skill: Advanced Revset Recipes in revsets.md (roots pattern for branch rebasing)
+- jj skill: Push flag compatibility table in commands.md
 - zellij skill: Terminal workspace and multiplexer for interactive CLI sessions
 - zellij skill: Comprehensive SKILL.md with session management, programmatic control, common workflows
 - zellij skill: references/actions.md - Complete action reference (50+ actions)

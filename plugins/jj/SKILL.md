@@ -41,6 +41,27 @@ jj status        # Shows working copy state
 jj diff          # Shows changes in working copy commit
 ```
 
+### When Snapshots Are Triggered
+
+The working copy is snapshotted into the current commit (`@`) when running most jj commands. Key triggers:
+
+- `jj new` - Creates new commit, snapshots working copy into parent
+- `jj status` - Triggers snapshot before showing status
+- `jj diff`, `jj log`, `jj describe` - All trigger snapshot first
+
+**Forcing a snapshot manually:**
+
+```bash
+# If you edited files but need to ensure they're committed:
+jj new                       # Snapshot into parent, create new @
+jj abandon @                 # Remove empty new commit if not needed
+
+# Alternative: describe triggers snapshot
+jj describe -m "updated"     # Snapshot and update description
+```
+
+**Important:** When you `jj edit` a commit and make changes, those appear as "working copy changes" until a snapshot is triggered. This is normal behavior.
+
 ### Change ID vs Commit ID
 
 - **Change ID**: Stable identifier that persists across rewrites (e.g., `kntqzsqt`)
@@ -152,6 +173,22 @@ jj bookmark delete <name> # Delete bookmark
 jj bookmark track <name>@<remote>  # Track remote bookmark
 ```
 
+**Bookmark gotchas:**
+
+```bash
+# Moving backwards requires a flag:
+jj bookmark set feature -r <ancestor>                  # FAILS if ancestor
+jj bookmark set feature -r <ancestor> --allow-backwards  # Works
+
+# The * suffix means bookmark diverged from tracked remote:
+# feature* 123abc  ← Push to sync with remote
+jj git push --bookmark feature
+
+# Create vs Set:
+jj bookmark create feature     # FAILS if feature@origin exists
+jj bookmark set feature -r @   # Works, moves existing bookmark
+```
+
 ### Pushing Changes
 
 ```bash
@@ -176,6 +213,47 @@ jj squash                 # Move resolution into conflicted commit
 
 # Or use external merge tool:
 jj resolve                # Opens merge tool for each conflict
+jj resolve --list         # List all conflicted files
+```
+
+### Resolving Binary File Conflicts
+
+Binary files (images, `.wasm`, compiled files) cannot have conflict markers. Resolve by choosing one version:
+
+```bash
+# Take version from specific revision (e.g., main):
+jj restore --from main path/to/binary.wasm
+
+# Take version from feature branch:
+jj restore --from feature path/to/binary.wasm
+
+# For multiple binary files:
+jj resolve --list         # See all conflicted files
+for file in file1.wasm file2.wasm; do
+  jj restore --from main "path/to/$file"
+done
+```
+
+### Multi-Parent (Merge) Conflict Resolution
+
+When a merge commit has conflicts:
+
+```bash
+# Option 1: Work on child of merge
+jj new <conflicted-merge>    # Create child of merge
+# Edit files to resolve
+jj squash                    # Move resolutions into merge
+
+# Option 2: Edit the merge directly
+jj edit <conflicted-merge>   # Edit the merge itself
+# Make changes - they appear as "working copy changes"
+jj new                       # Snapshot changes into merge
+jj abandon @                 # Remove empty temp commit
+```
+
+**Creating multi-parent merges:**
+```bash
+jj new branch-a branch-b branch-c -m "integration: merge features"
 ```
 
 ### Undoing Mistakes
@@ -244,6 +322,48 @@ cd existing-git-repo
 jj git init --colocate    # Add jj to existing Git repo
 ```
 
+### Colocated Mode Deep Dive
+
+In colocated mode, both jj and Git operate on the same repository. This creates some nuances to understand:
+
+**Understanding git status output:**
+
+```bash
+$ git status
+HEAD detached from 82f30e2c
+nothing to commit, working tree clean
+```
+
+The "detached from X" message shows the *original* detachment point, not current HEAD. To verify actual HEAD position:
+
+```bash
+git log --oneline -1 HEAD  # Shows current HEAD
+```
+
+**Git index sync issues:**
+
+After jj conflict resolution, git may show unmerged paths:
+
+```bash
+$ git status
+Unmerged paths:
+  both modified:   Cargo.lock
+```
+
+Fix by updating the git index:
+```bash
+git add <files>           # Clears unmerged entries
+```
+
+**When git and jj disagree:**
+
+```bash
+jj git import             # Force import git state to jj
+jj git export             # Force export jj state to git
+```
+
+**Best practice:** Primarily use jj commands in colocated repos. Only use git for operations jj doesn't support (like interactive rebase with git add -p style workflows).
+
 ## Configuration
 
 Edit config with `jj config edit --user`:
@@ -286,3 +406,48 @@ jj abandon <unwanted>     # Remove one version
 ```bash
 jj --ignore-immutable <command>  # Override protection
 ```
+
+## Common Pitfalls
+
+### Push Flag Combinations
+
+Some `jj git push` flag combinations don't work together:
+
+| Flags | Works? | Notes |
+|-------|--------|-------|
+| `--all` | ✓ | Pushes all bookmarks |
+| `--tracked` | ✓ | Pushes tracked bookmarks that changed |
+| `--bookmark <name>` | ✓ | Pushes specific bookmark |
+| `--change <id>` | ✓ | Creates/pushes auto-named bookmark |
+| `--all --allow-new` | ✗ | **Incompatible** |
+| `--tracked --allow-new` | ✗ | **Incompatible** |
+| `--bookmark <name> --allow-new` | ✓ | For new bookmarks |
+
+### Working Copy Changes on Merge Commits
+
+When you `jj edit` a merge commit, changes appear as "working copy changes" even if you're resolving conflicts. This is expected - use `jj new` to trigger snapshot:
+
+```bash
+jj edit <merge-commit>       # Edit the merge
+# Make changes...
+jj new                       # Snapshot into merge, create new @
+jj abandon @                 # Remove empty commit
+```
+
+### Git Status Shows Detached HEAD
+
+In colocated repos, `git status` shows "HEAD detached from X" - this is normal. The message shows the *original* detachment point. Check actual HEAD with:
+
+```bash
+git log --oneline -1 HEAD    # Current HEAD position
+```
+
+### Bookmark Movement Refused
+
+If `jj bookmark set` fails because it would move "backwards":
+
+```bash
+jj bookmark set name -r <rev> --allow-backwards
+```
+
+This flag is required when moving a bookmark to an ancestor of its current position.

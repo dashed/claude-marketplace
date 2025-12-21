@@ -270,7 +270,7 @@ jj bookmark create <name>         # At working copy
 jj bookmark create <name> -r <rev>
 jj bookmark set <name>            # Move to working copy
 jj bookmark set <name> -r <rev>   # Move to revision
-jj bookmark set <name> -B         # Allow moving backwards
+jj bookmark set <name> -r <rev> --allow-backwards  # Move to ancestor
 
 # Modify
 jj bookmark move <name>           # Move to working copy
@@ -311,7 +311,20 @@ jj git push --deleted             # Push deletions
 jj git push --change <rev>        # Create bookmark from change
 jj git push --remote <name>       # To specific remote
 jj git push --dry-run             # Show what would be pushed
+jj git push --allow-new           # Allow creating new remote bookmark
 ```
+
+**Flag compatibility:**
+
+| Flags | Works? | Notes |
+|-------|--------|-------|
+| `--all` | ✓ | Pushes all bookmarks |
+| `--tracked` | ✓ | Pushes tracked bookmarks that moved |
+| `--bookmark <name>` | ✓ | Push specific bookmark |
+| `--change <id>` | ✓ | Creates/pushes auto-named bookmark |
+| `--all --allow-new` | ✗ | **Incompatible** |
+| `--tracked --allow-new` | ✗ | **Incompatible** |
+| `--bookmark <name> --allow-new` | ✓ | For new bookmarks |
 
 ### `jj git remote`
 

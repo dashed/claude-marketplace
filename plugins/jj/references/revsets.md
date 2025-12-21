@@ -263,3 +263,85 @@ jj log -r 'latest(file("src/**"), 5)'
 # All commits between two tags
 jj log -r 'v1.0::v2.0'
 ```
+
+## Advanced Recipes
+
+### Rebasing Entire Branch Tree onto New Base
+
+When you have multiple feature branches and want to rebase all onto new upstream:
+
+```bash
+# Find roots of all branches leading to integration commit, excluding main:
+jj rebase -s 'roots(::my-integration ~ ::main)' -d main
+```
+
+This pattern works by:
+1. `::my-integration` - All ancestors of integration branch
+2. `~ ::main` - Subtract ancestors of main (the difference)
+3. `roots(...)` - Find root commits of that set (the branch points)
+
+jj automatically rebases all descendants when you rebase the roots.
+
+**Example workflow:**
+```bash
+# Verify current state
+jj log -r 'main | feature-a | feature-b | integration'
+
+# Rebase all feature branch roots onto updated main
+jj rebase -s 'roots(::integration ~ ::main)' -d main
+
+# Handle any conflicts that arise
+jj log -r 'conflicts()'
+```
+
+### Finding Branch Divergence
+
+```bash
+# Commits in feature not in main:
+jj log -r '::feature ~ ::main'
+
+# Commits that diverged (in both since common ancestor):
+jj log -r '(::feature | ::main) ~ ::trunk()'
+
+# Common ancestor of two branches:
+jj log -r 'heads(::feature & ::main)'
+```
+
+### Working with Multiple Feature Branches
+
+```bash
+# All feature branch heads:
+jj log -r 'heads(bookmarks(glob:"feature-*")::)'
+
+# Commits unique to each feature branch:
+jj log -r '(::feature-a ~ ::main) | (::feature-b ~ ::main)'
+
+# Find all roots of your work (useful before complex rebase):
+jj log -r 'roots(mine() & trunk()..@)'
+```
+
+### Finding Merge Commits
+
+```bash
+# Commits with merge descriptions in your branch:
+jj log -r 'trunk()..@ & description(glob:"*merge*")'
+
+# Multi-parent commits (created with jj new A B):
+# Note: Direct parent count query not available, but merges usually
+# have descriptive messages
+jj log -r 'trunk()..@ & description(glob:"*integration*")'
+```
+
+### Complex Rebase Scenarios
+
+```bash
+# Rebase preserving branch structure (roots only):
+jj rebase -s 'roots(::feature-integration ~ ::main)' -d main
+
+# Rebase single commit without descendants:
+jj rebase -r <rev> -d main
+
+# Insert commit between two others:
+jj rebase -r <commit> -A <after-this>
+jj rebase -r <commit> -B <before-this>
+```

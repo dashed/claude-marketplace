@@ -4,6 +4,35 @@ All notable changes to the jj skill in this marketplace will be documented in th
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Added
+- Working copy snapshot trigger explanation (when snapshots occur, how to force them)
+- Binary file conflict resolution using `jj restore --from`
+- Multi-parent (merge) conflict resolution workflow
+- Colocated Mode Deep Dive section covering:
+  - Git status interpretation ("HEAD detached from X" meaning)
+  - Git index synchronization issues after jj conflict resolution
+  - When git and jj disagree (import/export commands)
+- Bookmark gotchas subsection:
+  - `--allow-backwards` flag for moving bookmarks to ancestors
+  - `*` suffix meaning (diverged from remote)
+  - Create vs Set bookmark behavior
+- Common Pitfalls section covering:
+  - Push flag combinations that don't work together
+  - Working copy changes on merge commits
+  - Git status in colocated mode
+  - Bookmark movement refused scenarios
+- Advanced Revset Recipes in revsets.md:
+  - `roots(X ~ Y)` pattern for rebasing entire branch trees
+  - Branch divergence analysis
+  - Working with multiple feature branches
+  - Finding merge commits
+  - Complex rebase scenarios
+- Push flag compatibility table in commands.md
+- `--allow-new` flag documentation for `jj git push`
+- Updated bookmark set command with `--allow-backwards` flag
+
 ## [1.0.0] - 2025-11-24
 
 ### Added
