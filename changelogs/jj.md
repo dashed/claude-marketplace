@@ -18,6 +18,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - `--allow-backwards` flag for moving bookmarks to ancestors
   - `*` suffix meaning (diverged from remote)
   - Create vs Set bookmark behavior
+- Non-Interactive Workflows section covering:
+  - Commit messages without editor (`-m` flag for describe, commit, new, squash, split)
+  - Squash without editor (`-u` or `-m` flags)
+  - Conflict resolution without merge tool (`--tool :ours/:theirs` or `jj restore`)
+  - Inherently interactive commands and workarounds
 - Common Pitfalls section covering:
   - Push flag combinations that don't work together
   - Working copy changes on merge commits

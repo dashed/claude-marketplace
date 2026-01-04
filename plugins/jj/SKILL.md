@@ -407,6 +407,55 @@ jj abandon <unwanted>     # Remove one version
 jj --ignore-immutable <command>  # Override protection
 ```
 
+## Non-Interactive Workflows
+
+Many jj commands open an editor by default. Use these flags for automation and CLI workflows:
+
+### Commit Messages Without Editor
+
+| Command | Non-Interactive Flag | Example |
+|---------|---------------------|---------|
+| `jj describe` | `-m` or `--stdin` | `jj describe -m "Fix bug"` |
+| `jj commit` | `-m` | `jj commit -m "Add feature"` |
+| `jj new` | `-m` | `jj new -m "Start new work"` |
+| `jj squash` | `-m` or `-u` | `jj squash -u` (use destination message) |
+| `jj split` | `-m` (first commit only) | `jj split -m "First part" <files>` |
+
+### Squash Without Editor
+
+```bash
+# Use destination's message (discard source)
+jj squash --use-destination-message    # or -u
+
+# Provide explicit message
+jj squash -m "Combined commit message"
+```
+
+**Note:** If either commit has an empty description, jj automatically uses the non-empty one without opening an editor.
+
+### Conflict Resolution Without Merge Tool
+
+```bash
+# Use built-in tools instead of external merge tool
+jj resolve --tool :ours <file>      # Take "our" version (side #1)
+jj resolve --tool :theirs <file>    # Take "their" version (side #2)
+
+# Or use restore for complete replacement
+jj restore --from <rev> <file>      # Take file from specific revision
+```
+
+### Inherently Interactive Commands
+
+These commands cannot be made non-interactive:
+- `jj split` (without file arguments) - requires diff selection
+- `jj diffedit` - opens diff editor by design
+- `jj resolve` (without `--tool`) - opens merge tool
+
+**Workaround for split:** Provide file paths to avoid interactive selection:
+```bash
+jj split -m "First commit" src/file1.rs src/file2.rs
+```
+
 ## Common Pitfalls
 
 ### Push Flag Combinations

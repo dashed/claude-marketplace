@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - jj skill: Multi-parent (merge) conflict resolution workflow
 - jj skill: Colocated Mode Deep Dive section (git status interpretation, index sync issues)
 - jj skill: Bookmark gotchas (--allow-backwards, * suffix meaning, create vs set)
+- jj skill: Non-Interactive Workflows section (avoid editors with -m/-u flags, --tool for resolve)
 - jj skill: Common Pitfalls section (push flag combinations, working copy on merges)
 - jj skill: Advanced Revset Recipes in revsets.md (roots pattern for branch rebasing)
 - jj skill: Push flag compatibility table in commands.md
