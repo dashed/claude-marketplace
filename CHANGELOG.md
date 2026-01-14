@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- design-principles skill: Guide AI-assisted UI generation toward enterprise-grade, intentional design
+- design-principles skill: Based on [claude-design-skill](https://github.com/Dammyjay93/claude-design-skill) by Dammyjay93
+- design-principles skill: 6 design directions (Precision & Density, Warmth & Approachability, Sophistication & Trust, etc.)
+- design-principles skill: Core craft principles (4px grid, symmetrical padding, consistent depth strategies, typography hierarchy)
 - jj skill: Working copy snapshot trigger explanation (when snapshots occur, how to force them)
 - jj skill: Binary file conflict resolution using `jj restore --from`
 - jj skill: Multi-parent (merge) conflict resolution workflow
