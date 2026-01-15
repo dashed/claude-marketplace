@@ -9,15 +9,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [1.1.0] - 2026-01-15
 
 ### Added
-- Editor Settings section in references/configuration.md covering:
+- Editor Settings section in references/configuration.md (for interactive/human use):
   - Priority order: `$JJ_EDITOR` > `ui.editor` > `$VISUAL` > `$EDITOR`
   - Terminal editor examples (vim, nvim, nano, emacs, micro, helix)
   - GUI editor configurations with wait flags (VS Code, Sublime, BBEdit, TextMate, IntelliJ)
   - Quick config commands (`jj config set --user ui.editor`)
   - Comparison table of `ui.editor` vs `ui.diff-editor` vs `ui.merge-editor`
-- Updated SKILL.md Configuration section with editor setup examples
+
 - Working copy snapshot trigger explanation (when snapshots occur, how to force them)
 - Binary file conflict resolution using `jj restore --from`
+
 - Multi-parent (merge) conflict resolution workflow
 - Colocated Mode Deep Dive section covering:
   - Git status interpretation ("HEAD detached from X" meaning)
@@ -46,6 +47,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Push flag compatibility table in commands.md
 - `--allow-new` flag documentation for `jj git push`
 - Updated bookmark set command with `--allow-backwards` flag
+
+### Changed
+- SKILL.md Configuration section now emphasizes non-interactive workflows for LLM/automation use
+- Removed editor setup from main SKILL.md (moved to references for human users)
 
 ## [1.0.0] - 2025-11-24
 
