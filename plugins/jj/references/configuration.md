@@ -7,6 +7,11 @@ Comprehensive reference for jj configuration options, templates, filesets, and a
 - [Config Files](#config-files)
 - [User Settings](#user-settings)
 - [UI Settings](#ui-settings)
+  - [Basic UI](#basic-ui)
+  - [Editor Settings](#editor-settings)
+  - [Colors and Styles](#colors-and-styles)
+  - [Diff Options](#diff-options)
+  - [External Diff Tools](#external-diff-tools)
 - [Aliases](#aliases)
 - [Templates](#templates)
 - [Filesets](#filesets)
@@ -56,15 +61,73 @@ default-command = ["log", "--reversed"]
 # Pager command
 pager = "less -FRX"
 
-# Editor for descriptions
-editor = "vim"
-
 # Diff format: :color-words, :git, :summary, :stat, :types, :name-only
 diff-formatter = ":color-words"
 
 # Movement commands (next/prev) edit instead of creating new commit
 movement.edit = false
 ```
+
+### Editor Settings
+
+The editor is used for commands that need text input: `jj describe`, `jj squash` (when combining messages), `jj commit`, `jj split` (for commit messages).
+
+**Priority order** (highest to lowest):
+
+```
+$JJ_EDITOR > ui.editor > $VISUAL > $EDITOR
+```
+
+If none are set, defaults to `nano` (Unix) or `notepad` (Windows).
+
+**Terminal editors:**
+
+```toml
+[ui]
+editor = "vim"
+editor = "nvim"
+editor = "nano"
+editor = "emacs"
+editor = "micro"
+editor = "helix"
+```
+
+**GUI editors** (require wait flag to block until closed):
+
+```toml
+[ui]
+editor = "code -w"           # VS Code
+editor = "code.cmd -w"       # VS Code on Windows
+editor = "subl -n -w"        # Sublime Text
+editor = "bbedit -w"         # BBEdit
+editor = "mate -w"           # TextMate
+editor = "idea --temp-project --wait"  # IntelliJ IDEA
+
+# Array syntax for complex commands:
+editor = ["C:/Program Files/Notepad++/notepad++.exe",
+    "-multiInst", "-notabbar", "-nosession", "-noPlugin"]
+```
+
+**Quick config commands:**
+
+```bash
+# Set editor in user config
+jj config set --user ui.editor "nvim"
+
+# Set editor in repo config
+jj config set --repo ui.editor "code -w"
+
+# Check current editor setting
+jj config get ui.editor
+```
+
+**Editor vs Diff-Editor:**
+
+| Setting | Used For | Default |
+|---------|----------|---------|
+| `ui.editor` | Commit messages (`describe`, `squash`, `commit`) | `nano` |
+| `ui.diff-editor` | Interactive diff editing (`split`, `squash -i`, `diffedit`) | `:builtin` |
+| `ui.merge-editor` | Conflict resolution (`resolve`) | (none) |
 
 ### Colors and Styles
 

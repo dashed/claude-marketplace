@@ -375,11 +375,24 @@ email = "your@email.com"
 
 [ui]
 default-command = "log"   # Run 'jj log' when no command given
-diff-editor = ":builtin"  # Or "meld", "kdiff3", etc.
+editor = "nvim"           # For commit messages (squash, describe, etc.)
+diff-editor = ":builtin"  # For interactive diff editing (split, squash -i)
 
 [revset-aliases]
 'wip' = 'description(exact:"") & mine()'  # Custom revset alias
 ```
+
+**Setting your editor:**
+
+```bash
+# Quick setup (user-wide)
+jj config set --user ui.editor "nvim"
+jj config set --user ui.editor "code -w"  # VS Code (needs -w flag)
+
+# Priority: $JJ_EDITOR > ui.editor > $VISUAL > $EDITOR
+```
+
+See [references/configuration.md](references/configuration.md#editor-settings) for all editor options.
 
 ## Advanced Topics
 

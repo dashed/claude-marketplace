@@ -7,11 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-01-15
+
 ### Added
 - design-principles skill: Guide AI-assisted UI generation toward enterprise-grade, intentional design
 - design-principles skill: Based on [claude-design-skill](https://github.com/Dammyjay93/claude-design-skill) by Dammyjay93
 - design-principles skill: 6 design directions (Precision & Density, Warmth & Approachability, Sophistication & Trust, etc.)
 - design-principles skill: Core craft principles (4px grid, symmetrical padding, consistent depth strategies, typography hierarchy)
+- jj skill: Editor Settings section in references/configuration.md (priority order, terminal/GUI editors, quick config commands)
 - jj skill: Working copy snapshot trigger explanation (when snapshots occur, how to force them)
 - jj skill: Binary file conflict resolution using `jj restore --from`
 - jj skill: Multi-parent (merge) conflict resolution workflow
@@ -245,7 +248,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/dashed/claude-marketplace/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/dashed/claude-marketplace/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/dashed/claude-marketplace/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/dashed/claude-marketplace/compare/v0.6.2...v0.7.0

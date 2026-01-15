@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.8.0"
+    "version": "0.9.0"
   },
   "plugins": [
     {
@@ -25,7 +25,7 @@
     },
     {
       "name": "git-absorb",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "source": "./plugins/git-absorb",
       "description": "Automatically fold uncommitted changes into appropriate commits. Use for applying review feedback and maintaining atomic commit history.",
       "author": {
@@ -39,7 +39,7 @@
     },
     {
       "name": "tmux",
-      "version": "1.4.0",
+      "version": "1.5.0",
       "source": "./plugins/tmux",
       "description": "Remote control tmux sessions for interactive CLIs (python, gdb, etc.) by sending keystrokes and scraping pane output. Use when debugging applications, running interactive REPLs (Python, gdb, ipdb, psql, mysql, node), automating terminal workflows, or when user mentions tmux, debugging, or interactive shells.",
       "author": {
@@ -146,7 +146,7 @@
     },
     {
       "name": "jj",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "source": "./plugins/jj",
       "description": "Jujutsu (jj) version control system - a Git-compatible VCS with novel features. Use when working with jj repositories, managing stacked commits, needing automatic rebasing with first-class conflict handling, using revsets to select commits, or wanting enhanced Git workflows. Triggers on mentions of 'jj', 'jujutsu', change IDs, or operation log.",
       "author": {
