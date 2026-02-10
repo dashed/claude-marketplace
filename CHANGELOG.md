@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- mermaid-cli skill: Generate diagrams and visualizations from Mermaid markup using mmdc command-line tool
+- mermaid-cli skill: Comprehensive SKILL.md with prerequisites, basic workflow, common patterns, and troubleshooting
+- mermaid-cli skill: Progressive disclosure structure with references/ directory
+- mermaid-cli skill: references/cli-reference.md - Complete CLI flag reference with all options and examples
+- mermaid-cli skill: references/configuration.md - Mermaid config, puppeteer config, themes, and CSS styling
+- mermaid-cli skill: Diagram validation and fix patterns for verifying and correcting Mermaid syntax
+
 ## [0.9.0] - 2026-01-15
 
 ### Added
