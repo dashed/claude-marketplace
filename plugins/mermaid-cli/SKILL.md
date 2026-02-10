@@ -71,7 +71,7 @@ mmdc -i diagram.mmd -o diagram.pdf
 
 ### Step 3: Verify
 
-Check that the output file was created and is non-empty.
+On success, mmdc prints `Generating single mermaid chart` and exits with code 0. Check that the output file was created and is non-empty.
 
 ## Common Patterns
 
@@ -307,3 +307,10 @@ cat <<'EOF' > puppeteer-config.json
 EOF
 mmdc -i diagram.mmd -o diagram.svg -p puppeteer-config.json
 ```
+
+## Known Limitations
+
+- Requires Node.js (^18.19 or >=20) with Puppeteer and headless Chromium (~200MB)
+- Large or complex diagrams may be slow to render (Puppeteer timeout)
+- Icon packs require network access to download from unpkg.com
+- PDF output does not support background color customization

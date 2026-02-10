@@ -296,7 +296,7 @@ mmdc --help
 
 ## Markdown Processing Mode
 
-When the input is a Markdown file (`.md` extension or `-I md`), mmdc operates in Markdown processing mode:
+When the input is a Markdown file (`.md` or `.markdown` extension), mmdc operates in Markdown processing mode:
 
 1. Scans the input file for fenced code blocks with `mermaid` language identifier
 2. Renders each mermaid block to the specified output format
