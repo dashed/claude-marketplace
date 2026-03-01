@@ -284,6 +284,29 @@
       ],
       "strict": false,
       "skills": ["./"]
+    },
+    {
+      "name": "walkthrough-to-obsidian",
+      "version": "1.0.0",
+      "source": "./plugins/walkthrough-to-obsidian",
+      "description": "Convert game walkthroughs and guides from plain text into structured, interlinked Obsidian markdown pages. Use when the user wants to convert a walkthrough, FAQ, guide, or reference document into Obsidian vault pages. Triggers on mentions of converting walkthroughs, guides, or FAQs to Obsidian, or splitting a large text file into Obsidian pages.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/walkthrough-to-obsidian",
+      "license": "MIT",
+      "keywords": [
+        "obsidian",
+        "walkthrough",
+        "guide",
+        "conversion",
+        "markdown",
+        "wiki",
+        "knowledge-base",
+        "gaming"
+      ],
+      "strict": false,
+      "skills": ["./"]
     }
   ]
 }

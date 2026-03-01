@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - mermaid-cli skill: references/cli-reference.md - Complete CLI flag reference with all options and examples
 - mermaid-cli skill: references/configuration.md - Mermaid config, puppeteer config, themes, and CSS styling
 - mermaid-cli skill: Diagram validation and fix patterns for verifying and correcting Mermaid syntax
+- walkthrough-to-obsidian skill: Convert game walkthroughs and guides into structured, interlinked Obsidian markdown pages
+- walkthrough-to-obsidian skill: 7-phase conversion workflow (Analyze, Plan, Stub+Index, Convert, Audit, Navigation, Cross-links)
+- walkthrough-to-obsidian skill: references/formatting-guide.md for Obsidian markdown formatting rules
+- walkthrough-to-obsidian skill: references/cross-linking-guide.md for wiki-link taxonomy and patterns
+- walkthrough-to-obsidian skill: Agent team parallelization support for large documents
 
 ## [0.9.0] - 2026-01-15
 
