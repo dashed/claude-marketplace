@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - walkthrough-to-obsidian skill: references/formatting-guide.md for Obsidian markdown formatting rules
 - walkthrough-to-obsidian skill: references/cross-linking-guide.md for wiki-link taxonomy and patterns
 - walkthrough-to-obsidian skill: Agent team parallelization support for large documents
+- long-form-math skill: Long-form, understanding-focused mathematical writing style inspired by Cummings and Chartrand
+- long-form-math skill: Three-phase proof workflow (Pre-Proof Strategy, Proof, Post-Proof Analysis)
+- long-form-math skill: references/proof-writing-guide.md - Proof templates for 8 techniques, worked examples, technique selection flowchart
+- long-form-math skill: references/exposition-patterns.md - Definition introduction workflows, motivation-first patterns, historical storytelling, writing rules
 
 ## [0.9.0] - 2026-01-15
 
