@@ -330,6 +330,32 @@
       ],
       "strict": false,
       "skills": ["./"]
+    },
+    {
+      "name": "skillboss-ai-gateway",
+      "version": "1.0.0",
+      "source": "./plugins/skillboss-ai-gateway",
+      "description": "Unified AI gateway providing one API key for 100+ AI services. Use when needing multiple AI models (Claude, GPT, Gemini), generating images/videos, synthesizing voice, or scraping websites. Triggers on mentions of switching models, unified API, or multi-provider access.",
+      "author": {
+        "name": "SkillBoss",
+        "url": "https://skillboss.co"
+      },
+      "repository": "https://github.com/heeyo-life/skillboss-mcp",
+      "license": "MIT",
+      "keywords": [
+        "ai-gateway",
+        "openai-compatible",
+        "mcp",
+        "claude",
+        "gpt",
+        "gemini",
+        "image-generation",
+        "video-generation",
+        "voice",
+        "unified-api"
+      ],
+      "strict": false,
+      "skills": ["./"]
     }
   ]
 }
