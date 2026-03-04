@@ -330,6 +330,20 @@
       ],
       "strict": false,
       "skills": ["./"]
+    },
+    {
+      "name": "linear",
+      "version": "2.3.1",
+      "source": "./plugins/linear",
+      "description": "Managing Linear issues, projects, and teams. Use when working with Linear tasks, creating issues, updating status, querying projects, or managing team workflows.",
+      "author": {
+        "name": "Will Smith"
+      },
+      "repository": "https://github.com/wrsmith108/linear-claude-skill",
+      "license": "MIT",
+      "keywords": ["linear", "project-management", "issues", "teams"],
+      "strict": false,
+      "skills": ["./"]
     }
   ]
 }

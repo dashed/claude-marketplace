@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - skill-creator skill: Replace old references with comprehensive schemas documentation
 
 ### Added
+- linear skill: Linear issue, project, and team management (v2.3.1)
+- linear skill: TypeScript SDK scripts, label taxonomy, reference documentation
+- linear skill: Unit tests, ESLint linting, TypeScript type checking, Prettier formatting
+- Makefile targets for TypeScript quality gates (lint-typescript, typecheck-typescript, format-typescript, test-linear)
 - mermaid-cli skill: Generate diagrams and visualizations from Mermaid markup using mmdc command-line tool
 - mermaid-cli skill: Comprehensive SKILL.md with prerequisites, basic workflow, common patterns, and troubleshooting
 - mermaid-cli skill: Progressive disclosure structure with references/ directory

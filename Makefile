@@ -1,4 +1,4 @@
-.PHONY: help sync validate validate-strict validate-yaml validate-json validate-structure clean test test-tmux-build test-tmux test-tmux-local test-tmux-shell test-session-registry test-session-registry-local test-registry test-create-session test-list-sessions test-cleanup-sessions test-session-integration test-playwright-build test-playwright test-playwright-local test-playwright-shell lint lint-python lint-python-fix lint-shellcheck lint-shellcheck-strict lint-fix type-check format format-check format-playwright format-playwright-check lint-playwright
+.PHONY: help sync validate validate-strict validate-yaml validate-json validate-structure clean test test-tmux-build test-tmux test-tmux-local test-tmux-shell test-session-registry test-session-registry-local test-registry test-create-session test-list-sessions test-cleanup-sessions test-session-integration test-playwright-build test-playwright test-playwright-local test-playwright-shell lint lint-python lint-python-fix lint-shellcheck lint-shellcheck-strict lint-fix type-check format format-check format-playwright format-playwright-check lint-playwright setup-linear lint-typescript typecheck-typescript format-typescript format-check-typescript test-linear
 
 # Default target
 .DEFAULT_GOAL := help
@@ -63,7 +63,7 @@ validate-structure-strict: ## Validate file structure (strict mode)
 	@echo "$(CYAN)Validating file structure (strict mode)...$(NC)"
 	@uv run scripts/validators/validate_structure.py --strict
 
-test: ## Run pytest tests
+test: ## Run all tests (pytest + vitest)
 	@echo "$(CYAN)Running tests...$(NC)"
 	@if find tests -name 'test_*.py' -type f | grep -q .; then \
 		uv run pytest tests/ -v; \
@@ -71,6 +71,7 @@ test: ## Run pytest tests
 		echo "$(YELLOW)No Python tests found - skipping pytest$(NC)"; \
 		echo "$(YELLOW)Bash tests are located in tests/bash/ (run with make test-tmux)$(NC)"; \
 	fi
+	@$(MAKE) test-linear
 
 test-cov: ## Run tests with coverage report
 	@echo "$(CYAN)Running tests with coverage...$(NC)"
@@ -185,10 +186,11 @@ test-playwright-shell: test-playwright-build ## Open interactive shell in playwr
 	@echo "$(CYAN)Opening shell in playwright test container...$(NC)"
 	@docker run --rm -it -v $(PWD):/workspace:ro -w /workspace $(PLAYWRIGHT_DOCKER_IMAGE) /bin/bash
 
-lint: ## Run all linting checks (ruff + shellcheck)
+lint: ## Run all linting checks (ruff + shellcheck + eslint)
 	@echo "$(CYAN)Running all linting checks...$(NC)"
 	@$(MAKE) lint-python
 	@$(MAKE) lint-shellcheck
+	@$(MAKE) lint-typescript
 
 lint-python: ## Run Python linting checks (ruff)
 	@echo "$(CYAN)Running Python linting checks...$(NC)"
@@ -216,17 +218,20 @@ lint-shellcheck-strict: ## Run shellcheck on all bash scripts (fail on issues)
 
 lint-fix: lint-python-fix ## Fix linting issues automatically (Python only)
 
-type-check: ## Run type checking with ty
+type-check: ## Run type checking (ty + tsc)
 	@echo "$(CYAN)Running type checks with ty...$(NC)"
 	@uv run ty check scripts/ tests/
+	@$(MAKE) typecheck-typescript
 
-format: ## Format code with black
+format: ## Format code (black + prettier)
 	@echo "$(CYAN)Formatting code with black...$(NC)"
 	@uv run black scripts/ tests/
+	@$(MAKE) format-typescript
 
 format-check: ## Check code formatting without making changes
 	@echo "$(CYAN)Checking code formatting...$(NC)"
 	@uv run black --check scripts/ tests/
+	@$(MAKE) format-check-typescript
 
 # Playwright Python scripts
 PLAYWRIGHT_SCRIPTS := plugins/playwright/scripts
@@ -243,6 +248,32 @@ format-playwright-check: ## Check playwright script formatting
 lint-playwright: ## Type check playwright scripts with ty
 	@echo "$(CYAN)Type checking playwright scripts with ty...$(NC)"
 	@uv run ty check $(PLAYWRIGHT_SCRIPTS)/
+
+# Linear plugin TypeScript targets
+setup-linear: ## Install linear plugin dependencies
+	@echo "$(CYAN)Installing linear plugin dependencies...$(NC)"
+	cd plugins/linear && npm install --no-fund --no-audit
+	@echo "$(GREEN)✓ Linear plugin dependencies installed$(NC)"
+
+lint-typescript: ## Run ESLint on TypeScript files
+	@echo "$(CYAN)Running ESLint on TypeScript files...$(NC)"
+	cd plugins/linear && npx eslint scripts/
+
+typecheck-typescript: ## Run TypeScript type checker
+	@echo "$(CYAN)Running TypeScript type checker...$(NC)"
+	cd plugins/linear && npx tsc --noEmit
+
+format-typescript: ## Format TypeScript files with Prettier
+	@echo "$(CYAN)Formatting TypeScript files with Prettier...$(NC)"
+	cd plugins/linear && npx prettier --write 'scripts/**/*.ts'
+
+format-check-typescript: ## Check TypeScript formatting
+	@echo "$(CYAN)Checking TypeScript formatting...$(NC)"
+	cd plugins/linear && npx prettier --check 'scripts/**/*.ts'
+
+test-linear: ## Run linear plugin tests
+	@echo "$(CYAN)Running linear plugin tests...$(NC)"
+	cd plugins/linear && npx vitest run
 
 clean: ## Clean up generated files
 	@echo "$(CYAN)Cleaning up...$(NC)"

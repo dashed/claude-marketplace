@@ -36,6 +36,7 @@ A curated collection of Agent Skills for extending Claude Code's capabilities. T
 | **mermaid-cli** | Generate, validate, and fix diagrams from Mermaid markup using mmdc. Use when creating flowcharts, sequence diagrams, class diagrams, or converting .mmd files to images/SVG/PDF. Also validates and fixes Mermaid syntax. Tool: [mermaid-cli](https://github.com/mermaid-js/mermaid-cli) | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/mermaid-cli) |
 | **walkthrough-to-obsidian** | Convert game walkthroughs and guides from plain text into structured, interlinked Obsidian markdown pages. Use when converting walkthroughs, FAQs, or reference documents into Obsidian vault pages. Supports agent team parallelization for large documents. | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/walkthrough-to-obsidian) |
 | **long-form-math** | Write mathematics in a long-form, understanding-focused style with detailed proofs and rich exposition. Three-phase proof workflow, motivation-first exposition, and rigorous writing conventions. Inspired by Cummings' Real Analysis and Chartrand's Mathematical Proofs. | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/long-form-math) |
+| **linear** | Managing Linear issues, projects, and teams. Use when working with Linear tasks, creating issues, updating status, querying projects, or managing team workflows. Tool: [Linear SDK](https://github.com/linear/linear) + MCP | [wrsmith108](https://github.com/wrsmith108/linear-claude-skill) |
 
 ### Playwright Setup
 

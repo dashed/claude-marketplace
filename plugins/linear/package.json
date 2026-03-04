@@ -1,0 +1,69 @@
+{
+  "name": "claude-plugin-linear",
+  "version": "2.4.0",
+  "type": "module",
+  "description": "Claude Code skill for Linear issue, project, and team management with MCP integration",
+  "keywords": [
+    "claude",
+    "claude-code",
+    "claude-plugin",
+    "linear",
+    "project-management",
+    "issue-tracking",
+    "workflow"
+  ],
+  "author": "wrsmith108",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wrsmith108/linear-claude-skill.git"
+  },
+  "homepage": "https://github.com/wrsmith108/linear-claude-skill#readme",
+  "bugs": {
+    "url": "https://github.com/wrsmith108/linear-claude-skill/issues"
+  },
+  "files": [
+    "SKILL.md",
+    "scripts",
+    "docs",
+    "hooks",
+    "api.md",
+    "sdk.md",
+    "sync.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "setup": "npx tsx scripts/setup.ts",
+    "ops": "npx tsx scripts/linear-ops.ts",
+    "query": "npx tsx scripts/query.ts",
+    "test-connection": "npx tsx scripts/query.ts \"query { viewer { name } }\"",
+    "upload-image": "npx tsx scripts/upload-image.ts",
+    "extract-image": "npx tsx scripts/extract-image.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint scripts/",
+    "lint:fix": "eslint scripts/ --fix",
+    "format": "prettier --write 'scripts/**/*.ts'",
+    "format:check": "prettier --check 'scripts/**/*.ts'",
+    "test": "vitest run"
+  },
+  "claude-plugin": {
+    "name": "Linear",
+    "description": "Manage Linear issues, projects, and teams with MCP tools, SDK automation, and GraphQL API patterns",
+    "skills": [
+      "."
+    ]
+  },
+  "dependencies": {
+    "@linear/sdk": "^68.1.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@types/node": "^25.0.10",
+    "eslint": "^9.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.7.0",
+    "typescript-eslint": "^8.0.0",
+    "vitest": "^3.0.0"
+  }
+}

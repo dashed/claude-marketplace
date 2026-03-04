@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Claude Code Skill Frontmatter",
-  "description": "Schema for SKILL.md YAML frontmatter",
+  "description": "Schema for SKILL.md YAML frontmatter. Based on https://code.claude.com/docs/en/skills.md",
   "type": "object",
   "required": ["name", "description"],
   "properties": {
@@ -19,12 +19,52 @@
     },
     "license": {
       "type": "string",
-      "description": "License identifier (e.g., MIT, Apache-2.0, Vibecoded)"
+      "description": "License identifier (e.g., MIT, Apache-2.0)"
+    },
+    "argument-hint": {
+      "type": "string",
+      "description": "Hint shown during autocomplete to indicate expected arguments (e.g., '[issue-number]')"
+    },
+    "disable-model-invocation": {
+      "type": "boolean",
+      "description": "Set to true to prevent Claude from automatically loading this skill. Default: false"
+    },
+    "user-invocable": {
+      "type": "boolean",
+      "description": "Set to false to hide from the / menu. Default: true"
     },
     "allowed-tools": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Comma-separated list of allowed tools (e.g., 'Read, Grep, Glob')"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of allowed tools (e.g., ['mcp__linear', 'Bash'])"
+        }
+      ],
+      "description": "Tools Claude can use without asking permission when this skill is active"
+    },
+    "model": {
       "type": "string",
-      "pattern": "^[A-Za-z]+(,\\s*[A-Za-z]+)*$",
-      "description": "Comma-separated list of allowed tools (e.g., 'Read, Grep, Glob')"
+      "description": "Model to use when this skill is active"
+    },
+    "context": {
+      "type": "string",
+      "enum": ["fork"],
+      "description": "Set to 'fork' to run in a forked subagent context"
+    },
+    "agent": {
+      "type": "string",
+      "description": "Which subagent type to use when context: fork is set (e.g., 'Explore', 'Plan', 'general-purpose')"
+    },
+    "hooks": {
+      "type": "object",
+      "description": "Hooks scoped to this skill's lifecycle"
     }
   },
   "additionalProperties": false
