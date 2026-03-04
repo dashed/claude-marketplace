@@ -4,6 +4,11 @@ All notable changes to the linear skill in this marketplace will be documented i
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Changed
+- Bump @linear/sdk from ^68.1.0 to ^76.0.0 (align with official Linear SDK repo)
+
 ## [2.3.1] - 2026-03-04
 
 ### Added

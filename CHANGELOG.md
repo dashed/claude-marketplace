@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- linear skill: Bump @linear/sdk from ^68.1.0 to ^76.0.0 (align with official Linear SDK repo)
 - skill-creator skill: Update to v2.0.0 matching upstream anthropic-skills repository
 - skill-creator skill: Complete rewrite with eval framework, benchmarking, and description optimization
 - skill-creator skill: Add agents/ directory for evaluation (grader, comparator, analyzer)
