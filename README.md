@@ -38,6 +38,22 @@ A curated collection of Agent Skills for extending Claude Code's capabilities. T
 | **long-form-math** | Write mathematics in a long-form, understanding-focused style with detailed proofs and rich exposition. Three-phase proof workflow, motivation-first exposition, and rigorous writing conventions. Inspired by Cummings' Real Analysis and Chartrand's Mathematical Proofs. | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/long-form-math) |
 | **linear** | Managing Linear issues, projects, and teams. Use when working with Linear tasks, creating issues, updating status, querying projects, or managing team workflows. Tool: [Linear SDK](https://github.com/linear/linear) + MCP | [wrsmith108](https://github.com/wrsmith108/linear-claude-skill) |
 
+### Linear Setup
+
+The linear skill requires Node.js dependencies and a Linear API key:
+
+```bash
+# 1. Install dependencies in the plugin cache directory
+cd ~/.claude/plugins/cache/alberto-marketplace/linear/2.3.1
+npm install
+
+# 2. Create a Linear API key at https://linear.app/settings/api
+# 3. Add to your shell profile (~/.zshrc or ~/.bashrc)
+export LINEAR_API_KEY="lin_api_..."
+```
+
+Restart Claude Code after setup.
+
 ### Playwright Setup
 
 The playwright skill requires a one-time browser installation (~200MB). Claude will suggest these commands but will not run them directly—run them manually:
