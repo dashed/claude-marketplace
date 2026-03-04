@@ -21,7 +21,7 @@ A curated collection of Agent Skills for extending Claude Code's capabilities. T
 
 | Skill | Description | Source |
 |-------|-------------|--------|
-| **skill-creator** | Guide for creating effective skills. Use when creating or updating skills that extend Claude's capabilities. | [Anthropic](https://github.com/anthropics/skills/tree/main/skill-creator) |
+| **skill-creator** | Create new skills, modify and improve existing skills, and measure skill performance. Use when creating, updating, evaluating, or optimizing skills. | [Anthropic](https://github.com/anthropics/skills/tree/main/skill-creator) |
 | **skill-reviewer** | Review and ensure skills maintain high quality standards. Use when creating new skills, updating existing skills, or auditing skill quality. Checks for progressive disclosure, mental model shift, appropriate scope, and documentation clarity. | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/skill-reviewer) |
 | **git-absorb** | Automatically fold uncommitted changes into appropriate commits. Use for applying review feedback and maintaining atomic commit history. Tool: [git-absorb](https://github.com/tummychow/git-absorb) | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/git-absorb) |
 | **tmux** | Remote control tmux sessions for interactive CLIs (python, gdb, etc.) by sending keystrokes and scraping pane output. Use when debugging applications, running interactive REPLs (Python, gdb, ipdb, psql, mysql, node), or automating terminal workflows. Works with stock tmux on Linux/macOS. | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/tmux) |

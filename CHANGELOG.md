@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- skill-creator skill: Update to v2.0.0 matching upstream anthropic-skills repository
+- skill-creator skill: Complete rewrite with eval framework, benchmarking, and description optimization
+- skill-creator skill: Add agents/ directory for evaluation (grader, comparator, analyzer)
+- skill-creator skill: Add eval-viewer/ for reviewing evaluation results
+- skill-creator skill: Replace old references with comprehensive schemas documentation
+
 ### Added
 - mermaid-cli skill: Generate diagrams and visualizations from Mermaid markup using mmdc command-line tool
 - mermaid-cli skill: Comprehensive SKILL.md with prerequisites, basic workflow, common patterns, and troubleshooting
