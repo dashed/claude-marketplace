@@ -21,8 +21,16 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "uv.lock"
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
       - name: Install Python dependencies
         run: uv sync --all-extras
+
+      - name: Install linear plugin dependencies
+        run: make setup-linear
 
       - name: Run CI checks
         run: make ci
