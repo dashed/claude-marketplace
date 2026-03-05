@@ -344,6 +344,20 @@
       "keywords": ["linear", "project-management", "issues", "teams"],
       "strict": false,
       "skills": ["./"]
+    },
+    {
+      "name": "ai-friendly-cli",
+      "version": "1.0.0",
+      "source": "./plugins/ai-friendly-cli",
+      "description": "Build and refactor CLIs for AI agent compatibility. Use when making CLI tools machine-readable with structured JSON output, input hardening, schema introspection, dry-run safety, and MCP surfaces.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/ai-friendly-cli",
+      "license": "MIT",
+      "keywords": ["cli", "ai-agents", "llm", "machine-readable", "json-output", "input-validation", "mcp", "developer-experience"],
+      "strict": false,
+      "skills": ["./"]
     }
   ]
 }

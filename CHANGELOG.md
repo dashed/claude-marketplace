@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - skill-creator skill: Replace old references with comprehensive schemas documentation
 
 ### Added
+- ai-friendly-cli skill: Build and refactor CLIs for AI agent compatibility (v1.0.0)
+- ai-friendly-cli skill: 8 core principles with implementation priority checklist
+- ai-friendly-cli skill: Reference documentation for output patterns, input hardening, safety patterns, and architecture
 - linear skill: Linear issue, project, and team management (v2.3.1)
 - linear skill: TypeScript SDK scripts, label taxonomy, reference documentation
 - linear skill: Unit tests, ESLint linting, TypeScript type checking, Prettier formatting
