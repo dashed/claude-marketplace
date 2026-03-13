@@ -17,7 +17,6 @@ from chrome_cdp.helpers import (
     sock_path,
 )
 
-
 # ── sock_path ──────────────────────────────────────────────────────────────
 
 
@@ -160,17 +159,20 @@ class TestGetWsUrl:
         port_file = tmp_path / "DevToolsActivePort"
         port_file.write_text("9222\n/devtools/browser/abc-123\n")
 
-        with patch("chrome_cdp.helpers.Path.home", return_value=tmp_path):
-            # We need to patch the actual file path construction
-            with patch.object(
+        with (
+            patch("chrome_cdp.helpers.Path.home", return_value=tmp_path),
+            patch.object(
                 Path,
                 "read_text",
                 return_value="9222\n/devtools/browser/abc-123\n",
-            ):
-                result = get_ws_url()
-                assert result == "ws://127.0.0.1:9222/devtools/browser/abc-123"
+            ),
+        ):
+            result = get_ws_url()
+            assert result == "ws://127.0.0.1:9222/devtools/browser/abc-123"
 
     def test_file_not_found_raises(self):
-        with patch.object(Path, "read_text", side_effect=FileNotFoundError):
-            with pytest.raises(FileNotFoundError):
-                get_ws_url()
+        with (
+            patch.object(Path, "read_text", side_effect=FileNotFoundError),
+            pytest.raises(FileNotFoundError),
+        ):
+            get_ws_url()

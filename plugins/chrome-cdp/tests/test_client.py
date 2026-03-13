@@ -10,7 +10,6 @@ import pytest
 
 from chrome_cdp.client import CDPClient, EventWaiter
 
-
 # ── CDPClient init ─────────────────────────────────────────────────────────
 
 
@@ -33,7 +32,9 @@ class TestCDPClientConnect:
         client = CDPClient()
         mock_ws = AsyncMock()
         # Make the websocket iterable but immediately stop
-        mock_ws.__aiter__ = MagicMock(return_value=AsyncMock(__anext__=AsyncMock(side_effect=StopAsyncIteration)))
+        mock_ws.__aiter__ = MagicMock(
+            return_value=AsyncMock(__anext__=AsyncMock(side_effect=StopAsyncIteration))
+        )
 
         with patch("chrome_cdp.client.websockets.connect", new_callable=AsyncMock) as mock_connect:
             mock_connect.return_value = mock_ws
@@ -59,9 +60,11 @@ class TestCDPClientSend:
             loop = asyncio.get_running_loop()
             # Schedule response delivery
             loop.call_soon(
-                lambda mid=msg["id"]: client._pending[mid].set_result({"ok": True})
-                if mid in client._pending
-                else None
+                lambda mid=msg["id"]: (
+                    client._pending[mid].set_result({"ok": True})
+                    if mid in client._pending
+                    else None
+                )
             )
 
         client._ws.send = fake_send
@@ -81,9 +84,11 @@ class TestCDPClientSend:
             sent_data = json.loads(data)
             loop = asyncio.get_running_loop()
             loop.call_soon(
-                lambda: client._pending[sent_data["id"]].set_result({})
-                if sent_data["id"] in client._pending
-                else None
+                lambda: (
+                    client._pending[sent_data["id"]].set_result({})
+                    if sent_data["id"] in client._pending
+                    else None
+                )
             )
 
         client._ws.send = capture_send
@@ -107,11 +112,11 @@ class TestCDPClientSend:
             msg = json.loads(data)
             loop = asyncio.get_running_loop()
             loop.call_soon(
-                lambda mid=msg["id"]: client._pending[mid].set_exception(
-                    RuntimeError("Something went wrong")
+                lambda mid=msg["id"]: (
+                    client._pending[mid].set_exception(RuntimeError("Something went wrong"))
+                    if mid in client._pending and not client._pending[mid].done()
+                    else None
                 )
-                if mid in client._pending and not client._pending[mid].done()
-                else None
             )
 
         client._ws.send = fake_send
@@ -225,15 +230,24 @@ class TestCDPClientClose:
 
 
 class TestCDPClientReadLoop:
+    @staticmethod
+    def _make_async_ws(messages: list[str]) -> AsyncMock:
+        """Create a mock websocket that yields messages via async for."""
+
+        async def _aiter(self_ws):
+            for msg in messages:
+                yield msg
+
+        ws = AsyncMock()
+        ws.__aiter__ = _aiter
+        return ws
+
     async def test_read_loop_dispatches_response(self):
         """Test that the read loop resolves pending futures from responses."""
         client = CDPClient()
         response_msg = json.dumps({"id": 1, "result": {"data": "test"}})
 
-        mock_ws = AsyncMock()
-        mock_ws.__aiter__ = MagicMock(return_value=iter([response_msg]))
-
-        client._ws = mock_ws
+        client._ws = self._make_async_ws([response_msg])
 
         loop = asyncio.get_running_loop()
         fut = loop.create_future()
@@ -242,6 +256,8 @@ class TestCDPClientReadLoop:
         await client._read_loop()
 
         assert fut.done()
+        # The future was resolved with the result, then the finally block
+        # tried to reject it again but it was already done.
         assert fut.result() == {"data": "test"}
 
     async def test_read_loop_dispatches_error_response(self):
@@ -249,10 +265,7 @@ class TestCDPClientReadLoop:
         client = CDPClient()
         error_msg = json.dumps({"id": 1, "error": {"message": "Not found"}})
 
-        mock_ws = AsyncMock()
-        mock_ws.__aiter__ = MagicMock(return_value=iter([error_msg]))
-
-        client._ws = mock_ws
+        client._ws = self._make_async_ws([error_msg])
 
         loop = asyncio.get_running_loop()
         fut = loop.create_future()
@@ -267,32 +280,27 @@ class TestCDPClientReadLoop:
     async def test_read_loop_dispatches_events(self):
         """Test that the read loop calls event handlers."""
         client = CDPClient()
-        event_msg = json.dumps(
-            {"method": "Page.loadEventFired", "params": {"timestamp": 100}}
-        )
+        event_msg = json.dumps({"method": "Page.loadEventFired", "params": {"timestamp": 100}})
 
-        mock_ws = AsyncMock()
-        mock_ws.__aiter__ = MagicMock(return_value=iter([event_msg]))
+        client._ws = self._make_async_ws([event_msg])
 
-        client._ws = mock_ws
+        received = []
 
-        handler = MagicMock()
+        def handler(params, msg):
+            received.append((params, msg))
+
         client.on_event("Page.loadEventFired", handler)
 
         await client._read_loop()
 
-        handler.assert_called_once_with(
-            {"timestamp": 100}, {"method": "Page.loadEventFired", "params": {"timestamp": 100}}
-        )
+        assert len(received) == 1
+        assert received[0][0] == {"timestamp": 100}
+        assert received[0][1]["method"] == "Page.loadEventFired"
 
     async def test_read_loop_fires_close_handlers_on_finish(self):
         """Test that close handlers fire when the read loop ends."""
         client = CDPClient()
-
-        mock_ws = AsyncMock()
-        mock_ws.__aiter__ = MagicMock(return_value=iter([]))
-
-        client._ws = mock_ws
+        client._ws = self._make_async_ws([])
 
         close_handler = MagicMock()
         client.on_close(close_handler)
@@ -304,11 +312,7 @@ class TestCDPClientReadLoop:
     async def test_read_loop_rejects_pending_on_close(self):
         """Test that remaining pending futures are rejected when loop ends."""
         client = CDPClient()
-
-        mock_ws = AsyncMock()
-        mock_ws.__aiter__ = MagicMock(return_value=iter([]))
-
-        client._ws = mock_ws
+        client._ws = self._make_async_ws([])
 
         loop = asyncio.get_running_loop()
         fut = loop.create_future()
