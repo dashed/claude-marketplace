@@ -1,4 +1,4 @@
-.PHONY: help sync validate validate-strict validate-yaml validate-json validate-structure clean test test-tmux-build test-tmux test-tmux-local test-tmux-shell test-session-registry test-session-registry-local test-registry test-create-session test-list-sessions test-cleanup-sessions test-session-integration test-playwright-build test-playwright test-playwright-local test-playwright-shell lint lint-python lint-python-fix lint-shellcheck lint-shellcheck-strict lint-fix type-check format format-check format-playwright format-playwright-check lint-playwright setup-linear lint-typescript typecheck-typescript format-typescript format-check-typescript test-linear test-chrome-cdp lint-chrome-cdp format-chrome-cdp format-chrome-cdp-check typecheck-chrome-cdp
+.PHONY: help sync validate validate-strict validate-yaml validate-json validate-structure clean test test-tmux-build test-tmux test-tmux-local test-tmux-shell test-session-registry test-session-registry-local test-registry test-create-session test-list-sessions test-cleanup-sessions test-session-integration test-playwright-build test-playwright test-playwright-local test-playwright-shell lint lint-python lint-python-fix lint-shellcheck lint-shellcheck-strict lint-fix type-check format format-check format-playwright format-playwright-check lint-playwright setup-linear lint-typescript typecheck-typescript format-typescript format-check-typescript test-linear test-chrome-cdp lint-chrome-cdp format-chrome-cdp format-chrome-cdp-check typecheck-chrome-cdp build-react-bp validate-react-bp test-react-bp lint-react-bp format-react-bp format-react-bp-check typecheck-react-bp
 
 # Default target
 .DEFAULT_GOAL := help
@@ -302,6 +302,45 @@ typecheck-chrome-cdp: ## Run ty type check on chrome-cdp plugin
 	@echo "$(CYAN)Type checking chrome-cdp plugin...$(NC)"
 	@uv run ty check $(CHROME_CDP_SRC)/
 	@echo "$(GREEN)✓ Chrome CDP type check passed$(NC)"
+
+# React Best Practices plugin targets
+REACT_BP_DIR := plugins/react-best-practices
+REACT_BP_SCRIPTS := $(REACT_BP_DIR)/scripts
+REACT_BP_TESTS := $(REACT_BP_DIR)/tests
+
+build-react-bp: ## Build React Best Practices AGENTS.md from rules
+	@echo "$(CYAN)Building React Best Practices AGENTS.md...$(NC)"
+	cd $(REACT_BP_DIR) && uv run python -m scripts build
+	@echo "$(GREEN)✓ React Best Practices build complete$(NC)"
+
+validate-react-bp: ## Validate React Best Practices rule files
+	@echo "$(CYAN)Validating React Best Practices rules...$(NC)"
+	cd $(REACT_BP_DIR) && uv run python -m scripts validate
+	@echo "$(GREEN)✓ React Best Practices validation passed$(NC)"
+
+test-react-bp: ## Run React Best Practices tests
+	@echo "$(CYAN)Running React Best Practices tests...$(NC)"
+	cd $(REACT_BP_DIR) && uv run --isolated --extra dev pytest tests/ -v
+	@echo "$(GREEN)✓ React Best Practices tests passed$(NC)"
+
+lint-react-bp: ## Run ruff check on React Best Practices scripts
+	@echo "$(CYAN)Linting React Best Practices scripts...$(NC)"
+	@uv run ruff check $(REACT_BP_SCRIPTS)/ $(REACT_BP_TESTS)/
+	@echo "$(GREEN)✓ React Best Practices lint passed$(NC)"
+
+format-react-bp: ## Format React Best Practices scripts with ruff
+	@echo "$(CYAN)Formatting React Best Practices scripts...$(NC)"
+	@uv run ruff format $(REACT_BP_SCRIPTS)/ $(REACT_BP_TESTS)/
+	@echo "$(GREEN)✓ React Best Practices formatted$(NC)"
+
+format-react-bp-check: ## Check React Best Practices script formatting
+	@echo "$(CYAN)Checking React Best Practices formatting...$(NC)"
+	@uv run ruff format --check $(REACT_BP_SCRIPTS)/ $(REACT_BP_TESTS)/
+
+typecheck-react-bp: ## Run ty type check on React Best Practices scripts
+	@echo "$(CYAN)Type checking React Best Practices scripts...$(NC)"
+	@uv run ty check $(REACT_BP_SCRIPTS)/
+	@echo "$(GREEN)✓ React Best Practices type check passed$(NC)"
 
 clean: ## Clean up generated files
 	@echo "$(CYAN)Cleaning up...$(NC)"

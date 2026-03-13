@@ -372,6 +372,20 @@
       "keywords": ["chrome", "cdp", "browser", "devtools", "debugging"],
       "strict": false,
       "skills": ["./"]
+    },
+    {
+      "name": "react-best-practices",
+      "version": "1.0.0",
+      "source": "./plugins/react-best-practices",
+      "description": "React and Next.js performance optimization guidelines from Vercel Engineering. Use when writing, reviewing, or refactoring React/Next.js code for optimal performance. 62 rules across 8 categories covering waterfalls, bundle size, server-side, re-renders, and rendering.",
+      "author": {
+        "name": "Vercel Engineering"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/react-best-practices",
+      "license": "MIT",
+      "keywords": ["react", "nextjs", "performance", "optimization", "vercel", "best-practices"],
+      "strict": false,
+      "skills": ["./"]
     }
   ]
 }

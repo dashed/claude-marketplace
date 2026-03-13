@@ -80,3 +80,11 @@ include = ["plugins/chrome-cdp/src/**/*.py"]
 
 [tool.ty.overrides.rules]
 unresolved-import = "ignore"            # websockets is provided via plugin's own pyproject.toml
+
+[[tool.ty.overrides]]
+# React Best Practices plugin uses relative imports within its own scripts/ package
+# ty at root level can't resolve these; the plugin has its own pyproject.toml
+include = ["plugins/react-best-practices/scripts/**/*.py"]
+
+[tool.ty.overrides.rules]
+unresolved-import = "ignore"            # Relative imports resolved at runtime via -m invocation

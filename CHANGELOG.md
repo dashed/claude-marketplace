@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- react-best-practices skill: React and Next.js performance optimization guidelines from Vercel Engineering (v1.0.0)
+- react-best-practices skill: 62 rules across 8 categories (waterfalls, bundle size, server-side, client-side, re-renders, rendering, JS performance, advanced patterns)
+- react-best-practices skill: Python build scripts for compiling, validating, and extracting test cases from rules
+- react-best-practices skill: references/rule-authoring.md for rule creation and maintenance
 - chrome-cdp skill: Lightweight Chrome DevTools Protocol CLI for interacting with live Chrome sessions (v1.0.0)
 - chrome-cdp skill: 13 commands (list, snap, eval, shot, html, nav, net, click, clickxy, type, loadall, evalraw, stop)
 - chrome-cdp skill: Per-tab persistent daemon architecture with Unix socket NDJSON protocol
