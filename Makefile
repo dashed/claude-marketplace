@@ -1,4 +1,4 @@
-.PHONY: help sync validate validate-strict validate-yaml validate-json validate-structure clean test test-tmux-build test-tmux test-tmux-local test-tmux-shell test-session-registry test-session-registry-local test-registry test-create-session test-list-sessions test-cleanup-sessions test-session-integration test-playwright-build test-playwright test-playwright-local test-playwright-shell lint lint-python lint-python-fix lint-shellcheck lint-shellcheck-strict lint-fix type-check format format-check format-playwright format-playwright-check lint-playwright setup-linear lint-typescript typecheck-typescript format-typescript format-check-typescript test-linear
+.PHONY: help sync validate validate-strict validate-yaml validate-json validate-structure clean test test-tmux-build test-tmux test-tmux-local test-tmux-shell test-session-registry test-session-registry-local test-registry test-create-session test-list-sessions test-cleanup-sessions test-session-integration test-playwright-build test-playwright test-playwright-local test-playwright-shell lint lint-python lint-python-fix lint-shellcheck lint-shellcheck-strict lint-fix type-check format format-check format-playwright format-playwright-check lint-playwright setup-linear lint-typescript typecheck-typescript format-typescript format-check-typescript test-linear test-chrome-cdp lint-chrome-cdp format-chrome-cdp format-chrome-cdp-check typecheck-chrome-cdp
 
 # Default target
 .DEFAULT_GOAL := help
@@ -274,6 +274,34 @@ format-check-typescript: ## Check TypeScript formatting
 test-linear: ## Run linear plugin tests
 	@echo "$(CYAN)Running linear plugin tests...$(NC)"
 	cd plugins/linear && npx vitest run
+
+# Chrome CDP plugin Python targets
+CHROME_CDP_SRC := plugins/chrome-cdp/src/chrome_cdp
+CHROME_CDP_TESTS := plugins/chrome-cdp/tests
+
+test-chrome-cdp: ## Run chrome-cdp plugin tests
+	@echo "$(CYAN)Running chrome-cdp plugin tests...$(NC)"
+	cd plugins/chrome-cdp && uv run --isolated pytest tests/ -v
+	@echo "$(GREEN)✓ Chrome CDP tests passed$(NC)"
+
+lint-chrome-cdp: ## Run ruff check on chrome-cdp plugin
+	@echo "$(CYAN)Linting chrome-cdp plugin...$(NC)"
+	@uv run ruff check $(CHROME_CDP_SRC)/ $(CHROME_CDP_TESTS)/
+	@echo "$(GREEN)✓ Chrome CDP lint passed$(NC)"
+
+format-chrome-cdp: ## Format chrome-cdp plugin with ruff
+	@echo "$(CYAN)Formatting chrome-cdp plugin...$(NC)"
+	@uv run ruff format $(CHROME_CDP_SRC)/ $(CHROME_CDP_TESTS)/
+	@echo "$(GREEN)✓ Chrome CDP formatted$(NC)"
+
+format-chrome-cdp-check: ## Check chrome-cdp plugin formatting
+	@echo "$(CYAN)Checking chrome-cdp formatting...$(NC)"
+	@uv run ruff format --check $(CHROME_CDP_SRC)/ $(CHROME_CDP_TESTS)/
+
+typecheck-chrome-cdp: ## Run ty type check on chrome-cdp plugin
+	@echo "$(CYAN)Type checking chrome-cdp plugin...$(NC)"
+	@uv run ty check $(CHROME_CDP_SRC)/
+	@echo "$(GREEN)✓ Chrome CDP type check passed$(NC)"
 
 clean: ## Clean up generated files
 	@echo "$(CYAN)Cleaning up...$(NC)"

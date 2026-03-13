@@ -73,3 +73,10 @@ include = ["plugins/playwright/scripts/*.py"]
 
 [tool.ty.overrides.rules]
 unresolved-import = "ignore"            # Playwright is provided via inline script metadata
+
+[[tool.ty.overrides]]
+# Chrome CDP plugin manages its own dependencies via plugin-specific pyproject.toml
+include = ["plugins/chrome-cdp/src/**/*.py"]
+
+[tool.ty.overrides.rules]
+unresolved-import = "ignore"            # websockets is provided via plugin's own pyproject.toml

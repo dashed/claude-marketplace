@@ -358,6 +358,20 @@
       "keywords": ["cli", "ai-agents", "llm", "machine-readable", "json-output", "input-validation", "mcp", "developer-experience"],
       "strict": false,
       "skills": ["./"]
+    },
+    {
+      "name": "chrome-cdp",
+      "version": "1.0.0",
+      "source": "./plugins/chrome-cdp",
+      "description": "Interact with local Chrome browser session via Chrome DevTools Protocol. Use when asked to inspect, debug, or interact with a page open in Chrome, take screenshots, read accessibility trees, evaluate JavaScript, click elements, or navigate pages.",
+      "author": {
+        "name": "Petr Baudis"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/chrome-cdp",
+      "license": "MIT",
+      "keywords": ["chrome", "cdp", "browser", "devtools", "debugging"],
+      "strict": false,
+      "skills": ["./"]
     }
   ]
 }

@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- chrome-cdp skill: Lightweight Chrome DevTools Protocol CLI for interacting with live Chrome sessions (v1.0.0)
+- chrome-cdp skill: 13 commands (list, snap, eval, shot, html, nav, net, click, clickxy, type, loadall, evalraw, stop)
+- chrome-cdp skill: Per-tab persistent daemon architecture with Unix socket NDJSON protocol
+- chrome-cdp skill: Python implementation adapted from original Node.js version by Petr Baudis
+- chrome-cdp skill: references/coordinate-system.md with DPR detection and CSS pixel mapping
+- chrome-cdp skill: references/daemon-ipc.md with socket protocol and request/response schema
+
 ### Changed
 - linear skill: Bump @linear/sdk from ^68.1.0 to ^76.0.0 (align with official Linear SDK repo)
 - skill-creator skill: Update to v2.0.0 matching upstream anthropic-skills repository
