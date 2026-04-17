@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-04-16
+
 ### Added
+- gogcli skill: Google Workspace CLI wrapper around the `gog` binary (gogcli v0.12.0, by Peter Steinberger) for Gmail, Calendar, Drive, Docs, Slides, Sheets, Chat, Tasks, Contacts, Classroom, Forms, Keep, Admin, and Cloud Identity Groups (v1.0.0)
+- gogcli skill: Agent-mode documentation covering JSON output, `--select` projection, `--dry-run`/`--force`/`--no-input` safety rails, stable exit codes, `gog schema`, and the `--enable-commands` sandbox
+- gogcli skill: Progressive disclosure with 7 references/ guides (auth, gmail, calendar, drive, sheets, docs-slides, other-surfaces)
 - react-best-practices skill: React and Next.js performance optimization guidelines from Vercel Engineering (v1.0.0)
 - react-best-practices skill: 62 rules across 8 categories (waterfalls, bundle size, server-side, client-side, re-renders, rendering, JS performance, advanced patterns)
 - react-best-practices skill: Python build scripts for compiling, validating, and extracting test cases from rules
@@ -18,16 +23,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - chrome-cdp skill: Python implementation adapted from original Node.js version by Petr Baudis
 - chrome-cdp skill: references/coordinate-system.md with DPR detection and CSS pixel mapping
 - chrome-cdp skill: references/daemon-ipc.md with socket protocol and request/response schema
-
-### Changed
-- linear skill: Bump @linear/sdk from ^68.1.0 to ^76.0.0 (align with official Linear SDK repo)
-- skill-creator skill: Update to v2.0.0 matching upstream anthropic-skills repository
-- skill-creator skill: Complete rewrite with eval framework, benchmarking, and description optimization
-- skill-creator skill: Add agents/ directory for evaluation (grader, comparator, analyzer)
-- skill-creator skill: Add eval-viewer/ for reviewing evaluation results
-- skill-creator skill: Replace old references with comprehensive schemas documentation
-
-### Added
 - ai-friendly-cli skill: Build and refactor CLIs for AI agent compatibility (v1.0.0)
 - ai-friendly-cli skill: 8 core principles with implementation priority checklist
 - ai-friendly-cli skill: Reference documentation for output patterns, input hardening, safety patterns, and architecture
@@ -50,6 +45,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - long-form-math skill: Three-phase proof workflow (Pre-Proof Strategy, Proof, Post-Proof Analysis)
 - long-form-math skill: references/proof-writing-guide.md - Proof templates for 8 techniques, worked examples, technique selection flowchart
 - long-form-math skill: references/exposition-patterns.md - Definition introduction workflows, motivation-first patterns, historical storytelling, writing rules
+
+### Changed
+- linear skill: Bump @linear/sdk from ^68.1.0 to ^76.0.0 (align with official Linear SDK repo)
+- skill-creator skill: Update to v2.0.0 matching upstream anthropic-skills repository
+- skill-creator skill: Complete rewrite with eval framework, benchmarking, and description optimization
+- skill-creator skill: Add agents/ directory for evaluation (grader, comparator, analyzer)
+- skill-creator skill: Add eval-viewer/ for reviewing evaluation results
+- skill-creator skill: Replace old references with comprehensive schemas documentation
 
 ## [0.9.0] - 2026-01-15
 
@@ -292,7 +295,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/dashed/claude-marketplace/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/dashed/claude-marketplace/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/dashed/claude-marketplace/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/dashed/claude-marketplace/compare/v0.7.0...v0.7.1

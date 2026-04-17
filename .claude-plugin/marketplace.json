@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.9.0"
+    "version": "0.10.0"
   },
   "plugins": [
     {
@@ -384,6 +384,20 @@
       "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/react-best-practices",
       "license": "MIT",
       "keywords": ["react", "nextjs", "performance", "optimization", "vercel", "best-practices"],
+      "strict": false,
+      "skills": ["./"]
+    },
+    {
+      "name": "gogcli",
+      "version": "1.0.0",
+      "source": "./plugins/gogcli",
+      "description": "Drive Google Workspace from the terminal with the `gog` CLI (gogcli). Use when sending/searching Gmail, managing Calendar events, uploading to Drive, editing Docs/Sheets/Slides, posting to Chat, managing Tasks/Contacts, administering Workspace via DWD, or building agent workflows needing JSON output, OAuth/service-account auth, Pub/Sub watches, and a command sandbox. Covers Gmail, Calendar, Drive, Docs, Slides, Sheets, Chat, Tasks, Contacts, Classroom, Forms, Keep, Admin.",
+      "author": {
+        "name": "Peter Steinberger (steipete)"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/gogcli",
+      "license": "MIT",
+      "keywords": ["google", "gmail", "calendar", "drive", "sheets", "docs", "cli", "workspace", "automation"],
       "strict": false,
       "skills": ["./"]
     }

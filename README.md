@@ -40,6 +40,7 @@ A curated collection of Agent Skills for extending Claude Code's capabilities. T
 | **chrome-cdp** | Interact with live Chrome browser sessions via Chrome DevTools Protocol. Use when inspecting, debugging, or interacting with pages open in Chrome — screenshots, accessibility trees, JS evaluation, clicking, navigating. Persistent per-tab daemon, works with 100+ tabs. Based on [pasky/chrome-cdp-skill](https://github.com/pasky/chrome-cdp-skill). **Requires Chrome remote debugging** (see below). | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/chrome-cdp) |
 | **react-best-practices** | React and Next.js performance optimization guidelines from Vercel Engineering. 62 rules across 8 categories covering waterfalls, bundle size, server-side, re-renders, and rendering. Use when writing, reviewing, or refactoring React/Next.js code. Source: [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) | [Vercel Engineering](https://github.com/dashed/claude-marketplace/tree/master/plugins/react-best-practices) |
 | **linear** | Managing Linear issues, projects, and teams. Use when working with Linear tasks, creating issues, updating status, querying projects, or managing team workflows. Tool: [Linear SDK](https://github.com/linear/linear) + MCP | [wrsmith108](https://github.com/wrsmith108/linear-claude-skill) |
+| **gogcli** | Drive Google Workspace from the terminal: Gmail, Calendar, Drive, Docs, Sheets, Slides, Chat, Tasks, Contacts, Admin, Keep, Forms, Classroom, Groups, Apps Script. JSON-first, multi-account, script-friendly. Use when sending mail, managing events, moving files, editing spreadsheets, or automating Workspace tasks. Tool: [gogcli](https://github.com/steipete/gogcli) | [steipete](https://github.com/dashed/claude-marketplace/tree/master/plugins/gogcli) |
 
 ### Chrome CDP Setup
 
@@ -159,6 +160,6 @@ claude-marketplace/
 
 ## Version
 
-Current version: **0.9.0**
+Current version: **0.10.0**
 
 See [CHANGELOG.md](CHANGELOG.md) for version history.
