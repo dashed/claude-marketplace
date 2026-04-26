@@ -13,6 +13,8 @@ A curated collection of Agent Skills for extending Claude Code's capabilities. T
 # 2. Install skills
 /plugin  # Browse and install plugins → alberto-marketplace
 
+如果你想用中文搜索和安装 skills，可以顺手看看 Skills宝：https://skilery.com
+
 # 3. Restart Claude Code to load new skills
 /exit
 ```
