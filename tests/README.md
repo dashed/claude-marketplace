@@ -13,6 +13,7 @@ This directory contains tests for:
 ```
 tests/
 ├── test_install_codex_skills.py # Tests for scripts/install_codex_skills.py
+├── test_manage_codex_skills.py  # Tests for scripts/manage_codex_skills.py
 ├── bash/                      # Bash integration tests
 │   ├── test-pane-health.sh   # Tests for pane-health.sh
 │   ├── test-wait-for-text.sh # Tests for wait-for-text.sh
@@ -63,7 +64,8 @@ This will:
 
 - **`make test`** - Run pytest tests (for Python validators)
 - **`make test-cov`** - Run tests with coverage report
-- **`make test-codex-installer`** - Run Codex skills installer Ruff, ty, format, and pytest checks
+- **`make test-codex-skills`** - Run Codex skills installer/manager Ruff, ty, format, and pytest checks
+- **`make test-codex-installer`** - Backward-compatible alias for `make test-codex-skills`
 
 ### Running Tests Manually
 
@@ -107,6 +109,18 @@ Tests for `scripts/install_codex_skills.py`:
 - ✅ Refuses to overwrite real files or directories
 - ✅ Replaces mismatched symlinks with `--force`
 - ✅ Exercises the CLI dry-run path
+
+#### test_manage_codex_skills.py
+Tests for `scripts/manage_codex_skills.py`:
+
+- ✅ Lists disabled, enabled, and external skill entries
+- ✅ Enables managed repo skills
+- ✅ Disables managed repo symlinks
+- ✅ Uninstalls symlinked entries
+- ✅ Refuses to delete real directories
+- ✅ Requires `--force` before replacing conflicting symlinks
+- ✅ Resolves interactive selection tokens
+- ✅ Exercises non-interactive CLI actions
 
 ### tmux Tools Tests
 

@@ -27,6 +27,14 @@ Codex reads repository skills from `.agents/skills`. This repo keeps the source 
 
 Then restart Codex or start a new Codex thread from this repo root. Re-run the script after adding new plugin folders.
 
+For day-to-day toggling, use the interactive manager:
+
+```bash
+./scripts/manage_codex_skills.py
+# or
+make manage-codex-skills
+```
+
 Useful options:
 
 ```bash
@@ -38,14 +46,22 @@ Useful options:
 
 # Install links into a personal Codex skills directory
 ./scripts/install_codex_skills.py --dest "$HOME/.agents/skills"
+
+# List current Codex skill state
+./scripts/manage_codex_skills.py --list
+
+# Enable, disable, or uninstall individual skills
+./scripts/manage_codex_skills.py --enable tmux
+./scripts/manage_codex_skills.py --disable tmux
+./scripts/manage_codex_skills.py --uninstall tmux
 ```
 
-By default, the script creates `.agents/skills/<skill>` symlinks back to `plugins/<skill>`. It will not overwrite real files or directories.
+By default, the scripts manage `.agents/skills/<skill>` symlinks back to `plugins/<skill>`. `disable` removes only a managed repo symlink, and `uninstall` removes symlinked entries from the Codex skills directory. Real files and directories are reported as conflicts instead of being deleted.
 
-To check and test the installer:
+To check and test the Codex scripts:
 
 ```bash
-make test-codex-installer
+make test-codex-skills
 ```
 
 ## Available Skills
@@ -142,6 +158,14 @@ uv run --with playwright playwright install
 
 Codex can then discover the skills from `.agents/skills` when launched from this repository or one of its subdirectories.
 
+To enable, disable, or uninstall skills interactively:
+
+```bash
+./scripts/manage_codex_skills.py
+# or
+make manage-codex-skills
+```
+
 ## Adding Skills to This Marketplace
 
 ### Method 1: Add to Marketplace (Recommended)
@@ -181,6 +205,9 @@ cp -r plugins/your-skill .claude/skills/
 
 # Codex personal links
 ./scripts/install_codex_skills.py --dest "$HOME/.agents/skills"
+
+# Codex interactive manager
+./scripts/manage_codex_skills.py
 ```
 
 ## Structure
@@ -197,7 +224,8 @@ claude-marketplace/
 │       ├── scripts/          # Optional scripts
 │       └── references/       # Optional documentation
 ├── scripts/
-│   └── install_codex_skills.py # Codex symlink installer
+│   ├── install_codex_skills.py # Codex symlink installer
+│   └── manage_codex_skills.py  # Codex interactive manager
 ├── CHANGELOG.md              # Version history
 └── README.md                 # This file
 ```

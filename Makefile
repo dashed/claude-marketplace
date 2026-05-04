@@ -1,4 +1,4 @@
-.PHONY: help sync validate validate-strict validate-yaml validate-json validate-structure clean test test-codex-installer lint-codex-installer typecheck-codex-installer format-codex-installer format-codex-installer-check test-tmux-build test-tmux test-tmux-local test-tmux-shell test-session-registry test-session-registry-local test-registry test-create-session test-list-sessions test-cleanup-sessions test-session-integration test-playwright-build test-playwright test-playwright-local test-playwright-shell lint lint-python lint-python-fix lint-shellcheck lint-shellcheck-strict lint-fix type-check format format-check format-playwright format-playwright-check lint-playwright setup-linear lint-typescript typecheck-typescript format-typescript format-check-typescript test-linear test-chrome-cdp lint-chrome-cdp format-chrome-cdp format-chrome-cdp-check typecheck-chrome-cdp build-react-bp validate-react-bp test-react-bp lint-react-bp format-react-bp format-react-bp-check typecheck-react-bp
+.PHONY: help sync validate validate-strict validate-yaml validate-json validate-structure clean test test-codex-skills test-codex-installer lint-codex-skills lint-codex-installer typecheck-codex-skills typecheck-codex-installer format-codex-skills format-codex-installer format-codex-skills-check format-codex-installer-check manage-codex-skills test-tmux-build test-tmux test-tmux-local test-tmux-shell test-session-registry test-session-registry-local test-registry test-create-session test-list-sessions test-cleanup-sessions test-session-integration test-playwright-build test-playwright test-playwright-local test-playwright-shell lint lint-python lint-python-fix lint-shellcheck lint-shellcheck-strict lint-fix type-check format format-check format-playwright format-playwright-check lint-playwright setup-linear lint-typescript typecheck-typescript format-typescript format-check-typescript test-linear test-chrome-cdp lint-chrome-cdp format-chrome-cdp format-chrome-cdp-check typecheck-chrome-cdp build-react-bp validate-react-bp test-react-bp lint-react-bp format-react-bp format-react-bp-check typecheck-react-bp
 
 # Default target
 .DEFAULT_GOAL := help
@@ -14,7 +14,7 @@ help: ## Show this help message
 	@echo "$(CYAN)Claude Marketplace - Makefile Commands$(NC)"
 	@echo ""
 	@echo "$(GREEN)Setup:$(NC)"
-	@grep -E '^(sync|init):.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(CYAN)%-30s$(NC) %s\n", $$1, $$2}'
+	@grep -E '^(sync|init|manage-codex-skills):.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(CYAN)%-30s$(NC) %s\n", $$1, $$2}'
 	@echo ""
 	@echo "$(GREEN)Validation:$(NC)"
 	@grep -E '^validate.*:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(CYAN)%-30s$(NC) %s\n", $$1, $$2}'
@@ -23,7 +23,7 @@ help: ## Show this help message
 	@grep -E '^test.*:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(CYAN)%-30s$(NC) %s\n", $$1, $$2}'
 	@echo ""
 	@echo "$(GREEN)Development:$(NC)"
-	@grep -E '^(lint|format|clean)(-[a-z]+)*:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(CYAN)%-30s$(NC) %s\n", $$1, $$2}'
+	@grep -E '^(lint|format|typecheck|type-check|clean)(-[a-z]+)*:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(CYAN)%-30s$(NC) %s\n", $$1, $$2}'
 	@echo ""
 
 sync: ## Sync dependencies with uv (manual - uv run does this automatically)
@@ -82,27 +82,40 @@ test-cov: ## Run tests with coverage report
 		echo "$(YELLOW)Bash tests are located in tests/bash/ (run with make test-tmux)$(NC)"; \
 	fi
 
-CODEX_INSTALLER_FILES := scripts/install_codex_skills.py tests/test_install_codex_skills.py
+CODEX_SKILLS_FILES := scripts/install_codex_skills.py scripts/manage_codex_skills.py tests/test_install_codex_skills.py tests/test_manage_codex_skills.py
 
-test-codex-installer: lint-codex-installer typecheck-codex-installer format-codex-installer-check ## Run Codex installer checks and unit tests
-	@echo "$(CYAN)Running Codex installer tests...$(NC)"
-	@uv run pytest tests/test_install_codex_skills.py -v
+test-codex-skills: lint-codex-skills typecheck-codex-skills format-codex-skills-check ## Run Codex skills checks and unit tests
+	@echo "$(CYAN)Running Codex skills tests...$(NC)"
+	@uv run pytest tests/test_install_codex_skills.py tests/test_manage_codex_skills.py -v
 
-lint-codex-installer: ## Run Ruff on the Codex installer
-	@echo "$(CYAN)Linting Codex installer with Ruff...$(NC)"
-	@uv run ruff check $(CODEX_INSTALLER_FILES)
+test-codex-installer: test-codex-skills ## Alias for Codex skills checks and tests
 
-typecheck-codex-installer: ## Run ty on the Codex installer
-	@echo "$(CYAN)Type checking Codex installer with ty...$(NC)"
-	@uv run ty check $(CODEX_INSTALLER_FILES)
+lint-codex-skills: ## Run Ruff on Codex skills scripts
+	@echo "$(CYAN)Linting Codex skills scripts with Ruff...$(NC)"
+	@uv run ruff check $(CODEX_SKILLS_FILES)
 
-format-codex-installer: ## Format the Codex installer with Ruff
-	@echo "$(CYAN)Formatting Codex installer with Ruff...$(NC)"
-	@uv run ruff format $(CODEX_INSTALLER_FILES)
+lint-codex-installer: lint-codex-skills ## Alias for Codex skills Ruff checks
 
-format-codex-installer-check: ## Check Codex installer formatting with Ruff
-	@echo "$(CYAN)Checking Codex installer formatting with Ruff...$(NC)"
-	@uv run ruff format --check $(CODEX_INSTALLER_FILES)
+typecheck-codex-skills: ## Run ty on Codex skills scripts
+	@echo "$(CYAN)Type checking Codex skills scripts with ty...$(NC)"
+	@uv run ty check $(CODEX_SKILLS_FILES)
+
+typecheck-codex-installer: typecheck-codex-skills ## Alias for Codex skills ty checks
+
+format-codex-skills: ## Format Codex skills scripts with Ruff
+	@echo "$(CYAN)Formatting Codex skills scripts with Ruff...$(NC)"
+	@uv run ruff format $(CODEX_SKILLS_FILES)
+
+format-codex-installer: format-codex-skills ## Alias for Codex skills formatting
+
+format-codex-skills-check: ## Check Codex skills script formatting with Ruff
+	@echo "$(CYAN)Checking Codex skills script formatting with Ruff...$(NC)"
+	@uv run ruff format --check $(CODEX_SKILLS_FILES)
+
+format-codex-installer-check: format-codex-skills-check ## Alias for Codex skills format checks
+
+manage-codex-skills: ## Open the interactive Codex skills manager
+	@./scripts/manage_codex_skills.py
 
 # Docker configuration for tmux tests
 DOCKER_IMAGE := tmux-tests
