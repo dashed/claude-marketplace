@@ -6,12 +6,13 @@ Comprehensive test suite for claude-marketplace tools and plugins.
 
 This directory contains tests for:
 - **tmux tools**: Bash-based integration tests for tmux helper scripts (pane-health.sh, wait-for-text.sh, find-sessions.sh)
-- **Python validators**: pytest tests for validation scripts (coming soon)
+- **Python tools**: pytest tests for repository scripts, including the Codex skills installer
 
 ## Directory Structure
 
 ```
 tests/
+├── test_install_codex_skills.py # Tests for scripts/install_codex_skills.py
 ├── bash/                      # Bash integration tests
 │   ├── test-pane-health.sh   # Tests for pane-health.sh
 │   ├── test-wait-for-text.sh # Tests for wait-for-text.sh
@@ -62,6 +63,7 @@ This will:
 
 - **`make test`** - Run pytest tests (for Python validators)
 - **`make test-cov`** - Run tests with coverage report
+- **`make test-codex-installer`** - Run Codex skills installer Ruff, ty, format, and pytest checks
 
 ### Running Tests Manually
 
@@ -92,6 +94,19 @@ docker run --rm -it -v $(pwd):/workspace:ro -w /workspace tmux-tests /bin/bash
 ```
 
 ## Test Coverage
+
+### Python Tool Tests
+
+#### test_install_codex_skills.py
+Tests for `scripts/install_codex_skills.py`:
+
+- ✅ Creates repo-local `.agents/skills` symlinks
+- ✅ Uses portable relative links for repo-local installs
+- ✅ Supports custom destination directories
+- ✅ Keeps dry runs read-only
+- ✅ Refuses to overwrite real files or directories
+- ✅ Replaces mismatched symlinks with `--force`
+- ✅ Exercises the CLI dry-run path
 
 ### tmux Tools Tests
 

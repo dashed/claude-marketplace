@@ -1,10 +1,10 @@
 # Alberto's Claude Marketplace
 
-> A local marketplace for personal Claude Code skills and plugins.
+> A local marketplace for personal Claude Code skills and Codex repo-local skills.
 
-A curated collection of Agent Skills for extending Claude Code's capabilities. This marketplace is configured for local use and makes it easy to install and manage custom skills.
+A curated collection of Agent Skills for extending Claude Code and Codex capabilities. This marketplace is configured for local use and makes it easy to install and manage custom skills.
 
-## Quick Start
+## Claude Code Quick Start
 
 ```bash
 # 1. Add the marketplace
@@ -15,6 +15,37 @@ A curated collection of Agent Skills for extending Claude Code's capabilities. T
 
 # 3. Restart Claude Code to load new skills
 /exit
+```
+
+## Codex Quick Start
+
+Codex reads repository skills from `.agents/skills`. This repo keeps the source skill folders in `plugins/`, so run the helper script to create Codex-compatible symlinks:
+
+```bash
+./scripts/install_codex_skills.py
+```
+
+Then restart Codex or start a new Codex thread from this repo root. Re-run the script after adding new plugin folders.
+
+Useful options:
+
+```bash
+# Preview changes without creating links
+./scripts/install_codex_skills.py --dry-run
+
+# Replace existing symlinks that point somewhere else
+./scripts/install_codex_skills.py --force
+
+# Install links into a personal Codex skills directory
+./scripts/install_codex_skills.py --dest "$HOME/.agents/skills"
+```
+
+By default, the script creates `.agents/skills/<skill>` symlinks back to `plugins/<skill>`. It will not overwrite real files or directories.
+
+To check and test the installer:
+
+```bash
+make test-codex-installer
 ```
 
 ## Available Skills
@@ -103,6 +134,14 @@ uv run --with playwright playwright install
 3. Choose the skills to install
 4. Restart Claude Code
 
+### Install skills for Codex
+
+```bash
+./scripts/install_codex_skills.py
+```
+
+Codex can then discover the skills from `.agents/skills` when launched from this repository or one of its subdirectories.
+
 ## Adding Skills to This Marketplace
 
 ### Method 1: Add to Marketplace (Recommended)
@@ -124,23 +163,32 @@ uv run --with playwright playwright install
 
 3. Update the CHANGELOG.md
 4. Commit your changes
+5. Re-run `./scripts/install_codex_skills.py` if you use Codex with this repo.
 
 ### Method 2: Direct Installation
 
-Skills can also be installed directly without using the marketplace:
+Skills can also be installed directly without using the Claude Code marketplace:
 
 ```bash
-# Personal (available everywhere)
+# Claude Code personal (available everywhere)
 cp -r plugins/your-skill ~/.claude/skills/
 
-# Project (shared with team)
+# Claude Code project (shared with team)
 cp -r plugins/your-skill .claude/skills/
+
+# Codex repo-local links
+./scripts/install_codex_skills.py
+
+# Codex personal links
+./scripts/install_codex_skills.py --dest "$HOME/.agents/skills"
 ```
 
 ## Structure
 
 ```
 claude-marketplace/
+├── .agents/
+│   └── skills/              # Generated Codex symlinks
 ├── .claude-plugin/
 │   └── marketplace.json      # Marketplace manifest
 ├── plugins/
@@ -148,6 +196,8 @@ claude-marketplace/
 │       ├── SKILL.md          # Skill definition
 │       ├── scripts/          # Optional scripts
 │       └── references/       # Optional documentation
+├── scripts/
+│   └── install_codex_skills.py # Codex symlink installer
 ├── CHANGELOG.md              # Version history
 └── README.md                 # This file
 ```
@@ -157,6 +207,8 @@ claude-marketplace/
 - [Claude Code Skills Documentation](https://docs.claude.com/en/docs/claude-code/skills)
 - [Plugin Marketplaces Guide](https://docs.claude.com/en/docs/claude-code/plugin-marketplaces)
 - [Anthropic Skills Repository](https://github.com/anthropics/skills)
+- [OpenAI Codex Skills Documentation](https://developers.openai.com/codex/skills)
+- [OpenAI Skills Catalog](https://github.com/openai/skills)
 
 ## Version
 

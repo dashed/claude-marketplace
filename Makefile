@@ -1,4 +1,4 @@
-.PHONY: help sync validate validate-strict validate-yaml validate-json validate-structure clean test test-tmux-build test-tmux test-tmux-local test-tmux-shell test-session-registry test-session-registry-local test-registry test-create-session test-list-sessions test-cleanup-sessions test-session-integration test-playwright-build test-playwright test-playwright-local test-playwright-shell lint lint-python lint-python-fix lint-shellcheck lint-shellcheck-strict lint-fix type-check format format-check format-playwright format-playwright-check lint-playwright setup-linear lint-typescript typecheck-typescript format-typescript format-check-typescript test-linear test-chrome-cdp lint-chrome-cdp format-chrome-cdp format-chrome-cdp-check typecheck-chrome-cdp build-react-bp validate-react-bp test-react-bp lint-react-bp format-react-bp format-react-bp-check typecheck-react-bp
+.PHONY: help sync validate validate-strict validate-yaml validate-json validate-structure clean test test-codex-installer lint-codex-installer typecheck-codex-installer format-codex-installer format-codex-installer-check test-tmux-build test-tmux test-tmux-local test-tmux-shell test-session-registry test-session-registry-local test-registry test-create-session test-list-sessions test-cleanup-sessions test-session-integration test-playwright-build test-playwright test-playwright-local test-playwright-shell lint lint-python lint-python-fix lint-shellcheck lint-shellcheck-strict lint-fix type-check format format-check format-playwright format-playwright-check lint-playwright setup-linear lint-typescript typecheck-typescript format-typescript format-check-typescript test-linear test-chrome-cdp lint-chrome-cdp format-chrome-cdp format-chrome-cdp-check typecheck-chrome-cdp build-react-bp validate-react-bp test-react-bp lint-react-bp format-react-bp format-react-bp-check typecheck-react-bp
 
 # Default target
 .DEFAULT_GOAL := help
@@ -81,6 +81,28 @@ test-cov: ## Run tests with coverage report
 		echo "$(YELLOW)No Python tests found - skipping pytest with coverage$(NC)"; \
 		echo "$(YELLOW)Bash tests are located in tests/bash/ (run with make test-tmux)$(NC)"; \
 	fi
+
+CODEX_INSTALLER_FILES := scripts/install_codex_skills.py tests/test_install_codex_skills.py
+
+test-codex-installer: lint-codex-installer typecheck-codex-installer format-codex-installer-check ## Run Codex installer checks and unit tests
+	@echo "$(CYAN)Running Codex installer tests...$(NC)"
+	@uv run pytest tests/test_install_codex_skills.py -v
+
+lint-codex-installer: ## Run Ruff on the Codex installer
+	@echo "$(CYAN)Linting Codex installer with Ruff...$(NC)"
+	@uv run ruff check $(CODEX_INSTALLER_FILES)
+
+typecheck-codex-installer: ## Run ty on the Codex installer
+	@echo "$(CYAN)Type checking Codex installer with ty...$(NC)"
+	@uv run ty check $(CODEX_INSTALLER_FILES)
+
+format-codex-installer: ## Format the Codex installer with Ruff
+	@echo "$(CYAN)Formatting Codex installer with Ruff...$(NC)"
+	@uv run ruff format $(CODEX_INSTALLER_FILES)
+
+format-codex-installer-check: ## Check Codex installer formatting with Ruff
+	@echo "$(CYAN)Checking Codex installer formatting with Ruff...$(NC)"
+	@uv run ruff format --check $(CODEX_INSTALLER_FILES)
 
 # Docker configuration for tmux tests
 DOCKER_IMAGE := tmux-tests
