@@ -130,7 +130,7 @@ Before committing, verify:
 - [ ] Message accurately describes the changes
 - [ ] Type correctly categorizes the change
 - [ ] Scope (if used) is meaningful and consistent
-- [ ] Breaking changes are properly marked with `!` or footer
+- [ ] Breaking changes are properly marked with `!` suffix or `BREAKING CHANGE:` footer
 - [ ] Description is clear and under 50 characters
 - [ ] Body wraps at 72 characters (if present)
 

@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed
+- Clarify breaking change syntax in quality checklist: `!` suffix or `BREAKING CHANGE:` footer
+
 ## [1.0.0] - 2025-11-24
 
 ### Added
