@@ -400,6 +400,20 @@
       "keywords": ["google", "gmail", "calendar", "drive", "sheets", "docs", "cli", "workspace", "automation"],
       "strict": false,
       "skills": ["./"]
+    },
+    {
+      "name": "pup",
+      "version": "1.0.0",
+      "source": "./plugins/pup",
+      "description": "Datadog CLI (pup) for observability, monitoring, logs, APM, security, and infrastructure. Use when querying Datadog metrics, searching logs, managing monitors, investigating incidents, or performing Datadog API operations.",
+      "author": {
+        "name": "Datadog"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/pup",
+      "license": "Apache-2.0",
+      "keywords": ["datadog", "cli", "monitoring", "observability", "logs", "metrics", "apm", "security", "infrastructure", "incidents"],
+      "strict": false,
+      "skills": ["./"]
     }
   ]
 }

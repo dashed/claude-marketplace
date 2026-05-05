@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- pup skill: Datadog CLI (pup) for observability, monitoring, logs, APM, security, and infrastructure
+- pup skill: Reference documentation for commands, workflows, query syntax, and advanced features
+
 ## [0.10.0] - 2026-04-16
 
 ### Added
