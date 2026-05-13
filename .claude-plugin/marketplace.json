@@ -428,6 +428,20 @@
       "keywords": ["writing", "style", "voice", "extraction", "style-guide", "rubric", "analysis", "authorship"],
       "strict": false,
       "skills": ["./"]
+    },
+    {
+      "name": "style-writer",
+      "version": "1.0.0",
+      "source": "./plugins/style-writer",
+      "description": "Write content using stored writing styles from the writing-styles/ collection. Use when the user wants to write in a specific voice, apply a stored style, list available writing styles, or evaluate text against a style rubric.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/style-writer",
+      "license": "MIT",
+      "keywords": ["writing", "style", "voice", "application", "style-guide", "rubric", "evaluation"],
+      "strict": false,
+      "skills": ["./"]
     }
   ]
 }

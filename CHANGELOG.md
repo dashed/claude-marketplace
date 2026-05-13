@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- style-writer skill: Write content using stored writing styles with smart context loading and self-evaluation (v1.0.0)
+- style-writer skill: Reference documentation for self-scoring with common pitfalls and improvement strategies
 - style-extractor skill: Extract and document writing styles from source texts into reusable style guides (v1.0.0)
 - style-extractor skill: Four-phase workflow with 17 style dimensions for comprehensive voice analysis
 - style-extractor skill: Reference documentation for style dimensions and deliverable templates
