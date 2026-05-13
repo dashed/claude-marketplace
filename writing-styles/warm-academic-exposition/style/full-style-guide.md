@@ -1,4 +1,4 @@
-# Full Style Guide: Chartrand Mathematical Proofs
+# Full Style Guide: Warm Academic Exposition
 
 > Source: *Mathematical Proofs: A Transition to Advanced Mathematics* (4th ed.) by Gary Chartrand, Albert D. Polimeni, and Ping Zhang
 

@@ -1,4 +1,4 @@
-# Style Rubric: Chartrand Mathematical Proofs
+# Style Rubric: Warm Academic Exposition
 
 > Score writing samples 1-5 on how well they match this voice.
 

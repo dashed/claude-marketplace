@@ -115,7 +115,7 @@ Use kebab-case: `<author-or-title>`
 
 | Source | Directory Name |
 |--------|---------------|
-| *Mathematical Proofs* by Chartrand | `chartrand-mathematical-proofs` |
+| *Mathematical Proofs* by Chartrand | `warm-academic-exposition` |
 | Hemingway's short stories | `hemingway-short-stories` |
 | Stripe API documentation | `stripe-api-docs` |
 | Paul Graham's essays | `paul-graham-essays` |

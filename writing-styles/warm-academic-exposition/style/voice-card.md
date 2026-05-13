@@ -1,4 +1,4 @@
-# Voice Card: Chartrand Mathematical Proofs
+# Voice Card: Warm Academic Exposition
 
 > One-page quick reference for writing in this voice.
 

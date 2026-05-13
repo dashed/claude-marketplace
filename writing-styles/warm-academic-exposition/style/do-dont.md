@@ -1,4 +1,4 @@
-# Do / Don't Checklist: Chartrand Mathematical Proofs
+# Do / Don't Checklist: Warm Academic Exposition
 
 > Practical guardrails for writing in this voice.
 

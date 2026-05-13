@@ -16,7 +16,7 @@ writing-styles/
 │   │   └── do-dont.md                 # Practical checklist
 │   └── evals/
 │       └── style-rubric.md            # 1-5 scoring rubric
-├── chartrand-mathematical-proofs/     # First style entry
+├── warm-academic-exposition/           # First style entry
 │   ├── style/
 │   │   ├── full-style-guide.md
 │   │   ├── voice-card.md
@@ -47,7 +47,7 @@ writing-styles/
 
 | Style | Source | Domain |
 |-------|--------|--------|
-| `chartrand-mathematical-proofs` | *Mathematical Proofs* (Chartrand et al., 4th ed.) | Academic mathematics textbook |
+| `warm-academic-exposition` | *Mathematical Proofs* (Chartrand et al., 4th ed.) | Warm, structured, rigorous-but-approachable teaching |
 
 ## Usage
 
