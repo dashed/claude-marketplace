@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- style-extractor skill: Extract and document writing styles from source texts into reusable style guides (v1.0.0)
+- style-extractor skill: Four-phase workflow with 17 style dimensions for comprehensive voice analysis
+- style-extractor skill: Reference documentation for style dimensions and deliverable templates
 - pup skill: Datadog CLI (pup) for observability, monitoring, logs, APM, security, and infrastructure
 - pup skill: Reference documentation for commands, workflows, query syntax, and advanced features
 

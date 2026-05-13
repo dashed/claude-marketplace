@@ -414,6 +414,20 @@
       "keywords": ["datadog", "cli", "monitoring", "observability", "logs", "metrics", "apm", "security", "infrastructure", "incidents"],
       "strict": false,
       "skills": ["./"]
+    },
+    {
+      "name": "style-extractor",
+      "version": "1.0.0",
+      "source": "./plugins/style-extractor",
+      "description": "Extract and document writing styles from source texts into reusable style guides. Use when analyzing an author's voice, creating a style guide from a book or document, capturing writing patterns for replication, or building a writing style rubric.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/style-extractor",
+      "license": "MIT",
+      "keywords": ["writing", "style", "voice", "extraction", "style-guide", "rubric", "analysis", "authorship"],
+      "strict": false,
+      "skills": ["./"]
     }
   ]
 }
