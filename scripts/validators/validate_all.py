@@ -116,7 +116,6 @@ def main() -> int:
     with Progress(
         SpinnerColumn(), TextColumn("[progress.description]{task.description}"), console=console
     ) as progress:
-
         for validator in validators:
             task = progress.add_task(f"[cyan]{validator['description']}...", total=None)
 
