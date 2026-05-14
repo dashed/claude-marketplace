@@ -32,7 +32,9 @@ def test_load_states_tracks_disabled_enabled_and_external(tmp_path: Path) -> Non
     create_skill(repo_root, "beta")
     dest_dir = repo_root / ".agents" / "skills"
     dest_dir.mkdir(parents=True)
-    (dest_dir / "alpha").symlink_to(str((repo_root / "plugins" / "alpha").resolve()), target_is_directory=True)
+    (dest_dir / "alpha").symlink_to(
+        str((repo_root / "plugins" / "alpha").resolve()), target_is_directory=True
+    )
     (dest_dir / "external").symlink_to("/tmp/external-skill", target_is_directory=True)
 
     states = load_skill_states(repo_root)
@@ -49,7 +51,9 @@ def test_enable_disable_and_uninstall_managed_skill(tmp_path: Path) -> None:
     states = load_skill_states(repo_root)
     enable_result = apply_action(states, "enable", ["alpha"])
     assert enable_result.ok
-    assert os.readlink(repo_root / ".agents" / "skills" / "alpha") == str((repo_root / "plugins" / "alpha").resolve())
+    assert os.readlink(repo_root / ".agents" / "skills" / "alpha") == str(
+        (repo_root / "plugins" / "alpha").resolve()
+    )
 
     states = load_skill_states(repo_root)
     disable_result = apply_action(states, "disable", ["alpha"])
@@ -154,7 +158,9 @@ def test_cli_list_and_enable(tmp_path: Path, capsys: pytest.CaptureFixture[str])
     enable_output = capsys.readouterr()
     assert enable_exit == 0
     assert "alpha: enabled" in enable_output.out
-    assert os.readlink(repo_root / ".agents" / "skills" / "alpha") == str((repo_root / "plugins" / "alpha").resolve())
+    assert os.readlink(repo_root / ".agents" / "skills" / "alpha") == str(
+        (repo_root / "plugins" / "alpha").resolve()
+    )
 
 
 def test_cli_rejects_multiple_actions(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
