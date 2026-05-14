@@ -51,11 +51,11 @@ class StructureValidator:
 
         has_plugin_json = plugin_json.exists()
         has_skill_md = (plugin_dir / "SKILL.md").exists()
-        has_skills_dir = any(
-            (d / "SKILL.md").exists()
-            for d in (plugin_dir / "skills").iterdir()
-            if d.is_dir()
-        ) if (plugin_dir / "skills").is_dir() else False
+        has_skills_dir = (
+            any((d / "SKILL.md").exists() for d in (plugin_dir / "skills").iterdir() if d.is_dir())
+            if (plugin_dir / "skills").is_dir()
+            else False
+        )
 
         if not has_plugin_json and not has_skill_md and not has_skills_dir:
             self.warnings.append(
@@ -139,7 +139,7 @@ class StructureValidator:
         plugins_dir = self.base_dir / "plugins"
         if not plugins_dir.exists():
             self.warnings.append(
-                "No 'plugins/' directory found. " "This is okay if plugins are sourced externally."
+                "No 'plugins/' directory found. This is okay if plugins are sourced externally."
             )
 
         # Check for recommended files
