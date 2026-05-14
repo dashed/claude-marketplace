@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- anki-flashcards skill: Create and manage Anki flashcards via the AnkiConnect API (v1.0.0)
+- anki-flashcards skill: Comprehensive API reference covering all 100+ AnkiConnect actions
+- anki-flashcards skill: Flashcard design best practices guide with effective card patterns
 - style-writer skill: Write content using stored writing styles with smart context loading and self-evaluation (v1.0.0)
 - style-writer skill: Reference documentation for self-scoring with common pitfalls and improvement strategies
 - style-extractor skill: Extract and document writing styles from source texts into reusable style guides (v1.0.0)
