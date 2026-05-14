@@ -46,11 +46,8 @@ def normalize_dest_dir(dest_dir: Path, repo_root: Path) -> Path:
     return repo_root / dest_dir
 
 
-def link_target_for(source_dir: Path, dest_dir: Path, repo_root: Path) -> str:
-    """Return the symlink target string to use for a skill directory."""
-    default_dest = repo_root / ".agents" / "skills"
-    if dest_dir.resolve(strict=False) == default_dest.resolve(strict=False):
-        return f"../../plugins/{source_dir.name}"
+def link_target_for(source_dir: Path, dest_dir: Path, repo_root: Path) -> str:  # noqa: ARG001
+    """Return the absolute symlink target string to use for a skill directory."""
     return str(source_dir.resolve())
 
 

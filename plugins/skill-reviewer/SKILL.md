@@ -201,4 +201,4 @@ After completing a review, verify the process worked correctly:
 **Version**: 1.1.0
 **Last Updated**: 2025-11-23
 **Maintainer**: Alberto Leal (mail4alberto@gmail.com)
-**Changelog**: See [changelogs/skill-reviewer.md](../../changelogs/skill-reviewer.md)
+**Changelog**: See `changelogs/skill-reviewer.md` in the marketplace root

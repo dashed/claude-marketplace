@@ -83,27 +83,32 @@ def validate_skill_frontmatter(skill_path: Path, schema_path: Path) -> Tuple[boo
                 errors.append(f"  at path: {'.'.join(str(p) for p in e.path)}")
             return False, errors
 
-        # Additional checks
+        # Additional checks (only if fields are present — both are optional per spec)
 
-        # Check name format
-        name = frontmatter.get("name", "")
-        if not re.match(r"^[a-z0-9]+(-[a-z0-9]+)*$", name):
+        # Check name format (if provided)
+        name = frontmatter.get("name")
+        if name is not None and not re.match(r"^[a-z0-9]+(-[a-z0-9]+)*$", name):
             errors.append(
                 f"Invalid name format: '{name}'. "
                 "Must use lowercase letters, numbers, and hyphens only."
             )
 
-        # Check description quality
+        # Check description quality (if provided)
         description = frontmatter.get("description", "")
-        if len(description) < 20:
+        if description and len(description) < 20:
             errors.append(
                 f"Description too short ({len(description)} chars). "
                 "Should be at least 20 characters and include both what the skill does "
                 "and when to use it."
             )
+        elif not description:
+            console.print(
+                f"[yellow]Warning:[/yellow] No description in {skill_path.name}. "
+                "Recommended for skill discovery."
+            )
 
         # Check for "Use when" clause (best practice)
-        if "use when" not in description.lower():
+        if description and "use when" not in description.lower():
             # This is a warning, not an error
             console.print(
                 f"[yellow]Warning:[/yellow] Description in {skill_path.name} "

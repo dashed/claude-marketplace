@@ -1479,6 +1479,6 @@ fi
 
 ## See Also
 
-- [SKILL.md](../SKILL.md) - Quick reference and common usage
+- SKILL.md - Quick reference and common usage (in plugin root)
 - [tmux man page](https://man.openbsd.org/tmux.1) - Official tmux documentation
-- [Implementation Tracker](../../notes/tmux/session-registry-implementation.md) - Development status and roadmap
+- `notes/tmux/session-registry-implementation.md` - Development status and roadmap (in marketplace root)

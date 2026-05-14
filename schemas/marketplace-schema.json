@@ -1,14 +1,18 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Claude Code Plugin Marketplace",
-  "description": "Schema for marketplace.json files",
+  "description": "Schema for marketplace.json files. Based on https://code.claude.com/docs/en/plugin-marketplaces",
   "type": "object",
   "required": ["name", "owner", "plugins"],
   "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema URL for editor autocomplete and validation. Ignored by Claude Code at load time."
+    },
     "name": {
       "type": "string",
       "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
-      "description": "Marketplace identifier (kebab-case, no spaces)"
+      "description": "Marketplace identifier (kebab-case, no spaces). Public-facing: users see it when installing plugins."
     },
     "owner": {
       "type": "object",
@@ -17,32 +21,47 @@
         "name": {
           "type": "string",
           "minLength": 1,
-          "description": "Marketplace maintainer name"
+          "description": "Name of the maintainer or team"
         },
         "email": {
           "type": "string",
           "format": "email",
-          "description": "Maintainer email address"
+          "description": "Contact email for the maintainer"
         }
       }
+    },
+    "description": {
+      "type": "string",
+      "description": "Brief marketplace description"
+    },
+    "version": {
+      "type": "string",
+      "description": "Marketplace manifest version"
     },
     "metadata": {
       "type": "object",
       "properties": {
         "description": {
           "type": "string",
-          "description": "Brief marketplace description"
+          "description": "Brief marketplace description (backward compat location)"
         },
         "version": {
           "type": "string",
           "pattern": "^\\d+\\.\\d+\\.\\d+$",
-          "description": "Marketplace version"
+          "description": "Marketplace version (backward compat location)"
         },
         "pluginRoot": {
           "type": "string",
-          "description": "Base path for relative plugin sources"
+          "description": "Base directory prepended to relative plugin source paths (e.g., ./plugins lets you write source: formatter instead of source: ./plugins/formatter)"
         }
       }
+    },
+    "allowCrossMarketplaceDependenciesOn": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Other marketplaces that plugins in this marketplace may depend on"
     },
     "plugins": {
       "type": "array",
@@ -54,13 +73,14 @@
           "name": {
             "type": "string",
             "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
-            "description": "Plugin identifier"
+            "description": "Plugin identifier (kebab-case, no spaces)"
           },
           "source": {
             "oneOf": [
               {
                 "type": "string",
-                "pattern": "^\\./"
+                "pattern": "^\\./",
+                "description": "Relative path starting with ./ resolved from marketplace root"
               },
               {
                 "type": "object",
@@ -68,15 +88,42 @@
                 "properties": {
                   "source": {
                     "type": "string",
-                    "enum": ["github", "git", "url"]
+                    "enum": ["github", "url", "git-subdir", "npm"]
                   },
                   "repo": {
                     "type": "string",
-                    "pattern": "^[^/]+/[^/]+$"
+                    "pattern": "^[^/]+/[^/]+$",
+                    "description": "GitHub owner/repo (for github source)"
                   },
                   "url": {
                     "type": "string",
-                    "format": "uri"
+                    "description": "Git repository URL (for url and git-subdir sources)"
+                  },
+                  "path": {
+                    "type": "string",
+                    "description": "Subdirectory within repo (for git-subdir source)"
+                  },
+                  "ref": {
+                    "type": "string",
+                    "description": "Git branch or tag"
+                  },
+                  "sha": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{40}$",
+                    "description": "Full 40-character git commit SHA"
+                  },
+                  "package": {
+                    "type": "string",
+                    "description": "npm package name (for npm source)"
+                  },
+                  "version": {
+                    "type": "string",
+                    "description": "npm version or version range (for npm source)"
+                  },
+                  "registry": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Custom npm registry URL (for npm source)"
                   }
                 }
               }
@@ -85,7 +132,7 @@
           },
           "version": {
             "type": "string",
-            "pattern": "^\\d+\\.\\d+\\.\\d+$"
+            "description": "Plugin version. If set, users only receive updates when it changes."
           },
           "description": {
             "type": "string",
@@ -101,8 +148,17 @@
               "email": {
                 "type": "string",
                 "format": "email"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri"
               }
             }
+          },
+          "homepage": {
+            "type": "string",
+            "format": "uri",
+            "description": "Plugin homepage or documentation URL"
           },
           "repository": {
             "type": "string",
@@ -128,18 +184,97 @@
           },
           "strict": {
             "type": "boolean",
-            "default": true
+            "default": true,
+            "description": "Controls whether plugin.json is the authority for component definitions. Default: true."
           },
           "skills": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Directories containing SKILL.md files"
+            "oneOf": [
+              {
+                "type": "string",
+                "pattern": "^\\./"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^\\./"
+                }
+              }
+            ],
+            "description": "Custom paths to skill directories containing <name>/SKILL.md"
+          },
+          "commands": {
+            "oneOf": [
+              {
+                "type": "string",
+                "pattern": "^\\./"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^\\./"
+                }
+              }
+            ],
+            "description": "Custom paths to flat .md skill files or directories"
+          },
+          "agents": {
+            "oneOf": [
+              {
+                "type": "string",
+                "pattern": "^\\./"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^\\./"
+                }
+              }
+            ],
+            "description": "Custom paths to agent files"
+          },
+          "hooks": {
+            "oneOf": [
+              {
+                "type": "string",
+                "pattern": "^\\./"
+              },
+              {
+                "type": "object"
+              }
+            ],
+            "description": "Custom hooks configuration or path to hooks file"
+          },
+          "mcpServers": {
+            "oneOf": [
+              {
+                "type": "string",
+                "pattern": "^\\./"
+              },
+              {
+                "type": "object"
+              }
+            ],
+            "description": "MCP server configurations or path to MCP config"
+          },
+          "lspServers": {
+            "oneOf": [
+              {
+                "type": "string",
+                "pattern": "^\\./"
+              },
+              {
+                "type": "object"
+              }
+            ],
+            "description": "LSP server configurations or path to LSP config"
           }
-        }
+        },
+        "additionalProperties": true
       }
     }
   },
-  "additionalProperties": false
+  "additionalProperties": true
 }

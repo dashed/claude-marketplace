@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Claude Code Plugin Manifest",
-  "description": "Schema for plugin.json manifest files",
+  "description": "Schema for per-plugin plugin.json manifest files. Based on https://code.claude.com/docs/en/plugins-reference",
   "type": "object",
   "required": ["name"],
   "properties": {
@@ -64,6 +64,22 @@
       "uniqueItems": true,
       "description": "Tags for plugin discovery"
     },
+    "skills": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^\\./"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^\\./"
+          }
+        }
+      ],
+      "description": "Custom paths to skill directories containing <name>/SKILL.md (relative paths starting with ./)"
+    },
     "commands": {
       "oneOf": [
         {
@@ -118,8 +134,58 @@
           "type": "object"
         }
       ],
-      "description": "MCP server config path or inline config"
+      "description": "MCP server configurations or path to MCP config"
+    },
+    "lspServers": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^\\./"
+        },
+        {
+          "type": "object"
+        }
+      ],
+      "description": "LSP server configurations or path to LSP config"
+    },
+    "outputStyles": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^\\./"
+        },
+        {
+          "type": "object"
+        }
+      ],
+      "description": "Output style configurations or path to output styles config"
+    },
+    "dependencies": {
+      "type": "object",
+      "description": "Plugin dependencies on other plugins"
+    },
+    "userConfig": {
+      "type": "object",
+      "description": "User-configurable settings for the plugin"
+    },
+    "channels": {
+      "type": "object",
+      "description": "Communication channels configuration"
+    },
+    "experimental": {
+      "type": "object",
+      "properties": {
+        "themes": {
+          "type": "object",
+          "description": "Custom theme configurations"
+        },
+        "monitors": {
+          "type": "object",
+          "description": "Custom monitor configurations"
+        }
+      },
+      "description": "Experimental features"
     }
   },
-  "additionalProperties": false
+  "additionalProperties": true
 }
