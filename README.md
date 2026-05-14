@@ -91,6 +91,7 @@ make test-codex-skills
 | **pup** | Datadog CLI (pup) for observability, monitoring, logs, APM, security, and infrastructure. Use when querying Datadog metrics, searching logs, managing monitors, investigating incidents, or performing Datadog API operations. 49 command groups, 300+ subcommands. Tool: [pup](https://github.com/datadog-labs/pup) | [Datadog](https://github.com/dashed/claude-marketplace/tree/master/plugins/pup) |
 | **style-extractor** | Extract and document writing styles from source texts into reusable style guides. Four-phase workflow analyzing 17 style dimensions, producing a full style guide, voice card, do/don't checklist, and scoring rubric. Works with PDFs, documents, and any readable text. | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/style-extractor) |
 | **style-writer** | Write content using stored writing styles from the writing-styles/ collection. Discovers available styles, loads the right guide into context, applies it during writing, and self-evaluates against the style rubric. Companion to style-extractor. | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/style-writer) |
+| **anki-flashcards** | Create and manage Anki flashcards via the AnkiConnect API. Use when creating flashcards, managing decks, reviewing statistics, or interacting with Anki. Comprehensive API reference covering 100+ actions, flashcard design best practices. Requires Anki with AnkiConnect add-on. Tool: [AnkiConnect](https://github.com/FooSoft/anki-connect) | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/anki-flashcards) |
 
 ### Chrome CDP Setup
 
@@ -182,7 +183,7 @@ make manage-codex-skills
   "source": "./plugins/your-skill-name",
   "description": "Brief description of what the skill does",
   "strict": false,
-  "skills": ["./"]
+  "skills": ["./skills"]
 }
 ```
 
@@ -222,10 +223,12 @@ claude-marketplace/
 ├── .claude-plugin/
 │   └── marketplace.json      # Marketplace manifest
 ├── plugins/
-│   └── skill-creator/        # Skills directory
-│       ├── SKILL.md          # Skill definition
-│       ├── scripts/          # Optional scripts
-│       └── references/       # Optional documentation
+│   └── skill-creator/        # Plugin directory
+│       └── skills/
+│           └── skill-creator/
+│               ├── SKILL.md      # Skill definition
+│               ├── scripts/      # Optional scripts
+│               └── references/   # Optional documentation
 ├── scripts/
 │   ├── install_codex_skills.py # Codex symlink installer
 │   └── manage_codex_skills.py  # Codex interactive manager
