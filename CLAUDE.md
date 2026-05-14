@@ -254,9 +254,9 @@ This section documents the conventions for adding a new skill to the marketplace
 When adding a new skill:
 
 1. [ ] Create `plugins/<skill-name>/` directory
-2. [ ] Create `SKILL.md` with YAML frontmatter
-3. [ ] Create `references/` directory (if needed for advanced docs)
-4. [ ] Add plugin entry to `.claude-plugin/marketplace.json`
+2. [ ] Create `plugins/<skill-name>/skills/<skill-name>/SKILL.md` with YAML frontmatter
+3. [ ] Create `references/` directory inside the skill directory (if needed for advanced docs)
+4. [ ] Add plugin entry to `.claude-plugin/marketplace.json` (with `"skills": ["./skills"]`)
 5. [ ] Create `changelogs/<skill-name>.md`
 6. [ ] Update `CHANGELOG.md` under `## [Unreleased]`
 7. [ ] Run `make validate`
@@ -265,12 +265,14 @@ When adding a new skill:
 
 ```
 plugins/<skill-name>/
-├── SKILL.md              (required)
-├── references/           (optional - for detailed documentation)
-│   ├── advanced-usage.md
-│   └── configuration.md
-├── scripts/              (optional - executable code)
-└── assets/               (optional - templates, images)
+└── skills/
+    └── <skill-name>/
+        ├── SKILL.md              (required)
+        ├── references/           (optional - for detailed documentation)
+        │   ├── advanced-usage.md
+        │   └── configuration.md
+        ├── scripts/              (optional - executable code)
+        └── assets/               (optional - templates, images)
 ```
 
 **Naming**: Use kebab-case for directory names (e.g., `git-chain`, `skill-creator`).
@@ -327,11 +329,13 @@ Keep the main SKILL.md focused on common use cases. Move detailed documentation 
 
 ```
 plugins/git-chain/
-├── SKILL.md                      (common workflows, ~200 lines)
-└── references/
-    ├── rebase-options.md         (all rebase flags and options)
-    ├── merge-options.md          (all merge flags and strategies)
-    └── chain-management.md       (advanced chain operations)
+└── skills/
+    └── git-chain/
+        ├── SKILL.md                      (common workflows, ~200 lines)
+        └── references/
+            ├── rebase-options.md         (all rebase flags and options)
+            ├── merge-options.md          (all merge flags and strategies)
+            └── chain-management.md       (advanced chain operations)
 ```
 
 **In SKILL.md, link to references:**
@@ -365,7 +369,7 @@ Add an entry to `.claude-plugin/marketplace.json` under the `plugins` array:
   "license": "MIT",
   "keywords": ["keyword1", "keyword2", "keyword3"],
   "strict": false,
-  "skills": ["./"]
+  "skills": ["./skills"]
 }
 ```
 
@@ -438,10 +442,11 @@ Complete example of adding a `pdf-editor` skill:
 
 **1. Create directory structure:**
 ```bash
-mkdir -p plugins/pdf-editor/references
+mkdir -p plugins/pdf-editor/skills/pdf-editor/references
 ```
 
 **2. Create SKILL.md:**
+Save to `plugins/pdf-editor/skills/pdf-editor/SKILL.md`:
 ```markdown
 ---
 name: pdf-editor
@@ -466,7 +471,7 @@ description: Edit and manipulate PDF files. Use when rotating pages, extracting 
   "license": "MIT",
   "keywords": ["pdf", "document", "editing"],
   "strict": false,
-  "skills": ["./"]
+  "skills": ["./skills"]
 }
 ```
 

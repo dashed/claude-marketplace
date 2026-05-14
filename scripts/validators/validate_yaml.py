@@ -134,8 +134,10 @@ def validate_all_skills(plugins_dir: Path, schema_path: Path) -> Dict[str, Any]:
     """
     results = {"total": 0, "passed": 0, "failed": 0, "details": []}
 
-    # Find all SKILL.md files
-    skill_files = list(plugins_dir.glob("*/SKILL.md"))
+    # Find all SKILL.md files (both at plugin root and in skills/<name>/ subdirectories)
+    skill_files = sorted(
+        set(plugins_dir.glob("*/SKILL.md")) | set(plugins_dir.glob("*/skills/*/SKILL.md"))
+    )
 
     if not skill_files:
         console.print(f"[yellow]No SKILL.md files found in {plugins_dir}[/yellow]")
