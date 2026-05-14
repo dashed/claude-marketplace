@@ -63,9 +63,11 @@ Check available MCPs - if useful for research (searching docs, finding similar s
 
 Based on the user interview, fill in these components:
 
-- **name**: Skill identifier
+- **name**: Skill identifier (optional — defaults to the directory name if omitted)
 - **description**: When to trigger, what it does. This is the primary triggering mechanism - include both what the skill does AND specific contexts for when to use it. All "when to use" info goes here, not in the body. Note: currently Claude has a tendency to "undertrigger" skills -- to not use them when they'd be useful. To combat this, please make the skill descriptions a little bit "pushy". So for instance, instead of "How to build a simple fast dashboard to display internal Anthropic data.", you might write "How to build a simple fast dashboard to display internal Anthropic data. Make sure to use this skill whenever the user mentions dashboards, data visualization, internal metrics, or wants to display any kind of company data, even if they don't explicitly ask for a 'dashboard.'"
+- **when_to_use**: Additional trigger context appended to description in the skill listing (optional, complements description)
 - **compatibility**: Required tools, dependencies (optional, rarely needed)
+- **Other optional frontmatter fields**: `effort` (low/medium/high/xhigh/max), `paths` (glob patterns to limit activation to specific files), `allowed-tools` (tools auto-approved when skill is active), `model` (model override for this skill), `arguments` (named positional args for $name substitution), `disable-model-invocation` (prevent auto-loading, manual /name only), `user-invocable` (set false to hide from / menu), `context: fork` + `agent` (run in a subagent), `hooks` (skill-scoped hooks)
 - **the rest of the skill :)**
 
 ### Skill Writing Guide
@@ -75,7 +77,7 @@ Based on the user interview, fill in these components:
 ```
 skill-name/
 ├── SKILL.md (required)
-│   ├── YAML frontmatter (name, description required)
+│   ├── YAML frontmatter (name optional, description strongly recommended)
 │   └── Markdown instructions
 └── Bundled Resources (optional)
     ├── scripts/    - Executable code for deterministic/repetitive tasks
