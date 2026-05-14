@@ -33,8 +33,8 @@ def test_installs_repo_local_relative_symlinks(tmp_path: Path) -> None:
     assert summary.linked == 2
     assert summary.unchanged == 0
     assert summary.conflicts == []
-    assert os.readlink(dest_dir / "alpha") == "../../plugins/alpha"
-    assert os.readlink(dest_dir / "beta") == "../../plugins/beta"
+    assert os.readlink(dest_dir / "alpha") == str((repo_root / "plugins" / "alpha").resolve())
+    assert os.readlink(dest_dir / "beta") == str((repo_root / "plugins" / "beta").resolve())
     assert (dest_dir / "alpha" / "SKILL.md").is_file()
     assert not (dest_dir / "not-a-skill").exists()
 
@@ -114,7 +114,7 @@ def test_force_replaces_symlink_only(tmp_path: Path) -> None:
 
     assert summary.linked == 1
     assert summary.conflicts == []
-    assert os.readlink(target) == "../../plugins/alpha"
+    assert os.readlink(target) == str((repo_root / "plugins" / "alpha").resolve())
 
 
 def test_cli_supports_dry_run_without_mutating_repo(
