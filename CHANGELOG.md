@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-05-23
+
 ### Changed
 - jj skill: Update to cover jj 0.37.0-0.41.0 (new commands, revsets, config options, breaking changes)
 - jj skill: Add `jj arrange`, `jj bookmark advance`, `jj file search`, `jj util snapshot` commands
@@ -318,7 +320,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.10.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/dashed/claude-marketplace/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/dashed/claude-marketplace/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/dashed/claude-marketplace/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/dashed/claude-marketplace/compare/v0.7.1...v0.8.0
