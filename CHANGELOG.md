@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- statusline skill: Configure Claude Code status line with VCS-aware scripts (v1.0.0)
+- statusline skill: Reference script with git + jj support (jj priority for colocated repos)
+- statusline skill: Complete JSON field documentation from official Claude Code docs
+
 ## [0.11.0] - 2026-05-23
 
 ### Changed

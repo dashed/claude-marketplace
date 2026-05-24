@@ -1,0 +1,214 @@
+---
+name: statusline
+description: Configure the Claude Code status line with VCS-aware scripts showing git branch, jj change ID, bookmarks, context usage, and costs. Use when setting up a statusline, customizing the status bar, adding git or jj info to the prompt, configuring statusLine in settings.json, or troubleshooting statusline scripts.
+---
+
+# Statusline Configuration
+
+## Overview
+
+Claude Code supports a custom status line via a shell script that receives JSON session data on stdin and outputs text to stdout. The script runs after each assistant message, after `/compact`, on permission mode changes, and on vim mode toggles (debounced at 300ms). Supports multiple lines, ANSI colors, and OSC 8 hyperlinks.
+
+## Setup
+
+Configure in `~/.claude/settings.json` (or project settings):
+
+```json
+{
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh"
+  }
+}
+```
+
+Optional fields:
+- `padding` (int): extra horizontal spacing in characters (default: 0)
+- `refreshInterval` (int): re-run every N seconds in addition to event-driven updates (min: 1)
+- `hideVimModeIndicator` (bool): suppress built-in `-- INSERT --` when script renders vim mode
+
+Alternatively, use an inline command:
+
+```json
+{
+  "statusLine": {
+    "type": "command",
+    "command": "jq -r '\"[\\(.model.display_name)] \\(.context_window.used_percentage // 0)% context\"'"
+  }
+}
+```
+
+Or use `/statusline <description>` to have Claude generate one automatically.
+
+## Available JSON Fields
+
+The script receives JSON on stdin with these fields:
+
+| Field | Description |
+|-------|-------------|
+| `model.id`, `model.display_name` | Model identifier and display name |
+| `cwd`, `workspace.current_dir` | Current working directory |
+| `workspace.project_dir` | Directory where Claude Code was launched |
+| `workspace.added_dirs` | Additional directories added via `/add-dir` |
+| `workspace.git_worktree` | Git worktree name (if in linked worktree) |
+| `workspace.repo.host/owner/name` | Repository identity from `origin` remote |
+| `cost.total_cost_usd` | Estimated session cost in USD |
+| `cost.total_duration_ms` | Wall-clock time since session start |
+| `cost.total_api_duration_ms` | Time spent waiting for API responses |
+| `cost.total_lines_added/removed` | Lines of code changed |
+| `context_window.used_percentage` | Percentage of context window used |
+| `context_window.remaining_percentage` | Percentage remaining |
+| `context_window.context_window_size` | Max context window (200000 or 1000000) |
+| `context_window.total_input_tokens` | Input tokens in current context |
+| `context_window.total_output_tokens` | Output tokens from last response |
+| `exceeds_200k_tokens` | Whether tokens exceed 200k threshold |
+| `effort.level` | Reasoning effort (low/medium/high/xhigh/max) |
+| `thinking.enabled` | Whether extended thinking is enabled |
+| `rate_limits.five_hour.used_percentage` | 5-hour rate limit usage (Pro/Max only) |
+| `rate_limits.seven_day.used_percentage` | 7-day rate limit usage (Pro/Max only) |
+| `session_id` | Unique session identifier |
+| `session_name` | Custom name from `--name` or `/rename` |
+| `version` | Claude Code version |
+| `vim.mode` | Current vim mode (NORMAL/INSERT/VISUAL) |
+| `agent.name` | Agent name if using `--agent` |
+| `pr.number`, `pr.url`, `pr.review_state` | Open PR info for current branch |
+| `worktree.name/path/branch` | Worktree info during `--worktree` sessions |
+
+Fields marked may be absent or null - use `jq` fallbacks like `// 0` or `// empty`.
+
+## Reference Script (Git + jj + Context)
+
+Full-featured script with VCS detection (jj priority over git) and context usage:
+
+```bash
+#!/bin/bash
+input=$(cat)
+
+model_name=$(echo "$input" | jq -r '.model.display_name')
+current_dir=$(echo "$input" | jq -r '.workspace.current_dir')
+
+# Get VCS info - try jj first (handles colocated repos), fall back to git
+vcs_info=""
+
+if jj root -R "$current_dir" --ignore-working-copy >/dev/null 2>&1; then
+    # jj repository detected
+    jj_data=$(jj --no-pager --ignore-working-copy -R "$current_dir" log --no-graph -r @ -T 'if(local_bookmarks, local_bookmarks.join(","), "-") ++ "\t" ++ change_id.short(8) ++ "\t" ++ if(conflict, "conflict", "")' 2>/dev/null)
+
+    if [ -n "$jj_data" ]; then
+        IFS=$'\t' read -r bookmarks change_id conflict_status <<< "$jj_data"
+        if [ "$bookmarks" = "-" ]; then bookmarks=""; fi
+
+        modified_count=$(jj --no-pager --ignore-working-copy -R "$current_dir" diff --summary 2>/dev/null | wc -l | tr -d ' ')
+
+        status_parts=()
+        if [ -n "$conflict_status" ]; then
+            status_parts+=("conflict")
+        fi
+        if [ "$modified_count" -gt 0 ]; then
+            status_parts+=("${modified_count} modified")
+        fi
+
+        if [ -n "$bookmarks" ]; then
+            display="${bookmarks} @ ${change_id}"
+        else
+            display="@ ${change_id}"
+        fi
+
+        if [ ${#status_parts[@]} -eq 0 ]; then
+            vcs_info=" [jj ${display}]"
+        else
+            status=$(IFS=", "; echo "${status_parts[*]}")
+            vcs_info=" [jj ${display}: ${status}]"
+        fi
+    fi
+
+elif git -C "$current_dir" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    branch=$(git -C "$current_dir" branch --show-current 2>/dev/null)
+    if [ -n "$branch" ]; then
+        status_parts=()
+
+        staged_count=$(git -C "$current_dir" diff --cached --numstat 2>/dev/null | wc -l | tr -d ' ')
+        if [ "$staged_count" -gt 0 ]; then
+            status_parts+=("${staged_count} staged")
+        fi
+
+        modified_count=$(git -C "$current_dir" diff --numstat 2>/dev/null | wc -l | tr -d ' ')
+        if [ "$modified_count" -gt 0 ]; then
+            status_parts+=("${modified_count} modified")
+        fi
+
+        untracked_count=$(git -C "$current_dir" ls-files --others --exclude-standard 2>/dev/null | wc -l | tr -d ' ')
+        if [ "$untracked_count" -gt 0 ]; then
+            status_parts+=("${untracked_count} untracked")
+        fi
+
+        upstream=$(git -C "$current_dir" rev-parse --abbrev-ref @{upstream} 2>/dev/null)
+        if [ -n "$upstream" ]; then
+            ahead=$(git -C "$current_dir" rev-list --count HEAD..@{upstream} 2>/dev/null)
+            behind=$(git -C "$current_dir" rev-list --count @{upstream}..HEAD 2>/dev/null)
+            if [ "$ahead" -gt 0 ]; then
+                status_parts+=("${ahead} behind")
+            fi
+            if [ "$behind" -gt 0 ]; then
+                status_parts+=("${behind} ahead")
+            fi
+        fi
+
+        if [ ${#status_parts[@]} -eq 0 ]; then
+            vcs_info=" [${branch}]"
+        else
+            status=$(IFS=", "; echo "${status_parts[*]}")
+            vcs_info=" [${branch}: ${status}]"
+        fi
+    fi
+fi
+
+echo "${model_name} | ${current_dir}${vcs_info}"
+```
+
+## Output Examples
+
+```
+Opus 4.6 | /path/to/project [jj feature @ znnuytsz: 1 modified]
+Opus 4.6 | /path/to/project [jj @ uoylmlmx]
+Opus 4.6 | /path/to/project [jj main @ kntqzsqt: conflict, 3 modified]
+Opus 4.6 | /path/to/project [master: 2 staged, 1 modified]
+Opus 4.6 | /path/to/project [main: 1 ahead]
+Opus 4.6 | /tmp
+```
+
+## Design Notes
+
+- **jj priority over git**: Colocated repos have both `.jj/` and `.git/`; jj users prefer jj info
+- **`--ignore-working-copy`**: Prevents expensive snapshot operations in the statusline
+- **`--no-pager`**: Ensures jj doesn't page when running non-interactively
+- **Performance**: 2 subprocess calls for jj repos, 3-5 for git; acceptable for statusline frequency
+
+## Multi-Line Example
+
+Add context usage as a second line:
+
+```bash
+#!/bin/bash
+input=$(cat)
+model_name=$(echo "$input" | jq -r '.model.display_name')
+current_dir=$(echo "$input" | jq -r '.workspace.current_dir')
+pct=$(echo "$input" | jq -r '.context_window.used_percentage // 0' | cut -d. -f1)
+cost=$(echo "$input" | jq -r '.cost.total_cost_usd // 0')
+
+# Line 1: model + dir + VCS (add VCS logic from above)
+echo "${model_name} | ${current_dir}"
+
+# Line 2: context bar + cost
+bar_width=20
+filled=$((pct * bar_width / 100))
+printf -v bar '%*s' "$filled" ''
+printf -v empty '%*s' "$((bar_width - filled))" ''
+echo "[${bar// /▓}${empty// /░}] ${pct}%  \$${cost}"
+```
+
+## Prerequisites
+
+- `jq` (for parsing JSON input)
+- `git` (for git repo detection)
+- `jj` >= 0.36 (optional, for jj repo support)

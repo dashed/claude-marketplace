@@ -456,6 +456,20 @@
       "keywords": ["anki", "flashcards", "spaced-repetition", "ankiconnect", "study", "learning", "memorization"],
       "strict": false,
       "skills": ["./skills"]
+    },
+    {
+      "name": "statusline",
+      "version": "1.0.0",
+      "source": "./plugins/statusline",
+      "description": "Configure the Claude Code status line with VCS-aware scripts showing git branch, jj change ID, bookmarks, context usage, and costs. Use when setting up a statusline, customizing the status bar, or adding VCS info to the status line.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/statusline",
+      "license": "MIT",
+      "keywords": ["statusline", "status-bar", "git", "jj", "vcs", "prompt", "context-window"],
+      "strict": false,
+      "skills": ["./skills"]
     }
   ]
 }
