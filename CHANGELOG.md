@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- jj skill: Update to cover jj 0.37.0-0.41.0 (new commands, revsets, config options, breaking changes)
+- jj skill: Add `jj arrange`, `jj bookmark advance`, `jj file search`, `jj util snapshot` commands
+- jj skill: Add new revset functions (`divergent()`, `remote_tags()`, `diff_lines()`, `diff_lines_added/removed()`)
+- jj skill: Document `xyz/n` versioned change ID syntax, `--no-integrate-operation` flag
+- jj skill: Update bookmark track/untrack syntax, push behavior, and configuration reference
+
 ### Added
 - anki-flashcards skill: Create and manage Anki flashcards via the AnkiConnect API (v1.0.0)
 - anki-flashcards skill: Comprehensive API reference covering all 100+ AnkiConnect actions

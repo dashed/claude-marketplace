@@ -26,6 +26,8 @@ This reference maps common Git commands and workflows to their jj equivalents.
 | `git switch` | `jj new` | |
 | `git branch` | `jj bookmark` | Alias: `jj b` |
 | `git branch -d` | `jj bookmark delete` | |
+| `git branch --set-upstream-to` | `jj bookmark track <name> --remote <remote>` | Use `--remote` flag (not `<name>@<remote>` syntax) |
+| N/A | `jj bookmark untrack <name> --remote <remote>` | Stop tracking a remote bookmark |
 | `git merge` | `jj new <A> <B>` | Creates merge commit |
 | `git rebase` | `jj rebase` | More powerful |
 | `git rebase -i` | `jj squash -i`, `jj split` | Different approach |
@@ -37,8 +39,13 @@ This reference maps common Git commands and workflows to their jj equivalents.
 | `git pull` | `jj git fetch` + `jj rebase` | No single command |
 | `git push` | `jj git push` | |
 | `git blame` | `jj file annotate` | |
+| `git grep` | `jj file search` | `--pattern` accepts `kind:pattern` syntax (defaults to `regex:`) |
 | `git reflog` | `jj op log` | More powerful |
 | `git tag` | `jj tag` | |
+| `git push -o <opt>` | `jj git push --option <opt>` | Or `-o <opt>` shorthand |
+| N/A | `jj arrange` | Reorder commits; closest git equivalent is interactive rebase reordering |
+| N/A | `jj bookmark advance` | Automatically fast-forward a bookmark to a descendant |
+| N/A | `jj util snapshot` | Snapshot working copy into the commit (jj-specific concept) |
 
 ## Workflow Comparisons
 
@@ -244,9 +251,11 @@ git reset --hard HEAD@{2}
 **jj:**
 ```bash
 jj op log
-jj op restore <op-id>
+jj op revert <op-id>  # Revert a specific operation
 # Or simply:
-jj undo
+jj undo               # Undo last operation
+jj redo               # Redo last undone operation
+# Note: `jj op undo` was removed in 0.39 — use `jj op revert` or `jj undo`
 ```
 
 ### Viewing History at a Point
@@ -297,7 +306,8 @@ Every jj operation is recorded and reversible:
 ```bash
 jj op log      # See all operations
 jj undo        # Undo last operation
-jj op restore  # Go to any point
+jj redo        # Redo last undone operation
+jj op revert   # Revert a specific operation
 ```
 
 ### Bookmarks vs Branches
@@ -358,6 +368,47 @@ jj squash -r <commit>
 jj squash -r <commit>
 # Or use revsets:
 jj squash --from 'trunk()..@'
+```
+
+### "Search File Contents"
+
+**Git:**
+```bash
+git grep "pattern"
+git grep -n "pattern" -- "*.py"
+```
+
+**jj:**
+```bash
+jj file search --pattern "pattern"
+jj file search --pattern "regex:pattern"   # Explicit regex (default)
+jj file search --pattern "glob:*.py"       # Glob syntax
+```
+
+### "Push with Options"
+
+**Git:**
+```bash
+git push -o ci.skip
+```
+
+**jj:**
+```bash
+jj git push --option ci.skip
+jj git push -o ci.skip  # Shorthand
+```
+
+### "Reorder Commits"
+
+**Git:**
+```bash
+git rebase -i HEAD~5
+# Manually reorder lines in editor
+```
+
+**jj:**
+```bash
+jj arrange   # Reorder commits interactively
 ```
 
 ### "Edit Old Commit"

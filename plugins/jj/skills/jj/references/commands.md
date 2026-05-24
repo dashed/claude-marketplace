@@ -12,6 +12,7 @@ Complete reference for jj commands and their options.
 - [Git Operations](#git-operations)
 - [Operation Log](#operation-log)
 - [File Operations](#file-operations)
+- [Tags](#tags)
 - [Workspaces](#workspaces)
 - [Configuration](#configuration)
 
@@ -173,6 +174,17 @@ jj split -p                       # Parallel (sibling) commits
 jj split -m "message"             # First commit message
 ```
 
+### `jj arrange`
+
+TUI for reordering and abandoning revisions interactively:
+
+```bash
+jj arrange                        # Reorder revisions in TUI
+jj arrange -r <revset>            # Arrange specific revisions
+```
+
+Supports swapping commits up/down along graph edges. Includes parents/children in the view and uses the default log template.
+
 ### `jj rebase`
 
 Move commits to different parents:
@@ -197,6 +209,7 @@ jj rebase -r X -B Y               # Insert X before Y
 
 # Options:
 jj rebase --skip-emptied          # Abandon commits that become empty
+jj rebase --simplify-parents      # Remove redundant parent edges
 ```
 
 ### `jj diffedit`
@@ -276,15 +289,20 @@ jj bookmark set <name> -r <rev> --allow-backwards  # Move to ancestor
 jj bookmark move <name>           # Move to working copy
 jj bookmark move --from <rev>     # Move from revision
 jj bookmark rename <old> <new>
+jj bookmark rename <old> <new> --overwrite-existing  # Replace existing
+jj bookmark advance               # Move bookmarks forward to @
+jj bookmark advance -r <rev>      # Move bookmarks forward to revision
 
 # Delete
 jj bookmark delete <name>         # Delete (will push deletion)
 jj bookmark forget <name>         # Forget (won't push deletion)
 
 # Remote tracking
-jj bookmark track <name>@<remote>
-jj bookmark untrack <name>@<remote>
+jj bookmark track <name> --remote <remote>
+jj bookmark untrack <name> --remote <remote>
 ```
+
+`bookmark advance` uses `revsets.bookmark-advance-from` and `revsets.bookmark-advance-to` for customization.
 
 ## Git Operations
 
@@ -297,7 +315,10 @@ jj git fetch                      # From default remote
 jj git fetch --remote <name>      # From specific remote
 jj git fetch --all-remotes        # From all remotes
 jj git fetch --branch <pattern>   # Specific branches
+jj git fetch --tag <pattern>      # Fetch specific tags (experimental)
 ```
+
+Shows details of abandoned commits after fetch.
 
 ### `jj git push`
 
@@ -312,7 +333,10 @@ jj git push --change <rev>        # Create bookmark from change
 jj git push --remote <name>       # To specific remote
 jj git push --dry-run             # Show what would be pushed
 jj git push --allow-new           # Allow creating new remote bookmark
+jj git push -o <key>=<value>      # Pass push options to remote
 ```
+
+`--all`, `--tracked`, and `-r` skip ineligible bookmarks (private/conflicted) instead of failing.
 
 **Flag compatibility:**
 
@@ -336,6 +360,7 @@ jj git remote add <name> <url>
 jj git remote remove <name>
 jj git remote rename <old> <new>
 jj git remote set-url <name> <url>
+jj git remote set-url <name> --push <url>  # Separate push URL
 ```
 
 ### `jj git import` / `jj git export`
@@ -360,13 +385,12 @@ jj op log -p                      # Show patches
 jj op log -d                      # Show operation diffs
 ```
 
-### `jj undo` / `jj redo`
+### `jj op revert`
 
-Undo/redo operations:
+Revert an operation (replaces removed `jj op undo`):
 
 ```bash
-jj undo                           # Undo last operation
-jj redo                           # Redo after undo
+jj op revert <op-id>              # Revert specific operation
 ```
 
 ### `jj op restore`
@@ -403,6 +427,22 @@ jj file chmod x <path>            # Make executable
 jj file chmod n <path>            # Remove executable
 jj file track <paths>             # Start tracking
 jj file untrack <paths>           # Stop tracking
+jj file search <pattern>          # Search file contents (like git grep)
+jj file search <pattern> -r <rev> # Search at specific revision
+```
+
+`file search` accepts `kind:pattern` syntax (e.g., `regex:`, `glob:`). The `--pattern` flag defaults to `regex:`.
+
+## Tags
+
+### `jj tag list`
+
+List and filter tags:
+
+```bash
+jj tag list                       # List all tags
+jj tag list --sort <field>        # Sort by name, date, etc.
+jj tag list -r <revset>           # Filter tags by revset
 ```
 
 ## Workspaces
@@ -413,10 +453,11 @@ Manage multiple working copies:
 
 ```bash
 jj workspace list                 # List workspaces
-jj workspace add <path>           # Add workspace
+jj workspace add <path>           # Add workspace (uses relative paths)
 jj workspace add -r <rev> <path>  # At specific revision
 jj workspace forget [name]        # Remove workspace
 jj workspace root                 # Show workspace root
+jj workspace root --name <name>   # Root of specified workspace
 jj workspace update-stale         # Update stale workspace
 ```
 
@@ -449,13 +490,17 @@ jj evolog                         # Show change evolution
 jj interdiff --from <A> --to <B>  # Compare changes of commits
 jj next                           # Move to child commit
 jj prev                           # Move to parent commit
-jj fix                            # Run code formatters
+jj fix                            # Run code formatters (line-ranges only)
+jj fix --all-lines                # Format entire files (previous default)
 jj sign                           # Sign commits
 jj sparse set --add <path>        # Add to sparse checkout
 jj sparse set --remove <path>     # Remove from sparse
 jj util completion <shell>        # Generate shell completions
 jj util gc                        # Garbage collect
+jj util snapshot                  # Manually trigger working copy snapshot
 ```
+
+`jj fix` supports line-range formatting via `fix.tools.<name>.line-range-arg` config.
 
 ## Global Options
 
@@ -466,6 +511,7 @@ jj -R <path>                      # Use different repo
 jj --at-op <op-id>                # Load at operation
 jj --ignore-working-copy          # Skip working copy snapshot
 jj --ignore-immutable             # Allow modifying immutable
+jj --no-integrate-operation       # Run without impacting repo state
 jj --color <when>                 # always/never/auto
 jj --no-pager                     # Disable pager
 jj --config <key=value>           # Override config

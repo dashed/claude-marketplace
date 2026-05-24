@@ -6,6 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-05-23
+
+### Added
+- New commands: `jj arrange`, `jj bookmark advance`, `jj file search`, `jj util snapshot`
+- New revset functions: `divergent()`, `remote_tags()`, `diff_lines()`, `diff_lines_added()`, `diff_lines_removed()`
+- `xyz/n` versioned access syntax for hidden/divergent changes
+- `--no-integrate-operation` global flag documentation
+- `jj rebase --simplify-parents` flag
+- `jj git push --option` for push options
+- `jj bookmark rename --overwrite-existing` flag
+- Pattern alias support (`name:x` syntax) in revsets
+- Configuration: `remotes.<name>.fetch-bookmarks/fetch-tags`, `working-copy.exec-bit-change`, `--when.environments`, `JJ_PAGER`, `revsets.bookmark-advance-from/to`, `revsets.op-diff-changes-in`
+
+### Changed
+- Update skill to cover jj 0.37.0 through 0.41.0 (from 0.36.0)
+- Update `jj bookmark track/untrack` to use `--remote` flag (old `@remote` syntax deprecated)
+- Update push flag table: `--all`/`--tracked`/`-r` now skip ineligible bookmarks instead of failing
+- Note `jj op undo` removed (use `jj op revert` or `jj undo`/`jj redo`)
+- Note `diff_contains()` renamed to `diff_lines()`
+- Note `git_head()` and `git_refs()` deprecated
+- Note per-repo config moved outside repo (0.38)
+- Note removed configs: `ui.always-allow-large-revsets`, `all:` modifier, `git.push-bookmark-prefix`, `ui.default-description`, `ui.diff.format`, `ui.diff.tool`, `core.fsmonitor`, `core.watchman.register-snapshot-trigger`
+- Note minimum git version now 2.41.0
+- Condensed Colocated Mode Deep Dive for brevity (progressive disclosure)
+- Condensed binary/merge conflict resolution sections
+
 ## [1.1.0] - 2026-01-15
 
 ### Added

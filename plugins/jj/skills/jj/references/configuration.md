@@ -16,6 +16,8 @@ Comprehensive reference for jj configuration options, templates, filesets, and a
 - [Templates](#templates)
 - [Filesets](#filesets)
 - [Git Settings](#git-settings)
+- [Working Copy](#working-copy)
+- [Conditional Configuration](#conditional-configuration)
 - [Signing](#signing)
 
 ## Config Files
@@ -24,9 +26,11 @@ jj loads configuration from multiple sources (in order of precedence):
 
 1. **Built-in** - Cannot be edited
 2. **User** - `~/.config/jj/config.toml` or `~/.jjconfig.toml`
-3. **Repo** - `.jj/repo/config.toml`
-4. **Workspace** - `.jj/workspace-config.toml`
+3. **Repo** - Stored outside the repo (managed by jj)
+4. **Workspace** - Stored outside the repo (managed by jj)
 5. **Command-line** - `--config key=value`
+
+> **Note (0.38+):** Per-repo and per-workspace config are now stored outside the repository directory. The legacy locations `.jj/repo/config.toml` and `.jj/workspace-config.toml` are auto-migrated on first access. Use `jj config edit --repo` / `--workspace` to edit — jj manages the paths.
 
 ```bash
 jj config path --user      # Show user config path
@@ -58,7 +62,7 @@ default-command = "log"
 # Or with arguments:
 default-command = ["log", "--reversed"]
 
-# Pager command
+# Pager command (also overridable via JJ_PAGER env var)
 pager = "less -FRX"
 
 # Diff format: :color-words, :git, :summary, :stat, :types, :name-only
@@ -72,10 +76,16 @@ movement.edit = false
 
 The editor is used for commands that need text input: `jj describe`, `jj squash` (when combining messages), `jj commit`, `jj split` (for commit messages).
 
-**Priority order** (highest to lowest):
+**Editor priority order** (highest to lowest):
 
 ```
 $JJ_EDITOR > ui.editor > $VISUAL > $EDITOR
+```
+
+**Pager priority order** (highest to lowest):
+
+```
+$JJ_PAGER > ui.pager > $PAGER
 ```
 
 If none are set, defaults to `nano` (Unix) or `notepad` (Windows).
@@ -166,6 +176,8 @@ context = 3
 
 [diff.git]
 context = 3
+# Suppress a/ b/ path prefixes in diff --git output
+show-path-prefix = true
 ```
 
 ### External Diff Tools
@@ -221,6 +233,20 @@ jj fix
 'immutable_heads()' = 'trunk() | tags()'
 ```
 
+### Built-in Revsets
+
+jj provides built-in revset settings that can be overridden:
+
+```toml
+[revsets]
+# Revsets for 'jj bookmark advance'
+bookmark-advance-from = "~conflict() & ~description(exact:'')"
+bookmark-advance-to = "~conflict() & ~description(exact:'')"
+
+# Defines "interesting" revisions for op show/diff/log
+op-diff-changes-in = ""
+```
+
 ### Template Aliases
 
 ```toml
@@ -240,6 +266,17 @@ if(conflict, " CONFLICT", "")
 ## Templates
 
 Templates are a functional language for customizing output.
+
+### New Description Template
+
+Populated when `jj new` is run without `-m`:
+
+```toml
+[templates]
+new_description = '""'
+# Example: auto-populate with a prefix
+new_description = '"wip: "'
+```
 
 ### Log Template
 
@@ -341,6 +378,7 @@ self.hidden()
 self.mine()
 self.contained_in(revset)
 self.diff([fileset])
+config(name)              # Returns Option<ConfigValue>; accepts Stringify expression
 ```
 
 ## Filesets
@@ -407,6 +445,8 @@ jj squash 'glob:*.md'
 
 ## Git Settings
 
+> **Minimum git version:** 2.41.0 (required since jj 0.38)
+
 ```toml
 [git]
 # Auto-local-bookmark for new remote bookmarks
@@ -415,9 +455,6 @@ auto-local-bookmark = true
 # Default push/fetch remote
 push = "origin"
 fetch = "origin"
-
-# Push bookmark naming template
-push-bookmark-prefix = "push-"
 
 # Private commits (won't be pushed)
 private-commits = "description(glob:'wip:*')"
@@ -434,6 +471,44 @@ fetch-tags = "included"  # all, included, none
 # Abandon unreachable commits from remote
 abandon-unreachable-commits = true
 ```
+
+### Per-Remote Settings
+
+```toml
+[remotes.origin]
+# Auto-track only locally-created bookmarks (replaces deprecated git.push-new-bookmarks)
+auto-track-created-bookmarks = "*"
+
+# Configure default fetch targets
+fetch-bookmarks = ["glob:*"]
+fetch-tags = "all"  # all, included, none
+```
+
+## Working Copy
+
+```toml
+[working-copy]
+# Control executable bit handling on Unix: "respect" or "ignore"
+exec-bit-change = "respect"
+```
+
+Set to `"ignore"` on filesystems that don't support executable bits or when spurious permission changes cause noise.
+
+## Conditional Configuration
+
+Apply configuration only when specific environment variables are set:
+
+```toml
+[[--when]]
+# Only apply these settings when the REMOTE_DEV env var is set
+environments = ["REMOTE_DEV"]
+
+[--when.ui]
+editor = "code -w"
+pager = "cat"
+```
+
+Multiple `[[--when]]` blocks can be used for different conditions.
 
 ## Signing
 
@@ -488,6 +563,14 @@ patterns = ["glob:'**/*.py'"]
 [fix.tools.prettier]
 command = ["prettier", "--stdin-filepath=$path"]
 patterns = ["glob:'**/*.{js,ts,jsx,tsx,json,md}'"]
+
+[fix.tools.clang-format]
+command = ["clang-format"]
+patterns = ["glob:'**/*.{c,cc,cpp,h}'"]
+# Format string for line ranges (e.g., clang-format uses --lines=start:end)
+line-range-arg = "--lines=$start:$end"
+# Run tool even when there are zero line ranges to format
+run-tool-if-zero-line-ranges = true
 ```
 
 ## Merge Tools

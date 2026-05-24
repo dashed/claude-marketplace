@@ -9,6 +9,7 @@ Revsets are a functional language for selecting commits in jj. This reference co
 - [Functions](#functions)
 - [String Patterns](#string-patterns)
 - [Common Patterns](#common-patterns)
+- [Deprecations](#deprecations-037038)
 
 ## Basic Symbols
 
@@ -89,6 +90,7 @@ Use parentheses for grouping: `(x | y) & z`
 | `untracked_remote_bookmarks()` | Untracked remote bookmarks |
 | `tags()` | All tag targets |
 | `tags(pattern)` | Tags matching pattern |
+| `remote_tags()` | Query remote tags (0.38+) |
 | `trunk()` | Main branch (main, master, trunk) |
 
 ### Author/Committer
@@ -109,13 +111,16 @@ Use parentheses for grouping: `(x | y) & z`
 | `description(exact:"text")` | Exact description match |
 | `empty()` | Empty commits (no file changes) |
 | `file(pattern)` | Commits modifying matching files |
-| `diff_contains(pattern)` | Commits with matching diff content |
+| `diff_lines(pattern)` | Commits with matching diff content (renamed from `diff_contains()` in 0.38) |
+| `diff_lines_added(pattern)` | Match content on added side of diff only (0.40+) |
+| `diff_lines_removed(pattern)` | Match content on removed side of diff only (0.40+) |
 
 ### Conflicts and Status
 
 | Function | Description |
 |----------|-------------|
 | `conflicts()` | Commits containing conflicts |
+| `divergent()` | Divergent changes — multiple visible commits with the same change ID (0.38+) |
 | `signed()` | Cryptographically signed commits |
 | `working_copies()` | All working copy commits |
 
@@ -149,14 +154,27 @@ Use parentheses for grouping: `(x | y) & z`
 
 ## String Patterns
 
-Used in functions like `bookmarks()`, `description()`, `author()`:
+Used in functions like `bookmarks()`, `description()`, `author()`.
+
+Since 0.37, the default pattern type is `glob` (previously `substring`). Use explicit prefixes to be clear:
 
 | Pattern | Description | Example |
 |---------|-------------|---------|
-| `substring:text` | Contains text (default) | `description("fix")` |
+| `glob:pattern` | Glob pattern (default since 0.37) | `bookmarks("feature-*")` |
+| `substring:text` | Contains text | `description(substring:"fix")` |
 | `exact:text` | Exact match | `description(exact:"")` |
-| `glob:pattern` | Glob pattern | `bookmarks(glob:"feature-*")` |
 | `regex:pattern` | Regular expression | `author(regex:"^J.*")` |
+
+### Pattern Aliases (0.39+)
+
+Define custom pattern prefixes in the config:
+
+```toml
+[revset-aliases]
+'grep:x' = 'description(regex:x)'
+```
+
+Then use as `grep:"pattern"` in revset expressions.
 
 ## Common Patterns
 
@@ -196,7 +214,7 @@ jj log -r 'heads(trunk()..)'
 jj log -r 'file("src/main.rs")'
 
 # Commits containing "TODO" in diff
-jj log -r 'diff_contains("TODO")'
+jj log -r 'diff_lines("TODO")'
 
 # Commits by specific author
 jj log -r 'author("alice@")'
@@ -263,6 +281,15 @@ jj log -r 'latest(file("src/**"), 5)'
 # All commits between two tags
 jj log -r 'v1.0::v2.0'
 ```
+
+## Deprecations (0.37–0.38)
+
+| Deprecated | Replacement |
+|------------|-------------|
+| `diff_contains(pattern)` | `diff_lines(pattern)` (0.38) |
+| `git_head()` | `first_parent(@)` in colocated repos (0.37) |
+| `git_refs()` | `remote_bookmarks(remote=glob:*) \| tags()` (0.37) |
+| `all:` revset modifier | Removed in 0.38 — no replacement needed |
 
 ## Advanced Recipes
 

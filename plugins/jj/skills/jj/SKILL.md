@@ -69,6 +69,11 @@ jj describe -m "updated"     # Snapshot and update description
 
 Always prefer change IDs when referring to commits in commands.
 
+**Versioned access (0.37+):** Use `xyz/n` suffix to access hidden/divergent versions:
+- `xyz/0` - latest version of change xyz
+- `xyz/1` - previous version (useful for `jj restore --from xyz/1 --to xyz`)
+- Shown automatically in `jj log` for divergent changes
+
 ### No Staging Area
 
 Instead of staging, use these patterns:
@@ -95,6 +100,8 @@ Every operation is recorded and can be undone:
 ```bash
 jj op log                # View operation history
 jj undo                  # Undo last operation
+jj redo                  # Redo undone operation
+jj op revert <op-id>     # Revert specific operation
 jj op restore <op-id>    # Restore to specific operation
 ```
 
@@ -118,6 +125,9 @@ jj op restore <op-id>    # Restore to specific operation
 | `jj git push` | Push to remote | `git push` |
 | `jj undo` | Undo last operation | `git reflog` + reset |
 | `jj file annotate` | Show line origins | `git blame` |
+| `jj file search` | Search file contents | `git grep` |
+| `jj arrange` | TUI to reorder/abandon commits | `git rebase -i` (reorder) |
+| `jj bookmark advance` | Move bookmark forward | fast-forward branch |
 
 ## Common Workflows
 
@@ -161,7 +171,18 @@ jj rebase -r <rev> -d <destination>
 # Insert commit between others
 jj rebase -r X -A Y       # Insert X after Y
 jj rebase -r X -B Y       # Insert X before Y
+
+# Simplify redundant parents during rebase
+jj rebase -s <rev> -d <dest> --simplify-parents
 ```
+
+### Reordering Commits with `jj arrange`
+
+```bash
+jj arrange <revset>       # Open TUI to reorder/abandon commits
+```
+
+The TUI shows selected commits with their immediate parents/children. Use swap up/down to reorder along graph edges.
 
 ### Working with Bookmarks (Branches)
 
@@ -170,7 +191,8 @@ jj bookmark list          # List bookmarks
 jj bookmark create <name> # Create at current commit
 jj bookmark set <name>    # Move bookmark to current commit
 jj bookmark delete <name> # Delete bookmark
-jj bookmark track <name>@<remote>  # Track remote bookmark
+jj bookmark track <name> --remote <remote>  # Track remote bookmark
+jj bookmark advance       # Move bookmark forward to @ (like "jj tug")
 ```
 
 **Bookmark gotchas:**
@@ -189,6 +211,15 @@ jj bookmark create feature     # FAILS if feature@origin exists
 jj bookmark set feature -r @   # Works, moves existing bookmark
 ```
 
+### Searching File Contents
+
+```bash
+jj file search <pattern>                  # Search with regex (default)
+jj file search --pattern "glob:*.rs"      # Use glob pattern
+jj file search --pattern "substring:foo"  # Substring match
+jj file search -r <rev> <pattern>         # Search at specific revision
+```
+
 ### Pushing Changes
 
 ```bash
@@ -198,8 +229,11 @@ jj git push --bookmark <name>
 # Push change by creating auto-named bookmark
 jj git push --change <change-id>
 
-# Push all bookmarks
+# Push all bookmarks (skips ineligible: private/conflicted)
 jj git push --all
+
+# Pass push options to remote server
+jj git push --bookmark <name> --option key=value
 ```
 
 ### Resolving Conflicts
@@ -216,39 +250,19 @@ jj resolve                # Opens merge tool for each conflict
 jj resolve --list         # List all conflicted files
 ```
 
-### Resolving Binary File Conflicts
+### Binary & Merge Conflict Resolution
 
-Binary files (images, `.wasm`, compiled files) cannot have conflict markers. Resolve by choosing one version:
+Binary files cannot have conflict markers - resolve by choosing a version:
 
 ```bash
-# Take version from specific revision (e.g., main):
-jj restore --from main path/to/binary.wasm
-
-# Take version from feature branch:
-jj restore --from feature path/to/binary.wasm
-
-# For multiple binary files:
-jj resolve --list         # See all conflicted files
-for file in file1.wasm file2.wasm; do
-  jj restore --from main "path/to/$file"
-done
+jj restore --from main path/to/binary.wasm    # Take from specific revision
 ```
 
-### Multi-Parent (Merge) Conflict Resolution
-
-When a merge commit has conflicts:
-
+Multi-parent merge conflicts:
 ```bash
-# Option 1: Work on child of merge
 jj new <conflicted-merge>    # Create child of merge
 # Edit files to resolve
 jj squash                    # Move resolutions into merge
-
-# Option 2: Edit the merge directly
-jj edit <conflicted-merge>   # Edit the merge itself
-# Make changes - they appear as "working copy changes"
-jj new                       # Snapshot changes into merge
-jj abandon @                 # Remove empty temp commit
 ```
 
 **Creating multi-parent merges:**
@@ -260,11 +274,16 @@ jj new branch-a branch-b branch-c -m "integration: merge features"
 
 ```bash
 jj undo                   # Undo last operation
+jj redo                   # Redo undone operation
 jj op log                 # View operation history
+jj op revert <op-id>      # Revert specific operation
 jj op restore <op-id>     # Restore to specific state
 
 # View repo at past operation
 jj --at-op=<op-id> log
+
+# Run command without affecting repo state (read-only inspection)
+jj --no-integrate-operation log -r 'trunk()..@'
 ```
 
 ## Revsets Quick Reference
@@ -285,7 +304,10 @@ Revsets select commits using a functional language:
 | `trunk()` | Main branch (main/master) |
 | `mine()` | Commits by current user |
 | `conflicts()` | Commits with conflicts |
+| `divergent()` | Divergent changes |
 | `description(text)` | Commits with matching description |
+| `diff_lines(text)` | Commits with matching diff content |
+| `remote_tags()` | Remote tag targets |
 
 **Examples:**
 ```bash
@@ -322,51 +344,20 @@ cd existing-git-repo
 jj git init --colocate    # Add jj to existing Git repo
 ```
 
-### Colocated Mode Deep Dive
+### Colocated Mode Notes
 
-In colocated mode, both jj and Git operate on the same repository. This creates some nuances to understand:
-
-**Understanding git status output:**
-
-```bash
-$ git status
-HEAD detached from 82f30e2c
-nothing to commit, working tree clean
-```
-
-The "detached from X" message shows the *original* detachment point, not current HEAD. To verify actual HEAD position:
-
-```bash
-git log --oneline -1 HEAD  # Shows current HEAD
-```
-
-**Git index sync issues:**
-
-After jj conflict resolution, git may show unmerged paths:
-
-```bash
-$ git status
-Unmerged paths:
-  both modified:   Cargo.lock
-```
-
-Fix by updating the git index:
-```bash
-git add <files>           # Clears unmerged entries
-```
-
-**When git and jj disagree:**
+In colocated mode, `git status` shows "HEAD detached from X" - this is normal. If git shows unmerged paths after jj conflict resolution, run `git add <files>`. When git and jj disagree:
 
 ```bash
 jj git import             # Force import git state to jj
 jj git export             # Force export jj state to git
 ```
 
-**Best practice:** Primarily use jj commands in colocated repos. Only use git for operations jj doesn't support (like interactive rebase with git add -p style workflows).
+**Best practice:** Primarily use jj commands in colocated repos.
 
 ## Configuration
 
-Edit config with `jj config edit --user`:
+Edit config with `jj config edit --user` (or `--repo` for per-repo config, stored outside the repo since 0.38):
 
 ```toml
 [user]
@@ -402,8 +393,10 @@ For comprehensive documentation, see:
 
 **Divergent changes** - Same change ID, different commits. Usually from concurrent edits:
 ```bash
-jj log                    # Shows divergent commits
+jj log                    # Shows divergent commits with xyz/0, xyz/1 suffixes
+jj diff --from xyz/0 --to xyz/1  # Compare versions
 jj abandon <unwanted>     # Remove one version
+jj restore --from xyz/1 --to xyz  # Restore to previous version
 ```
 
 **Immutable commit error** - Can't modify trunk/tagged commits by default:
@@ -437,6 +430,14 @@ jj squash -m "Combined commit message"
 
 **Note:** If either commit has an empty description, jj automatically uses the non-empty one without opening an editor.
 
+### Searching Files (Non-Interactive)
+
+```bash
+jj file search "pattern"                  # Regex search (default)
+jj file search --pattern "glob:*.rs"      # Glob pattern
+jj file search -r <rev> "pattern"         # Search at specific revision
+```
+
 ### Conflict Resolution Without Merge Tool
 
 ```bash
@@ -454,6 +455,7 @@ These commands cannot be made non-interactive:
 - `jj split` (without file arguments) - requires diff selection
 - `jj diffedit` - opens diff editor by design
 - `jj resolve` (without `--tool`) - opens merge tool
+- `jj arrange` - TUI by design
 
 **Workaround for split:** Provide file paths to avoid interactive selection:
 ```bash
@@ -468,32 +470,20 @@ Some `jj git push` flag combinations don't work together:
 
 | Flags | Works? | Notes |
 |-------|--------|-------|
-| `--all` | ✓ | Pushes all bookmarks |
+| `--all` | ✓ | Pushes all bookmarks (skips ineligible) |
 | `--tracked` | ✓ | Pushes tracked bookmarks that changed |
 | `--bookmark <name>` | ✓ | Pushes specific bookmark |
 | `--change <id>` | ✓ | Creates/pushes auto-named bookmark |
 | `--all --allow-new` | ✗ | **Incompatible** |
 | `--tracked --allow-new` | ✗ | **Incompatible** |
 | `--bookmark <name> --allow-new` | ✓ | For new bookmarks |
+| `--option key=value` | ✓ | Pass push options to server |
+
+**Note (0.41+):** `--all`, `--tracked`, and `-r REVSETS` no longer fail when revisions are private or have conflicts - ineligible bookmarks are silently skipped.
 
 ### Working Copy Changes on Merge Commits
 
-When you `jj edit` a merge commit, changes appear as "working copy changes" even if you're resolving conflicts. This is expected - use `jj new` to trigger snapshot:
-
-```bash
-jj edit <merge-commit>       # Edit the merge
-# Make changes...
-jj new                       # Snapshot into merge, create new @
-jj abandon @                 # Remove empty commit
-```
-
-### Git Status Shows Detached HEAD
-
-In colocated repos, `git status` shows "HEAD detached from X" - this is normal. The message shows the *original* detachment point. Check actual HEAD with:
-
-```bash
-git log --oneline -1 HEAD    # Current HEAD position
-```
+When you `jj edit` a merge commit, changes appear as "working copy changes" - this is expected. Use `jj new` to trigger snapshot, then `jj abandon @` to remove the empty commit.
 
 ### Bookmark Movement Refused
 
