@@ -33,11 +33,14 @@ This project follows [Semantic Versioning 2.0.0](https://semver.org/):
 When releasing a new version, follow these steps:
 
 1. **Update CHANGELOG.md**
-   - Document all changes under `## [Unreleased]` section
-   - Categorize changes: Added, Changed, Deprecated, Removed, Fixed, Security
    - Move `## [Unreleased]` content to new version section with date
    - Format: `## [X.Y.Z] - YYYY-MM-DD`
-   - Update version comparison links at bottom
+   - Leave an empty `## [Unreleased]` section at the top
+   - Update version comparison links at bottom:
+     ```markdown
+     [Unreleased]: https://github.com/dashed/claude-marketplace/compare/vX.Y.Z...HEAD
+     [X.Y.Z]: https://github.com/dashed/claude-marketplace/compare/vPREVIOUS...vX.Y.Z
+     ```
 
 2. **Update individual skill changelogs (if applicable)**
    - Update `./changelogs/<skill-name>.md` for any skills that were added, updated, or modified
@@ -47,7 +50,7 @@ When releasing a new version, follow these steps:
 
 3. **Update .claude-plugin/marketplace.json**
    - Update `metadata.version` field to new version number
-   - Example: `"version": "0.2.0"`
+   - Example: `"version": "0.11.0"`
 
 4. **Update README.md**
    - Update version in the "Version" section to match marketplace version
@@ -56,7 +59,7 @@ When releasing a new version, follow these steps:
 
 5. **Run validation**
    ```bash
-   make validate
+   make validate-strict
    ```
    Ensure all checks pass before proceeding.
 
@@ -65,13 +68,12 @@ When releasing a new version, follow these steps:
    git add CHANGELOG.md changelogs/ .claude-plugin/marketplace.json README.md
    git commit -m "chore: bump version to vX.Y.Z"
    ```
-   Note: Add README.md to git add if it was updated in step 4
 
 7. **Create git tag**
    ```bash
    git tag -a vX.Y.Z -m "Release vX.Y.Z"
    ```
-   Note: Use `v` prefix for tags (e.g., `v0.2.0`)
+   Note: Use `v` prefix for tags (e.g., `v0.11.0`)
 
 8. **Push changes**
    ```bash
@@ -210,21 +212,23 @@ Replace `X.Y.Z` with actual version numbers.
 
 ### Examples from This Project
 
-**0.1.0 → 0.2.0 (Minor bump)**:
-- **Why**: Added Static Validation system (new feature)
+**0.10.0 → 0.11.0 (Minor bump)**:
+- **Why**: Added multiple new skills (anki-flashcards, style-writer, pup, etc.) and significant jj skill update
 - **Changed**:
-  - `.claude-plugin/marketplace.json`: `"version": "0.1.0"` → `"version": "0.2.0"`
-  - `CHANGELOG.md`: Created `## [0.2.0] - 2025-11-23` section
-  - Updated comparison links
+  - `.claude-plugin/marketplace.json`: `"version": "0.10.0"` → `"version": "0.11.0"`
+  - `CHANGELOG.md`: Moved `## [Unreleased]` content to `## [0.11.0] - 2026-05-23`
+  - `README.md`: Updated version to `0.11.0`
+  - Updated comparison links at bottom of CHANGELOG.md
 
 **Files to update**:
-1. `CHANGELOG.md` - Document changes and create version section
+1. `CHANGELOG.md` - Move [Unreleased] to version section, update comparison links
 2. `changelogs/<skill-name>.md` - Update if skill-specific changes (if applicable)
 3. `.claude-plugin/marketplace.json` - Update metadata.version
+4. `README.md` - Update version in "Version" section
 
 **Validation**:
 ```bash
-make validate  # Must pass before release
+make validate-strict  # Must pass before release
 ```
 
 ## Development Workflow
