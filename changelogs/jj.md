@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-05-24
+
+### Added
+- New references/faq-patterns.md: 14 common patterns from jj FAQ (private commits, resume work, revert merges, lost commits, etc.)
+- New references/conflicts.md: Conflict resolution deep dive (marker styles, workflows, multi-sided, binary)
+- Enhanced commands.md: Added missing flags for squash (--from/--into/-k), split (-r), log (-p/--stat/--no-graph/-n), show (--stat/--git/-T), resolve (--list/--tool), duplicate (behavior notes), redo
+
 ## [1.4.0] - 2026-05-24
 
 ### Added

@@ -14,9 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - jj skill: Add references/github-workflow.md for GitHub/GitLab PR workflows and fork patterns
-- jj skill: Add missing commands (absorb, evolog, commit, parallelize, revert, simplify-parents)
+- jj skill: Add references/faq-patterns.md with 14 common patterns from jj FAQ
+- jj skill: Add references/conflicts.md with conflict resolution deep dive
+- jj skill: Add missing commands (absorb, evolog, commit, parallelize, revert, simplify-parents, interdiff, fix, bisect, next/prev, sparse, sign, metaedit)
 - jj skill: Add CLI revision options guide (-r/-s/-b/-f, -o/-A/-B/-t patterns)
 - jj skill: Add conflict marker styles and multiple remotes to configuration reference
+- jj skill: Enhance commands.md with missing flags for squash, split, log, show, resolve, duplicate
 
 ## [0.11.0] - 2026-05-23
 

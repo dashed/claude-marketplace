@@ -361,6 +361,8 @@ See [references/filesets.md](references/filesets.md).
 
 For comprehensive documentation, see:
 - [references/github-workflow.md](references/github-workflow.md) - GitHub/GitLab PR workflows
+- [references/conflicts.md](references/conflicts.md) - Conflict resolution deep dive
+- [references/faq-patterns.md](references/faq-patterns.md) - Common patterns & FAQ
 - [references/templates.md](references/templates.md) - Template language reference
 - [references/filesets.md](references/filesets.md) - Fileset language reference
 - [references/revsets.md](references/revsets.md) - Complete revset reference

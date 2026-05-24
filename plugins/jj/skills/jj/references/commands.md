@@ -125,6 +125,7 @@ jj show -s                        # Summary only
 jj show -p                        # Patch (default)
 jj show --stat                    # Diffstat
 jj show --git                     # Git-format diff
+jj show -T <template>             # Custom output template
 ```
 
 ### `jj diff`
@@ -286,7 +287,7 @@ jj diffedit --restore-descendants # Preserve descendant content
 
 ### `jj duplicate`
 
-Copy commits:
+Copy commits. Duplicated commits have the same file content and description but receive new change IDs, so they are independent from the originals:
 
 ```bash
 jj duplicate                      # Duplicate working copy
@@ -435,6 +436,22 @@ Make sequential revisions into parallel siblings (children of the same parent):
 jj parallelize <revs>             # Make revisions parallel
 jj parallelize abc::xyz           # Parallelize a range of commits
 ```
+
+### `jj resolve`
+
+Resolve merge conflicts interactively:
+
+```bash
+jj resolve                        # Resolve conflicts in working copy
+jj resolve -r <rev>               # Resolve conflicts in specific revision
+jj resolve -l                     # List conflicted files
+jj resolve --tool <name>          # Use specific merge tool (e.g., meld, kdiff3)
+jj resolve --tool :ours           # Resolve all conflicts using "our" side
+jj resolve --tool :theirs         # Resolve all conflicts using "their" side
+jj resolve [paths...]             # Resolve specific files only
+```
+
+Built-in tools `:ours` and `:theirs` are useful for bulk-resolving conflicts without opening an editor.
 
 ### `jj simplify-parents`
 
@@ -661,24 +678,12 @@ jj config path --user             # Show config file path
 ### Other useful commands
 
 ```bash
-jj root                           # Show repo root
+jj root                           # Show repo root (shortcut for workspace root)
 jj version                        # Show jj version
-jj resolve                        # Resolve conflicts
-jj resolve -l                     # List conflicts
-jj interdiff --from <A> --to <B>  # Compare changes of commits
-jj next                           # Move to child commit
-jj prev                           # Move to parent commit
-jj fix                            # Run code formatters (line-ranges only)
-jj fix --all-lines                # Format entire files (previous default)
-jj sign                           # Sign commits
-jj sparse set --add <path>        # Add to sparse checkout
-jj sparse set --remove <path>     # Remove from sparse
 jj util completion <shell>        # Generate shell completions
 jj util gc                        # Garbage collect
 jj util snapshot                  # Manually trigger working copy snapshot
 ```
-
-`jj fix` supports line-range formatting via `fix.tools.<name>.line-range-arg` config.
 
 ## Global Options
 
