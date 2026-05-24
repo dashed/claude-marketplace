@@ -30,6 +30,8 @@ jj loads configuration from multiple sources (in order of precedence):
 4. **Workspace** - Stored outside the repo (managed by jj)
 5. **Command-line** - `--config key=value`
 
+> **Tip:** Enable JSON Schema validation in your editor by adding `#:schema jj` at the top of your TOML config files.
+
 > **Note (0.38+):** Per-repo and per-workspace config are now stored outside the repository directory. The legacy locations `.jj/repo/config.toml` and `.jj/workspace-config.toml` are auto-migrated on first access. Use `jj config edit --repo` / `--workspace` to edit — jj manages the paths.
 
 ```bash
@@ -231,6 +233,22 @@ jj fix
 
 # Customize immutable commits
 'immutable_heads()' = 'trunk() | tags()'
+
+# Pattern aliases (0.39+): use as name:value in revsets
+'grep:x' = 'description(regex:x)'
+
+# Alias with description for shell completions (0.39+)
+HEAD = { definition = '@-', doc = 'The parent of the working-copy commit' }
+```
+
+### Fileset Aliases (0.39+)
+
+```toml
+[fileset-aliases]
+'src' = 'glob:"src/**"'
+'tests' = 'glob:"**/test_*" | glob:"**/tests/**"'
+'rust' = 'glob:"**/*.rs"'
+'no-lock' = '~glob:"**/Cargo.lock" ~ glob:"**/package-lock.json"'
 ```
 
 ### Built-in Revsets

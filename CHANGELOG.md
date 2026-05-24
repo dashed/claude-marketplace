@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - jj skill: Add new revset functions (`divergent()`, `remote_tags()`, `diff_lines()`, `diff_lines_added/removed()`)
 - jj skill: Document `xyz/n` versioned change ID syntax, `--no-integrate-operation` flag
 - jj skill: Update bookmark track/untrack syntax, push behavior, and configuration reference
+- jj skill: Add references/templates.md - comprehensive template language reference
+- jj skill: Add references/filesets.md - fileset language reference
+- jj skill: Enhance references/revsets.md with 20+ missing functions, string/date patterns
+- jj skill: Add minimum version requirements table and template/fileset sections to SKILL.md
 
 ### Added
 - anki-flashcards skill: Create and manage Anki flashcards via the AnkiConnect API (v1.0.0)

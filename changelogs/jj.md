@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-05-23
+
+### Added
+- New references/templates.md: Comprehensive template language reference (operators, global functions, types with methods, aliases, practical examples)
+- New references/filesets.md: Fileset language reference (file patterns, operators, functions, aliases)
+- Enhanced references/revsets.md: Added 20+ missing functions (reachable, fork_point, bisect, first_parent, at_operation, etc.), string/date patterns, alias documentation
+- Added "Minimum Version Requirements" table to SKILL.md
+- Added "Template Language" section to SKILL.md with quick reference
+- Added "Filesets" section to SKILL.md with practical examples
+- Added fileset aliases (0.39+) to references/configuration.md
+- Added revset alias with doc property syntax to references/configuration.md
+
+### Changed
+- Condensed snapshot trigger and colocated mode sections in SKILL.md for brevity
+- Updated Advanced Topics section with links to all 6 reference files
+
 ## [1.2.0] - 2026-05-23
 
 ### Added

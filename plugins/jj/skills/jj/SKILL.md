@@ -43,24 +43,7 @@ jj diff          # Shows changes in working copy commit
 
 ### When Snapshots Are Triggered
 
-The working copy is snapshotted into the current commit (`@`) when running most jj commands. Key triggers:
-
-- `jj new` - Creates new commit, snapshots working copy into parent
-- `jj status` - Triggers snapshot before showing status
-- `jj diff`, `jj log`, `jj describe` - All trigger snapshot first
-
-**Forcing a snapshot manually:**
-
-```bash
-# If you edited files but need to ensure they're committed:
-jj new                       # Snapshot into parent, create new @
-jj abandon @                 # Remove empty new commit if not needed
-
-# Alternative: describe triggers snapshot
-jj describe -m "updated"     # Snapshot and update description
-```
-
-**Important:** When you `jj edit` a commit and make changes, those appear as "working copy changes" until a snapshot is triggered. This is normal behavior.
+The working copy is snapshotted into `@` when running most jj commands (`new`, `status`, `diff`, `log`, `describe`). Force a snapshot with `jj util snapshot` or just run any jj command.
 
 ### Change ID vs Commit ID
 
@@ -288,8 +271,6 @@ jj --no-integrate-operation log -r 'trunk()..@'
 
 ## Revsets Quick Reference
 
-Revsets select commits using a functional language:
-
 | Expression | Description |
 |------------|-------------|
 | `@` | Working copy commit |
@@ -328,15 +309,6 @@ jj git clone <url>        # Creates colocated repo (default)
 jj git clone --no-colocate <url>  # Non-colocated (jj only)
 ```
 
-### Using Git Commands
-
-In colocated repos, Git changes are auto-imported. For non-colocated:
-
-```bash
-jj git import             # Import changes from Git
-jj git export             # Export changes to Git
-```
-
 ### Converting Existing Git Repo
 
 ```bash
@@ -344,16 +316,7 @@ cd existing-git-repo
 jj git init --colocate    # Add jj to existing Git repo
 ```
 
-### Colocated Mode Notes
-
-In colocated mode, `git status` shows "HEAD detached from X" - this is normal. If git shows unmerged paths after jj conflict resolution, run `git add <files>`. When git and jj disagree:
-
-```bash
-jj git import             # Force import git state to jj
-jj git export             # Force export jj state to git
-```
-
-**Best practice:** Primarily use jj commands in colocated repos.
+In colocated repos, Git changes are auto-imported. If git and jj disagree, use `jj git import` / `jj git export`. Best practice: primarily use jj commands.
 
 ## Configuration
 
@@ -376,11 +339,38 @@ diff-editor = ":builtin"  # For interactive diff editing (split, squash -i)
 
 See [references/configuration.md](references/configuration.md) for comprehensive configuration options including editor setup for interactive use.
 
+## Template Language
+
+Customize output with `-T`/`--template`:
+
+```bash
+jj log -T 'change_id.short(8) ++ " " ++ description.first_line() ++ "\n"'
+jj log -T 'if(conflict, "CONFLICT ", "") ++ description.first_line()'
+```
+
+Key: `++` concatenates, `if(cond, then, else)` conditionals, `separate(sep, ...)` joins non-empty. See [references/templates.md](references/templates.md).
+
+## Filesets
+
+Select files in commands using fileset expressions:
+
+```bash
+jj diff 'glob:*.rs'              # Rust files in cwd
+jj diff '~Cargo.lock'            # Everything except Cargo.lock
+jj split 'glob:**/test_*'        # Test files only
+jj log -r 'files("src")'         # Commits touching src/
+```
+
+See [references/filesets.md](references/filesets.md).
+
 ## Advanced Topics
 
 For comprehensive documentation, see:
+- [references/templates.md](references/templates.md) - Template language reference
+- [references/filesets.md](references/filesets.md) - Fileset language reference
 - [references/revsets.md](references/revsets.md) - Complete revset reference
 - [references/commands.md](references/commands.md) - Full command reference
+- [references/configuration.md](references/configuration.md) - Configuration reference
 - [references/git-comparison.md](references/git-comparison.md) - Git to jj command mapping
 
 ## Troubleshooting
@@ -494,3 +484,17 @@ jj bookmark set name -r <rev> --allow-backwards
 ```
 
 This flag is required when moving a bookmark to an ancestor of its current position.
+
+## Minimum Version Requirements
+
+| Feature | Min Version |
+|---------|-------------|
+| `xyz/n` change offset syntax | 0.37+ |
+| `jj file search`, string patterns default to glob | 0.37+ |
+| `divergent()`, `remote_tags()`, `diff_lines()` revsets | 0.38+ |
+| `git_web_url()`, `hyperlink()` templates | 0.38+ |
+| `jj arrange`, `jj bookmark advance` | 0.39+ |
+| List methods (`first`, `last`, `get`, `reverse`, `skip`, `take`) | 0.39+ |
+| Pattern aliases, fileset aliases | 0.39+ |
+| `diff_lines_added()`, `diff_lines_removed()` | 0.40+ |
+| `replace()` template, `--no-integrate-operation` | 0.41+ |
