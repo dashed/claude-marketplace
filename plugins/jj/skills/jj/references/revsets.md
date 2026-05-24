@@ -429,7 +429,7 @@ jj log -r 'v1.0::v2.0'
 | `diff_contains(pattern)` | `diff_lines(pattern)` (0.38) |
 | `git_head()` | `first_parent(@)` in colocated repos (0.37) |
 | `git_refs()` | `remote_bookmarks(remote=glob:*) \| tags()` (0.37) |
-| `all:` revset modifier | Removed in 0.38 — no replacement needed |
+| `all:` global config (`ui.always-allow-large-revsets`) | Removed in 0.38 — multi-revset now default for most commands |
 | `file(pattern)` | `files(expression)` — now takes fileset expressions |
 
 ## Advanced Recipes
@@ -513,6 +513,27 @@ jj log -r 'merges() & trunk()..@'
 # Commits with merge descriptions in your branch:
 jj log -r 'trunk()..@ & description(glob:"*merge*")'
 ```
+
+### The `all:` Prefix for Multi-Commit Arguments
+
+Some command flags (like `-b` in rebase) expect a single commit. If your revset resolves to multiple commits, prefix with `all:`:
+
+```bash
+# ERROR: "resolved to more than one revision"
+jj rebase -b wip -d main
+
+# WORKS: prefix with all:
+jj rebase -b all:wip -d main       # Rebase ALL matching branches onto main
+```
+
+Useful WIP revset alias to combine with this:
+
+```toml
+[revset-aliases]
+'wip' = 'description(regex:"^\\[(wip|WIP|todo|TODO)\\]|(wip|WIP|todo|TODO):?")'
+```
+
+Then: `jj rebase -b all:wip -d main` rebases every WIP-tagged branch at once.
 
 ### Complex Rebase Scenarios
 
