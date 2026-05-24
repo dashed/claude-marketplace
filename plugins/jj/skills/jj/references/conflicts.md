@@ -132,6 +132,18 @@ jj restore --from <rev> <path>    # take the file from a specific revision
 
 You can resolve some conflicted files while leaving others unresolved. jj tracks conflict state per-file, so partially resolved commits are valid. Use `jj resolve --list` to see remaining conflicts.
 
+## Opting Out of Auto-Rebase
+
+By default, editing commit B auto-rebases descendants C→D onto the new B′ (conflicts appear immediately). To temporarily keep descendants on the OLD version (git-like diverged branches):
+
+```bash
+jj duplicate B                     # Create copy K of commit B
+jj rebase --branch C --destination K  # Move C..D onto the copy
+jj new B                           # Work on B freely — C..D are unaffected
+```
+
+This is rarely needed since jj's default (conflicts visible, resolution deferred) is usually preferable.
+
 ## Advantages of First-Class Conflicts
 
 - **No `--continue` workflows** — resolve conflicts at any time by editing the commit, no special state to manage
