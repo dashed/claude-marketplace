@@ -4,6 +4,7 @@ Complete reference for jj commands and their options.
 
 ## Table of Contents
 
+- [CLI Revision Options](#cli-revision-options)
 - [Repository Setup](#repository-setup)
 - [Status and History](#status-and-history)
 - [Creating and Editing Commits](#creating-and-editing-commits)
@@ -15,6 +16,50 @@ Complete reference for jj commands and their options.
 - [Tags](#tags)
 - [Workspaces](#workspaces)
 - [Configuration](#configuration)
+
+## CLI Revision Options
+
+Many jj commands share a consistent pattern of flags for selecting revisions and destinations. Understanding this pattern makes the CLI predictable across commands.
+
+### Source flags (what to operate on)
+
+| Flag | Short | Meaning |
+|------|-------|---------|
+| `--revision` (or `--revisions`) | `-r` | Select specific revision(s) — default for most commands |
+| `--source` | `-s` | Revision AND all its descendants (same as `-r REV::`) |
+| `--from` | `-f` | The _contents_ of a revision, or the bookmarks on a revision |
+| `--branch` | `-b` | Whole branch relative to destination |
+
+### Destination flags (where to put it)
+
+| Flag | Short | Meaning |
+|------|-------|---------|
+| `--onto` / `--destination` | `-d` / `-o` | Place as children of target |
+| `--insert-after` | `-A` | Insert between target and its children |
+| `--insert-before` | `-B` | Insert between target and its parents |
+| `--to` / `--into` | `-t` | Target for contents/bookmarks (use with `--from`) |
+
+### Key examples
+
+```bash
+# Rebase operations
+jj rebase -r xyz -d main              # Rebase single commit onto main
+jj rebase -s xyz -d main              # Rebase xyz and all descendants onto main
+jj rebase -b @ -d main                # Rebase current branch onto main
+
+# Content operations
+jj squash --from xyz --into abc        # Move xyz's changes into abc
+jj restore --from main --to @          # Copy file state from main to working copy
+
+# Insertion
+jj rebase -r xyz -A main              # Insert xyz after main
+jj rebase -r xyz -B main              # Insert xyz before main
+```
+
+### Commands that allow omitting `-r`
+
+Some commands accept revisions as positional arguments (e.g., `jj new xyz` instead of `jj new -r xyz`):
+`abandon`, `describe`, `duplicate`, `metaedit`, `new`, `parallelize`, `show`.
 
 ## Repository Setup
 
@@ -99,6 +144,21 @@ jj diff --color-words             # Word-level diff
 jj diff [paths...]                # Specific paths only
 ```
 
+### `jj evolog` (evolution log)
+
+Show the history of a single change over time. Each time a change is rewritten (rebased, squashed, amended), the update appears here:
+
+```bash
+jj evolog                         # Evolution of working copy change
+jj evolog -r <rev>                # Evolution of specific change
+jj evolog -p                      # Show patches between versions
+jj evolog -s                      # Summary of changes
+jj evolog -n 5                    # Limit entries
+jj evolog -T <template>           # Custom template
+```
+
+Use with `jj restore --from` to recover a previous version of a change.
+
 ## Creating and Editing Commits
 
 ### `jj new`
@@ -136,10 +196,10 @@ jj edit <rev>                     # Edit specific revision
 
 ### `jj commit` (alias: `ci`)
 
-Finalize working copy and create new commit:
+Snapshot working copy into the current commit, then create a new empty commit on top. The description editor opens for the CURRENT commit (contrast with `jj new`, which creates a new commit without editing the current one's description):
 
 ```bash
-jj commit                         # Describe and create new
+jj commit                         # Describe current, create new on top
 jj commit -m "message"            # With message
 jj commit -i                      # Interactive selection
 jj commit [paths...]              # Only specified paths
@@ -258,12 +318,45 @@ jj restore -c <rev>               # Undo changes in revision
 jj restore -i                     # Interactive mode
 ```
 
+### `jj absorb`
+
+Auto-squash working copy changes into the commits where those lines were last modified. Like `git commit --fixup` + `rebase --autosquash` in one step:
+
+```bash
+jj absorb                         # Absorb all working copy changes
+jj absorb [paths...]              # Absorb specific paths only
+jj absorb -r <revset>             # Target specific destination commits
+```
+
+If multiple commits in the stack modified the same line, absorb won't move that change — you decide manually how to squash it.
+
+### `jj revert`
+
+Create new commit(s) that are the reverse of specified changes. Unlike `jj restore`, this creates new commits rather than modifying existing ones:
+
+```bash
+jj revert -r <rev>                # Create commit undoing rev's changes
+jj revert -r <revs>              # Revert multiple revisions
+jj revert -s <rev>                # Revert rev and all descendants
+jj revert -r xyz -d main          # Revert and place onto main
+```
+
 ### `jj parallelize`
 
-Make commits siblings instead of parent-child:
+Make sequential revisions into parallel siblings (children of the same parent):
 
 ```bash
 jj parallelize <revs>             # Make revisions parallel
+jj parallelize abc::xyz           # Parallelize a range of commits
+```
+
+### `jj simplify-parents`
+
+Remove redundant parent edges from merge commits. Useful after rebasing when a merge commit has a parent that's also an ancestor through another parent:
+
+```bash
+jj simplify-parents               # Simplify working copy parents
+jj simplify-parents -r <revs>     # Simplify specific revisions
 ```
 
 ## Bookmarks (Branches)
@@ -486,7 +579,6 @@ jj root                           # Show repo root
 jj version                        # Show jj version
 jj resolve                        # Resolve conflicts
 jj resolve -l                     # List conflicts
-jj evolog                         # Show change evolution
 jj interdiff --from <A> --to <B>  # Compare changes of commits
 jj next                           # Move to child commit
 jj prev                           # Move to parent commit

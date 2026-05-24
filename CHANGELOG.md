@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - statusline skill: Reference script with git + jj support (jj priority for colocated repos)
 - statusline skill: Complete JSON field documentation from official Claude Code docs
 
+### Changed
+- jj skill: Add references/github-workflow.md for GitHub/GitLab PR workflows and fork patterns
+- jj skill: Add missing commands (absorb, evolog, commit, parallelize, revert, simplify-parents)
+- jj skill: Add CLI revision options guide (-r/-s/-b/-f, -o/-A/-B/-t patterns)
+- jj skill: Add conflict marker styles and multiple remotes to configuration reference
+
 ## [0.11.0] - 2026-05-23
 
 ### Changed

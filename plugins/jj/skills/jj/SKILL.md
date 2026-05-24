@@ -109,6 +109,9 @@ jj op restore <op-id>    # Restore to specific operation
 | `jj undo` | Undo last operation | `git reflog` + reset |
 | `jj file annotate` | Show line origins | `git blame` |
 | `jj file search` | Search file contents | `git grep` |
+| `jj commit` | Finalize WC commit + start new | `git commit` |
+| `jj absorb` | Auto-squash into right commits | `git commit --fixup` + autosquash |
+| `jj evolog` | History of a single change | `git reflog` (per-commit) |
 | `jj arrange` | TUI to reorder/abandon commits | `git rebase -i` (reorder) |
 | `jj bookmark advance` | Move bookmark forward | fast-forward branch |
 
@@ -136,7 +139,9 @@ jj new                    # Return to working on new changes
 # Option 2: Squash changes into parent
 jj squash                 # Move all changes to parent
 jj squash -i              # Interactively select changes
-jj squash <file>          # Move specific file
+
+# Option 3: Auto-squash into correct commits in stack
+jj absorb                 # Each hunk goes to commit that last changed those lines
 ```
 
 ### Rebasing Commits
@@ -178,21 +183,7 @@ jj bookmark track <name> --remote <remote>  # Track remote bookmark
 jj bookmark advance       # Move bookmark forward to @ (like "jj tug")
 ```
 
-**Bookmark gotchas:**
-
-```bash
-# Moving backwards requires a flag:
-jj bookmark set feature -r <ancestor>                  # FAILS if ancestor
-jj bookmark set feature -r <ancestor> --allow-backwards  # Works
-
-# The * suffix means bookmark diverged from tracked remote:
-# feature* 123abc  ← Push to sync with remote
-jj git push --bookmark feature
-
-# Create vs Set:
-jj bookmark create feature     # FAILS if feature@origin exists
-jj bookmark set feature -r @   # Works, moves existing bookmark
-```
+**Gotchas:** Use `--allow-backwards` to move a bookmark to an ancestor. The `*` suffix in log means diverged from remote (push to sync). Use `bookmark set` (not `create`) if the bookmark may already exist on a remote.
 
 ### Searching File Contents
 
@@ -366,6 +357,7 @@ See [references/filesets.md](references/filesets.md).
 ## Advanced Topics
 
 For comprehensive documentation, see:
+- [references/github-workflow.md](references/github-workflow.md) - GitHub/GitLab PR workflows
 - [references/templates.md](references/templates.md) - Template language reference
 - [references/filesets.md](references/filesets.md) - Fileset language reference
 - [references/revsets.md](references/revsets.md) - Complete revset reference

@@ -12,10 +12,13 @@ Comprehensive reference for jj configuration options, templates, filesets, and a
   - [Colors and Styles](#colors-and-styles)
   - [Diff Options](#diff-options)
   - [External Diff Tools](#external-diff-tools)
+  - [Conflict Marker Styles](#conflict-marker-styles)
 - [Aliases](#aliases)
 - [Templates](#templates)
 - [Filesets](#filesets)
 - [Git Settings](#git-settings)
+  - [Multiple Remotes](#multiple-remotes)
+  - [Per-Remote Settings](#per-remote-settings)
 - [Working Copy](#working-copy)
 - [Conditional Configuration](#conditional-configuration)
 - [Signing](#signing)
@@ -195,6 +198,22 @@ program = "difft"
 diff-args = ["--color=always", "$left", "$right"]
 diff-invocation-mode = "dir"  # or "file-by-file"
 ```
+
+### Conflict Marker Styles
+
+```toml
+[ui]
+# Conflict marker style: "diff" (default), "snapshot", "git"
+conflict-marker-style = "diff"
+```
+
+**Available styles:**
+
+| Style | Markers | Best For |
+|-------|---------|----------|
+| `diff` (default) | `<<<<<<<`, `%%%%%%%` (diff), `+++++++` (snapshot), `>>>>>>>` | Most powerful — shows a snapshot section plus a diff to apply. Apply the diff hunks to the snapshot to resolve. |
+| `snapshot` | `+++++++`, `-------` | Shows full content of each side. Simpler but requires manual comparison. |
+| `git` | `<<<<<<<`, `\|\|\|\|\|\|\|`, `=======`, `>>>>>>>` | Git-compatible diff3 style. Best for tools that expect Git conflict markers. |
 
 ## Aliases
 
@@ -490,6 +509,26 @@ fetch-tags = "included"  # all, included, none
 abandon-unreachable-commits = true
 ```
 
+### Multiple Remotes
+
+Configure fetch/push for fork workflows:
+
+```toml
+[git]
+# Fetch from multiple remotes by default
+fetch = ["upstream", "origin"]
+# Push only to your fork
+push = "origin"
+```
+
+Fork workflow trunk override:
+
+```toml
+[revset-aliases]
+# Point trunk() at upstream instead of origin
+'trunk()' = 'main@upstream'
+```
+
 ### Per-Remote Settings
 
 ```toml
@@ -554,6 +593,14 @@ key = "~/.ssh/id_ed25519.pub"
 ```
 
 ## Immutable Commits
+
+The immutable system protects commits from accidental modification:
+
+- `immutable_heads()` — defines which commit heads are protected (configurable below)
+- `immutable()` — defined as `::immutable_heads()` (all ancestors of immutable heads)
+- `mutable()` — defined as `~immutable()` (everything NOT immutable)
+
+`mutable()` is useful in revsets — e.g., `reachable(@, mutable())` returns your working stack (all commits reachable from `@` that aren't immutable).
 
 ```toml
 [revset-aliases]
@@ -623,6 +670,20 @@ auto-track = "glob:**/*.rs"
 
 # Watchman integration
 use-watchman = "if-available"
+```
+
+### Auto-Track Examples
+
+```toml
+[snapshot]
+# Only track specific file types
+auto-track = 'glob:"**/*.rs" | glob:"**/*.toml" | glob:"Cargo.lock"'
+
+# Exclude large generated directories
+auto-track = 'all() ~ glob:"node_modules/**" ~ glob:"target/**"'
+
+# Track everything except build artifacts and vendored deps
+auto-track = 'all() ~ glob:"dist/**" ~ glob:"vendor/**" ~ glob:".next/**"'
 ```
 
 ## Debug Settings

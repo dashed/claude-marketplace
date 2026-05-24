@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-05-24
+
+### Added
+- New references/github-workflow.md: GitHub/GitLab PR workflows (push patterns, review comments, fork setup, useful revsets)
+- Added `jj absorb`, `jj evolog`, `jj commit`, `jj parallelize`, `jj revert`, `jj simplify-parents` to commands.md
+- Added CLI revision options guide (-r/-s/-b/-f and -o/-A/-B/-t flag patterns) to commands.md
+- Added conflict marker styles (diff/snapshot/git) to configuration.md
+- Added multiple remotes / fork workflow configuration
+- Added mutable()/immutable() system explanation
+- Added more snapshot.auto-track examples
+
+### Changed
+- SKILL.md: Added absorb, evolog, commit to Essential Commands table
+- SKILL.md: Added `jj absorb` to "Editing a Previous Commit" section
+- SKILL.md: Added github-workflow.md link to Advanced Topics
+- Condensed bookmark gotchas section for brevity
+
 ## [1.3.0] - 2026-05-23
 
 ### Added
