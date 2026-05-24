@@ -185,6 +185,8 @@ jj describe                       # Edit working copy description
 jj describe <rev>                 # Edit specific revision
 jj describe -m "message"          # Set message directly
 jj describe --stdin               # Read from stdin
+jj describe -r 'trunk()..@'      # Describe all commits in branch (editor per commit)
+jj describe -r 'description("")' # Describe all commits with empty messages
 ```
 
 ### `jj edit`
