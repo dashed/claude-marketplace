@@ -220,7 +220,13 @@ jj squash [paths...]              # Only specific paths
 jj squash --from <A> --into <B>   # Between arbitrary commits
 jj squash -m "message"            # Set combined description
 jj squash -k                      # Keep source (don't abandon)
+
+# Gather changes to specific paths from a range of commits:
+jj squash vendor/ --from r1::rN   # All vendor/ changes from r1..rN into @
+jj squash -i --from r1::rN        # Interactive pick from range
 ```
+
+`--from` accepts full revset expressions (not just single commits). `--into` defaults to `@` when omitted.
 
 ### `jj split`
 
