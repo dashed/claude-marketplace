@@ -112,6 +112,9 @@ jj op restore <op-id>    # Restore to specific operation
 | `jj commit` | Finalize WC commit + start new | `git commit` |
 | `jj absorb` | Auto-squash into right commits | `git commit --fixup` + autosquash |
 | `jj evolog` | History of a single change | `git reflog` (per-commit) |
+| `jj next` / `jj prev` | Navigate commit graph | `git checkout HEAD~` |
+| `jj interdiff` | Compare diffs of two changes | - |
+| `jj fix` | Run formatters on commits | - |
 | `jj arrange` | TUI to reorder/abandon commits | `git rebase -i` (reorder) |
 | `jj bookmark advance` | Move bookmark forward | fast-forward branch |
 

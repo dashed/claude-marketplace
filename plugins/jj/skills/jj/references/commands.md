@@ -323,12 +323,98 @@ jj restore -i                     # Interactive mode
 Auto-squash working copy changes into the commits where those lines were last modified. Like `git commit --fixup` + `rebase --autosquash` in one step:
 
 ```bash
-jj absorb                         # Absorb all working copy changes
+jj absorb                         # Absorb all working copy changes into mutable()
 jj absorb [paths...]              # Absorb specific paths only
-jj absorb -r <revset>             # Target specific destination commits
+jj absorb --from <rev>            # Absorb from specific revision (default: @)
+jj absorb --into <revset>         # Target specific destination commits (default: mutable())
 ```
 
-If multiple commits in the stack modified the same line, absorb won't move that change — you decide manually how to squash it.
+**Behavior:**
+- Only considers ancestors of the source revision as destinations
+- If the destination for a hunk can't be determined unambiguously, the change stays in the source
+- Source is abandoned if all changes are absorbed AND it has no description
+- Review what happened with `jj op show -p`
+
+### `jj interdiff`
+
+Compare the *diffs* of two revisions — shows how one implementation differs from another:
+
+```bash
+jj interdiff --from <rev> --to <rev>   # Compare what two changes do differently
+jj interdiff --from push-xyz@origin --to push-xyz  # What changed since last push
+jj interdiff --from @- --to other -s   # Summary of implementation differences
+```
+
+Unlike `jj diff --from A --to B` (which compares file contents), interdiff compares *patches* — what each change adds/removes relative to its own parents. Use `jj evolog -p` to see the full evolution history instead.
+
+### `jj fix`
+
+Run configured formatting tools on files in mutable commits:
+
+```bash
+jj fix                            # Fix files in reachable(@, mutable())
+jj fix -s <rev>                   # Fix from specific revision + descendants
+jj fix [paths...]                 # Fix only specific paths
+jj fix --all-lines               # Format entire files, not just modified lines (0.41+)
+jj fix --include-unchanged-files  # Fix all files, not just changed ones
+```
+
+Default scope is `reachable(@, mutable())`. Descendants are also fixed to preserve formatting. Review with `jj op show -p`. Requires `[fix.tools.*]` configuration.
+
+### `jj bisect`
+
+Find a bad revision by running a command across history:
+
+```bash
+jj bisect run -s <good> -e <bad> -- <command>  # Find first bad revision
+```
+
+### `jj next` / `jj prev`
+
+Navigate the commit graph by moving the working copy forward/backward:
+
+```bash
+jj next                           # Move WC to child commit
+jj next 2                         # Move 2 commits forward
+jj next --edit                    # Edit the child instead of creating new WC on top
+jj prev                           # Move WC to parent commit
+jj prev 2                         # Move 2 commits backward
+jj prev --edit                    # Edit the parent directly
+```
+
+Without `--edit`: creates a new empty WC commit as sibling. With `--edit`: changes WC to the target commit directly (like `jj edit`).
+
+### `jj metaedit`
+
+Modify commit metadata without changing file content:
+
+```bash
+jj metaedit -m "new message"      # Update description (default: @)
+jj metaedit -r <revs> -m "msg"    # Update specific revisions
+jj metaedit --update-change-id    # Generate a new change ID
+```
+
+### `jj sign` / `jj unsign`
+
+Cryptographically sign or remove signatures from commits:
+
+```bash
+jj sign                           # Sign revision (uses revsets.sign default)
+jj sign -r <revs>                 # Sign specific revisions
+jj unsign -r <revs>               # Remove signature
+```
+
+### `jj sparse`
+
+Manage sparse checkouts — control which paths are materialized in the working copy:
+
+```bash
+jj sparse list                    # Show current sparse patterns
+jj sparse set --add src --remove tests  # Modify patterns
+jj sparse set --clear --add src   # Start fresh with only src/
+jj sparse reset                   # Include all files again
+jj sparse edit                    # Edit patterns in editor
+```
 
 ### `jj revert`
 
