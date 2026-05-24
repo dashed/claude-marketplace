@@ -289,6 +289,22 @@ Override `trunk()` for custom setups:
 'trunk()' = 'your-bookmark@your-remote'
 ```
 
+### Useful Custom Aliases
+
+```toml
+[revset-aliases]
+# All mutable ancestors + descendants of a revision (your "active" work context)
+'active(rev)' = '(ancestors(rev) | descendants(rev)) ~ immutable()'
+
+# Everything related to current work
+work = 'active(@)'
+
+# WIP commits by description pattern
+'wip' = 'description(regex:"^\\[(wip|WIP|todo|TODO)\\]|(wip|WIP|todo|TODO):?")'
+```
+
+Use per-repo config (`jj config edit --repo`) to keep project-specific aliases isolated.
+
 ## Common Patterns
 
 ### Working with Current Work
