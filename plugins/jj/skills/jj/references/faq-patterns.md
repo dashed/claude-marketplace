@@ -290,3 +290,29 @@ To see everything once without changing config:
 jj log -r '..'        # all visible commits
 jj log -r 'all()'     # literally everything, including hidden
 ```
+
+## Megamerge Pattern (Parallel Integration)
+
+Work on multiple features simultaneously while continuously verifying they integrate:
+
+```bash
+# Create parallel work streams off main
+jj new main -m "feature A"
+# ... work on feature A commits (a1, a2) ...
+jj new main -m "feature B"
+# ... work on feature B commits (b1, b2) ...
+
+# Create integration merge combining all streams
+jj new a2 b2 -m "integration: verify A + B together"
+jj new                            # Working commit on top of merge
+
+# Work here - build/test with everything combined
+# Route changes back to the right branch:
+jj squash --into a2 -k            # Move changes to feature A, keep WC
+jj squash -i --into b2            # Interactively pick changes for feature B
+
+# Or let jj figure it out automatically:
+jj absorb                         # Routes each hunk to correct ancestor
+```
+
+The `-k`/`--keep-emptied` flag preserves the integration commit even after squashing content out. This pattern works because jj records conflicts without blocking operations.
