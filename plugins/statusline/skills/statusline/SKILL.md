@@ -76,9 +76,9 @@ The script receives JSON on stdin with these fields:
 
 Fields marked may be absent or null - use `jq` fallbacks like `// 0` or `// empty`.
 
-## Reference Script (Git + jj + Context)
+## Reference Script (Git + jj — Dual VCS)
 
-Full-featured script with VCS detection (jj priority over git) and context usage:
+Full-featured script showing both jj and git status independently (both appear for colocated repos):
 
 ```bash
 #!/bin/bash
@@ -87,15 +87,15 @@ input=$(cat)
 model_name=$(echo "$input" | jq -r '.model.display_name')
 current_dir=$(echo "$input" | jq -r '.workspace.current_dir')
 
-# Get VCS info - try jj first (handles colocated repos), fall back to git
+# Build VCS info — jj and git are checked independently (both can show for colocated repos)
 vcs_info=""
 
+# jj repository check
 if jj root -R "$current_dir" --ignore-working-copy >/dev/null 2>&1; then
-    # jj repository detected
-    jj_data=$(jj --no-pager --ignore-working-copy -R "$current_dir" log --no-graph -r @ -T 'if(local_bookmarks, local_bookmarks.join(","), "-") ++ "\t" ++ change_id.short(8) ++ "\t" ++ if(conflict, "conflict", "")' 2>/dev/null)
+    jj_data=$(jj --no-pager --ignore-working-copy -R "$current_dir" log --no-graph -r @ -T 'if(local_bookmarks, local_bookmarks.join(","), "-") ++ "\t" ++ change_id.short(8) ++ "\t" ++ if(conflict, "conflict", "") ++ "\t" ++ commit_id' 2>/dev/null)
 
     if [ -n "$jj_data" ]; then
-        IFS=$'\t' read -r bookmarks change_id conflict_status <<< "$jj_data"
+        IFS=$'\t' read -r bookmarks change_id conflict_status commit_hash <<< "$jj_data"
         if [ "$bookmarks" = "-" ]; then bookmarks=""; fi
 
         modified_count=$(jj --no-pager --ignore-working-copy -R "$current_dir" diff --summary 2>/dev/null | wc -l | tr -d ' ')
@@ -108,6 +108,22 @@ if jj root -R "$current_dir" --ignore-working-copy >/dev/null 2>&1; then
             status_parts+=("${modified_count} modified")
         fi
 
+        # Ahead/behind remote tracking (works in colocated repos via git)
+        if [ -n "$bookmarks" ] && [ -n "$commit_hash" ]; then
+            first_bookmark=$(echo "$bookmarks" | cut -d',' -f1)
+            if git -C "$current_dir" rev-parse --verify "origin/$first_bookmark" >/dev/null 2>&1; then
+                remote_ref=$(git -C "$current_dir" rev-parse "origin/$first_bookmark" 2>/dev/null)
+                ahead=$(git -C "$current_dir" rev-list --count "$remote_ref..$commit_hash" 2>/dev/null)
+                behind=$(git -C "$current_dir" rev-list --count "$commit_hash..$remote_ref" 2>/dev/null)
+                if [ "$ahead" -gt 0 ]; then
+                    status_parts+=("${ahead} ahead")
+                fi
+                if [ "$behind" -gt 0 ]; then
+                    status_parts+=("${behind} behind")
+                fi
+            fi
+        fi
+
         if [ -n "$bookmarks" ]; then
             display="${bookmarks} @ ${change_id}"
         else
@@ -117,12 +133,14 @@ if jj root -R "$current_dir" --ignore-working-copy >/dev/null 2>&1; then
         if [ ${#status_parts[@]} -eq 0 ]; then
             vcs_info=" [jj ${display}]"
         else
-            status=$(IFS=", "; echo "${status_parts[*]}")
+            status=$(printf '%s, ' "${status_parts[@]}"); status=${status%, }
             vcs_info=" [jj ${display}: ${status}]"
         fi
     fi
+fi
 
-elif git -C "$current_dir" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+# git repository check (independent — shows alongside jj for colocated repos)
+if git -C "$current_dir" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     branch=$(git -C "$current_dir" branch --show-current 2>/dev/null)
     if [ -n "$branch" ]; then
         status_parts=()
@@ -144,21 +162,21 @@ elif git -C "$current_dir" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
 
         upstream=$(git -C "$current_dir" rev-parse --abbrev-ref @{upstream} 2>/dev/null)
         if [ -n "$upstream" ]; then
-            ahead=$(git -C "$current_dir" rev-list --count HEAD..@{upstream} 2>/dev/null)
-            behind=$(git -C "$current_dir" rev-list --count @{upstream}..HEAD 2>/dev/null)
+            ahead=$(git -C "$current_dir" rev-list --count @{upstream}..HEAD 2>/dev/null)
+            behind=$(git -C "$current_dir" rev-list --count HEAD..@{upstream} 2>/dev/null)
             if [ "$ahead" -gt 0 ]; then
-                status_parts+=("${ahead} behind")
+                status_parts+=("${ahead} ahead")
             fi
             if [ "$behind" -gt 0 ]; then
-                status_parts+=("${behind} ahead")
+                status_parts+=("${behind} behind")
             fi
         fi
 
         if [ ${#status_parts[@]} -eq 0 ]; then
-            vcs_info=" [${branch}]"
+            vcs_info="${vcs_info} [git ${branch}]"
         else
-            status=$(IFS=", "; echo "${status_parts[*]}")
-            vcs_info=" [${branch}: ${status}]"
+            status=$(printf '%s, ' "${status_parts[@]}"); status=${status%, }
+            vcs_info="${vcs_info} [git ${branch}: ${status}]"
         fi
     fi
 fi
@@ -169,20 +187,25 @@ echo "${model_name} | ${current_dir}${vcs_info}"
 ## Output Examples
 
 ```
-Opus 4.6 | /path/to/project [jj feature @ znnuytsz: 1 modified]
+# Colocated jj+git repo (both shown)
+Opus 4.6 | /path/to/project [jj feature @ znnuytsz: 1 modified, 2 ahead] [git feature: 1 untracked]
+# jj-only (non-colocated)
 Opus 4.6 | /path/to/project [jj @ uoylmlmx]
-Opus 4.6 | /path/to/project [jj main @ kntqzsqt: conflict, 3 modified]
-Opus 4.6 | /path/to/project [master: 2 staged, 1 modified]
-Opus 4.6 | /path/to/project [main: 1 ahead]
+# jj with conflict and remote tracking
+Opus 4.6 | /path/to/project [jj main @ kntqzsqt: conflict, 3 modified, 1 behind]
+# git-only repo
+Opus 4.6 | /path/to/project [git master: 2 staged, 1 modified]
+# No VCS
 Opus 4.6 | /tmp
 ```
 
 ## Design Notes
 
-- **jj priority over git**: Colocated repos have both `.jj/` and `.git/`; jj users prefer jj info
+- **Dual VCS**: Both jj and git blocks run independently; colocated repos show both
+- **jj ahead/behind**: Uses `commit_id` (renders as full git commit hash) then `git rev-list --count` against the first bookmark's remote tracking ref
 - **`--ignore-working-copy`**: Prevents expensive snapshot operations in the statusline
 - **`--no-pager`**: Ensures jj doesn't page when running non-interactively
-- **Performance**: 2 subprocess calls for jj repos, 3-5 for git; acceptable for statusline frequency
+- **Performance**: 2-3 subprocess calls for jj, 3-5 for git; acceptable for statusline frequency
 
 ## Multi-Line Example
 
