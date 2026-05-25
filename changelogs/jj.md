@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-05-25
+
+### Added
+- Megamerge pattern for parallel integration testing with jj absorb routing (faq-patterns.md)
+- `all:` prefix pattern and WIP batch rebase recipe (revsets.md)
+- Auto-rebase opt-out pattern with duplicate + rebase workaround (conflicts.md)
+- `squash --from` with revset ranges documentation (commands.md)
+- `describe -r` with revsets for batch descriptions (commands.md)
+- `active()`/`wip` custom revset alias examples (revsets.md)
+- Per-repo config isolation tip (revsets.md)
+
 ## [1.5.0] - 2026-05-24
 
 ### Added

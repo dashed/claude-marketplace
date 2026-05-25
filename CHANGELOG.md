@@ -7,19 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-05-25
+
 ### Added
 - statusline skill: Configure Claude Code status line with VCS-aware scripts (v1.0.0)
-- statusline skill: Reference script with git + jj support (jj priority for colocated repos)
-- statusline skill: Complete JSON field documentation from official Claude Code docs
-
-### Changed
+- statusline skill: Reference script with git + jj support, complete JSON field documentation
+- statusline skill: Dual VCS mode showing both jj and git status independently for colocated repos (v1.1.0)
+- statusline skill: Ahead/behind remote tracking for jj bookmarks via commit_id
 - jj skill: Add references/github-workflow.md for GitHub/GitLab PR workflows and fork patterns
-- jj skill: Add references/faq-patterns.md with 14 common patterns from jj FAQ
-- jj skill: Add references/conflicts.md with conflict resolution deep dive
+- jj skill: Add references/faq-patterns.md with 14 common patterns (private commits, lost commits, megamerge, etc.)
+- jj skill: Add references/conflicts.md with conflict resolution deep dive (marker styles, workflows, multi-sided)
 - jj skill: Add missing commands (absorb, evolog, commit, parallelize, revert, simplify-parents, interdiff, fix, bisect, next/prev, sparse, sign, metaedit)
 - jj skill: Add CLI revision options guide (-r/-s/-b/-f, -o/-A/-B/-t patterns)
-- jj skill: Add conflict marker styles and multiple remotes to configuration reference
+- jj skill: Add megamerge pattern for parallel integration with jj absorb routing
+- jj skill: Add `all:` prefix pattern and WIP batch rebase recipe to revsets
+- jj skill: Add auto-rebase opt-out pattern to conflicts reference
+- jj skill: Add `squash --from` with revset ranges and `describe -r` with revsets to commands
+- jj skill: Add `active()`/`wip` custom alias examples and per-repo config isolation to revsets
+
+### Changed
+- jj skill: Bump to v1.6.0
 - jj skill: Enhance commands.md with missing flags for squash, split, log, show, resolve, duplicate
+- jj skill: Add conflict marker styles and multiple remotes to configuration reference
+- statusline skill: Change from jj-priority if/elif to independent dual-VCS if/if blocks
+- statusline skill: Fix comma-join bug in status formatting (IFS trick to printf)
+- statusline skill: Fix git ahead/behind labels (were swapped)
+- Update version bump checklist in CLAUDE.md with current examples
 
 ## [0.11.0] - 2026-05-23
 
@@ -334,7 +347,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.11.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.12.0...HEAD
+[0.12.0]: https://github.com/dashed/claude-marketplace/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/dashed/claude-marketplace/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/dashed/claude-marketplace/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/dashed/claude-marketplace/compare/v0.8.0...v0.9.0
