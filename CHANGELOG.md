@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- hledger skill: Plain-text double-entry accounting with hledger (v1.0.0)
+- hledger skill: Comprehensive SKILL.md with journal basics, commands, workflows, querying, multi-currency
+- hledger skill: 6 reference files (commands, journal-format, queries, csv-import, reports, budgeting)
+
 ## [0.12.0] - 2026-05-25
 
 ### Added
