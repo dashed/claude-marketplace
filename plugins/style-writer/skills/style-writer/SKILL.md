@@ -49,12 +49,23 @@ Apply the loaded style to the user's content request:
 3. For long pieces: write in chunks, periodically re-read the voice card to prevent drift
 4. Incorporate style-appropriate transitions, sentence patterns, and rhetorical moves
 
+### Fiction: Narrative Authenticity
+
+When writing fiction or creative writing, also load [references/narrative-authenticity.md](references/narrative-authenticity.md) and:
+
+1. **Pre-write:** Review the pre-writing checklist. Plan structural choices (timeline, subplots, character moral complexity) before drafting.
+2. **During writing:** Vary scene types and emotional intensity. Resist the pull toward clean single-track plots, explicit thematic statements, and embodied-metaphor-only emotion.
+3. **Post-write:** Run the post-writing checklist. Audit for AI narrative defaults — especially Claude-specific fingerprints (flat event escalation, epilogue endings, low event diversity).
+
+If the style guide includes narrative construction notes (from fiction extraction), those override the general guidance in narrative-authenticity.md. The style guide captures THIS author's narrative choices; the authenticity guide captures general AI defaults to avoid.
+
 ### Task-Specific Approach
 
 | Task | Approach |
 |------|----------|
 | Short piece (email, paragraph) | Load voice card + do/don't. Write in one pass. |
 | Long piece (essay, chapter) | Load full style guide. Write in sections, re-checking voice card between sections. |
+| Fiction piece | Load full style guide + narrative-authenticity.md. Plan structure before drafting. Post-audit for AI tells. |
 | Editing existing text | Load voice card + do/don't. Identify violations, rewrite to match. |
 | Style comparison | Load rubric. Score original text, identify gaps, suggest rewrites. |
 
@@ -65,7 +76,8 @@ Triggered when user asks "evaluate", "score", or "how well does this match?"
 1. Load `evals/style-rubric.md`
 2. Score the output on each of the 5 rubric dimensions (1–5)
 3. Report total score with per-dimension breakdown
-4. Suggest 2–3 specific improvements
+4. **For fiction:** Also score on 5 narrative construction dimensions (structural diversity, thematic subtlety, emotional range, character agency, event/temporal complexity). See the Narrative Construction Evaluation section in [references/evaluation-guide.md](references/evaluation-guide.md).
+5. Suggest 2–3 specific improvements
 
 See [references/evaluation-guide.md](references/evaluation-guide.md) for detailed scoring guidance and common pitfalls.
 
@@ -80,3 +92,4 @@ See [references/evaluation-guide.md](references/evaluation-guide.md) for detaile
 ## References
 
 - [references/evaluation-guide.md](references/evaluation-guide.md) — Detailed self-scoring guide with common pitfalls and improvement strategies
+- [references/narrative-authenticity.md](references/narrative-authenticity.md) — AI narrative debiasing guide with Claude-specific fingerprints (fiction only)

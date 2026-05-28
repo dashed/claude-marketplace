@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - hledger skill: Plain-text double-entry accounting with hledger (v1.0.0)
 - hledger skill: Comprehensive SKILL.md with journal basics, commands, workflows, querying, multi-currency
 - hledger skill: 6 reference files (commands, journal-format, queries, csv-import, reports, budgeting)
+- style-extractor skill: Narrative construction layer for fiction with 10 structural dimensions
+- style-extractor skill: references/narrative-dimensions.md with analysis guide and AI defaults table
+- style-writer skill: Narrative authenticity guide with AI debiasing checklists and Claude-specific fingerprints
+- style-writer skill: references/narrative-authenticity.md with 30 core features from StoryScope research
+- style-writer skill: Narrative construction evaluation framework (5 dimensions, 1-5 scoring)
+
+### Changed
+- style-extractor skill: SKILL.md distinguishes surface style from narrative construction for fiction sources
+- style-writer skill: SKILL.md adds fiction-specific workflow with narrative authenticity pre/post checks
+- style-writer skill: evaluation-guide.md extended with narrative construction scoring and pitfalls
 
 ## [0.12.0] - 2026-05-25
 

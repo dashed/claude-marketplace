@@ -188,6 +188,54 @@ When self-evaluation reveals gaps, follow this cycle:
 
 **When to stop:** A total score of 16+ (good match) is a reasonable target for most tasks. Push for 21+ only when the user explicitly asks for a very close match or when the piece is high-stakes.
 
+## Narrative Construction Evaluation (Fiction Only)
+
+When evaluating fiction or creative writing, add a **narrative authenticity audit** alongside the standard rubric scoring. This evaluates structural choices that are orthogonal to surface style.
+
+See [narrative-authenticity.md](narrative-authenticity.md) for the full AI-debiasing guide. The evaluation below distills it into a scoring framework.
+
+### Narrative Dimensions (Score 1–5 each)
+
+| Dimension | 1 (AI Default) | 3 (Mixed) | 5 (Distinctively Human) |
+|-----------|----------------|-----------|------------------------|
+| **Structural Diversity** | Single-track plot, linear timeline, no subplots | Some non-linearity or subplots, but structure is mostly clean | Multi-threaded plot, nonlinear time, subplots that contrast/complicate the main arc |
+| **Thematic Subtlety** | Theme stated explicitly by narrator or character, moral delivered at ending | Theme implied but heavy-handed, some showing-not-telling | Theme emerges from events alone, reader does the interpretive work, no moral closure |
+| **Emotional Range** | All emotion conveyed through embodied metaphors and sensory density | Mix of embodied and explicit, some environmental mirroring | Varied modes — explicit labels, behavioral cues, selective sensory detail, unnarrated gaps |
+| **Character Agency & Morality** | Protagonist clearly sympathetic, resolution through protagonist's epiphany | Some moral ambiguity, mixed agency | Morally ambivalent protagonist, resolution through external forces or non-resolution, no authorial judgment |
+| **Event & Temporal Complexity** | Flat escalation, uniform scene types, epilogue ending, no flashbacks | Some variation in intensity and scene type, mostly linear with occasional flashback | Varied escalation, diverse scene types, nonlinear structure, ending resists tidy closure |
+
+### Narrative Score Report
+
+Add this section to the standard style evaluation when the piece is fiction:
+
+```
+### Narrative Construction: XX/25
+
+| Dimension | Score | Key Evidence |
+|-----------|-------|-------------|
+| Structural Diversity   | X/5 | Brief justification |
+| Thematic Subtlety      | X/5 | Brief justification |
+| Emotional Range        | X/5 | Brief justification |
+| Character Agency       | X/5 | Brief justification |
+| Event/Temporal Complexity | X/5 | Brief justification |
+
+### Narrative Authenticity Notes
+[Flag any detected AI narrative defaults. Reference specific passages.]
+```
+
+### Common Narrative Pitfalls
+
+These are the structural equivalents of the surface-style pitfalls above. They are harder to fix because they require rethinking story architecture, not just revising sentences.
+
+| Pitfall | Fix |
+|---------|-----|
+| Every emotion rendered as a physical sensation — no character ever simply "feels sad" | Replace 30–50% of embodied metaphors with explicit labels or behavioral cues. Vary the mode. |
+| Story resolves when the protagonist "understands" or "accepts" — internal epiphany as resolution | Try resolving through external action, another character's choice, or non-resolution. |
+| The narrator explains what the story means in the final paragraph | Delete the last paragraph. If the story is weaker without it, the problem is earlier — the events aren't carrying the theme. |
+| All scenes are the same type (usually characters talking about feelings) | Alternate scene types: action, dialogue, description, reflection, flashback, letter, dream. |
+| Timeline is strictly linear from beginning to end | Move one scene out of chronological order and see if the story improves. Often it does. |
+| The protagonist is clearly "the good one" | Give the protagonist a choice that the reader can't easily defend. Don't resolve the moral tension. |
+
 ## Evaluating Someone Else's Writing
 
 The same process works when evaluating text the user provides (not text you wrote):

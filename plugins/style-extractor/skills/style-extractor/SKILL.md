@@ -77,6 +77,27 @@ Focus on **patterns, not content**. A style dimension describes HOW the author w
 
 For detailed guidance on analyzing each dimension, see [references/style-dimensions.md](references/style-dimensions.md).
 
+### Phase 2b: Narrative Construction (Fiction Only)
+
+**When the source text is fiction or narrative-driven writing**, analyze **10 narrative dimensions** in addition to the 17 surface style dimensions. Surface style captures how sentences read; narrative construction captures how stories are built. These are orthogonal layers — capturing both produces a significantly more complete style profile.
+
+| # | Dimension | What to look for |
+|---|-----------|-----------------|
+| 1 | Plot architecture | Single-track vs multi-subplot, causal tightness, resolution pattern |
+| 2 | Temporal structure | Linear vs nonlinear, flashbacks, time jumps, anachrony |
+| 3 | Character introduction | In-dialogue, in-action, external description, deferred naming |
+| 4 | Emotional conveyance | Explicit labels vs embodied metaphors vs behavioral cues |
+| 5 | Thematic handling | Explicit moralizing vs implicit, narrator commentary, thematic unity |
+| 6 | Revelation & information | What's withheld, pacing, recontextualization depth, foreshadowing |
+| 7 | Reader engagement | Fourth-wall status, direct address, audience positioning |
+| 8 | Intertextual strategy | Named vs allusive references, pastiche, self-referential gestures |
+| 9 | Moral framing & agency | Protagonist morality, resolution agency, authorial judgment |
+| 10 | Event escalation | Intensity arc, event-type diversity, ending pattern |
+
+Pay special attention to where the author's choices **diverge from AI narrative defaults** (e.g., nonlinear time, morally ambivalent protagonists, implicit themes). These divergences are the most valuable and hardest-to-replicate aspects of the style.
+
+For detailed guidance, see [references/narrative-dimensions.md](references/narrative-dimensions.md).
+
 ### Phase 3: Synthesis
 
 Generate four deliverables in `writing-styles/<style-name>/`:
@@ -89,6 +110,8 @@ Generate four deliverables in `writing-styles/<style-name>/`:
 | Style Rubric | `evals/style-rubric.md` | 5 dimensions | 1–5 scoring scale for evaluating style match |
 
 **Every deliverable MUST include 2–3 examples** of neutral text rewritten in the extracted style. These examples demonstrate the style applied to content unrelated to the source.
+
+**For fiction sources:** Each deliverable should include a "Narrative Construction" section alongside the surface style analysis. The voice card should list the author's distinctive narrative patterns (e.g., "nonlinear time, morally ambivalent protagonists, implicit themes"). The do/don't list should include narrative-level items (e.g., "Do: use subplots that contrast the main arc" / "Don't: resolve through protagonist epiphany"). The rubric should include at least one narrative construction dimension.
 
 Use `writing-styles/_template/` as the structural starting point for each file.
 
@@ -141,5 +164,6 @@ Use kebab-case: `<author-or-title>`
 
 For detailed analysis guidance and deliverable templates:
 
-- [references/style-dimensions.md](references/style-dimensions.md) — Detailed analysis guide for each of the 17 dimensions with examples and scoring criteria
+- [references/style-dimensions.md](references/style-dimensions.md) — Detailed analysis guide for each of the 17 surface style dimensions
+- [references/narrative-dimensions.md](references/narrative-dimensions.md) — Analysis guide for 10 narrative construction dimensions (fiction/creative writing only)
 - [references/deliverable-templates.md](references/deliverable-templates.md) — Templates for all four deliverables with embedded guidance and worked examples
