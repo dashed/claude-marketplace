@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- git skill: references/version-features.md — consolidated "feature → minimum git version" lookup (git skill v1.1.0)
+
+### Changed
+- git skill: Add inline git-version-availability annotations ("(git X.Y+)") across SKILL.md and all reference files, with introduced/default-changed/removed notes
+
 ## [0.13.0] - 2026-05-29
 
 ### Added

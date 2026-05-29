@@ -38,7 +38,7 @@ git log --first-parent             # follow only first parents (clean topic view
 - `--graph` draws the ASCII commit graph (implies topo-order; can't combine with `--no-walk`).
 - `--decorate[=short|full|auto|no]` shows ref names; `--oneline` = `--pretty=oneline --abbrev-commit`.
 - `--all` / `--branches` / `--tags` / `--remotes` widen the starting refs; `--not <ref>` excludes.
-- Merge commits show **no diff** by default with `-p`; add `-m`, `-c`, `--cc`, or `--remerge-diff` to see merge diffs (or `--first-parent`, which shows first-parent diffs).
+- Merge commits show **no diff** by default with `-p`; add `-m`, `-c`, `--cc`, or `--remerge-diff` (git 2.36+) to see merge diffs (or `--first-parent`, which shows first-parent diffs).
 
 ## Pretty formats & placeholders
 
@@ -48,7 +48,7 @@ git log --pretty=short|medium|full|fuller|reference|raw|email
 git log --pretty=format:'%h %an %ar  %s'   # custom (see table)
 ```
 
-Built-in `--pretty=reference` → `<abbrev-hash> (<subject>, <short-date>)` — exactly the format to cite a commit in a message.
+Built-in `--pretty=reference` (git 2.25+) → `<abbrev-hash> (<subject>, <short-date>)` — exactly the format to cite a commit in a message.
 
 **Most useful `format:` placeholders:**
 
@@ -65,7 +65,7 @@ Built-in `--pretty=reference` → `<abbrev-hash> (<subject>, <short-date>)` — 
 
 Use `%aN`/`%aE` (capitalized) for `.mailmap`-canonicalized name/email. Add `+`/`-`/` ` after `%` to conditionally insert a leading newline/strip newlines/space when the field is (non-)empty.
 
-**Date formats** (`--date=`): `relative`, `short`, `iso` (`iso8601`), `iso-strict`, `rfc`, `human`, `unix`, `raw`, `format:%Y-%m-%d %H:%M` (strftime), and `*-local` variants. `format.pretty` config sets the default `--pretty`.
+**Date formats** (`--date=`): `relative`, `short`, `iso` (`iso8601`), `iso-strict`, `rfc`, `human` (git 2.21+), `unix`, `raw`, `format:%Y-%m-%d %H:%M` (strftime), and `*-local` variants. `format.pretty` config sets the default `--pretty`.
 
 ```bash
 git log --pretty=format:'%C(auto)%h%d %s %C(dim)(%an, %ar)' --graph
@@ -193,7 +193,7 @@ Compare endpoints: working tree, index, commits, blobs, or files on disk.
 | `git diff <a> <b> -- <path>` | limited to `<path>` |
 | `git diff --no-index <p1> <p2>` | two files/dirs **outside** git |
 | `git diff <blob> <blob>` | raw blob contents |
-| `git diff --merge-base A [B]` | use merge-base of A and HEAD (or A,B) as the "before" |
+| `git diff --merge-base A [B]` | use merge-base of A and HEAD (or A,B) as the "before" (git 2.30+) |
 
 **Output modes:**
 
@@ -265,7 +265,7 @@ git blame -e file.c               # show emails; -s suppress author+date; -n ori
 | `-w` | Ignore whitespace when matching lines to their origin |
 | `-M[<n>]` | Detect lines **moved/copied within the same file** (default threshold 20 chars) |
 | `-C[<n>]` | Also detect lines **moved/copied from other files changed in the same commit**. `-C -C` also checks the commit that *created* the file; `-C -C -C` checks **any** commit (slowest, most thorough) |
-| `--ignore-rev <rev>` | Blame as if `<rev>` never happened — skip a bulk-reformat commit |
+| `--ignore-rev <rev>` | Blame as if `<rev>` never happened — skip a bulk-reformat commit (git 2.23+) |
 | `--ignore-revs-file <file>` | Skip every commit listed in the file (format like `fsck.skipList`); set `blame.ignoreRevsFile=.git-blame-ignore-revs` to apply automatically |
 | `--color-by-age` / `--color-lines` | Color by line age / by repeated commit |
 | `--reverse <start>..<end>` | Walk **forward**: show the last commit in which each line still existed (find when a line was deleted) |
@@ -290,11 +290,11 @@ git shortlog -sn --group=trailer:Co-authored-by   # tally co-authors
 git shortlog -sn --group=trailer:Reviewed-by      # tally reviewers
 ```
 
-`-s`/`--summary` = counts only; `-n`/`--numbered` = sort by count; `-e`/`--email` = show emails. `--group=` can be `author` (default), `committer` (or `-c`), `trailer:<field>`, or `format:<fmt>`. Accepts any `git log` revision range and pathspec.
+`-s`/`--summary` = counts only; `-n`/`--numbered` = sort by count; `-e`/`--email` = show emails. `--group=` (git 2.29+) can be `author` (default), `committer` (or `-c`), `trailer:<field>`, or `format:<fmt>`. Accepts any `git log` revision range and pathspec.
 
 ## git range-diff
 
-Compare **two versions of a patch series** (e.g. before/after a rebase or a re-roll) — shows which commits were added, dropped, reordered, or modified, with a diff-of-diffs.
+Compare **two versions of a patch series** (e.g. before/after a rebase or a re-roll) — shows which commits were added, dropped, reordered, or modified, with a diff-of-diffs (`git range-diff`: git 2.19+).
 
 ```bash
 git range-diff @{u} @{1} @       # after a rebase: old upstream..old-HEAD vs ..new-HEAD

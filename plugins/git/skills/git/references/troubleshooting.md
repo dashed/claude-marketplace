@@ -96,7 +96,7 @@ git switch main         # or a named one
 **If you already left and lost commits**, they're in the reflog — recover them via
 [recovery.md](recovery.md). Detached HEAD is normal during `git bisect` and inside
 submodules (see [advanced-features.md](advanced-features.md)); just branch before
-committing.
+committing. (`git switch`/`git restore` are git 2.23+; on older git use `git checkout`.)
 
 ---
 
@@ -202,7 +202,9 @@ To add an exception for this directory, call:
 **Why:** The repository's files are owned by a **different user** than the one running
 git. Git refuses to read such a repo's config (let alone run its hooks) to prevent a
 malicious checkout from hijacking your session. Common in CI runners, Docker
-containers (host bind-mounts), and when a repo was created with `sudo`.
+containers (host bind-mounts), and when a repo was created with `sudo`. (This
+dubious-ownership check and `safe.directory` arrived as a security fix in git 2.35.2,
+backported to 2.30.3 / 2.31.2 / 2.32.1 / 2.33.2 / 2.34.2 — CVE-2022-24765.)
 
 **Quick fix:**
 ```bash
@@ -216,7 +218,8 @@ git config --global --add safe.directory /path/to/repo
 git config --global --add safe.directory '*'    # trusts ALL repos
 ```
 `safe.directory` is honored only in protected (global/system) config, never from a
-repo's own config. `<dir>/*` trusts everything under a directory. See
+repo's own config. `<dir>/*` trusts everything under a directory. The `*` wildcard
+(trust everything) is git 2.36+. See
 [config-attributes-hooks.md](config-attributes-hooks.md) for config scopes.
 
 ---

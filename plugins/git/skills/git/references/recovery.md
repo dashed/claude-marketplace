@@ -150,7 +150,7 @@ For *how to perform* a rebase or amend (not undo one), and for recovering from a
 
 Modern, single-purpose replacements for `git checkout`'s overloaded behavior.
 
-**`git restore`** — restore file *contents* (working tree and/or index):
+**`git restore`** (git 2.23+) — restore file *contents* (working tree and/or index):
 
 ```bash
 git restore --staged <file>            # unstage (index ← HEAD); == git reset <file>
@@ -164,7 +164,7 @@ git restore --source=main~2 --staged --worktree .   # wholesale revert paths to 
 
 During a conflict, restore can re-create or re-stage conflict states: `--ours`/`--theirs` (pick a side from the index), `--merge` (recreate conflict markers), `--conflict=diff3|zdiff3`.
 
-**`git switch`** — move between branches / detach (recovery-relevant flags):
+**`git switch`** (git 2.23+) — move between branches / detach (recovery-relevant flags):
 
 ```bash
 git switch -                       # go back to the previously checked-out branch (== @{-1})

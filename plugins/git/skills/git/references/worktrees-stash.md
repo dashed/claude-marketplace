@@ -59,7 +59,7 @@ Default convenience behavior (no `-b`/`--detach`/`<commit-ish>`):
 | `-b <new-branch>` | Create `<new-branch>` at `<commit-ish>` (default `HEAD`) and check it out. Refuses if it exists |
 | `-B <new-branch>` | Like `-b` but **resets** an existing branch to `<commit-ish>` |
 | `-d` / `--detach` | Check out with a **detached `HEAD`** (throwaway/experiments — no branch) |
-| `--orphan` | New worktree + index empty, on a new unborn branch |
+| `--orphan` | New worktree + index empty, on a new unborn branch (git 2.42+) |
 | `--checkout` / `--no-checkout` | `--no-checkout` skips populating files (e.g. to configure sparse-checkout first) |
 | `--track` / `--no-track` | Mark/skip upstream when the new branch starts from a branch (auto for remote-tracking starts) → see [refspecs-remotes.md](refspecs-remotes.md) |
 | `--guess-remote` | With no `<commit-ish>`: if a single remote has a same-named branch, base on it and set upstream (config `worktree.guessRemote`) |
@@ -81,15 +81,15 @@ git worktree add --detach ../test v2.1.0
 ```bash
 git worktree list                 # human-readable
 git worktree list --porcelain -z  # stable, script-parseable (NUL-terminated)
-git worktree list -v              # verbose: shows lock reasons / prunable cause
+git worktree list -v              # verbose: shows lock reasons / prunable cause (-v & prunable: git 2.31+)
 ```
 
-Each entry shows path, checked-out `HEAD` (abbrev SHA), and branch — or `(detached HEAD)`, `(bare)`. Annotations: `locked` and `prunable`. `--porcelain` emits one `label value` per line, blank line between records (`worktree`, `HEAD`, `branch`/`detached`, `bare`, `locked`, `prunable`); combine with `-z` so paths containing newlines parse correctly.
+Each entry shows path, checked-out `HEAD` (abbrev SHA), and branch — or `(detached HEAD)`, `(bare)`. Annotations: `locked` and `prunable`. `--porcelain` emits one `label value` per line, blank line between records (`worktree`, `HEAD`, `branch`/`detached`, `bare`, `locked`, `prunable`); combine with `-z` (git 2.36+) so paths containing newlines parse correctly.
 
 ### worktree remove
 
 ```bash
-git worktree remove <worktree>
+git worktree remove <worktree>   # git 2.17+
 ```
 
 Removes the worktree directory *and* its admin files. **Refuses** if the worktree is unclean (untracked files or modifications) or has submodules — override with `-f`/`--force`. For a *locked* worktree, `--force` **twice**. The main worktree cannot be removed. A worktree is identifiable by a unique trailing path component (e.g. `ghi` for `/abc/def/ghi`), not just the full path.
@@ -107,7 +107,7 @@ Cleans up `$GIT_DIR/worktrees/<id>` entries whose working tree directory is **mi
 ### worktree move
 
 ```bash
-git worktree move <worktree> <new-path>
+git worktree move <worktree> <new-path>   # git 2.17+
 ```
 
 Relocates a worktree and fixes its admin pointers. **Cannot** move the main worktree, or any worktree containing submodules. (Moved the main worktree manually? Run `git worktree repair` from it.) `--force` needed for some locked/occupied-destination cases.
@@ -124,13 +124,13 @@ Locking prevents a worktree from being auto-pruned, moved, or deleted — for wo
 ### worktree repair
 
 ```bash
-git worktree repair [<path>...]
+git worktree repair [<path>...]   # git 2.29+
 ```
 
 Fixes the two-way links when paths change *outside* git's knowledge:
 - Moved the **main** repo/bare dir → run `repair` in it to reconnect linked worktrees.
 - Moved a **linked** worktree manually → run `repair` inside it (or from any worktree, passing the new path) to reconnect it to the main repo.
-- `--relative-paths` rewrites links relative (config `worktree.useRelativePaths`), handy for portable setups.
+- `--relative-paths` (git 2.48+) rewrites links relative (config `worktree.useRelativePaths`), handy for portable setups.
 
 ### Shared vs per-worktree refs & config
 
@@ -150,7 +150,7 @@ Because `refs/stash` is **shared**, `git stash` entries are visible from *every*
 **Per-worktree config:** enable the extension, then write with `--worktree`:
 
 ```bash
-git config extensions.worktreeConfig true
+git config extensions.worktreeConfig true   # git 2.20+
 git config --worktree core.sparseCheckout true
 ```
 
@@ -169,7 +169,7 @@ With this on, `core.bare`/`core.worktree`/`core.sparseCheckout` should live in e
 
 ### The model
 
-`git stash` records your dirty working tree **and** index, then resets them to `HEAD`, giving you a clean tree. Stashes form a stack: the newest is `refs/stash`, older ones live in that ref's **reflog** as `stash@{1}`, `stash@{2}`, … A bare integer `<n>` is equivalent to `stash@{<n>}` (so `git stash show 1` shows `stash@{1}`), and reflog time syntax is valid (`stash@{2.hours.ago}`). Bare `git stash` == `git stash push`.
+`git stash` records your dirty working tree **and** index, then resets them to `HEAD`, giving you a clean tree. Stashes form a stack: the newest is `refs/stash`, older ones live in that ref's **reflog** as `stash@{1}`, `stash@{2}`, … A bare integer `<n>` is equivalent to `stash@{<n>}` (so `git stash show 1` shows `stash@{1}`), and reflog time syntax is valid (`stash@{2.hours.ago}`). Bare `git stash` == `git stash push` (git 2.13+).
 
 ### stash push (stashing)
 
@@ -182,7 +182,7 @@ git stash [push] [options] [-- <pathspec>...]
 | `-m <msg>` / `--message <msg>` | Label the entry (else "WIP on <branch>: …") |
 | `-p` / `--patch` | Interactively pick hunks to stash (implies `--keep-index`; override with `--no-keep-index`) |
 | `-k` / `--keep-index` | Leave already-**staged** changes in the index (stash a copy; test what's staged) |
-| `-S` / `--staged` | Stash **only** staged changes (like committing them, but to the stash). `--patch` overrides this |
+| `-S` / `--staged` | Stash **only** staged changes (like committing them, but to the stash; git 2.35+). `--patch` overrides this |
 | `-u` / `--include-untracked` | Also stash untracked files (then `git clean`s them from the tree) |
 | `-a` / `--all` | Also stash **ignored** + untracked files |
 | `-- <pathspec>` | Stash only matching paths (other changes stay in the tree) |
@@ -195,7 +195,7 @@ git stash push -- src/auth.py              # stash just one file's changes
 git stash push --staged                    # shelve only what's staged, keep the rest working
 ```
 
-**`save` is deprecated** in favor of `push`; `save` can't take a pathspec and treats all args as the message. **⚠️ Bare-form gotcha:** with the `push` keyword omitted, pathspecs are only allowed after `--` (`git stash -- file`), so a mistyped subcommand can't silently create a stash.
+**`save` is deprecated** (since git 2.16) in favor of `push`; `save` can't take a pathspec and treats all args as the message. **⚠️ Bare-form gotcha:** with the `push` keyword omitted, pathspecs are only allowed after `--` (`git stash -- file`), so a mistyped subcommand can't silently create a stash.
 
 **⚠️ Untracked files aren't stashed by default.** A plain `git stash` leaves untracked files in your tree; without `-u`/`-a` they can collide on a later branch switch. Use `-u` when "clean tree" must include new files.
 
@@ -205,7 +205,7 @@ git stash push --staged                    # shelve only what's staged, keep the
 git stash list                       # all entries (accepts git log options)
 git stash show                       # diffstat of stash@{0} vs its base
 git stash show -p stash@{1}          # full patch of the 2nd entry
-git stash show -u stash@{0}          # include untracked files in the diff
+git stash show -u stash@{0}          # include untracked files in the diff (git 2.32+)
 ```
 
 `show` defaults to a diffstat; `-p` gives the patch; it accepts any `git diff` option. Defaults are configurable via `stash.showStat` / `stash.showPatch` / `stash.showIncludeUntracked`.
@@ -252,7 +252,7 @@ git stash store -m "snapshot" "$sha"   # put that commit into refs/stash + reflo
 
 ### export / import
 
-Newer (transferable) stashes — move stash entries between repos over normal fetch/push:
+Newer (transferable) stashes (git 2.51+) — move stash entries between repos over normal fetch/push:
 
 ```bash
 git stash export --to-ref refs/stash-export    # encode all stashes into a commit chain at a ref

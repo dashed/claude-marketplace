@@ -83,8 +83,8 @@ Condition keywords:
 |-----------|-----------|
 | `gitdir:<glob>` | the repo's `.git` dir matches the glob |
 | `gitdir/i:<glob>` | same, case-insensitive |
-| `onbranch:<glob>` | the currently checked-out branch matches |
-| `hasconfig:remote.*.url:<glob>` | any configured remote URL matches |
+| `onbranch:<glob>` | the currently checked-out branch matches (git 2.23+) |
+| `hasconfig:remote.*.url:<glob>` | any configured remote URL matches (git 2.36+) |
 
 `gitdir` glob conveniences: a trailing `/` appends `**` (matches the dir and everything under it); a pattern without `~/`, `./`, or a leading `/` gets `**/` prepended (so `foo/bar` matches `/any/foo/bar`).
 
@@ -118,7 +118,7 @@ Settings that change behavior in ways worth knowing (not an exhaustive list — 
 | `core.autocrlf` / `core.eol` | line-ending conversion — see [.gitattributes](#gitattributes) and [troubleshooting.md](troubleshooting.md) |
 | `core.editor` / `core.pager` | editor for messages; pager for output |
 | `core.excludesFile` | global ignore file (default `$XDG_CONFIG_HOME/git/ignore`) |
-| `core.hooksPath` | relocate the hooks dir (share hooks across repos) |
+| `core.hooksPath` | relocate the hooks dir (share hooks across repos; git 2.9+) |
 | `core.fileMode` | track the executable bit or not |
 | `core.fsmonitor` | speed up status on huge worktrees |
 | `pull.rebase` | `true`/`false`/`merges` — rebase vs merge on pull |
@@ -128,8 +128,8 @@ Settings that change behavior in ways worth knowing (not an exhaustive list — 
 | `fetch.prune` = `true` | delete remote-tracking refs for deleted upstream branches |
 | `rebase.autosquash` | honor `fixup!`/`squash!` automatically (see [history-rewriting.md](history-rewriting.md)) |
 | `rebase.autoStash` | stash/unstash a dirty tree around rebase/pull |
-| `rebase.updateRefs` | move dependent branch refs during interactive rebase |
-| `merge.conflictStyle` = `zdiff3` | show the common ancestor in conflict markers (much easier merges) |
+| `rebase.updateRefs` | move dependent branch refs during interactive rebase (git 2.38+) |
+| `merge.conflictStyle` = `zdiff3` | show the common ancestor in conflict markers (much easier merges; `zdiff3` is git 2.35+) |
 | `rerere.enabled` | record/replay conflict resolutions (owned by [branching-merging.md](branching-merging.md)) |
 | `diff.algorithm` = `histogram` | better diffs than default `myers` |
 | `diff.colorMoved` | highlight moved (vs added/removed) lines |
@@ -176,7 +176,7 @@ git check-attr --all --cached -- file    # consult .gitattributes in the index, 
 
 - `text` / `text=auto`: enables LF-in-index normalization (`auto` lets Git detect text vs binary). When unspecified, `core.autocrlf`/`core.eol` decide.
 - `eol=lf|crlf`: forces the worktree line ending (implies `text`).
-- `working-tree-encoding=<enc>`: store as UTF-8 internally, re-encode on checkout. **Footgun:** clients/old Git without support will checkout mangled content; always pair with `eol` and confirm all clients support it.
+- `working-tree-encoding=<enc>` (git 2.18+): store as UTF-8 internally, re-encode on checkout. **Footgun:** clients/old Git without support will checkout mangled content; always pair with `eol` and confirm all clients support it.
 - Committing a `.gitattributes` `text=auto` change? Re-normalize once: `git add --renormalize .`
 
 ### Filters (clean / smudge)
@@ -310,7 +310,7 @@ chmod +x .git/hooks/pre-commit                   # remember: must be executable
 | `prepare-commit-msg` | before the editor opens | msg-file, source, [commit-oid] | edit the message; **not** suppressed by `--no-verify` |
 | `commit-msg` | after message entered | msg-file | validate/normalize the message; **bypassable** with `--no-verify` |
 | `post-commit` | after commit | none | notification only; can't abort |
-| `pre-merge-commit` | `git merge` (auto-commit) | none | bypassable with `--no-verify` |
+| `pre-merge-commit` | `git merge` (auto-commit) | none | bypassable with `--no-verify`; git 2.24+ |
 | `pre-rebase` | `git rebase` | upstream, [branch] | block a rebase |
 | `post-checkout` | `checkout`/`switch`/`clone`/`worktree add` | prev-HEAD, new-HEAD, flag (1=branch,0=file) | set up worktree state |
 | `post-merge` | after a merge (incl. `pull`) | squash-flag | restore worktree metadata |

@@ -4,6 +4,15 @@ All notable changes to the git skill in this marketplace will be documented in t
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.1.0] - 2026-05-29
+
+### Added
+- references/version-features.md — consolidated "feature → minimum git version" lookup, grouped newest-version-first plus a removed/changed-defaults section
+
+### Changed
+- Add inline git-version-availability annotations ("(git X.Y+)") across SKILL.md and all 10 reference files, grounded in git RelNotes, covering introduced / default-changed / removed lifecycle notes
+- SKILL.md: add a "Git version awareness" section explaining the annotation convention and the highest-impact version cutoffs
+
 ## [1.0.0] - 2026-05-29
 
 ### Added

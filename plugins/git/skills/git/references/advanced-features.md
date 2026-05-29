@@ -56,8 +56,8 @@ git submodule update --remote libs/foo
 git add libs/foo && git commit -m "Bump libs/foo"
 
 # Point a submodule at a new URL (updates .gitmodules + syncs .git/config):
-git submodule set-url libs/foo https://new.example.com/foo.git
-git submodule set-branch --branch release libs/foo   # track a branch for --remote
+git submodule set-url libs/foo https://new.example.com/foo.git   # set-url: git 2.25+
+git submodule set-branch --branch release libs/foo   # set-branch: git 2.22+ (track a branch for --remote)
 
 # After upstream URL changes, push the new URLs into your local .git/config:
 git submodule sync --recursive
@@ -138,7 +138,8 @@ consumers must "just clone and build" with zero extra steps).
 
 Sparse-checkout populates only a *subset* of tracked files in the working tree while
 keeping the full repo. It uses the skip-worktree bit; absent files are simply ignored.
-Ideal for a monorepo where you only need a few directories.
+Ideal for a monorepo where you only need a few directories. (The `git sparse-checkout`
+command — cone mode included — is git 2.25+.)
 
 ```bash
 # Restrict the working tree to two directory cones (cone mode is the default):
@@ -178,11 +179,11 @@ git sparse-checkout set --sparse-index services/payments
 | `list` | Show selected cone directories | |
 | `reapply` | Re-enforce sparsity on the worktree | Use after conflicts left files behind |
 | `disable` | Restore full working tree | Turns off `core.sparseCheckout` |
-| `clean [-f]` | Remove stray files outside the cone | Cone mode only; `--dry-run` to preview |
+| `clean [-f]` | Remove stray files outside the cone (git 2.52+) | Cone mode only; `--dry-run` to preview |
 | `init` | **Deprecated** alias for `set` (no paths) | May be removed; use `set` |
 
 **Footguns:**
-- `--no-cone` (full gitignore-style patterns) is **deprecated**: O(N×M) matching,
+- `--no-cone` (full gitignore-style patterns) is **deprecated** (since git 2.37): O(N×M) matching,
   no `--sparse-index`, and easy to misfire with an unquoted glob. Stay in cone mode.
 - Sparse-checkout does **not** auto-initialize or deinit submodules; manage those
   separately with `git submodule init/deinit`.
@@ -195,7 +196,8 @@ git sparse-checkout set --sparse-index services/payments
 
 A partial clone omits some objects at clone time and lazily fetches them on demand
 from the "promisor" remote. This is the modern way to clone a huge repo fast — usually
-preferable to a shallow clone because history stays intact.
+preferable to a shallow clone because history stays intact. (Partial clone `--filter`
+is git 2.19+.)
 
 ```bash
 # Blobless: download all commits + trees, but no file contents until needed.
@@ -211,11 +213,11 @@ git clone --filter=blob:limit=1m https://example.com/big.git
 | Filter spec | Omits | Typical use |
 |---|---|---|
 | `blob:none` | All file contents (blobs) | Dev clone; blobs fetched on checkout/diff |
-| `tree:0` | All blobs **and** trees | CI / shallow exploration of a tip |
+| `tree:0` | All blobs **and** trees | CI / shallow exploration of a tip (git 2.20+) |
 | `blob:limit=<n>[kmg]` | Blobs ≥ `<n>` bytes | Keep small files, defer big assets |
-| `object:type=(tag\|commit\|tree\|blob)` | All objects of that type | Niche analysis |
+| `object:type=(tag\|commit\|tree\|blob)` | All objects of that type | Niche analysis (git 2.32+) |
 | `sparse:oid=<blob-ish>` | Per a sparse-checkout spec blob | Pair with sparse-checkout |
-| `combine:<f1>+<f2>` | Apply multiple filters | e.g. `combine:tree:0+blob:none` |
+| `combine:<f1>+<f2>` | Apply multiple filters | e.g. `combine:tree:0+blob:none` (git 2.24+) |
 
 After cloning, git sets `remote.origin.promisor=true` and records the filter in
 `remote.origin.partialclonefilter`; `extensions.partialClone` names the promisor
@@ -438,7 +440,7 @@ git bisect reset
 `125` = untestable (skip); any other code aborts. In a build-then-test script, do
 `make || exit 125` so unbuildable commits are skipped rather than blamed.
 
-Useful flags: `--first-parent` (blame the merge, ignore the merged branch's internal
+Useful flags: `--first-parent` (git 2.29+; blame the merge, ignore the merged branch's internal
 commits) and `--no-checkout` (don't touch the worktree; test against `BISECT_HEAD`,
 e.g. for bare repos). For custom good/bad vocabulary use
 `git bisect start --term-old <old> --term-new <new>`.
@@ -447,7 +449,7 @@ e.g. for bare repos). For custom good/bad vocabulary use
 
 ## Backfill (for blobless partial clones)
 
-**⚠️ Experimental.** `git backfill` batch-downloads the blobs a `--filter=blob:none`
+**⚠️ Experimental.** `git backfill` (git 2.49+) batch-downloads the blobs a `--filter=blob:none`
 clone deferred, in path-grouped requests that compress well — far better than the
 one-blob-at-a-time fetches that make `git blame` crawl on a fresh blobless clone.
 
@@ -476,7 +478,7 @@ delta-compressed `backfill` requests instead of a single huge transfer.
 ## Signing commits & tags (GPG / SSH)
 
 Git can cryptographically sign commits and tags. The backend is chosen by
-`gpg.format`: `openpgp` (default), `x509` (S/MIME via gpgsm), or `ssh`. SSH signing
+`gpg.format`: `openpgp` (default), `x509` (S/MIME via gpgsm), or `ssh` (git 2.34+). SSH signing
 is the easiest to set up — any SSH key works.
 
 ```bash

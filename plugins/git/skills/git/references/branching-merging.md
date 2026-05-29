@@ -23,7 +23,7 @@ Reach here when you need to merge with a non-default strategy, control whether a
 
 ## Merge strategies
 
-`git merge -s <strategy>` (also `git pull -s …`, `git rebase -s …`, `cherry-pick/revert -s …`). With no `-s`, git picks **`ort`** for one branch and **`octopus`** for more than one.
+`git merge -s <strategy>` (also `git pull -s …`, `git rebase -s …`, `cherry-pick/revert -s …`). With no `-s`, git picks **`ort`** (default since git 2.34) for one branch and **`octopus`** for more than one.
 
 | Strategy | Heads | What it does | Use when |
 |----------|:-----:|--------------|----------|
@@ -143,7 +143,7 @@ their version
 Set a richer style to also see the original via a middle `|||||||` block:
 
 ```bash
-git config merge.conflictStyle zdiff3   # diff3 minus duplicated context (recommended)
+git config merge.conflictStyle zdiff3   # diff3 minus duplicated context (recommended; zdiff3 added git 2.35+)
 # values: merge (default, no base) | diff3 (shows base) | zdiff3
 ```
 
@@ -257,7 +257,7 @@ git cherry-pick A^..B      # include A itself (A^..B = A through B inclusive)
 git cherry-pick -m 1 <merge-hash>   # replay the merge's net change relative to parent #1
 ```
 
-**Empty / redundant commits:** if a pick's change is already present, the pick *stops* by default so you can inspect it.
+**Empty / redundant commits:** (cherry-pick `--empty`: git 2.45+) if a pick's change is already present, the pick *stops* by default so you can inspect it.
 
 ```bash
 git cherry-pick --empty=drop A..B   # silently drop now-redundant commits
@@ -287,7 +287,7 @@ git revert HEAD~3             # revert the 4th-from-top commit
 git revert -n A^..B           # reverse a whole range into the index, no commits
 ```
 
-Same sequencer subcommands as cherry-pick: `--continue` / `--skip` / `--abort` / `--quit`. `revert.reference` (or `--reference`) makes the auto message refer to the reverted commit in `--pretty=reference` style.
+Same sequencer subcommands as cherry-pick: `--continue` / `--skip` / `--abort` / `--quit`. `revert.reference` (or `--reference`) (git 2.37+) makes the auto message refer to the reverted commit in `--pretty=reference` style.
 
 > To *discard* uncommitted changes use `git reset`/`git restore`, not `revert` (which is for already-committed work). See [recovery.md](recovery.md).
 

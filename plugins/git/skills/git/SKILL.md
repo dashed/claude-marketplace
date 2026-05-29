@@ -201,9 +201,26 @@ git blame -w -C file.c                   # who/why, ignoring whitespace & copies
 ```
 More in [inspection.md](references/inspection.md).
 
+## Git Version Awareness
+
+This skill is **documented against git 2.54**, but most of it works on far older git. Features that need a specific minimum version are tagged inline as **`(git X.Y+)`**; default changes and removals are noted where they matter. When no tag is present, assume the feature is long-standing. For a consolidated lookup, see **[version-features.md](references/version-features.md)**.
+
+High-impact cutoffs worth remembering:
+
+| Feature | Minimum version |
+|---------|-----------------|
+| `git switch` / `git restore` | git 2.23+ |
+| `ort` merge strategy as default | git 2.34 |
+| `git rebase --update-refs` | git 2.38+ |
+| `git push --force-if-includes` | git 2.30+ |
+| `git config get`/`set`/`unset`/`list` subcommands | git 2.46+ |
+| `git backfill` (blobless partial clones) | git 2.49+ |
+
+Always confirm against the installed git: `git version`, then `git <cmd> --help`.
+
 ## Conventions & Notes
 
-- Verify exact flags against the installed git (`git <cmd> --help`); this skill targets **git 2.54+** and flags evolve.
+- Verify exact flags against the installed git (`git <cmd> --help`); flag behavior evolves across releases (see [Git Version Awareness](#git-version-awareness)).
 - Prefer **non-destructive diagnosis first** (`status`, `reflog`, `log --graph`, `--dry-run`, `--no-` variants) before any command that rewrites or deletes.
 - Quote/escape revisions and pathspecs in shells (`'HEAD^'`, `--` to separate paths from revs).
 - When in doubt about a destructive op, create a throwaway branch or tag at the current commit first: `git branch backup-$(date +%s)`.

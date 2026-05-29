@@ -79,11 +79,11 @@ The full command set (verbatim from `git rebase -i`'s help, git 2.54.0). Single-
 | `edit` (`e`) | Use the commit, but **stop for amending** (change content, split, etc.) |
 | `squash` (`s`) | **Meld into the previous commit**; combine both messages in the editor |
 | `fixup` (`f`) | Like `squash` but **discard this commit's message** (keep the previous one) |
-| `fixup -C` | Meld in, but **keep only THIS commit's message** (discard the previous) |
+| `fixup -C` (git 2.32+) | Meld in, but **keep only THIS commit's message** (discard the previous) |
 | `fixup -c` | Same as `-C` but **opens the editor** to refine the kept message |
 | `drop` (`d`) | **Remove** the commit (same as deleting the line) |
 | `exec` (`x`) | **Run a shell command**; non-zero exit halts the rebase |
-| `break` (`b`) | **Stop here**; resume later with `git rebase --continue` |
+| `break` (`b`) (git 2.20+) | **Stop here**; resume later with `git rebase --continue` |
 | `label` (`l`) | Label current HEAD with a name (for `--rebase-merges`) |
 | `reset` (`t`) | Reset HEAD to a previously set `label` |
 | `merge` (`m`) | Create a merge commit (`-C <commit>` reuse message, `-c <commit>` reword) |
@@ -137,7 +137,7 @@ Create specially-named commits now, then let rebase reorder and fold them automa
 ```bash
 git commit --fixup=<commit>          # makes "fixup! <subject>" — folds in, drops its message
 git commit --squash=<commit>         # makes "squash! <subject>" — folds in, combines messages
-git commit --fixup=amend:<commit>    # "amend!" — replaces both content AND message of <commit>
+git commit --fixup=amend:<commit>    # "amend!" (git 2.32+) — replaces both content AND message of <commit>
 git commit --fixup=reword:<commit>   # "amend!" message-only (no content change)
 
 git rebase -i --autosquash <base>    # reorders squash!/fixup!/amend! commits under their targets
@@ -149,7 +149,7 @@ To generate these fixup commits **automatically** by detecting which commit each
 
 ## `--update-refs`: rewriting stacked branches
 
-When several branches point at commits *within* the range being rebased (a stack), `--update-refs` force-moves those intervening branch refs to follow their commits instead of being left behind:
+When several branches point at commits *within* the range being rebased (a stack), `--update-refs` (git 2.38+) force-moves those intervening branch refs to follow their commits instead of being left behind:
 
 ```bash
 git rebase -i --update-refs <base>   # injects `update-ref refs/heads/<branch>` lines into the todo
@@ -179,11 +179,11 @@ git rebase --keep-base <upstream>               # base = merge-base(upstream, HE
 git rebase -i --root
 ```
 
-`--onto` accepts any commit-ish, and the `A...B` merge-base shorthand. `--keep-base` and `--onto`/`--root` are mutually exclusive.
+`--onto` accepts any commit-ish, and the `A...B` merge-base shorthand. `--keep-base` (git 2.24+) and `--onto`/`--root` are mutually exclusive.
 
 ## Rebasing merges (`--rebase-merges`)
 
-By default rebase *flattens* history — merge commits are dropped and their contents linearized. `--rebase-merges` instead **recreates the merge topology**:
+By default rebase *flattens* history — merge commits are dropped and their contents linearized. `--rebase-merges` (git 2.18+) instead **recreates the merge topology**:
 
 ```bash
 git rebase -i --rebase-merges <base>
@@ -264,7 +264,7 @@ git fast-export --all | (cd /empty/repo && git fast-import)
 git fast-export master~5..master | sed 's|refs/heads/master|refs/heads/other|' | git fast-import
 ```
 
-Useful `fast-export` options: `--no-data` (refer to blobs by SHA — fast structural rewrites without touching file contents), `--full-tree` (emit a full `deleteall` + file list per commit), `--signed-tags=(strip|abort|…)` and `--signed-commits=…` (signatures break under rewrite), `--tag-of-filtered-object=(abort|drop|rewrite)`, `--anonymize` (share a bug repro with identifying data stripped), `--reencode`, `--mark-tags`/`--export-marks`/`--import-marks` (incremental).
+Useful `fast-export` options: `--no-data` (refer to blobs by SHA — fast structural rewrites without touching file contents), `--full-tree` (emit a full `deleteall` + file list per commit), `--signed-tags=(strip|abort|…)` and `--signed-commits=…` (git 2.50+; signatures break under rewrite), `--tag-of-filtered-object=(abort|drop|rewrite)`, `--anonymize` (share a bug repro with identifying data stripped), `--reencode`, `--mark-tags`/`--export-marks`/`--import-marks` (incremental).
 
 The stream's `commit` block grammar is: `commit <ref>`, optional `mark`, `author`/`committer`, `data` (the message), optional `from`/`merge` (parents), then `filemodify`/`filedelete`/`filecopy`/`filerename`/`filedeleteall` to shape the tree. Editing these lines (or piping through `sed`/a script) is how surgical rewrites are done.
 

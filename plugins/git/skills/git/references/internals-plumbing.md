@@ -45,7 +45,7 @@ A tree entry's mode is one of: `100644` (file), `100755` (executable), `120000` 
 
 The default object format is **SHA-1**, but Git uses a *collision-detecting* SHA-1 implementation (sha1dc) that aborts on inputs resembling the known SHAttered attack, so the practical collision risk is negligible.
 
-A repository can instead use **SHA-256** (OIDs are 64 hex chars):
+A repository can instead use **SHA-256** (git 2.29+, experimental; OIDs are 64 hex chars):
 
 ```bash
 git init --object-format=sha256 myrepo    # valid values: sha1 (default) | sha256
@@ -72,11 +72,11 @@ A **ref** is a named pointer to an OID. The namespace lives under `.git/refs/`:
 
 ```bash
 git pack-refs --all          # pack all refs (incl. active branch heads)
-git pack-refs --auto         # pack only when heuristics say it's worth it (2.46+)
+git pack-refs --auto         # pack only when heuristics say it's worth it (2.45+)
 git for-each-ref --format='%(refname) %(objectname:short)'   # enumerate refs (scriptable)
 ```
 
-**reftable** is an alternative ref backend (binary, faster for huge ref counts): `git init --ref-format=reftable` (valid values `files` (default) | `reftable`). With reftable there is no `.git/refs` tree or `packed-refs` file to edit by hand.
+**reftable** (git 2.45+) is an alternative ref backend (binary, faster for huge ref counts): `git init --ref-format=reftable` (valid values `files` (default) | `reftable`). With reftable there is no `.git/refs` tree or `packed-refs` file to edit by hand.
 
 ## The index (staging area)
 
@@ -120,7 +120,7 @@ git cat-file --filters HEAD:file.txt          # apply smudge/eol filters as on c
 git cat-file --textconv HEAD:diagram.png      # apply textconv (see config-attributes-hooks.md)
 ```
 
-`--batch`/`--batch-check`/`--batch-command` stream over stdin for bulk lookups; add `-Z` for NUL-delimited I/O when contents may contain newlines. `--batch-all-objects` walks *every* object (incl. unreachable), not just reachable ones.
+`--batch`/`--batch-check`/`--batch-command` (the last is git 2.36+) stream over stdin for bulk lookups; add `-Z` (git 2.42+) for NUL-delimited I/O when contents may contain newlines. `--batch-all-objects` walks *every* object (incl. unreachable), not just reachable ones.
 
 ### `git hash-object` — write objects
 
@@ -186,7 +186,7 @@ git ls-tree --name-only -r HEAD            # just paths
 git ls-tree -r HEAD -- path/  # limit to a pathspec
 ```
 
-Default line format is exactly: `%(objectmode) %(objecttype) %(objectname)%x09%(path)`. Use `--format=` for custom fields; `-z` for NUL termination.
+Default line format is exactly: `%(objectmode) %(objecttype) %(objectname)%x09%(path)`. Use `--format=` (git 2.36+) for custom fields; `-z` for NUL termination.
 
 ### `git ls-files` — read the index/worktree
 
@@ -269,7 +269,7 @@ To commit the current index instead of a hand-built tree, replace steps 1–2 wi
 
 ## Packfiles, gc, repack, maintenance
 
-Objects start **loose** (one compressed file each). For efficiency Git also stores them **packed**: many objects delta-compressed into a `.pack` file with a companion `.idx` (index) under `.git/objects/pack/`. Unreachable objects that survive are stored in a **cruft pack** (`.mtimes` sidecar tracks ages) rather than as loose files.
+Objects start **loose** (one compressed file each). For efficiency Git also stores them **packed**: many objects delta-compressed into a `.pack` file with a companion `.idx` (index) under `.git/objects/pack/`. Unreachable objects that survive are stored in a **cruft pack** (git 2.37+; `.mtimes` sidecar tracks ages) rather than as loose files.
 
 ```bash
 git count-objects -vH        # loose count, on-disk size, in-pack count, pack count (human units)
@@ -301,14 +301,14 @@ What gc keeps alive: anything reachable from branches, tags, **the index**, **re
 | `-f` / `-F` | discard & recompute deltas (`-F` also ignores cached objects) |
 | `-b` / `--write-bitmap-index` | write a reachability bitmap (speeds up clones/fetches; needs `-a`/`-A`) |
 | `--cruft` | move unreachable objects into a cruft pack instead of loosening |
-| `-g<factor>` / `--geometric=<factor>` | maintain a geometric size progression across packs (cheap incremental repacks) |
+| `-g<factor>` / `--geometric=<factor>` | maintain a geometric size progression across packs (cheap incremental repacks; git 2.32+) |
 | `-m` / `--write-midx` | write a multi-pack index over the resulting packs |
 
 `--window=<n>` (default 10) and `--depth=<n>` (default 50) tune delta search vs. size.
 
 ### `git maintenance` — scheduled, background-friendly upkeep
 
-Replaces ad-hoc `gc` with smaller, lock-aware tasks you can schedule.
+Replaces ad-hoc `gc` with smaller, lock-aware tasks you can schedule. The `git maintenance` command is git 2.29+.
 
 ```bash
 git maintenance run --task=incremental-repack   # run one task now

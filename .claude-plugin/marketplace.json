@@ -487,7 +487,7 @@
     },
     {
       "name": "git",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "source": "./plugins/git",
       "description": "Advanced Git CLI mastery, recovery, and troubleshooting (git 2.54+). Use when recovering lost commits/branches/stashes (reflog, fsck), undoing a bad reset/merge/rebase, rewriting history (interactive rebase, filter-repo), resolving conflicts (rerere), worktrees, bisect, cherry-pick, stash, refspecs and --force-with-lease, .gitattributes/hooks, git internals, or confusing git errors. For commit messages use conventional-commits; stacked branches git-chain; auto-fixup git-absorb; Jujutsu jj.",
       "author": {

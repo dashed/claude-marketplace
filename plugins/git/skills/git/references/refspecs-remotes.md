@@ -58,7 +58,7 @@ git remote add -f -t main -t release upstream https://example.com/repo.git
 
 Clone is "basic," but its *side effects* on remotes/tracking are worth pinning down:
 
-- Creates a remote named **`origin`** (rename with `-o <name>` / `--origin=<name>`, default overridable via `clone.defaultRemoteName`).
+- Creates a remote named **`origin`** (rename with `-o <name>` / `--origin=<name>`, default overridable via `clone.defaultRemoteName` (git 2.30+)).
 - Sets `remote.origin.url` and `remote.origin.fetch = +refs/heads/*:refs/remotes/origin/*` (see [Refspecs](#refspecs-in-depth)).
 - Creates remote-tracking branches under `refs/remotes/origin/*`, checks out the default branch, and **sets that branch's upstream** to `origin/<default>`.
 
@@ -98,7 +98,7 @@ The default fetch refspec a clone writes:
 | `+src:dst` | …allowing non-fast-forward |
 | `:dst` (push) | **Empty `<src>` deletes `<dst>` on the remote.** `git push origin :dev` deletes `dev` |
 | `refs/heads/*:refs/remotes/origin/*` | Wildcard — exactly one `*` on each side; the match is substituted into `<dst>` |
-| `^refs/heads/dev-*` (push) | **Negative refspec** — *exclude* matching refs (src only, no `<dst>`, no hex SHAs) |
+| `^refs/heads/dev-*` (push) | **Negative refspec** (git 2.29+) — *exclude* matching refs (src only, no `<dst>`, no hex SHAs) |
 | `tag <tag>` (push) | Special syntax expanding to `refs/tags/<tag>:refs/tags/<tag>` |
 | `:` (push) | Push "matching" branches (every local branch that already exists on the remote); `+:` allows non-ff |
 
@@ -120,10 +120,10 @@ By default, tags pointing into the fetched history are auto-followed. Control wi
 
 | Flag | Effect |
 |---|---|
-| `--all` | Fetch all remotes (honors `remote.<name>.skipFetchAll`; config `fetch.all`) |
+| `--all` | Fetch all remotes (honors `remote.<name>.skipFetchAll`; config `fetch.all` — git 2.44+) |
 | `--multiple <repo\|group>...` | Fetch several remotes/groups (no refspecs allowed) |
 | `-p` / `--prune` | Delete tracking refs that vanished upstream — see [Pruning](#pruning-stale-remote-tracking-refs) |
-| `-P` / `--prune-tags` | Also prune local tags absent upstream (**use with care**) |
+| `-P` / `--prune-tags` | Also prune local tags absent upstream (**use with care**) — git 2.17+ |
 | `-t` / `--tags` | Fetch *all* tags too (not subject to pruning by itself) |
 | `-n` / `--no-tags` | **`-n` means `--no-tags`, not dry-run!** Disables tag auto-following |
 | `--dry-run` | Show what would happen (no short alias for fetch) |
@@ -131,7 +131,7 @@ By default, tags pointing into the fetched history are auto-followed. Control wi
 | `--atomic` | All-or-nothing ref update |
 | `-j <n>` / `--jobs=<n>` | Parallelize fetches |
 | `--depth`, `--deepen`, `--unshallow`, `--filter` | Shallow / partial → [advanced-features.md](advanced-features.md) |
-| `--set-upstream` | Set upstream tracking for the current branch after a successful fetch |
+| `--set-upstream` | Set upstream tracking for the current branch after a successful fetch (git 2.24+) |
 
 **⚠️ Footgun — `-n`:** For `git fetch`, `-n` is `--no-tags`. For `git push`, `-n` is `--dry-run`. They are *not* the same option across commands. To preview a fetch, spell out `--dry-run`.
 
@@ -189,7 +189,7 @@ Rebase/merge *mechanics* (conflict markers, `--continue`, `--rebase-merges`) liv
 | Flag | Effect |
 |---|---|
 | `-u` / `--set-upstream` | Set upstream tracking for each pushed branch (so later `git pull`/`git push` need no args) |
-| `--all` / `--branches` | Push all of `refs/heads/*` (cannot combine with explicit refspecs) |
+| `--all` / `--branches` | Push all of `refs/heads/*` (cannot combine with explicit refspecs; `--branches` alias git 2.41+) |
 | `--tags` | Also push all of `refs/tags/*` |
 | `--follow-tags` | Also push annotated tags reachable from the pushed commits (config `push.followTags`) |
 | `-d` / `--delete` | Delete the listed remote refs (same as `:`-prefixing them) |
@@ -241,7 +241,7 @@ git fetch origin-push
 git push --force-with-lease origin-push feature   # fails unless you fetched origin-push yourself
 ```
 
-**`--force-if-includes`** verifies the remote-tracking tip is reachable from your branch's reflog — i.e. the remote changes were actually *integrated locally* before you rewrote. Pair it with `--force-with-lease` (it's a no-op alone or with the explicit `:<expect>` form). Enable by default with `push.useForceIfIncludes=true`.
+**`--force-if-includes`** (git 2.30+) verifies the remote-tracking tip is reachable from your branch's reflog — i.e. the remote changes were actually *integrated locally* before you rewrote. Pair it with `--force-with-lease` (it's a no-op alone or with the explicit `:<expect>` form). Enable by default with `push.useForceIfIncludes=true`.
 
 **Rule of thumb:** never `--force` a shared branch; use `--force-with-lease --force-if-includes`. Plain `--force` is reserved for branches only you touch, or when you genuinely mean to discard remote history. Recovering history clobbered by a force-push → [recovery.md](recovery.md).
 
@@ -282,7 +282,7 @@ git push -u origin feature                # push and set upstream together
 git switch -c feature origin/feature      # checkout remote branch -> auto-creates local + upstream
 ```
 
-**⚠️ Gone:** `git branch --set-upstream <branch> <upstream>` (the confusing positional form) was **removed**. Use `-u`/`--set-upstream-to=` or `--track` instead.
+**⚠️ Gone:** `git branch --set-upstream <branch> <upstream>` (the confusing positional form) was **removed** in git 2.15. Use `-u`/`--set-upstream-to=` or `--track` instead.
 
 Auto-setup happens via `--track[=direct|inherit]` (default `direct` = upstream is the start-point; `inherit` = copy the start-point's tracking config), governed by `branch.autoSetupMerge` (default `true` = track when starting from a remote-tracking branch; also `always`/`simple`/`inherit`/`false`). `branch.autoSetupRebase` (default `never`) can make tracked branches default to rebase-on-pull. Disable per-branch with `--no-track`.
 
