@@ -484,6 +484,32 @@
       "keywords": ["hledger", "accounting", "ledger", "plain-text", "double-entry", "finance", "budget", "csv-import"],
       "strict": false,
       "skills": ["./skills"]
+    },
+    {
+      "name": "git",
+      "version": "1.0.0",
+      "source": "./plugins/git",
+      "description": "Advanced Git CLI mastery, recovery, and troubleshooting (git 2.54+). Use when recovering lost commits/branches/stashes (reflog, fsck), undoing a bad reset/merge/rebase, rewriting history (interactive rebase, filter-repo), resolving conflicts (rerere), worktrees, bisect, cherry-pick, stash, refspecs and --force-with-lease, .gitattributes/hooks, git internals, or confusing git errors. For commit messages use conventional-commits; stacked branches git-chain; auto-fixup git-absorb; Jujutsu jj.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/git",
+      "license": "MIT",
+      "keywords": [
+        "git",
+        "version-control",
+        "vcs",
+        "rebase",
+        "reflog",
+        "recovery",
+        "worktree",
+        "bisect",
+        "merge",
+        "history-rewriting",
+        "cli"
+      ],
+      "strict": false,
+      "skills": ["./skills"]
     }
   ]
 }

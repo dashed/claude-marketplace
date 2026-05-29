@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- git skill: Advanced Git CLI mastery + recovery skill targeting git 2.54+ (v1.0.0)
+- git skill: SKILL.md spine with object model, HEAD/index/worktree, three reset modes table, refspecs, an "Oh No" recovery quick-reference, safety/footgun rules, and a reference map
+- git skill: 10 progressive-disclosure reference files (recovery, history-rewriting, branching-merging, inspection, refspecs-remotes, worktrees-stash, internals-plumbing, config-attributes-hooks, advanced-features, troubleshooting)
+- git skill: Explicitly defers to conventional-commits, git-chain, git-absorb, and jj skills to avoid overlap
 - hledger skill: Plain-text double-entry accounting with hledger (v1.0.0)
 - hledger skill: Comprehensive SKILL.md with journal basics, commands, workflows, querying, multi-currency
 - hledger skill: 6 reference files (commands, journal-format, queries, csv-import, reports, budgeting)
