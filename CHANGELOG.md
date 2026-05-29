@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-05-29
+
 ### Added
 - git skill: Advanced Git CLI mastery + recovery skill targeting git 2.54+ (v1.0.0)
 - git skill: SKILL.md spine with object model, HEAD/index/worktree, three reset modes table, refspecs, an "Oh No" recovery quick-reference, safety/footgun rules, and a reference map
@@ -366,7 +368,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.12.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.13.0...HEAD
+[0.13.0]: https://github.com/dashed/claude-marketplace/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/dashed/claude-marketplace/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/dashed/claude-marketplace/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/dashed/claude-marketplace/compare/v0.9.0...v0.10.0
