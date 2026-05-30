@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-05-30
+
+### Added
+- sequential-thinking plugin: the marketplace's first MCP-server plugin, bundling a Python port of the official `sequential-thinking` MCP server (`scripts/mcp_sequential_thinking.py`, a PEP 723 `uv run --script` script) that exposes one `sequentialthinking` tool (`mcp__sequential-thinking__sequentialthinking`) for dynamic, reflective, step-by-step problem-solving
+- Establishes the MCP-server plugin pattern: server bundled under `scripts/`, registered via `.mcp.json`, referenced from the marketplace entry with `"mcpServers": "./.mcp.json"` instead of `"skills"`
+
+### Changed
+- ultrathink skill: Corrected the Sequential Thinking tool reference from underscores to hyphens (`mcp__sequential-thinking__sequentialthinking`), matching the live MCP server key `sequential-thinking`
+- ultrathink skill: Documented the companion `sequential-thinking` MCP plugin as a prerequisite and noted the optional `DISABLE_THOUGHT_LOGGING` env var
+
 ## [0.14.0] - 2026-05-29
 
 ### Added
@@ -376,7 +386,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.14.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.15.0...HEAD
+[0.15.0]: https://github.com/dashed/claude-marketplace/compare/v0.14.0...v0.15.0
 [0.14.0]: https://github.com/dashed/claude-marketplace/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/dashed/claude-marketplace/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/dashed/claude-marketplace/compare/v0.11.0...v0.12.0

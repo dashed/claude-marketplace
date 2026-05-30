@@ -6,7 +6,13 @@ license: MIT
 
 # Ultrathink
 
-Ultrathink activates the Sequential Thinking MCP tool (`mcp__sequential_thinking__sequentialthinking`) to enable deep, structured reasoning through complex problems.
+Ultrathink activates the Sequential Thinking MCP tool (`mcp__sequential-thinking__sequentialthinking`) to enable deep, structured reasoning through complex problems.
+
+## Prerequisites
+
+This skill drives the Sequential Thinking MCP tool, provided by the companion `sequential-thinking` plugin in this marketplace. That MCP server must be installed and enabled for the `mcp__sequential-thinking__sequentialthinking` tool to exist. If the tool is unavailable, enable the `sequential-thinking` plugin (or its underlying MCP server) first.
+
+Optional: set the `DISABLE_THOUGHT_LOGGING` environment variable to `true` on the MCP server to suppress thought logging to stderr.
 
 ## When to Use
 
@@ -25,7 +31,7 @@ Invoke ultrathink when:
 Call the sequential thinking tool with structured thoughts:
 
 ```
-mcp__sequential_thinking__sequentialthinking:
+mcp__sequential-thinking__sequentialthinking:
   thought: "Your current thinking step"
   nextThoughtNeeded: true/false
   thoughtNumber: 1

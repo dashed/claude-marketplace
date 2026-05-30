@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-05-30
+
+### Changed
+- Corrected the Sequential Thinking tool reference from underscores to hyphens (`mcp__sequential-thinking__sequentialthinking`), matching the live MCP server key `sequential-thinking`
+- Documented the companion `sequential-thinking` MCP plugin as a prerequisite (the MCP server must be enabled for the tool to exist)
+- Added optional mention of the `DISABLE_THOUGHT_LOGGING` environment variable
+
 ## [1.0.0] - 2025-11-24
 
 ### Added

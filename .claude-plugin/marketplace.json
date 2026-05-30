@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.14.0"
+    "version": "0.15.0"
   },
   "plugins": [
     {
@@ -81,7 +81,7 @@
     },
     {
       "name": "ultrathink",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "source": "./plugins/ultrathink",
       "description": "Invoke deep sequential thinking for complex problem-solving. Use when the user says 'use ultrathink', 'ultrathink', or when tackling problems that require careful step-by-step reasoning, planning, hypothesis generation, or multi-step analysis.",
       "author": {
@@ -510,6 +510,28 @@
       ],
       "strict": false,
       "skills": ["./skills"]
+    },
+    {
+      "name": "sequential-thinking",
+      "version": "1.0.0",
+      "source": "./plugins/sequential-thinking",
+      "description": "MCP server exposing a single sequentialthinking tool for dynamic, reflective, step-by-step problem-solving. Use when a task needs structured reasoning, planning, hypothesis generation, branching to explore alternatives, or revising earlier steps while keeping a running chain of thoughts.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/sequential-thinking",
+      "license": "MIT",
+      "keywords": [
+        "mcp",
+        "sequential-thinking",
+        "reasoning",
+        "planning",
+        "problem-solving",
+        "reflection",
+        "chain-of-thought"
+      ],
+      "strict": false,
+      "mcpServers": "./.mcp.json"
     }
   ]
 }

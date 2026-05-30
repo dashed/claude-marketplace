@@ -95,6 +95,7 @@ make test-codex-skills
 | **statusline** | Configure the Claude Code status line with VCS-aware scripts showing git branch, jj change ID, bookmarks, context usage, and costs. Use when setting up a statusline, customizing the status bar, or adding VCS info to the status line. | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/statusline) |
 | **hledger** | Plain-text double-entry accounting with hledger. Use when recording transactions, checking balances, generating financial reports, importing CSV bank statements, budgeting, tracking time, managing multiple currencies, or doing year-end closing. Tool: [hledger](https://hledger.org) | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/hledger) |
 | **git** | Advanced Git CLI mastery, recovery, and troubleshooting (git 2.54+). Use when recovering lost commits/branches/stashes (reflog, fsck), undoing a bad reset/merge/rebase, rewriting history (interactive rebase, filter-repo), resolving conflicts (rerere), or working with worktrees, bisect, cherry-pick, stash, refspecs, `--force-with-lease`, `.gitattributes`/hooks, git internals, or confusing git errors. Defers to conventional-commits, git-chain, git-absorb, and jj for their niches. | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/git) |
+| **sequential-thinking** | MCP server exposing a single `sequentialthinking` tool for dynamic, reflective, step-by-step problem-solving. Use when a task needs structured reasoning, planning, hypothesis generation, branching to explore alternatives, or revising earlier steps while keeping a running chain of thoughts. The marketplace's first MCP-server plugin. **Requires [uv](https://docs.astral.sh/uv/).** | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/sequential-thinking) |
 
 ### Chrome CDP Setup
 
@@ -249,6 +250,6 @@ claude-marketplace/
 
 ## Version
 
-Current version: **0.14.0**
+Current version: **0.15.0**
 
 See [CHANGELOG.md](CHANGELOG.md) for version history.
