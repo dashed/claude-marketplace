@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.15.0"
+    "version": "0.15.1"
   },
   "plugins": [
     {
@@ -81,7 +81,7 @@
     },
     {
       "name": "ultrathink",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "source": "./plugins/ultrathink",
       "description": "Invoke deep sequential thinking for complex problem-solving. Use when the user says 'use ultrathink', 'ultrathink', or when tackling problems that require careful step-by-step reasoning, planning, hypothesis generation, or multi-step analysis.",
       "author": {

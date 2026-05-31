@@ -250,6 +250,6 @@ claude-marketplace/
 
 ## Version
 
-Current version: **0.15.0**
+Current version: **0.15.1**
 
 See [CHANGELOG.md](CHANGELOG.md) for version history.

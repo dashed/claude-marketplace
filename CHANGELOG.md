@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.1] - 2026-05-30
+
+### Fixed
+- ultrathink skill: Corrected the Sequential Thinking tool reference to the plugin-namespaced id `mcp__plugin_sequential-thinking_sequential-thinking__sequentialthinking` (the form Claude Code registers when the server ships as a marketplace plugin). The previous `mcp__sequential-thinking__sequentialthinking` only applies to a directly-configured MCP server. Documented both forms and the `mcp__plugin_<plugin>_<server>__<tool>` naming pattern. Verified against the live installed plugin.
+
 ## [0.15.0] - 2026-05-30
 
 ### Added
@@ -386,7 +391,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.15.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.15.1...HEAD
+[0.15.1]: https://github.com/dashed/claude-marketplace/compare/v0.15.0...v0.15.1
 [0.15.0]: https://github.com/dashed/claude-marketplace/compare/v0.14.0...v0.15.0
 [0.14.0]: https://github.com/dashed/claude-marketplace/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/dashed/claude-marketplace/compare/v0.12.0...v0.13.0

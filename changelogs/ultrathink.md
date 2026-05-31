@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-05-30
+
+### Fixed
+- Corrected the Sequential Thinking tool reference to the plugin-namespaced id `mcp__plugin_sequential-thinking_sequential-thinking__sequentialthinking` — the form Claude Code registers when the server ships as a marketplace plugin (pattern `mcp__plugin_<plugin>_<server>__<tool>`). The `mcp__sequential-thinking__sequentialthinking` form only applies to a directly-configured MCP server
+- Documented both tool-id forms in the Prerequisites section so the skill is accurate for either install method. Verified against the live installed `sequential-thinking` plugin
+
 ## [1.1.0] - 2026-05-30
 
 ### Changed
