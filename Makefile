@@ -1,4 +1,4 @@
-.PHONY: help sync validate validate-strict validate-yaml validate-json validate-structure clean test test-codex-skills test-codex-installer lint-codex-skills lint-codex-installer typecheck-codex-skills typecheck-codex-installer format-codex-skills format-codex-installer format-codex-skills-check format-codex-installer-check manage-codex-skills test-tmux-build test-tmux test-tmux-local test-tmux-shell test-session-registry test-session-registry-local test-registry test-create-session test-list-sessions test-cleanup-sessions test-session-integration test-playwright-build test-playwright test-playwright-local test-playwright-shell lint lint-python lint-python-fix lint-shellcheck lint-shellcheck-strict lint-fix type-check format format-check format-playwright format-playwright-check lint-playwright setup-linear lint-typescript typecheck-typescript format-typescript format-check-typescript test-linear test-chrome-cdp lint-chrome-cdp format-chrome-cdp format-chrome-cdp-check typecheck-chrome-cdp build-react-bp validate-react-bp test-react-bp lint-react-bp format-react-bp format-react-bp-check typecheck-react-bp
+.PHONY: help sync validate validate-strict validate-yaml validate-json validate-structure clean test test-codex-skills test-codex-installer lint-codex-skills lint-codex-installer typecheck-codex-skills typecheck-codex-installer format-codex-skills format-codex-installer format-codex-skills-check format-codex-installer-check manage-codex-skills test-tmux-build test-tmux test-tmux-local test-tmux-shell test-session-registry test-session-registry-local test-registry test-create-session test-list-sessions test-cleanup-sessions test-session-integration test-playwright-build test-playwright test-playwright-local test-playwright-shell lint lint-python lint-python-fix lint-shellcheck lint-shellcheck-strict lint-fix type-check format format-check format-playwright format-playwright-check lint-playwright setup-linear lint-typescript typecheck-typescript format-typescript format-check-typescript test-linear test-chrome-cdp lint-chrome-cdp format-chrome-cdp format-chrome-cdp-check typecheck-chrome-cdp build-react-bp validate-react-bp test-react-bp lint-react-bp format-react-bp format-react-bp-check typecheck-react-bp test-sequential-thinking
 
 # Default target
 .DEFAULT_GOAL := help
@@ -376,6 +376,13 @@ typecheck-react-bp: ## Run ty type check on React Best Practices scripts
 	@echo "$(CYAN)Type checking React Best Practices scripts...$(NC)"
 	@uv run ty check $(REACT_BP_SCRIPTS)/
 	@echo "$(GREEN)✓ React Best Practices type check passed$(NC)"
+
+SEQ_THINKING_DIR := plugins/sequential-thinking
+
+test-sequential-thinking: ## Run sequential-thinking MCP server tests
+	@echo "$(CYAN)Running sequential-thinking tests...$(NC)"
+	cd $(SEQ_THINKING_DIR) && uv run --isolated --extra dev pytest tests/ -v
+	@echo "$(GREEN)✓ sequential-thinking tests passed$(NC)"
 
 clean: ## Clean up generated files
 	@echo "$(CYAN)Cleaning up...$(NC)"

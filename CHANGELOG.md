@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- sequential-thinking plugin: bundled the upstream test suite (`tests/test_sequential_thinking.py`, 58 cases) verbatim from `mcp-personal`, a `pyproject.toml` dev extra, and a `make test-sequential-thinking` target. All tests pass against the verbatim server copy, confirming the port is faithful. Establishes the per-plugin test pattern for MCP-server plugins (mirrors `chrome-cdp` / `react-best-practices`)
+
 ## [0.15.1] - 2026-05-30
 
 ### Fixed
