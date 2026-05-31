@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-05-30
+
 ### Added
 - `tests/test_sequential_thinking.py` — the upstream test suite (58 test cases) copied verbatim from `mcp-personal`, covering the `SequentialThinkingServer` core, thought-box rendering, color handling, and the JSON-string argument coercion behavior (issue #3856) that matters for Claude Code clients
 - `pyproject.toml` with a `dev` extra (pytest, pytest-asyncio, mcp, anyio) and pytest config (`pythonpath = ["scripts"]`, `asyncio_mode = "auto"`) so the bundled server can be imported and tested
