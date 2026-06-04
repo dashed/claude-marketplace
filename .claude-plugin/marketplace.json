@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.18.0"
+    "version": "0.19.0"
   },
   "plugins": [
     {
@@ -616,6 +616,28 @@
         "cli",
         "search",
         "ripgrep-ecosystem"
+      ],
+      "strict": false,
+      "skills": ["./skills"]
+    },
+    {
+      "name": "ripgrep",
+      "version": "1.0.0",
+      "source": "./plugins/ripgrep",
+      "description": "Fast, gitignore-aware recursive content search with the `ripgrep` (`rg`) command-line tool — a smarter, faster `grep`. Use when searching code or text for a regex across a directory tree, filtering by file type or glob, listing/counting matches, doing search-and-replace previews, or gitignore-aware code search. Triggers on mentions of ripgrep or rg. The rg CLI tool, distinct from the file-search/fuzzy-search MCP servers.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/ripgrep",
+      "license": "MIT",
+      "keywords": [
+        "ripgrep",
+        "rg",
+        "grep",
+        "search",
+        "regex",
+        "code-search",
+        "cli"
       ],
       "strict": false,
       "skills": ["./skills"]

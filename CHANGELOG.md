@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.19.0] - 2026-06-04
+
+### Added
+- ripgrep skill: new skill for the `ripgrep` (`rg`) command-line tool (a fast, gitignore-aware recursive `grep`), authored against ripgrep 15.x (ripgrep skill v1.0.0). Includes a `SKILL.md` spine, `references/options.md` (all 104 flags grouped by category), `references/recipes.md` (multiline/replace/custom-types/preprocessing/config/integration), and `references/version-features.md` (feature → minimum ripgrep version lookup, mirroring the git/fzf/fd skills). Inline `(rg X.Y+)` version annotations throughout (long-standing basics unannotated); documents that there is no bare `--hyperlink` flag (only `--hyperlink-format`), `--generate` replaced `--man`, and `--engine` replaced `--auto-hybrid-regex`
+
 ## [0.18.0] - 2026-06-04
 
 ### Added
@@ -417,7 +422,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.18.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.19.0...HEAD
+[0.19.0]: https://github.com/dashed/claude-marketplace/compare/v0.18.0...v0.19.0
 [0.18.0]: https://github.com/dashed/claude-marketplace/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/dashed/claude-marketplace/compare/v0.16.0...v0.17.0
 [0.16.0]: https://github.com/dashed/claude-marketplace/compare/v0.15.2...v0.16.0

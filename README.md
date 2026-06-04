@@ -100,6 +100,7 @@ make test-codex-skills
 | **fuzzy-search** | MCP server exposing fuzzy content/file/document search tools (`fuzzy_search_files`, `fuzzy_search_content`, `fuzzy_search_documents`) built on ripgrep + fzf, plus PyMuPDF-backed PDF tools (`extract_pdf_pages`, `get_pdf_outline`, `get_pdf_page_count`, `get_pdf_page_labels`). Use when fuzzy-searching code/files/documents or inspecting/extracting PDF pages. **Requires [uv](https://docs.astral.sh/uv/); `rg`+`fzf` (and `rga` for documents).** | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/fuzzy-search) |
 | **sqlite** | MCP server exposing SQLite database tools (`query`, `execute`, `list_tables`, `describe_table`, `create_table`). Read-only by default; writes are opt-in via `--allow-writes` or `MCP_SQLITE_ALLOW_WRITES=true`. Use when inspecting, querying, or (when enabled) modifying SQLite databases. **Requires [uv](https://docs.astral.sh/uv/).** | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/sqlite) |
 | **fd** | Fast, user-friendly command-line file/directory search with the `fd` tool (a simpler, faster `find` replacement). Use when searching for files/directories by name or regex/glob, filtering by type/extension/size/modified-time, respecting `.gitignore`, or running a command per result with `-x`/`-X`. Includes `(fd X.Y+)` version annotations + a version-features lookup. Tool: [fd](https://github.com/sharkdp/fd) | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/fd) |
+| **ripgrep** | Fast, gitignore-aware recursive content search with the `ripgrep` (`rg`) tool — a smarter, faster `grep`. Use when searching code/text for a regex across a tree, filtering by file type/glob, listing/counting matches, search-and-replace previews, or gitignore-aware code search. Includes `(rg X.Y+)` version annotations + a version-features lookup. Tool: [ripgrep](https://github.com/BurntSushi/ripgrep) | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/ripgrep) |
 
 ### Chrome CDP Setup
 
@@ -254,6 +255,6 @@ claude-marketplace/
 
 ## Version
 
-Current version: **0.18.0**
+Current version: **0.19.0**
 
 See [CHANGELOG.md](CHANGELOG.md) for version history.
