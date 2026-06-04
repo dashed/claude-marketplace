@@ -490,7 +490,16 @@ make validate
 
 ## Creating a New MCP Server Plugin
 
-Some plugins ship a Model Context Protocol (MCP) server instead of (or in addition to) a skill. The first example is the `sequential-thinking` plugin — use it as the reference implementation.
+Some plugins ship a Model Context Protocol (MCP) server instead of (or in addition to) a skill. The marketplace currently ships four MCP-server plugins — all ported verbatim from the `mcp-personal` repo — use whichever is the closest analog to what you're adding as the reference implementation:
+
+| Plugin | Server script | Tools | Notable traits to copy from |
+|--------|---------------|-------|------------------------------|
+| `sequential-thinking` | `mcp_sequential_thinking.py` | `sequentialthinking` | Simplest reference: pure-stdlib-style server, no external binaries, import-only tests |
+| `file-search` | `mcp_fd_server.py` | `search_files`, `filter_files` | External binary prereqs (`fd`, `fzf`); `tests/conftest.py` chdir shim for bare-filename subprocess tests |
+| `fuzzy-search` | `mcp_fuzzy_search.py` | content/file/document search + PDF tools | Extra runtime dep (`PyMuPDF`) in the dev extra; a known-flaky upstream test `xfail`'d via `conftest.py` while keeping the test module verbatim |
+| `sqlite` | `mcp_sqlite_server.py` | `query`, `execute`, `list_tables`, `describe_table`, `create_table` | Safe-by-default config (read-only unless `--allow-writes` / `MCP_SQLITE_ALLOW_WRITES`) |
+
+All four follow the identical layout below. When a bundled test launches the server by a bare relative filename (subprocess), add a `tests/conftest.py` that resolves/`chdir`s to `scripts/` rather than editing the verbatim test module — see `file-search` and `fuzzy-search`.
 
 ### MCP Plugin Directory Structure
 
