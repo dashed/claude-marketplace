@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.23.0] - 2026-06-04
+
+### Added
+- ansible skill: new skill for **ansible-core** (the agentless automation engine), authored against the ansible-core **2.22.0.dev0** source (latest released 2.21; ansible skill v1.0.0). Covers the ten `ansible*` CLIs (`ansible` ad-hoc, `ansible-playbook`, `ansible-galaxy`, `ansible-vault`, `ansible-inventory`, `ansible-doc`, `ansible-config`, `ansible-console`, `ansible-pull`, plus an `ansible-test` scope note) and the authoring surface. Ships a `SKILL.md` spine (overview, CLI map, mental model, seven core workflows, ansible.cfg essentials, troubleshooting), `references/cli.md` (shared option groups + per-binary flag reference), `references/playbooks.md` (inventory, playbook anatomy, the source-verified variable-precedence backbone, loops/conditionals/templating, roles, collections/FQCN, delegation, strategies, handlers, tags, check/diff/idempotency), `references/config-vault.md` (ansible.cfg precedence + per-section settings with `ANSIBLE_*` env vars, and the Ansible Vault deep dive), and `references/version-features.md` (37 source-verified `feature → minimum ansible-core version` rows, 2.15→2.21). Inline `(ansible-core X.Y+)` version annotations sourced from maintainer-declared `version_added:` metadata (bedrock left unannotated); documents FQCN (`ansible.builtin.*`), become methods (sudo/su/runas), strategies (linear/free/host_pinned/debug), and that ansible-core ships only `ansible.builtin` (everything else is collections)
+
 ## [0.22.0] - 2026-06-04
 
 ### Added
@@ -445,7 +450,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.22.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.23.0...HEAD
+[0.23.0]: https://github.com/dashed/claude-marketplace/compare/v0.22.0...v0.23.0
 [0.22.0]: https://github.com/dashed/claude-marketplace/compare/v0.21.0...v0.22.0
 [0.21.0]: https://github.com/dashed/claude-marketplace/compare/v0.20.1...v0.21.0
 [0.20.1]: https://github.com/dashed/claude-marketplace/compare/v0.20.0...v0.20.1

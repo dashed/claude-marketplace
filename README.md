@@ -104,6 +104,7 @@ make test-codex-skills
 | **fuzzy-filter** | The non-interactive `rg`/`fd`/`rga` → `fzf --filter` pipeline — scan with a regex tool, then fuzzy-rank lines with no TUI (the CLI technique behind the fuzzy-search MCP). Use when fuzzy-matching paths, code lines, or PDF/document text from a script, or piping ranked results to xargs/an editor. Distinct from the **fzf** skill (interactive) and the **fuzzy-search** MCP (tool calls). Tools: [ripgrep](https://github.com/BurntSushi/ripgrep) + [fzf](https://github.com/junegunn/fzf) (+ [rga](https://github.com/phiresky/ripgrep-all) for documents). | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/fuzzy-filter) |
 | **k3s** | The `k3s` lightweight CNCF-certified Kubernetes distribution as a single binary (bundles containerd, flannel, CoreDNS, Traefik, ServiceLB, local-path-provisioner, metrics-server). Use when installing/running a lightweight cluster, bootstrapping single-node or HA control planes, joining agent nodes, choosing embedded etcd vs an external datastore, managing tokens, rotating certs, taking/restoring etcd snapshots, secrets encryption, airgap/private-registry installs, disabling bundled components, or upgrading. Includes `(k3s vX.Y+)` version annotations + a version-features lookup. Tool: [k3s](https://github.com/k3s-io/k3s) | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/k3s) |
 | **teach** | Run a Socratic teaching loop that quizzes you on a coding session until you've confirmed mastery of every concept. Use when you want to learn or lock in a Claude Code session, understand a transcript/PR/design decision, be quizzed on recent work, or prepare to teach someone else — or when the user runs `/teach` or asks to be taught or quizzed on a topic. Sources sessions from `~/.claude/projects/` and tracks a per-concept checklist until every item is confirmed. | [alexknowshtml](https://github.com/alexknowshtml/claude-skills/tree/main/teach) |
+| **ansible** | ansible-core — the agentless, push-based SSH automation engine that runs idempotent tasks from declarative YAML playbooks. Use when writing/running playbooks, issuing ad-hoc commands, managing inventory, authoring roles, installing collections with ansible-galaxy, encrypting secrets with Ansible Vault, tuning ansible.cfg, or looking up docs with ansible-doc. Covers the ten `ansible*` CLIs, FQCN, become, variable precedence, and check/diff mode. Includes `(ansible-core X.Y+)` version annotations + a version-features lookup. Tool: [ansible-core](https://github.com/ansible/ansible) | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/ansible) |
 
 ### Chrome CDP Setup
 
@@ -258,6 +259,6 @@ claude-marketplace/
 
 ## Version
 
-Current version: **0.22.0**
+Current version: **0.23.0**
 
 See [CHANGELOG.md](CHANGELOG.md) for version history.

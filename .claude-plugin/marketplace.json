@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.22.0"
+    "version": "0.23.0"
   },
   "plugins": [
     {
@@ -706,6 +706,29 @@
         "sessions",
         "education",
         "review"
+      ],
+      "strict": false,
+      "skills": ["./skills"]
+    },
+    {
+      "name": "ansible",
+      "version": "1.0.0",
+      "source": "./plugins/ansible",
+      "description": "ansible-core — the agentless, push-based SSH automation engine that runs idempotent tasks from declarative YAML playbooks. Use when writing/running playbooks, ad-hoc commands, inventory, roles, collections (ansible-galaxy), Ansible Vault, ansible.cfg, or ansible-doc lookups. Covers the ten ansible* CLIs, FQCN, become, variable precedence, and check/diff mode, with `(ansible-core X.Y+)` annotations. This is ansible-core, not the community package's collection modules.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/ansible",
+      "license": "MIT",
+      "keywords": [
+        "ansible",
+        "ansible-core",
+        "playbook",
+        "automation",
+        "configuration-management",
+        "devops",
+        "yaml",
+        "cli"
       ],
       "strict": false,
       "skills": ["./skills"]
