@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.22.0] - 2026-06-04
+
+### Added
+- teach skill: new skill that runs a Socratic teaching loop, quizzing you on a coding session until you have confirmed mastery of every concept (teach skill v1.0.0). Sources sessions from `~/.claude/projects/`, tracks a per-concept checklist (Problem / Solution / Broader Context), and never wraps up until every item is confirmed. Ported from the upstream `teach` skill by [alexknowshtml](https://github.com/alexknowshtml/claude-skills/tree/main/teach), itself based on a gist by ThariqS and a teaching concept by Suzanne. Ships a `SKILL.md` spine plus three `references/` files
+
 ## [0.21.0] - 2026-06-04
 
 ### Added
@@ -440,7 +445,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.21.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.22.0...HEAD
+[0.22.0]: https://github.com/dashed/claude-marketplace/compare/v0.21.0...v0.22.0
 [0.21.0]: https://github.com/dashed/claude-marketplace/compare/v0.20.1...v0.21.0
 [0.20.1]: https://github.com/dashed/claude-marketplace/compare/v0.20.0...v0.20.1
 [0.20.0]: https://github.com/dashed/claude-marketplace/compare/v0.19.0...v0.20.0

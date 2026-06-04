@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.21.0"
+    "version": "0.22.0"
   },
   "plugins": [
     {
@@ -683,6 +683,29 @@
         "rancher",
         "devops",
         "cli"
+      ],
+      "strict": false,
+      "skills": ["./skills"]
+    },
+    {
+      "name": "teach",
+      "version": "1.0.0",
+      "source": "./plugins/teach",
+      "description": "Run a Socratic teaching loop that quizzes you on a coding session until you've confirmed mastery of every concept. Use when you want to learn or lock in a Claude Code session, understand a transcript/PR/design decision, be quizzed on recent work, or prepare to teach someone else — or when the user runs `/teach` or asks to be taught or quizzed on a topic. Sources sessions from ~/.claude/projects/ and tracks a per-concept checklist until every item is confirmed.",
+      "author": {
+        "name": "alexknowshtml"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/teach",
+      "license": "UNLICENSED",
+      "keywords": [
+        "teaching",
+        "learning",
+        "socratic",
+        "quiz",
+        "mastery",
+        "sessions",
+        "education",
+        "review"
       ],
       "strict": false,
       "skills": ["./skills"]
