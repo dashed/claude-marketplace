@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.20.1] - 2026-06-04
+
+### Fixed
+- file-search, fuzzy-search, sequential-thinking, and sqlite plugins (MCP): added `--no-config` to the `uv run` invocation in each plugin's `.mcp.json` so the server always resolves its pinned dependencies from the default PyPI index, independent of the *consuming* repo's uv configuration. Previously, launching Claude Code from a directory whose `pyproject.toml`/`uv.toml` declares a non-PyPI `[[tool.uv.index]]` with `default = true` (e.g. a private mirror) made `uv run --script` adopt that index; resolving `mcp>=0.1.0` (and PyMuPDF) then failed with "not found in the package registry" and every server reported `✘ failed` in `/mcp`. `--no-config` makes uv skip ambient project/user config and use PyPI (file-search 1.0.1, fuzzy-search 1.1.1, sequential-thinking 1.0.2, sqlite 1.0.1)
+
 ## [0.20.0] - 2026-06-04
 
 ### Added
@@ -430,7 +435,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.20.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.20.1...HEAD
+[0.20.1]: https://github.com/dashed/claude-marketplace/compare/v0.20.0...v0.20.1
 [0.20.0]: https://github.com/dashed/claude-marketplace/compare/v0.19.0...v0.20.0
 [0.19.0]: https://github.com/dashed/claude-marketplace/compare/v0.18.0...v0.19.0
 [0.18.0]: https://github.com/dashed/claude-marketplace/compare/v0.17.0...v0.18.0

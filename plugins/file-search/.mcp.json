@@ -2,7 +2,7 @@
   "mcpServers": {
     "file-search": {
       "command": "uv",
-      "args": ["run", "--script", "${CLAUDE_PLUGIN_ROOT}/scripts/mcp_fd_server.py"]
+      "args": ["run", "--no-config", "--script", "${CLAUDE_PLUGIN_ROOT}/scripts/mcp_fd_server.py"]
     }
   }
 }

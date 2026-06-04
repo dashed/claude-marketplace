@@ -4,6 +4,11 @@ All notable changes to the file-search plugin in this marketplace will be docume
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.0.1] - 2026-06-04
+
+### Fixed
+- Added `--no-config` to the `uv run` invocation in `.mcp.json` so the server resolves its pinned `mcp>=0.1.0` dependency from the default PyPI index regardless of the *consuming* repo's uv configuration. Without it, launching Claude Code from a directory whose `pyproject.toml`/`uv.toml` declares a non-PyPI `[[tool.uv.index]]` with `default = true` (e.g. a private mirror) made `uv run --script` adopt that index, so resolution failed with "mcp ... not found in the package registry" and the server reported `✘ failed` in `/mcp`.
+
 ## [1.0.0] - 2026-06-04
 
 ### Added
