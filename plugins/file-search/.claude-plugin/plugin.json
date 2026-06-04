@@ -1,0 +1,18 @@
+{
+  "name": "file-search",
+  "version": "1.0.0",
+  "description": "MCP server exposing `search_files` and `filter_files` tools for fast file-NAME discovery powered by fd (regex/glob) and fzf (fuzzy matching). Use when locating files by name or partial path — not for searching file contents.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "file-search",
+    "fd",
+    "fzf",
+    "fuzzy-search",
+    "file-discovery",
+    "find"
+  ]
+}

@@ -1,0 +1,24 @@
+[project]
+name = "sqlite"
+version = "1.0.0"
+description = "Test/dev tooling for the sqlite MCP server plugin"
+requires-python = ">=3.10"
+# No declared runtime deps here — the server is a self-contained PEP 723
+# `uv run --script` file (scripts/mcp_sqlite_server.py). These extras
+# exist only to run the bundled test suite.
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-asyncio>=0.23",
+    "mcp>=0.1.0",
+    "anyio>=4.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+# Make `import mcp_sqlite_server` resolve to the bundled server under
+# scripts/ (mirrors the upstream repo's pythonpath = ["."] with the script
+# at its repo root).
+pythonpath = ["scripts"]

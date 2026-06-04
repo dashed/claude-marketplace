@@ -96,6 +96,9 @@ make test-codex-skills
 | **hledger** | Plain-text double-entry accounting with hledger. Use when recording transactions, checking balances, generating financial reports, importing CSV bank statements, budgeting, tracking time, managing multiple currencies, or doing year-end closing. Tool: [hledger](https://hledger.org) | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/hledger) |
 | **git** | Advanced Git CLI mastery, recovery, and troubleshooting (git 2.54+). Use when recovering lost commits/branches/stashes (reflog, fsck), undoing a bad reset/merge/rebase, rewriting history (interactive rebase, filter-repo), resolving conflicts (rerere), or working with worktrees, bisect, cherry-pick, stash, refspecs, `--force-with-lease`, `.gitattributes`/hooks, git internals, or confusing git errors. Defers to conventional-commits, git-chain, git-absorb, and jj for their niches. | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/git) |
 | **sequential-thinking** | MCP server exposing a single `sequentialthinking` tool for dynamic, reflective, step-by-step problem-solving. Use when a task needs structured reasoning, planning, hypothesis generation, branching to explore alternatives, or revising earlier steps while keeping a running chain of thoughts. The marketplace's first MCP-server plugin. **Requires [uv](https://docs.astral.sh/uv/).** | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/sequential-thinking) |
+| **file-search** | MCP server exposing `search_files` (fd regex/glob) and `filter_files` (fzf fuzzy matching) tools for fast file-NAME discovery. Use when locating files by name or partial path — not for searching file contents. **Requires [uv](https://docs.astral.sh/uv/), [fd](https://github.com/sharkdp/fd), and [fzf](https://github.com/junegunn/fzf).** | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/file-search) |
+| **fuzzy-search** | MCP server exposing fuzzy content/file/document search tools (`fuzzy_search_files`, `fuzzy_search_content`, `fuzzy_search_documents`) built on ripgrep + fzf, plus PyMuPDF-backed PDF tools (`extract_pdf_pages`, `get_pdf_outline`, `get_pdf_page_count`, `get_pdf_page_labels`). Use when fuzzy-searching code/files/documents or inspecting/extracting PDF pages. **Requires [uv](https://docs.astral.sh/uv/); `rg`+`fzf` (and `rga` for documents).** | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/fuzzy-search) |
+| **sqlite** | MCP server exposing SQLite database tools (`query`, `execute`, `list_tables`, `describe_table`, `create_table`). Read-only by default; writes are opt-in via `--allow-writes` or `MCP_SQLITE_ALLOW_WRITES=true`. Use when inspecting, querying, or (when enabled) modifying SQLite databases. **Requires [uv](https://docs.astral.sh/uv/).** | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/sqlite) |
 
 ### Chrome CDP Setup
 
@@ -250,6 +253,6 @@ claude-marketplace/
 
 ## Version
 
-Current version: **0.15.2**
+Current version: **0.16.0**
 
 See [CHANGELOG.md](CHANGELOG.md) for version history.

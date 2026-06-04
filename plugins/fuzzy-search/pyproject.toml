@@ -1,0 +1,27 @@
+[project]
+name = "fuzzy-search"
+version = "1.0.0"
+description = "Test/dev tooling for the fuzzy-search MCP server plugin"
+requires-python = ">=3.10"
+# No declared runtime deps here — the server is a self-contained PEP 723
+# `uv run --script` file (scripts/mcp_fuzzy_search.py) declaring mcp + PyMuPDF.
+# These extras exist only to run the bundled test suite, which exercises the
+# PDF tools (extract_pdf_pages / get_pdf_outline / get_pdf_page_count /
+# get_pdf_page_labels) and therefore needs PyMuPDF installed.
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-asyncio>=0.23",
+    "mcp>=0.1.0",
+    "anyio>=4.0",
+    "PyMuPDF>=1.23.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+# Make `import mcp_fuzzy_search` resolve to the bundled server under scripts/
+# (mirrors the upstream repo's pythonpath = ["."] with the script at its repo
+# root).
+pythonpath = ["scripts"]

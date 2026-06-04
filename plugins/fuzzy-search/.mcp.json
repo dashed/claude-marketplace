@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "fuzzy-search": {
+      "command": "uv",
+      "args": ["run", "--script", "${CLAUDE_PLUGIN_ROOT}/scripts/mcp_fuzzy_search.py"]
+    }
+  }
+}

@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.15.2"
+    "version": "0.16.0"
   },
   "plugins": [
     {
@@ -529,6 +529,71 @@
         "problem-solving",
         "reflection",
         "chain-of-thought"
+      ],
+      "strict": false,
+      "mcpServers": "./.mcp.json"
+    },
+    {
+      "name": "file-search",
+      "version": "1.0.0",
+      "source": "./plugins/file-search",
+      "description": "MCP server exposing search_files and filter_files tools for fast file-NAME discovery powered by fd (regex/glob) and fzf (fuzzy matching). Use when locating files by name or partial path — not for searching file contents.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/file-search",
+      "license": "MIT",
+      "keywords": [
+        "mcp",
+        "file-search",
+        "fd",
+        "fzf",
+        "fuzzy-search",
+        "file-discovery",
+        "find"
+      ],
+      "strict": false,
+      "mcpServers": "./.mcp.json"
+    },
+    {
+      "name": "fuzzy-search",
+      "version": "1.0.0",
+      "source": "./plugins/fuzzy-search",
+      "description": "MCP server exposing fuzzy content/file/document search tools built on ripgrep + fzf (plus ripgrep-all and PyMuPDF for PDFs). Use when searching code, files, or documents with fuzzy filtering, or extracting/inspecting PDF pages and outlines.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/fuzzy-search",
+      "license": "MIT",
+      "keywords": [
+        "mcp",
+        "fuzzy-search",
+        "ripgrep",
+        "fzf",
+        "ripgrep-all",
+        "pdf",
+        "search",
+        "content-search"
+      ],
+      "strict": false,
+      "mcpServers": "./.mcp.json"
+    },
+    {
+      "name": "sqlite",
+      "version": "1.0.0",
+      "source": "./plugins/sqlite",
+      "description": "MCP server exposing SQLite database tools (query, execute, list_tables, describe_table, create_table). Read-only by default; writes are opt-in via --allow-writes or MCP_SQLITE_ALLOW_WRITES=true. Use when inspecting, querying, or (when enabled) modifying SQLite databases.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/sqlite",
+      "license": "MIT",
+      "keywords": [
+        "mcp",
+        "sqlite",
+        "database",
+        "sql",
+        "query"
       ],
       "strict": false,
       "mcpServers": "./.mcp.json"

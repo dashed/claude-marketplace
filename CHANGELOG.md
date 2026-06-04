@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-06-04
+
+### Added
+- file-search plugin: new MCP-server plugin wrapping the upstream fd+fzf server (`mcp_fd_server.py`, ported verbatim from mcp-personal). Exposes `search_files` (fd regex/glob) and `filter_files` (fzf fuzzy) tools. Bundles the upstream test suite verbatim (`test_fd_server.py`, `test_simple.py`, `test_cli.py`, 49 cases, all passing against real fd/fzf) with a `pyproject.toml` dev extra and a `make test-file-search` target. Requires uv, fd, and fzf
+- fuzzy-search plugin: new MCP-server plugin wrapping the upstream ripgrep+fzf server (`mcp_fuzzy_search.py`, ported verbatim). Exposes fuzzy content/file/document search (`fuzzy_search_files`, `fuzzy_search_content`, `fuzzy_search_documents`) plus PyMuPDF-backed PDF tools (`extract_pdf_pages`, `get_pdf_outline`, `get_pdf_page_count`, `get_pdf_page_labels`). Bundles the upstream test suite verbatim (`test_fuzzy_search.py`) with a `make test-fuzzy-search` target. Requires uv, ripgrep, and fzf (ripgrep-all for documents)
+- sqlite plugin: new MCP-server plugin wrapping the upstream SQLite server (`mcp_sqlite_server.py`, ported verbatim). Exposes `query`, `execute`, `list_tables`, `describe_table`, `create_table`; read-only by default, writes opt-in via `--allow-writes` / `MCP_SQLITE_ALLOW_WRITES`. Bundles the upstream test suite verbatim (`test_sqlite_server.py`) with a `make test-sqlite` target. Requires only uv (sqlite3 is stdlib)
+- Each new MCP plugin follows the established pattern (verbatim server under `scripts/`, `.mcp.json`, metadata-only `plugin.json`, `pyproject.toml` with `pythonpath=["scripts"]`, bundled tests via a `tests/conftest.py` path shim that keeps the upstream test modules verbatim)
+
 ## [0.15.2] - 2026-05-30
 
 ### Added
@@ -396,7 +404,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.15.2...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.16.0...HEAD
+[0.16.0]: https://github.com/dashed/claude-marketplace/compare/v0.15.2...v0.16.0
 [0.15.2]: https://github.com/dashed/claude-marketplace/compare/v0.15.1...v0.15.2
 [0.15.1]: https://github.com/dashed/claude-marketplace/compare/v0.15.0...v0.15.1
 [0.15.0]: https://github.com/dashed/claude-marketplace/compare/v0.14.0...v0.15.0
