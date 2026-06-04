@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.21.0] - 2026-06-04
+
+### Added
+- k3s skill: new skill for the `k3s` lightweight CNCF-certified Kubernetes distribution, authored against the k3s **v1.35.0+k3s1** source (k3s skill v1.0.0). Covers the `k3s` multicall binary — `server` (~85 flags), `agent` (~45 flags), and the `token`/`etcd-snapshot`/`secrets-encrypt`/`certificate`/`check-config`/`completion` subcommands plus the `kubectl`/`crictl`/`ctr` passthroughs. Includes a `SKILL.md` spine (install, subcommand map, six core workflows: single-server, HA embedded etcd, external datastore, agent join, component disables, day-2 ops), `references/options.md` (exhaustive flag reference grouped by area, with K3S_* env equivalents and Hidden/Exp/Dep markers), `references/recipes.md` (HA bootstrap, airgap, private registries, CNI swap, secrets-encryption rotation, etcd snapshot + `cluster-reset` restore, cert rotation, remote kubeconfig, uninstall, upgrades), and `references/version-features.md` (21 source-verified `feature → minimum k3s version` rows, mirroring the git/fzf/fd/ripgrep skills). Inline `(k3s vX.Y+)` version annotations throughout (bedrock flags left unannotated); documents the `--disable` component set (coredns IS disable-able), token vs agent-token semantics, embedded-etcd odd-quorum, the config-file `.d` drop-ins + `+`-append semantics, and the disabled slice-flag comma-split quirk
+
 ## [0.20.1] - 2026-06-04
 
 ### Fixed
@@ -435,7 +440,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.20.1...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.21.0...HEAD
+[0.21.0]: https://github.com/dashed/claude-marketplace/compare/v0.20.1...v0.21.0
 [0.20.1]: https://github.com/dashed/claude-marketplace/compare/v0.20.0...v0.20.1
 [0.20.0]: https://github.com/dashed/claude-marketplace/compare/v0.19.0...v0.20.0
 [0.19.0]: https://github.com/dashed/claude-marketplace/compare/v0.18.0...v0.19.0

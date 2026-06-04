@@ -102,6 +102,7 @@ make test-codex-skills
 | **fd** | Fast, user-friendly command-line file/directory search with the `fd` tool (a simpler, faster `find` replacement). Use when searching for files/directories by name or regex/glob, filtering by type/extension/size/modified-time, respecting `.gitignore`, or running a command per result with `-x`/`-X`. Includes `(fd X.Y+)` version annotations + a version-features lookup. Tool: [fd](https://github.com/sharkdp/fd) | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/fd) |
 | **ripgrep** | Fast, gitignore-aware recursive content search with the `ripgrep` (`rg`) tool — a smarter, faster `grep`. Use when searching code/text for a regex across a tree, filtering by file type/glob, listing/counting matches, search-and-replace previews, or gitignore-aware code search. Includes `(rg X.Y+)` version annotations + a version-features lookup. Tool: [ripgrep](https://github.com/BurntSushi/ripgrep) | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/ripgrep) |
 | **fuzzy-filter** | The non-interactive `rg`/`fd`/`rga` → `fzf --filter` pipeline — scan with a regex tool, then fuzzy-rank lines with no TUI (the CLI technique behind the fuzzy-search MCP). Use when fuzzy-matching paths, code lines, or PDF/document text from a script, or piping ranked results to xargs/an editor. Distinct from the **fzf** skill (interactive) and the **fuzzy-search** MCP (tool calls). Tools: [ripgrep](https://github.com/BurntSushi/ripgrep) + [fzf](https://github.com/junegunn/fzf) (+ [rga](https://github.com/phiresky/ripgrep-all) for documents). | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/fuzzy-filter) |
+| **k3s** | The `k3s` lightweight CNCF-certified Kubernetes distribution as a single binary (bundles containerd, flannel, CoreDNS, Traefik, ServiceLB, local-path-provisioner, metrics-server). Use when installing/running a lightweight cluster, bootstrapping single-node or HA control planes, joining agent nodes, choosing embedded etcd vs an external datastore, managing tokens, rotating certs, taking/restoring etcd snapshots, secrets encryption, airgap/private-registry installs, disabling bundled components, or upgrading. Includes `(k3s vX.Y+)` version annotations + a version-features lookup. Tool: [k3s](https://github.com/k3s-io/k3s) | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/k3s) |
 
 ### Chrome CDP Setup
 
@@ -256,6 +257,6 @@ claude-marketplace/
 
 ## Version
 
-Current version: **0.20.1**
+Current version: **0.21.0**
 
 See [CHANGELOG.md](CHANGELOG.md) for version history.

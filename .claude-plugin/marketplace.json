@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.20.1"
+    "version": "0.21.0"
   },
   "plugins": [
     {
@@ -659,6 +659,29 @@
         "fzf-filter",
         "rga",
         "pipeline",
+        "cli"
+      ],
+      "strict": false,
+      "skills": ["./skills"]
+    },
+    {
+      "name": "k3s",
+      "version": "1.0.0",
+      "source": "./plugins/k3s",
+      "description": "The k3s lightweight CNCF-certified Kubernetes distribution as a single binary (bundles containerd, flannel, CoreDNS, Traefik, ServiceLB, local-path-provisioner, metrics-server). Use when installing/running a lightweight cluster, bootstrapping single-node or HA control planes, joining agent nodes, embedded etcd vs external datastore, managing tokens, rotating certs, etcd snapshots, secrets encryption, airgap installs, disabling components, or upgrading k3s. Includes `(k3s vX.Y+)` annotations.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/k3s",
+      "license": "MIT",
+      "keywords": [
+        "k3s",
+        "kubernetes",
+        "k8s",
+        "cluster",
+        "etcd",
+        "rancher",
+        "devops",
         "cli"
       ],
       "strict": false,
