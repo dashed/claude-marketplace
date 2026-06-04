@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.17.0"
+    "version": "0.18.0"
   },
   "plugins": [
     {
@@ -597,6 +597,28 @@
       ],
       "strict": false,
       "mcpServers": "./.mcp.json"
+    },
+    {
+      "name": "fd",
+      "version": "1.0.0",
+      "source": "./plugins/fd",
+      "description": "Fast, user-friendly command-line file/directory search with the `fd` tool (a simpler, faster `find` replacement). Use when searching for files or directories by name or regex/glob pattern, filtering by type/extension/size/modified-time, respecting .gitignore, or running a command per result with -x/-X. Triggers on mentions of fd or fdfind. The fd CLI tool, distinct from the file-search MCP server.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/fd",
+      "license": "MIT",
+      "keywords": [
+        "fd",
+        "fdfind",
+        "find",
+        "file-search",
+        "cli",
+        "search",
+        "ripgrep-ecosystem"
+      ],
+      "strict": false,
+      "skills": ["./skills"]
     }
   ]
 }

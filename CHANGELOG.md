@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.18.0] - 2026-06-04
+
+### Added
+- fd skill: new skill for the `fd` command-line tool (a fast `find` replacement), authored against fd v10.4.2 (fd skill v1.0.0). Includes a `SKILL.md` spine, `references/options.md` (exhaustive flag reference), `references/recipes.md` (command execution + tool integration), and `references/version-features.md` (feature → minimum fd version lookup, mirroring the git/fzf skills). Inline `(fd X.Y+)` version annotations throughout, with long-standing basics left unannotated; documents that fd has no `{n}`/positional placeholders and excludes master-only flags not in v10.4.2
+
 ## [0.17.0] - 2026-06-04
 
 ### Added
@@ -412,7 +417,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.17.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.18.0...HEAD
+[0.18.0]: https://github.com/dashed/claude-marketplace/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/dashed/claude-marketplace/compare/v0.16.0...v0.17.0
 [0.16.0]: https://github.com/dashed/claude-marketplace/compare/v0.15.2...v0.16.0
 [0.15.2]: https://github.com/dashed/claude-marketplace/compare/v0.15.1...v0.15.2
