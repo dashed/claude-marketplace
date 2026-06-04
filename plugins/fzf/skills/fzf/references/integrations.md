@@ -4,6 +4,10 @@ Recipes for integrating fzf with other tools.
 
 > **Version note:** A few recipes use binds/actions added in specific fzf releases — `become()` (fzf 0.38+; Windows 0.51+), the `transform` action (fzf 0.45+), and `--tmux` (fzf 0.53+; aliased to `--popup` in 0.71+). These are flagged inline below. Core actions used throughout (`reload`, `change-prompt`, `change-preview-window`, `transform-query`, `enable-search`/`disable-search`, `rebind`/`unbind`, the `start` event) predate ~0.38 and are long-standing. For the full feature → version map, see [references/version-features.md](version-features.md).
 
+> **Non-interactive counterpart:** every recipe here drives the live TUI. For the
+> batch `… | fzf --filter QUERY` pipeline (scriptable fuzzy ranking of files,
+> content, and documents — no terminal UI), see the **fuzzy-filter** skill.
+
 ## Table of Contents
 
 - [ripgrep Integration](#ripgrep-integration)

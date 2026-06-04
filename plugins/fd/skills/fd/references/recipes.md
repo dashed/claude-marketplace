@@ -275,6 +275,9 @@ fd --type f --hidden --exclude .git |
 
 See the **fzf** skill's `references/integrations.md` for richer fd+fzf pickers.
 
+> For the **non-interactive** counterpart — `fd … | fzf --filter QUERY` to
+> fuzzy-rank paths in a script (no TUI) — see the **fuzzy-filter** skill.
+
 ### fd + ripgrep
 
 `fd` selects *which files*; `rg` searches *inside* them. Hand the whole set to

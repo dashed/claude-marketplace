@@ -88,11 +88,13 @@ Varol Aksoy (@vaksoy)
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import logging
 import os
 import platform
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -129,6 +131,14 @@ RG_EXECUTABLE = shutil.which("rg")
 FZF_EXECUTABLE = shutil.which("fzf")
 RGA_EXECUTABLE = shutil.which("rga")
 PANDOC_EXECUTABLE = shutil.which("pandoc")
+
+# Default timeout (in seconds) applied to rg / rga / fzf subprocess calls so a
+# pathological search can never hang the MCP server. Configurable via the
+# MCP_FUZZY_SEARCH_TIMEOUT environment variable.
+try:
+    SUBPROCESS_TIMEOUT = int(os.getenv("MCP_FUZZY_SEARCH_TIMEOUT", "30"))
+except ValueError:
+    SUBPROCESS_TIMEOUT = 30
 
 # fzf exit codes (based on fzf source code constants)
 FZF_EXIT_OK = 0  # Success with matches
@@ -174,6 +184,27 @@ def _handle_fzf_error(exc: subprocess.CalledProcessError) -> dict[str, Any]:
     # All other non-zero exit codes are treated as errors
     # This includes FZF_EXIT_ERROR (actual error) and FZF_EXIT_INTERRUPT (user interrupt)
     return {"error": str(exc)}
+
+
+def _rg_json_text(obj: Any) -> str:
+    """Extract a string from a ripgrep JSON ``{"text": ...}``/``{"bytes": ...}`` object.
+
+    ripgrep emits ``{"text": "..."}`` for valid UTF-8 and falls back to
+    ``{"bytes": "<base64>"}`` for data that is not valid UTF-8. Decoding the
+    base64 fallback (replacing undecodable bytes) means paths and lines with
+    non-UTF-8 / non-ASCII content survive instead of being dropped or mangled.
+    """
+    if not isinstance(obj, dict):
+        return ""
+    if "text" in obj and obj["text"] is not None:
+        return obj["text"]
+    raw = obj.get("bytes")
+    if raw:
+        try:
+            return base64.b64decode(raw).decode("utf-8", errors="replace")
+        except Exception:
+            return ""
+    return ""
 
 
 def _get_page_label(doc, page_idx: int) -> str:
@@ -540,9 +571,10 @@ def extract_pdf_pages(
     if zero_based and one_based:
         return {"error": "Cannot use both zero_based and one_based flags together"}
 
+    doc = None
     try:
         # Open PDF with PyMuPDF
-        doc: fitz.Document = fitz.open(pdf_path)
+        doc = fitz.open(pdf_path)
 
         # Parse page specifications
         page_indices = []
@@ -755,6 +787,14 @@ def extract_pdf_pages(
 
     except Exception as e:
         return {"error": f"Failed to extract pages: {str(e)}"}
+    finally:
+        # Ensure the document handle is released on every exit path, including
+        # the early ``return`` branches above (e.g. failed pandoc conversion).
+        if doc is not None:
+            try:
+                doc.close()
+            except Exception:
+                pass
 
 
 # ---------------------------------------------------------------------------
@@ -798,9 +838,10 @@ def get_pdf_page_labels(
     if limit is not None and limit <= 0:
         return {"error": "limit must be positive"}
 
+    doc = None
     try:
         # Open PDF with PyMuPDF
-        doc: fitz.Document = fitz.open(pdf_path)
+        doc = fitz.open(pdf_path)
 
         # Get page count
         page_count = doc.page_count
@@ -824,6 +865,12 @@ def get_pdf_page_labels(
 
     except Exception as e:
         return {"error": f"Failed to get page labels: {str(e)}"}
+    finally:
+        if doc is not None:
+            try:
+                doc.close()
+            except Exception:
+                pass
 
 
 # ---------------------------------------------------------------------------
@@ -853,9 +900,10 @@ def get_pdf_page_count(file: str) -> dict[str, Any]:
     if not pdf_path.exists():
         return {"error": f"PDF file not found: {file}"}
 
+    doc = None
     try:
         # Open PDF with PyMuPDF
-        doc: fitz.Document = fitz.open(pdf_path)
+        doc = fitz.open(pdf_path)
         page_count = doc.page_count
         doc.close()
 
@@ -863,6 +911,12 @@ def get_pdf_page_count(file: str) -> dict[str, Any]:
 
     except Exception as e:
         return {"error": f"Failed to get page count: {str(e)}"}
+    finally:
+        if doc is not None:
+            try:
+                doc.close()
+            except Exception:
+                pass
 
 
 # ---------------------------------------------------------------------------
@@ -912,9 +966,10 @@ def get_pdf_outline(
     if not pdf_path.exists():
         return {"error": f"PDF file not found: {file}"}
 
+    doc = None
     try:
         # Open PDF with PyMuPDF
-        doc: fitz.Document = fitz.open(pdf_path)
+        doc = fitz.open(pdf_path)
 
         # Get outline
         outline = doc.outline
@@ -1087,6 +1142,12 @@ def get_pdf_outline(
 
     except Exception as e:
         return {"error": f"Failed to get outline: {str(e)}"}
+    finally:
+        if doc is not None:
+            try:
+                doc.close()
+            except Exception:
+                pass
 
 
 # ---------------------------------------------------------------------------
@@ -1583,7 +1644,7 @@ def fuzzy_search_content(
             if rg_flags:
                 # Filter out options that don't apply to --files
                 safe_flags = []
-                for flag in rg_flags.split():
+                for flag in shlex.split(rg_flags):
                     if flag not in [
                         "-n",
                         "--line-number",
@@ -1597,24 +1658,39 @@ def fuzzy_search_content(
             rg_list_cmd.append(search_path)
 
             # Get file list
-            file_list_result = subprocess.check_output(rg_list_cmd, text=True)
+            try:
+                file_list_result = subprocess.check_output(
+                    rg_list_cmd, text=True, timeout=SUBPROCESS_TIMEOUT
+                )
+            except subprocess.TimeoutExpired:
+                return {
+                    "error": f"ripgrep timed out after {SUBPROCESS_TIMEOUT}s while listing files"
+                }
             file_paths = [
                 str(Path(p).resolve()) for p in file_list_result.splitlines() if p
             ]
 
-            # Build multiline input with file contents
-            multiline_input = b""
+            # Build multiline input with file contents.
+            # Accumulate into a list and join once at the end (avoids the
+            # quadratic-time ``bytes += record`` re-allocation) and skip binary
+            # files (those containing a NUL byte) so binary blobs never pollute
+            # the null-delimited fzf stream.
+            multiline_chunks = []
             for file_path in file_paths:
                 try:
                     path_obj = Path(file_path)
                     with path_obj.open("rb") as f:
                         content = f.read()
-                        # Create record: filename + content + null separator
-                        record = f"{file_path}:\n".encode() + content + b"\0"
-                        multiline_input += record
-                except (OSError, UnicodeDecodeError):
+                except OSError:
                     continue
+                # Skip binary files (NUL byte present), mirroring ripgrep's own
+                # binary-detection heuristic.
+                if b"\x00" in content:
+                    continue
+                # Create record: filename + content + null separator
+                multiline_chunks.append(f"{file_path}:\n".encode() + content + b"\0")
 
+            multiline_input = b"".join(multiline_chunks)
             if not multiline_input:
                 return {"matches": []}
 
@@ -1634,7 +1710,14 @@ def fuzzy_search_content(
                 stderr=subprocess.PIPE,
                 text=False,
             )
-            out_bytes, err_bytes = fzf_proc.communicate(multiline_input)
+            try:
+                out_bytes, err_bytes = fzf_proc.communicate(
+                    multiline_input, timeout=SUBPROCESS_TIMEOUT
+                )
+            except subprocess.TimeoutExpired:
+                fzf_proc.kill()
+                fzf_proc.communicate()
+                return {"error": f"fzf timed out after {SUBPROCESS_TIMEOUT}s"}
 
             # Check fzf return code and handle errors
             if fzf_proc.returncode != 0:
@@ -1667,29 +1750,29 @@ def fuzzy_search_content(
                         except UnicodeDecodeError:
                             continue
         else:
-            # Standard mode - line-by-line results
-            rg_cmd = [
-                rg_bin,
-                "--line-number",
-                "--no-heading",
-                "--color=never",
-            ]
+            # Standard mode - line-by-line results.
+            #
+            # Use ripgrep's ``--json`` output rather than parsing colon-delimited
+            # ``file:line:content`` text. The JSON stream gives us the exact file
+            # path, line number and line text per record, which fixes three
+            # long-standing defects of the text-splitting approach:
+            #   * F1: ``-A/-B/-C`` context now actually surfaces — ripgrep emits
+            #         "context" records that we include alongside "match" records.
+            #   * F3: file paths containing ':' no longer corrupt parsing (we
+            #         never split on ':' to recover the path).
+            #   * #6: non-UTF-8 / non-ASCII bytes survive (see ``_rg_json_text``).
+            rg_cmd = [rg_bin, "--json"]
             if hidden:
                 rg_cmd.append("--hidden")
             if rg_flags:
-                rg_cmd.extend(rg_flags.split())
+                rg_cmd.extend(shlex.split(rg_flags))
             search_path = str(Path(path).resolve())
-
-            # If searching a single file, ensure filename is included in output
-            if Path(search_path).is_file():
-                rg_cmd.append("--with-filename")
-
             rg_cmd.extend([".", search_path])  # Search for all content in the path
 
-            # Pipe through fzf for fuzzy filtering
-            # Default: match on file path (field 1) and content (field 3+), skip line number
+            # fzf field-scoping is unchanged: the fuzzy filter still matches on
+            # the file path (field 1) and content (field 3+), skipping the line
+            # number (field 2). Content-only mode restricts matching to field 3+.
             if content_only:
-                # Match only on content (field 3+), ignore file path and line number
                 fzf_cmd = [
                     fzf_bin,
                     "--filter",
@@ -1699,7 +1782,6 @@ def fuzzy_search_content(
                     "--nth=3..",
                 ]
             else:
-                # Match on file path (field 1) and content (field 3+), skip line number
                 fzf_cmd = [
                     fzf_bin,
                     "--filter",
@@ -1710,133 +1792,115 @@ def fuzzy_search_content(
                 ]
 
             if enable_debug:
-                logger.debug("Pipeline: %s | %s", " ".join(rg_cmd), " ".join(fzf_cmd))
+                logger.debug("rg: %s | fzf: %s", " ".join(rg_cmd), " ".join(fzf_cmd))
 
-                # In CI or Windows, use subprocess.run for detailed debugging
-                rg_proc = subprocess.run(rg_cmd, capture_output=True, text=True)
-                logger.debug("Ripgrep returncode: %d", rg_proc.returncode)
-                logger.debug("Ripgrep stdout length: %d", len(rg_proc.stdout))
-                if rg_proc.stdout:
-                    logger.debug("Ripgrep stdout sample: %r", rg_proc.stdout[:200])
-                if rg_proc.stderr:
-                    logger.debug("Ripgrep stderr: %r", rg_proc.stderr[:200])
+            # Run ripgrep and collect its JSON output.
+            rg_proc = subprocess.Popen(
+                rg_cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            try:
+                rg_out, rg_err = rg_proc.communicate(timeout=SUBPROCESS_TIMEOUT)
+            except subprocess.TimeoutExpired:
+                rg_proc.kill()
+                rg_proc.communicate()
+                return {"error": f"ripgrep timed out after {SUBPROCESS_TIMEOUT}s"}
 
-                if (
-                    rg_proc.returncode != 0 and rg_proc.returncode != 1
-                ):  # 1 = no matches
-                    return {
-                        "error": rg_proc.stderr.strip()
-                        or f"ripgrep failed with code {rg_proc.returncode}"
-                    }
+            if rg_proc.returncode not in (0, 1):  # 1 = no matches (not an error)
+                return {
+                    "error": (rg_err or "").strip()
+                    or f"ripgrep failed with code {rg_proc.returncode}"
+                }
 
-                # Now run fzf with ripgrep's output
-                fzf_proc = subprocess.run(
-                    fzf_cmd, input=rg_proc.stdout, capture_output=True, text=True
+            # Parse the JSON stream into ``file:line:content`` lines for fzf,
+            # keeping a mapping back to the structured match dict so we can
+            # reconstruct results without re-splitting on ':'.
+            formatted_lines = []
+            line_to_data = {}
+            for json_line in (rg_out or "").splitlines():
+                if not json_line.strip():
+                    continue
+                try:
+                    record = json.loads(json_line)
+                except json.JSONDecodeError:
+                    continue
+                # Include both "match" and "context" records; context records are
+                # what make the advertised -A/-B/-C flags actually appear.
+                if record.get("type") not in ("match", "context"):
+                    continue
+                data = record.get("data", {})
+                file_path = _rg_json_text(data.get("path", {}))
+                if not file_path:
+                    continue
+                line_num = data.get("line_number") or 0
+                # Line text (without the trailing newline) is what fzf matches on
+                # and what we echo back; leading whitespace is preserved here and
+                # only stripped for the returned ``content`` field.
+                text = _rg_json_text(data.get("lines", {})).rstrip("\r\n")
+                formatted = f"{file_path}:{line_num}:{text}"
+
+                content = text.strip()
+                if len(content) > 2048:
+                    content = content[:2048] + "..."
+
+                formatted_lines.append(formatted)
+                # Map the exact formatted line back to its structured data. If the
+                # same line recurs (e.g. overlapping context windows) the first
+                # mapping wins, which is fine since the data is identical.
+                line_to_data.setdefault(
+                    formatted,
+                    {
+                        "file": file_path,
+                        "line": int(line_num),
+                        "content": content,
+                    },
                 )
-                logger.debug("Fzf returncode: %d", fzf_proc.returncode)
-                logger.debug("Fzf stdout length: %d", len(fzf_proc.stdout))
-                if fzf_proc.stdout:
-                    logger.debug("Fzf stdout sample: %r", fzf_proc.stdout[:200])
 
-                # Check fzf return code and handle errors
-                if fzf_proc.returncode != 0:
-                    exc = subprocess.CalledProcessError(
-                        fzf_proc.returncode,
-                        fzf_cmd,
-                        output=fzf_proc.stdout,
-                        stderr=fzf_proc.stderr,
-                    )
-                    return _handle_fzf_error(exc)
-
-                out = fzf_proc.stdout
-            else:
-                # Locally, use subprocess.Popen for test compatibility
-                rg_proc = subprocess.Popen(
-                    rg_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-                )
-                fzf_proc = subprocess.Popen(
-                    fzf_cmd,
-                    stdin=rg_proc.stdout,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    text=True,
-                )
-                if rg_proc.stdout:
-                    rg_proc.stdout.close()
-
-                out, err = fzf_proc.communicate()
-                rg_stderr = rg_proc.stderr.read().decode() if rg_proc.stderr else ""
-                rg_proc.wait()
-
-                if (
-                    rg_proc.returncode != 0 and rg_proc.returncode != 1
-                ):  # 1 = no matches
-                    return {
-                        "error": rg_stderr.strip()
-                        or f"ripgrep failed with code {rg_proc.returncode}"
-                    }
-
-                # Check fzf return code and handle errors
-                if fzf_proc.returncode != 0:
-                    exc = subprocess.CalledProcessError(
-                        fzf_proc.returncode, fzf_cmd, output=out, stderr=err
-                    )
-                    return _handle_fzf_error(exc)
-
-            # Parse results
-            matches = []
-            lines = out.splitlines()
             if enable_debug:
-                logger.debug("Total output lines to parse: %d", len(lines))
+                logger.debug("rg produced %d candidate lines", len(formatted_lines))
 
-            for i, line in enumerate(lines):
+            if not formatted_lines:
+                return {"matches": []}
+
+            # Feed the formatted lines to fzf for fuzzy filtering.
+            fzf_proc = subprocess.Popen(
+                fzf_cmd,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            try:
+                out, err = fzf_proc.communicate(
+                    "\n".join(formatted_lines), timeout=SUBPROCESS_TIMEOUT
+                )
+            except subprocess.TimeoutExpired:
+                fzf_proc.kill()
+                fzf_proc.communicate()
+                return {"error": f"fzf timed out after {SUBPROCESS_TIMEOUT}s"}
+
+            if fzf_proc.returncode != 0:
+                exc = subprocess.CalledProcessError(
+                    fzf_proc.returncode, fzf_cmd, output=out, stderr=err
+                )
+                return _handle_fzf_error(exc)
+
+            # Reconstruct the structured results from fzf's (unchanged) output
+            # lines via the mapping built above — no ':' re-splitting required.
+            matches = []
+            for line in (out or "").splitlines():
                 if not line:
                     continue
-
-                if enable_debug:
-                    logger.debug("Parsing line %d: %r", i, line)
-                # Parse ripgrep output: file:line:content
-                parts = line.split(":", 2)
-
-                # Handle Windows drive letters (e.g., "C:\path\file.py:123:content")
-                if len(parts) >= 3 and len(parts[0]) == 1 and parts[0].isalpha():
-                    # Windows drive letter detected, rejoin first two parts
-                    # Split the rest to separate line number and content properly
-                    remaining = parts[2]
-                    colon_idx = remaining.find(":")
-                    if colon_idx != -1:
-                        file_path = parts[0] + ":" + parts[1]
-                        line_num = remaining[:colon_idx]
-                        content = remaining[colon_idx + 1 :]
-                        parts = [file_path, line_num, content]
-
-                if len(parts) >= 3:
-                    try:
-                        content = parts[2].strip()
-                        # Truncate content to 2048 characters if needed
-                        if len(content) > 2048:
-                            content = content[:2048] + "..."
-                        match = {
-                            "file": parts[0],
-                            "line": int(parts[1]),
-                            "content": content,
-                        }
-                        matches.append(match)
-                        if enable_debug:
-                            logger.debug("Added match: %r", match)
-                    except (ValueError, IndexError) as e:
-                        if enable_debug:
-                            logger.debug("Failed to parse line %d: %s", i, e)
-                        continue
-                else:
-                    if enable_debug:
-                        logger.debug(
-                            "Line %d has insufficient parts: %d", i, len(parts)
-                        )
+                data = line_to_data.get(line)
+                if data is not None:
+                    matches.append(data)
+                elif enable_debug:
+                    logger.debug("fzf output line not found in mapping: %r", line)
 
             if enable_debug:
                 logger.debug("Final matches count: %d", len(matches))
-                logger.debug("=== WINDOWS DEBUG END ===")
 
         # Apply limit
         matches = matches[:limit]
@@ -1983,10 +2047,14 @@ def fuzzy_search_documents(
         stderr_data = ""
         try:
             # Use communicate to properly handle large outputs
-            result = rga_proc.communicate()
+            result = rga_proc.communicate(timeout=SUBPROCESS_TIMEOUT)
             if result:
                 stdout_data = result[0] if result[0] else ""
                 stderr_data = result[1] if len(result) > 1 and result[1] else ""
+        except subprocess.TimeoutExpired:
+            rga_proc.kill()
+            rga_proc.communicate()
+            return {"error": f"ripgrep-all (rga) timed out after {SUBPROCESS_TIMEOUT}s"}
         except Exception as e:
             logger.warning(f"Error communicating with rga: {e}")
 
@@ -2034,17 +2102,23 @@ def fuzzy_search_documents(
                             if file_path.lower().endswith(".pdf") and PYMUPDF_AVAILABLE:
                                 # Get page labels from cache or load them
                                 if file_path not in pdf_page_labels_cache:
+                                    label_doc = None
                                     try:
-                                        doc = fitz.open(file_path)
+                                        label_doc = fitz.open(file_path)
                                         # Build mapping from page index to actual label
                                         label_map = {}
-                                        for i in range(doc.page_count):
-                                            page = doc[i]
+                                        for i in range(label_doc.page_count):
+                                            page = label_doc[i]
                                             label_map[i] = page.get_label()
                                         pdf_page_labels_cache[file_path] = label_map
-                                        doc.close()
                                     except Exception:
                                         pdf_page_labels_cache[file_path] = {}
+                                    finally:
+                                        if label_doc is not None:
+                                            try:
+                                                label_doc.close()
+                                            except Exception:
+                                                pass
 
                                 label_map = pdf_page_labels_cache[file_path]
                                 # Page numbers from pdftotext are 1-based, convert to 0-based for index
@@ -2102,7 +2176,12 @@ def fuzzy_search_documents(
             stderr=subprocess.PIPE,
             text=True,
         )
-        out, err = fzf_proc.communicate(fzf_input)
+        try:
+            out, err = fzf_proc.communicate(fzf_input, timeout=SUBPROCESS_TIMEOUT)
+        except subprocess.TimeoutExpired:
+            fzf_proc.kill()
+            fzf_proc.communicate()
+            return {"error": f"fzf timed out after {SUBPROCESS_TIMEOUT}s"}
 
         # Check fzf return code and handle errors
         if fzf_proc.returncode != 0:

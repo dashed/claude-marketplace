@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.19.0"
+    "version": "0.20.0"
   },
   "plugins": [
     {
@@ -557,7 +557,7 @@
     },
     {
       "name": "fuzzy-search",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "source": "./plugins/fuzzy-search",
       "description": "MCP server exposing fuzzy content/file/document search tools built on ripgrep + fzf (plus ripgrep-all and PyMuPDF for PDFs). Use when searching code, files, or documents with fuzzy filtering, or extracting/inspecting PDF pages and outlines.",
       "author": {
@@ -637,6 +637,28 @@
         "search",
         "regex",
         "code-search",
+        "cli"
+      ],
+      "strict": false,
+      "skills": ["./skills"]
+    },
+    {
+      "name": "fuzzy-filter",
+      "version": "1.0.0",
+      "source": "./plugins/fuzzy-filter",
+      "description": "The non-interactive `rg`/`fd`/`rga` → `fzf --filter` pipeline — scan with a regex tool, then fuzzy-rank the lines without a TUI. Use when fuzzy-matching file paths, code lines, or document/PDF text from a script or one-shot command, reproducing the fuzzy-search MCP on the bare CLI, or piping fuzzy-ranked results into xargs/an editor. The CLI technique; for the INTERACTIVE picker use the fzf skill, for tool-call ergonomics use the fuzzy-search MCP.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/fuzzy-filter",
+      "license": "MIT",
+      "keywords": [
+        "fzf",
+        "ripgrep",
+        "fuzzy-search",
+        "fzf-filter",
+        "rga",
+        "pipeline",
         "cli"
       ],
       "strict": false,

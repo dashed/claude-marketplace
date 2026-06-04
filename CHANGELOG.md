@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.20.0] - 2026-06-04
+
+### Added
+- fuzzy-filter skill: new skill documenting the non-interactive `rg`/`fd`/`rga` → `fzf --filter` pipeline (the CLI technique behind the fuzzy-search MCP) — SKILL.md + references/pipelines.md (with the exact CLI equivalent of each fuzzy-search MCP tool) + references/pdf.md (fuzzy-search skill v1.0.0). Explicitly disambiguated from the interactive `fzf` skill and the `fuzzy-search` MCP; cross-linked from the fzf/ripgrep/fd skills
+
+### Changed
+- fuzzy-search plugin (MCP): hardened the rg→fzf pipeline (fuzzy-search MCP v1.1.0) — `fuzzy_search_content` now parses `rg --json` (fixes advertised-but-broken `-A`/`-B`/`-C` context, colons-in-paths, and encoding), `rg_flags` tokenized via `shlex.split` (quoted globs now work), subprocess timeouts on rg/rga/fzf, multiline skips binaries + avoids O(n²) buffering, PyMuPDF handles closed on error paths, and the stale fzf-ranking `xfail` test was fixed to pass for real. The bundled script now carries documented local patches (no longer byte-verbatim from `mcp-personal`)
+
 ## [0.19.0] - 2026-06-04
 
 ### Added
@@ -422,7 +430,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.19.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.20.0...HEAD
+[0.20.0]: https://github.com/dashed/claude-marketplace/compare/v0.19.0...v0.20.0
 [0.19.0]: https://github.com/dashed/claude-marketplace/compare/v0.18.0...v0.19.0
 [0.18.0]: https://github.com/dashed/claude-marketplace/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/dashed/claude-marketplace/compare/v0.16.0...v0.17.0

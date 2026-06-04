@@ -78,5 +78,42 @@ uv run --isolated --extra dev pytest tests/ -v
 its working directory set to `scripts/`, so the CLI subprocess tests — copied
 verbatim from upstream, where the script sits at the repo root and is launched
 as the bare filename `mcp_fuzzy_search.py` — resolve correctly from this
-plugin's `scripts/` layout. The server script and the test module are otherwise
-copied verbatim from the upstream `mcp-personal` repository.
+plugin's `scripts/` layout. The server script and the test module were
+originally copied from the upstream `mcp-personal` repository and then patched
+locally (see below).
+
+## Local modifications (diverges from mcp-personal upstream)
+
+`scripts/mcp_fuzzy_search.py` is no longer byte-verbatim from upstream. The
+following audit fixes were applied locally and are candidates for upstreaming:
+
+1. **`fuzzy_search_content` standard mode now parses `rg --json`** instead of
+   splitting ripgrep's `file:line:content` text on `:`. The structured stream is
+   parsed (path / line number / line text from both `match` **and** `context`
+   records) into the same `file:line:content` lines fed to fzf — the existing
+   `--delimiter ":"` / `--nth` field-scoping and the `{file, line, content}`
+   result shape are unchanged. This fixes three defects at once:
+   - advertised `-A`/`-B`/`-C` context records are now included (previously they
+     were dropped/mangled by the text parser);
+   - file paths containing `:` are no longer corrupted (no more colon-splitting
+     or Windows-drive-letter heuristic);
+   - non-UTF-8 / non-ASCII bytes survive (ripgrep's base64 `bytes` fallback is
+     decoded with replacement).
+2. **`rg_flags` is split with `shlex.split()`** rather than `str.split()`, so
+   quoted flag values (e.g. `--glob '!node_modules'`) are tokenized correctly.
+3. **Subprocess timeouts** on every `rg` / `rga` / `fzf` call (default 30s,
+   configurable via the `MCP_FUZZY_SEARCH_TIMEOUT` env var); a timeout returns a
+   structured `{"error": ...}` instead of hanging the server.
+4. **Multiline mode** skips binary files (NUL-byte detection) and accumulates
+   file contents in a list joined once with `b"".join(...)` instead of repeated
+   `bytes +=` concatenation (avoids quadratic-time rebuilds).
+5. **PyMuPDF documents are closed via `try`/`finally`** in every PDF tool
+   (`extract_pdf_pages`, `get_pdf_page_labels`, `get_pdf_page_count`,
+   `get_pdf_outline`) and in the document-search page-label cache, so error and
+   early-return paths no longer leak document handles.
+
+The test module (`tests/test_fuzzy_search.py`) was correspondingly updated: the
+subprocess mocks for `fuzzy_search_content` now feed `rg --json` records, and an
+over-specific fzf-ranking-dependent assertion in `test_fuzzy_search_content` was
+loosened (its previous `xfail` in `tests/conftest.py` was removed — it now
+passes for real).

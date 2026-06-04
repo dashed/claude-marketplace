@@ -5,6 +5,18 @@ documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.1.0] - 2026-06-04
+
+### Fixed
+- `fuzzy_search_content` standard mode now parses ripgrep's `--json` output instead of splitting `file:line:content` text on `:`, fixing broken `-A`/`-B`/`-C` context (context records are now included), file paths containing `:`, and non-UTF-8/non-ASCII encoding (base64 `bytes` fallback decoded with replacement). The `--delimiter ":"`/`--nth` fzf field-scoping and the `{file, line, content}` result shape are unchanged.
+- `rg_flags` are now tokenized with `shlex.split()` instead of `str.split()`, so quoted flag values (e.g. `--glob '!node_modules'`) are passed to ripgrep correctly.
+- Added subprocess timeouts (default 30s, configurable via `MCP_FUZZY_SEARCH_TIMEOUT`) to all `rg`/`rga`/`fzf` invocations; a timeout now returns a structured `{"error": ...}` instead of hanging the server.
+- Multiline content search now skips binary files (NUL-byte detection) and builds its fzf input with `b"".join(...)` instead of repeated `bytes` concatenation (avoids quadratic-time rebuilds).
+- PyMuPDF documents are now closed via `try`/`finally` in `extract_pdf_pages`, `get_pdf_page_labels`, `get_pdf_page_count`, `get_pdf_outline`, and the document-search page-label cache, so error and early-return paths no longer leak document handles.
+
+### Changed
+- Bundled server script and test module are no longer byte-verbatim from upstream `mcp-personal`; local patches are documented in the plugin README under "Local modifications". Removed a stale fzf-ranking `xfail` from the test suite (`test_fuzzy_search_content` now passes for real).
+
 ## [1.0.0] - 2026-06-04
 
 ### Added

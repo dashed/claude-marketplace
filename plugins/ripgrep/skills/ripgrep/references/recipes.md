@@ -381,6 +381,10 @@ fzf --ansi --disabled --query "$INITIAL_QUERY" \
 See the **fzf** skill's `references/integrations.md` for the full
 reload-vs-filter explanation and editor-launch variants.
 
+> For the **non-interactive** form — `rg --line-number --no-heading
+> --color=never . PATH | fzf --filter QUERY --delimiter : --nth=1,3..` to
+> fuzzy-rank content in a script (no TUI) — see the **fuzzy-filter** skill.
+
 ### fd | rg
 
 When you need file selection that ripgrep's globs/types can't express (by mtime,

@@ -41,31 +41,3 @@ def _chdir_to_scripts():
         yield
     finally:
         os.chdir(prev)
-
-
-def pytest_collection_modifyitems(items):
-    """Mark a known fzf-version-dependent assertion as xfail.
-
-    ``test_fuzzy_search_content`` asserts that a specific line ("implement"…)
-    ranks into the fuzzy-filtered results, but fzf's ranking changed in recent
-    versions (observed with fzf 0.55.0) so a different line ("# TODO: add error
-    handling") is returned instead. This failure is **pre-existing in the
-    upstream mcp-personal repo** — it reproduces identically there for both the
-    asyncio and trio variants — and is an over-specific assertion in the test,
-    not a defect in the bundled server (which is byte-verbatim from upstream).
-
-    We keep the test file verbatim and xfail the case here (non-strict, so it
-    is reported as xpass and not an error should a future fzf restore the old
-    ranking).
-    """
-    for item in items:
-        if item.originalname == "test_fuzzy_search_content":
-            item.add_marker(
-                pytest.mark.xfail(
-                    reason=(
-                        "fzf-ranking-dependent assertion; pre-existing upstream "
-                        "failure (mcp-personal), not a packaging/server issue"
-                    ),
-                    strict=False,
-                )
-            )

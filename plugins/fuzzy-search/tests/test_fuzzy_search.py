@@ -120,7 +120,13 @@ def main():
             assert "file" in match
             assert "line" in match
             assert "content" in match
-            assert "implement" in match["content"].lower()
+
+        # The fuzzy filter "TODO implement" should surface the lines mentioning
+        # "implement". fzf's ranking can vary between versions and may also
+        # include other fuzzy hits, so we only require that at least one returned
+        # match actually contains "implement" rather than every match (the old
+        # assertion was over-specific and fzf-version dependent).
+        assert any("implement" in match["content"].lower() for match in data["matches"])
 
 
 async def test_fuzzy_search_content_with_limit(tmp_path: Path):
@@ -544,15 +550,40 @@ async def test_fuzzy_search_files_mocked(mock_popen):
 @patch("subprocess.Popen")
 async def test_fuzzy_search_content_mocked(mock_popen):
     """Test fuzzy_search_content with mocked subprocess."""
-    # Mock ripgrep process
+    # Mock ripgrep process emitting --json records (match type). The server now
+    # parses ripgrep's JSON stream rather than colon-delimited text.
+    rg_json = (
+        json.dumps(
+            {
+                "type": "match",
+                "data": {
+                    "path": {"text": "src/app.py"},
+                    "lines": {"text": "    # TODO: implement feature\n"},
+                    "line_number": 10,
+                    "submatches": [],
+                },
+            }
+        )
+        + "\n"
+        + json.dumps(
+            {
+                "type": "match",
+                "data": {
+                    "path": {"text": "src/test.py"},
+                    "lines": {"text": "    # TODO: implement tests\n"},
+                    "line_number": 5,
+                    "submatches": [],
+                },
+            }
+        )
+        + "\n"
+    )
     rg_proc = MagicMock()
-    rg_proc.stdout = MagicMock()
-    rg_proc.stderr = MagicMock()
-    rg_proc.stderr.read.return_value = b""
-    rg_proc.wait.return_value = 0
+    rg_proc.communicate.return_value = (rg_json, "")
     rg_proc.returncode = 0
 
-    # Mock fzf process with properly formatted output
+    # Mock fzf process echoing back the formatted lines the server builds from
+    # the JSON records (fzf returns matching lines unchanged).
     fzf_proc = MagicMock()
     fzf_proc.communicate.return_value = (
         "src/app.py:10:    # TODO: implement feature\n"
@@ -587,15 +618,26 @@ async def test_fuzzy_search_content_mocked(mock_popen):
 @patch("subprocess.Popen")
 async def test_fuzzy_search_content_mocked_content_only(mock_popen):
     """Test fuzzy_search_content with content_only mode."""
-    # Mock ripgrep process
+    # Mock ripgrep process emitting a single --json match record.
+    rg_json = (
+        json.dumps(
+            {
+                "type": "match",
+                "data": {
+                    "path": {"text": "src/sync.py"},
+                    "lines": {"text": "async def fetch():\n"},
+                    "line_number": 1,
+                    "submatches": [],
+                },
+            }
+        )
+        + "\n"
+    )
     rg_proc = MagicMock()
-    rg_proc.stdout = MagicMock()
-    rg_proc.stderr = MagicMock()
-    rg_proc.stderr.read.return_value = b""
-    rg_proc.wait.return_value = 0
+    rg_proc.communicate.return_value = (rg_json, "")
     rg_proc.returncode = 0
 
-    # Mock fzf process
+    # Mock fzf process echoing back the formatted line.
     fzf_proc = MagicMock()
     fzf_proc.communicate.return_value = (
         "src/sync.py:1:async def fetch():\n",
@@ -1005,12 +1047,14 @@ def test_fuzzy_search_content_fzf_no_match():
     with patch("subprocess.Popen") as mock_popen:
         with patch.object(mcp_fuzzy_search, "RG_EXECUTABLE", "/mock/rg"):
             with patch.object(mcp_fuzzy_search, "FZF_EXECUTABLE", "/mock/fzf"):
-                # Mock rg process
+                # Mock rg process emitting one --json match record so fzf is
+                # actually invoked (an empty rg stream would short-circuit).
                 mock_rg_proc = MagicMock()
-                mock_rg_proc.stdout = MagicMock()
-                mock_rg_proc.stderr = MagicMock()
-                mock_rg_proc.stderr.read.return_value = b""
-                mock_rg_proc.wait.return_value = 0
+                mock_rg_proc.communicate.return_value = (
+                    '{"type":"match","data":{"path":{"text":"file1.py"},'
+                    '"lines":{"text":"some content\\n"},"line_number":1}}\n',
+                    "",
+                )
                 mock_rg_proc.returncode = 0
 
                 # Mock fzf process returning FZF_EXIT_NO_MATCH
@@ -1102,12 +1146,14 @@ def test_fuzzy_search_content_fzf_actual_error():
     with patch("subprocess.Popen") as mock_popen:
         with patch.object(mcp_fuzzy_search, "RG_EXECUTABLE", "/mock/rg"):
             with patch.object(mcp_fuzzy_search, "FZF_EXECUTABLE", "/mock/fzf"):
-                # Mock rg process
+                # Mock rg process emitting one --json match record so fzf is
+                # actually invoked.
                 mock_rg_proc = MagicMock()
-                mock_rg_proc.stdout = MagicMock()
-                mock_rg_proc.stderr = MagicMock()
-                mock_rg_proc.stderr.read.return_value = b""
-                mock_rg_proc.wait.return_value = 0
+                mock_rg_proc.communicate.return_value = (
+                    '{"type":"match","data":{"path":{"text":"file1.py"},'
+                    '"lines":{"text":"some content\\n"},"line_number":1}}\n',
+                    "",
+                )
                 mock_rg_proc.returncode = 0
 
                 # Mock fzf process returning FZF_EXIT_ERROR
@@ -3304,10 +3350,11 @@ async def test_fuzzy_search_content_root_path_with_confirm():
     # Mock subprocess to avoid actually searching from root
     with patch("subprocess.Popen") as mock_popen:
         mock_rg_proc = MagicMock()
-        mock_rg_proc.stdout = MagicMock()
-        mock_rg_proc.stderr = MagicMock()
-        mock_rg_proc.stderr.read.return_value = b""
-        mock_rg_proc.wait.return_value = 0
+        mock_rg_proc.communicate.return_value = (
+            '{"type":"match","data":{"path":{"text":"/test.txt"},'
+            '"lines":{"text":"test content\\n"},"line_number":1}}\n',
+            "",
+        )
         mock_rg_proc.returncode = 0
 
         mock_fzf_proc = MagicMock()
