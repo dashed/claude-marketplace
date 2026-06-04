@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.17.0] - 2026-06-04
+
+### Added
+- fzf skill: `references/version-features.md` — a "feature → minimum fzf version" lookup (mirrors the git skill's version-features pattern), and inline `(fzf X.Y+)` version annotations across SKILL.md and all reference files. Versions verified against the fzf v0.73.1 CHANGELOG section headers (fzf skill v1.1.0)
+
+### Changed
+- fzf skill: full accuracy/currency refresh against fzf v0.73.1 — documented `--popup` (Zellij support) as primary with `--tmux` as alias, added `dashed` border, `--nushell`, `--preview-window=next`, `--id-nth`, `every(N)` event, footer actions, and the `toggle-wrap-word` default rebind; corrected the `ALT-R`/`toggle-raw` description; documented the smart-case default; hardened the git integration recipes and added a `transform` example; softened the actions.md "complete reference" claim
+
 ## [0.16.0] - 2026-06-04
 
 ### Added
@@ -404,7 +412,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.16.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.17.0...HEAD
+[0.17.0]: https://github.com/dashed/claude-marketplace/compare/v0.16.0...v0.17.0
 [0.16.0]: https://github.com/dashed/claude-marketplace/compare/v0.15.2...v0.16.0
 [0.15.2]: https://github.com/dashed/claude-marketplace/compare/v0.15.1...v0.15.2
 [0.15.1]: https://github.com/dashed/claude-marketplace/compare/v0.15.0...v0.15.1

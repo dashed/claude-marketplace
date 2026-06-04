@@ -2,6 +2,8 @@
 
 Complete reference for all fzf command-line options.
 
+> **Version annotations:** Flags marked `(fzf X.Y+)` require at least that fzf version; unmarked flags are long-standing basics. For the consolidated feature→version lookup (and removed/changed defaults), see [references/version-features.md](version-features.md). This reference is documented against fzf 0.73.x — confirm on your system with `fzf --version`.
+
 ## Table of Contents
 
 - [Search Options](#search-options)
@@ -36,7 +38,7 @@ Complete reference for all fzf command-line options.
 
 | Option | Description |
 |--------|-------------|
-| `--scheme=SCHEME` | Scoring scheme: `default`, `path`, `history` |
+| `--scheme=SCHEME` | Scoring scheme: `default`, `path` (fzf 0.59+), `history` |
 | `--algo=TYPE` | Algorithm: `v2` (quality), `v1` (speed) |
 
 ### Field Processing
@@ -58,7 +60,7 @@ Complete reference for all fzf command-line options.
 **Tiebreak criteria:**
 - `length` - Shorter line preferred (default)
 - `chunk` - Shorter matched chunk
-- `pathname` - Match in filename preferred
+- `pathname` - Match in filename preferred (fzf 0.59+)
 - `begin` - Match closer to beginning
 - `end` - Match closer to end
 - `index` - Earlier in input (implicit last)
@@ -95,19 +97,24 @@ fzf --height=-N           # Terminal height minus N
 | `--height=HEIGHT[%]` | Non-fullscreen mode |
 | `--min-height=HEIGHT[+]` | Minimum height (with percentage height) |
 
-### tmux Mode
+### Popup Mode (tmux / Zellij)
 
 ```bash
-fzf --tmux [center|top|bottom|left|right][,SIZE[%]][,SIZE[%]]
+fzf --popup [center|top|bottom|left|right][,SIZE[%]][,SIZE[%]][,border-native]
 ```
+
+`--popup` (fzf 0.71+) opens fzf in a tmux popup **or** a Zellij floating pane — requires **tmux 3.3+** or **Zellij 0.44+**. Add `border-native` to use the multiplexer's own popup border instead of fzf's.
+
+`--tmux` (fzf 0.53+) is the older flag; as of fzf 0.71 it is a **back-compat alias for `--popup`** (same behavior, also targets Zellij). Prefer `--popup` in new scripts.
 
 Examples:
 ```bash
-fzf --tmux center         # Center, 50%
-fzf --tmux 80%            # Center, 80%
-fzf --tmux left,40%       # Left side, 40% width
-fzf --tmux bottom,30%     # Bottom, 30% height
-fzf --tmux top,80%,40%    # Top, 80% width, 40% height
+fzf --popup center            # Center, 50%
+fzf --popup 80%               # Center, 80%
+fzf --popup left,40%          # Left side, 40% width
+fzf --popup bottom,30%        # Bottom, 30% height
+fzf --popup top,80%,40%       # Top, 80% width, 40% height
+fzf --popup center,border-native  # Use the multiplexer's popup border
 ```
 
 ## Layout Options
@@ -128,7 +135,9 @@ fzf --tmux top,80%,40%    # Top, 80% width, 40% height
 | `--border-label-pos=N[:pos]` | Label position |
 
 **Border styles:**
-`rounded`, `sharp`, `bold`, `double`, `block`, `thinblock`, `horizontal`, `vertical`, `line`, `top`, `bottom`, `left`, `right`, `none`
+`rounded`, `sharp`, `bold`, `double`, `block`, `thinblock`, `dashed` (fzf 0.72+), `horizontal`, `vertical`, `line`, `top`, `bottom`, `left`, `right`, `none`
+
+(Applies to all border flags: `--border`, `--list-border`, `--input-border`, `--header-border`, `--footer-border`, `--preview-border`.)
 
 ## List Section Options
 
@@ -145,10 +154,11 @@ fzf --tmux top,80%,40%    # Top, 80% width, 40% height
 |--------|-------------|
 | `--highlight-line` | Highlight entire current line |
 | `--cycle` | Enable cyclic scroll |
-| `--wrap` | Enable line wrap |
-| `--wrap-sign=STR` | Indicator for wrapped lines |
+| `--wrap` | Enable line wrap (char-level) (fzf 0.54+) |
+| `--wrap=word`, `--wrap-word` | Word-level line wrap (fzf 0.68+) |
+| `--wrap-sign=STR` | Indicator for wrapped lines (fzf 0.54+) |
 | `--no-multi-line` | Disable multi-line items |
-| `--raw` | Show non-matching items (dimmed) |
+| `--raw` | Show non-matching items (dimmed) (fzf 0.66+) |
 | `--tac` | Reverse input order |
 | `--track` | Track current selection |
 
@@ -177,15 +187,15 @@ fzf --tmux top,80%,40%    # Top, 80% width, 40% height
 |--------|-------------|
 | `--gap[=N]` | Empty lines between items |
 | `--gap-line[=STR]` | Line character for gaps |
-| `--freeze-left=N` | Freeze N left fields |
-| `--freeze-right=N` | Freeze N right fields |
+| `--freeze-left=N` | Freeze N left fields (fzf 0.67+) |
+| `--freeze-right=N` | Freeze N right fields (fzf 0.67+) |
 | `--keep-right` | Keep right end visible |
 
 ### List Border
 
 | Option | Description |
 |--------|-------------|
-| `--list-border[=STYLE]` | Border around list |
+| `--list-border[=STYLE]` | Border around list (fzf 0.58+) |
 | `--list-label=LABEL` | List border label |
 | `--list-label-pos=N[:pos]` | Label position |
 
@@ -198,7 +208,7 @@ fzf --tmux top,80%,40%    # Top, 80% width, 40% height
 | `--info-command=CMD` | Custom info generator |
 | `--no-info` | Hide info line |
 | `--no-input` | Hide input section |
-| `--ghost=TEXT` | Ghost text when empty |
+| `--ghost=TEXT` | Ghost text when empty (fzf 0.61+) |
 | `--filepath-word` | Path-aware word movements |
 | `--separator=STR` | Separator line character |
 | `--no-separator` | Hide separator |
@@ -210,7 +220,7 @@ fzf --tmux top,80%,40%    # Top, 80% width, 40% height
 
 | Option | Description |
 |--------|-------------|
-| `--input-border[=STYLE]` | Border around input |
+| `--input-border[=STYLE]` | Border around input (fzf 0.58+) |
 | `--input-label=LABEL` | Input border label |
 | `--input-label-pos=N[:pos]` | Label position |
 
@@ -244,7 +254,7 @@ fzf --preview='COMMAND'
 fzf --preview-window=OPTS
 ```
 
-**Position:** `up`, `down`, `left`, `right` (default: right)
+**Position:** `up`, `down`, `left`, `right` (default: right), `next` (fzf 0.73+ — adjacent to the input section, on the list side: above the input by default, below it with `--layout=reverse`)
 
 **Options:**
 - `SIZE[%]` - Window size
@@ -271,6 +281,7 @@ fzf --preview-window='right,50%,border-left,+{2}+3/3,~3'
 | `--preview-border[=STYLE]` | Preview border style |
 | `--preview-label=LABEL` | Preview label |
 | `--preview-label-pos=N[:pos]` | Label position |
+| `--preview-wrap-sign=STR` | Indicator for wrapped lines in the preview (fzf 0.68+) |
 
 ## Header/Footer Options
 
@@ -281,17 +292,17 @@ fzf --preview-window='right,50%,border-left,+{2}+3/3,~3'
 | `--header=STR` | Sticky header text |
 | `--header-lines=N` | First N lines as header |
 | `--header-first` | Header before prompt |
-| `--header-border[=STYLE]` | Header border |
+| `--header-border[=STYLE]` | Header border (fzf 0.58+) |
 | `--header-label=LABEL` | Header label |
-| `--header-lines-border[=STYLE]` | Separate header lines |
+| `--header-lines-border[=STYLE]` | Separate header lines (fzf 0.59+) |
 
 ### Footer
 
 | Option | Description |
 |--------|-------------|
-| `--footer=STR` | Sticky footer text |
-| `--footer-border[=STYLE]` | Footer border |
-| `--footer-label=LABEL` | Footer label |
+| `--footer=STR` | Sticky footer text (fzf 0.63+) |
+| `--footer-border[=STYLE]` | Footer border (fzf 0.63+) |
+| `--footer-label=LABEL` | Footer label (fzf 0.63+) |
 
 ## Scripting Options
 
@@ -341,7 +352,7 @@ fzf --color=BASE_SCHEME
 ### Style Presets
 
 ```bash
-fzf --style=PRESET
+fzf --style=PRESET    # fzf 0.58+
 ```
 
 Presets: `default`, `minimal`, `full[:BORDER_STYLE]`
@@ -379,9 +390,10 @@ fzf --color='fg:#d0d0d0,bg:#121212,hl:#5f87af' \
 
 | Option | Description |
 |--------|-------------|
-| `--bash` | Print bash integration script |
-| `--zsh` | Print zsh integration script |
-| `--fish` | Print fish integration script |
+| `--bash` | Print bash integration script (fzf 0.48+) |
+| `--zsh` | Print zsh integration script (fzf 0.48+) |
+| `--fish` | Print fish integration script (fzf 0.48+, requires fish 3.4.0+ as of fzf 0.71) |
+| `--nushell` | Print Nushell integration script (fzf 0.73+) |
 
 ## Advanced Options
 
@@ -393,7 +405,9 @@ fzf --color='fg:#d0d0d0,bg:#121212,hl:#5f87af' \
 | `--listen-unsafe[=ADDR:PORT]` | Allow remote execution |
 | `--jump-labels=CHARS` | Characters for jump mode |
 | `--tabstop=N` | Tab width (default: 8) |
-| `--gutter=CHAR` | Gutter character |
+| `--gutter=CHAR` | Gutter column character (fzf 0.66+) |
+| `--gutter-raw=CHAR` | Gutter character in raw mode; pairs with `--raw` (fzf 0.66+) |
+| `--id-nth=N[,..]` | Item identity fields for cross-reload tracking; use with `--track` to keep the cursor on the same item across `reload` (fzf 0.71+) |
 
 ## Other Options
 

@@ -2,6 +2,8 @@
 
 Recipes for integrating fzf with other tools.
 
+> **Version note:** A few recipes use binds/actions added in specific fzf releases — `become()` (fzf 0.38+; Windows 0.51+), the `transform` action (fzf 0.45+), and `--tmux` (fzf 0.53+; aliased to `--popup` in 0.71+). These are flagged inline below. Core actions used throughout (`reload`, `change-prompt`, `change-preview-window`, `transform-query`, `enable-search`/`disable-search`, `rebind`/`unbind`, the `start` event) predate ~0.38 and are long-standing. For the full feature → version map, see [references/version-features.md](version-features.md).
+
 ## Table of Contents
 
 - [ripgrep Integration](#ripgrep-integration)
@@ -33,7 +35,7 @@ rg --line-number --no-heading --color=always '' |
 rg --line-number --no-heading --color=always '' |
   fzf --ansi --delimiter : \
       --preview 'bat --color=always {1} --highlight-line {2}' \
-      --bind 'enter:become(vim {1} +{2})'
+      --bind 'enter:become(vim {1} +{2})'  # become(): fzf 0.38+ (Windows 0.51+)
 ```
 
 ### Interactive ripgrep (fzf as Frontend)
@@ -76,6 +78,34 @@ fzf --ansi --disabled --query "${*:-}" \
     --bind 'enter:become(vim {1} +{2})'
 ```
 
+### Unified ripgrep/fzf Toggle (single `transform` bind)
+
+The `transform` action (fzf 0.45+) is the modern idiom for **dynamic action
+generation**: the bound command prints a sequence of actions to stdout at
+runtime, and fzf executes whatever it printed. This collapses the two-bind
+toggle above into one `CTRL-T` bind that branches on the current prompt.
+
+```bash
+#!/usr/bin/env bash
+# One CTRL-T bind generates the mode-switch actions at runtime via `transform`
+rm -f /tmp/rg-fzf-{r,f}
+RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case "
+
+fzf --ansi --disabled --query "${*:-}" \
+    --bind "start:reload:$RG_PREFIX {q}" \
+    --bind "change:reload:sleep 0.1; $RG_PREFIX {q} || true" \
+    --bind 'ctrl-t:transform:[[ ! $FZF_PROMPT =~ ripgrep ]] &&
+      echo "rebind(change)+change-prompt(1. ripgrep> )+disable-search+transform-query:echo \{q} > /tmp/rg-fzf-f; cat /tmp/rg-fzf-r" ||
+      echo "unbind(change)+change-prompt(2. fzf> )+enable-search+transform-query:echo \{q} > /tmp/rg-fzf-r; cat /tmp/rg-fzf-f"' \
+    --color "hl:-1:underline,hl+:-1:underline:reverse" \
+    --prompt '1. ripgrep> ' \
+    --delimiter : \
+    --header 'CTRL-T: switch between ripgrep / fzf mode' \
+    --preview 'bat --color=always {1} --highlight-line {2}' \
+    --preview-window 'up,60%,border-bottom,+{2}+3/3,~3' \
+    --bind 'enter:become(vim {1} +{2})'  # transform: fzf 0.45+ · become(): fzf 0.38+
+```
+
 ## fd Integration
 
 ### File Search with Preview
@@ -84,7 +114,7 @@ fzf --ansi --disabled --query "${*:-}" \
 # Find files with preview
 fd --type f --hidden --follow --exclude .git |
   fzf --preview 'bat --color=always {}' \
-      --bind 'enter:become(vim {})'
+      --bind 'enter:become(vim {})'  # become(): fzf 0.38+ (Windows 0.51+)
 ```
 
 ### Set as Default Command
@@ -146,8 +176,13 @@ fzf --preview 'bat --color=always --style=plain {}'
 ### Select Branches
 
 ```bash
-# Checkout branch
-git branch --all | fzf | xargs git checkout
+# Checkout branch — strip the `* `/indent marker and any remotes/origin/ prefix
+# (a bare `git branch | fzf | xargs git checkout` passes the `* ` marker and
+#  `remotes/origin/` prefix straight to checkout, which fails)
+git branch --all |
+  fzf |
+  sed 's/^[* ]*//' | sed 's/remotes\/origin\///' |
+  xargs git checkout
 
 # With preview of recent commits
 git branch --all |
@@ -180,6 +215,13 @@ git status --short |
   awk '{print $2}' |
   xargs git add
 ```
+
+> **Note:** `awk '{print $2}'` (and the `{2}` placeholder) take the second
+> whitespace field, which is fine for simple `XY path` lines but **mishandles
+> renames** (`R  old -> new` — `$2` is `old`) and any path containing spaces.
+> Untracked entries (`??`) are included here, which is usually intended for
+> staging but not for the diff preview. Good enough for a quick recipe; reach
+> for `git status --porcelain -z` parsing if you need rename/space safety.
 
 ### View Changed Files
 
@@ -306,9 +348,12 @@ tmux list-windows -a -F '#S:#W' |
 ### tmux Popup
 
 ```bash
-# Use fzf in tmux popup
+# Use fzf in tmux popup (fzf 0.53+; needs tmux 3.3+)
 fzf --tmux center,80%
 ```
+
+> `--tmux` replaces the legacy `fzf-tmux` script. In fzf 0.71+ it is an alias
+> for `--popup`, which also targets Zellij floating panes (Zellij 0.44+).
 
 ## Shell Function Recipes
 

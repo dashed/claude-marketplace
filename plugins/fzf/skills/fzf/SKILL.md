@@ -13,7 +13,7 @@ fzf is a general-purpose command-line fuzzy finder. It reads a list of items fro
 - **Fast**: Processes millions of items instantly
 - **Portable**: Single binary, works everywhere
 - **Versatile**: Customizable via event-action binding mechanism
-- **Integrated**: Built-in shell integrations for bash, zsh, and fish
+- **Integrated**: Built-in shell integrations for bash, zsh, fish, and Nushell
 
 ## When to Use This Skill
 
@@ -32,6 +32,8 @@ Use fzf when:
 ```bash
 fzf --version
 ```
+
+**Version note:** This skill is documented against **fzf 0.73.x**. The `fzf --bash`/`--zsh`/`--fish` integration flags require **fzf ≥0.48**, `--nushell` requires **≥0.73**, and `--tmux`/`--popup` are newer still. For the version that introduced any specific feature, see [references/version-features.md](references/version-features.md).
 
 **If fzf is not installed:**
 - **DO NOT** attempt to install it automatically
@@ -72,7 +74,12 @@ source <(fzf --zsh)
 
 # Fish (~/.config/fish/config.fish)
 fzf --fish | source
+
+# Nushell (fzf 0.73+) — write to a Nushell autoload dir
+fzf --nushell | save -f ($nu.user-autoload-dirs | first | path join "_fzf_integration.nu")
 ```
+
+The `--bash`/`--zsh`/`--fish` flags require **fzf ≥0.48**; `--nushell` requires **fzf ≥0.73**.
 
 ### Key Bindings (requires shell integration)
 
@@ -84,7 +91,7 @@ fzf --fish | source
 
 **CTRL-R extras:**
 - Press `CTRL-R` again to toggle sort by relevance
-- Press `ALT-R` to toggle raw mode (see surrounding items)
+- Press `ALT-R` to toggle between the cleaned and raw history line (`toggle-raw`, fzf 0.66+)
 - Press `CTRL-/` or `ALT-/` to toggle line wrapping
 
 ### Fuzzy Completion (`**<TAB>`)
@@ -188,15 +195,17 @@ seq 5 | fzf --height ~100%
 fzf --height 40% --layout reverse --border
 ```
 
-### tmux Mode
+### tmux Mode (fzf 0.53+)
 
 ```bash
-# Open in tmux popup (requires tmux 3.3+)
+# Open in tmux popup (requires tmux 3.3+ or Zellij 0.44+)
 fzf --tmux center         # Center, 50% width/height
 fzf --tmux 80%            # Center, 80% width/height
 fzf --tmux left,40%       # Left side, 40% width
 fzf --tmux bottom,30%     # Bottom, 30% height
 ```
+
+In fzf 0.71+, `--popup` is the newer name (it also targets Zellij floating panes); `--tmux` still works as an alias.
 
 ## Essential Options
 
@@ -214,9 +223,11 @@ fzf --tmux bottom,30%     # Bottom, 30% height
 ### Search Behavior
 
 ```bash
+# Default is smart-case: case-insensitive until the query
+# contains an uppercase letter, then case-sensitive.
 -e, --exact            # Exact match (disable fuzzy)
--i                     # Case-insensitive
-+i                     # Case-sensitive
+-i                     # Force case-insensitive (override smart-case)
++i                     # Force case-sensitive (override smart-case)
 --scheme=SCHEME        # default, path, history
 --algo=TYPE            # v2 (quality), v1 (performance)
 ```
@@ -271,7 +282,7 @@ fzf --bind 'enter:become(vim {})'
 | Action | Description |
 |--------|-------------|
 | `reload(cmd)` | Reload list from command |
-| `become(cmd)` | Replace fzf with command |
+| `become(cmd)` | Replace fzf with command (fzf 0.38+) |
 | `execute(cmd)` | Run command, return to fzf |
 | `execute-silent(cmd)` | Run command silently |
 | `preview(cmd)` | Change preview command |
@@ -414,6 +425,7 @@ For detailed documentation on advanced features, see:
 - [references/actions.md](references/actions.md) - Complete list of bindable actions
 - [references/options.md](references/options.md) - Full options reference
 - [references/integrations.md](references/integrations.md) - ripgrep, fd, git, bat integrations
+- [references/version-features.md](references/version-features.md) - Which fzf version introduced each feature (minimum-version lookup)
 
 ## Troubleshooting
 

@@ -1,6 +1,15 @@
 # fzf Actions Reference
 
-Complete reference for all bindable actions in fzf.
+Reference for fzf's bindable actions and events. This covers the actions you'll
+reach for in practice, not every action the binary defines — for the exhaustive,
+always-current list, run `man fzf` and read the **AVAILABLE ACTIONS** section
+(or check `src/actiontype_string.go` in the fzf source).
+
+Version-specific actions and events are annotated `(fzf X.Y+)`, marking the
+release that introduced them. Actions without an annotation are long-standing
+(predate ~0.38). For the full feature → version map, see
+[references/version-features.md](version-features.md). This skill documents fzf
+**0.73.x**; confirm with `fzf --version`.
 
 ## Table of Contents
 
@@ -69,19 +78,19 @@ action-name:...     # Special: no closing char needed (must be last)
 |--------|-----------------|-------------|
 | `up` | `ctrl-k`, `up` | Move cursor up |
 | `down` | `ctrl-j`, `down` | Move cursor down |
-| `first` | - | Move to first match |
-| `last` | - | Move to last match |
-| `best` | - | Move to best match |
+| `first` | - | Move to first match (same as `pos(1)`) |
+| `last` | - | Move to last match (same as `pos(-1)`) |
+| `best` | - | Move to best match; same as `first` unless raw mode is on (fzf 0.66+) |
 | `pos(N)` | - | Move to position N (negative counts from end) |
 
 ### Match Navigation
 
 | Action | Default Binding | Description |
 |--------|-----------------|-------------|
-| `up-match` | `ctrl-p`, `alt-up` | Move to match above cursor |
-| `down-match` | `ctrl-n`, `alt-down` | Move to match below cursor |
-| `up-selected` | - | Move to selected item above |
-| `down-selected` | - | Move to selected item below |
+| `up-match` | `ctrl-p`, `alt-up` | Move to match above cursor (fzf 0.66+; default `ctrl-p` only when `--history` unset) |
+| `down-match` | `ctrl-n`, `alt-down` | Move to match below cursor (fzf 0.66+; default `ctrl-n` only when `--history` unset) |
+| `up-selected` | - | Move to selected item above (synonym: `prev-selected`) |
+| `down-selected` | - | Move to selected item below (synonym: `next-selected`) |
 
 ### Page Movement
 
@@ -120,6 +129,7 @@ action-name:...     # Special: no closing char needed (must be last)
 | `preview-top` | - | Scroll to preview top |
 | `preview-bottom` | - | Scroll to preview bottom |
 | `toggle-preview-wrap` | - | Toggle line wrap in preview |
+| `toggle-preview-wrap-word` | - | Toggle word-level wrap in preview (fzf 0.68+) |
 
 ### Preview Window Options
 
@@ -138,8 +148,8 @@ action-name:...     # Special: no closing char needed (must be last)
 | `change-query(str)` | - | Set query to string |
 | `replace-query` | - | Replace query with current selection |
 | `transform-query(cmd)` | - | Transform query with command output |
-| `search(str)` | - | Trigger fzf search with string |
-| `transform-search(cmd)` | - | Search with command output |
+| `search(str)` | - | Trigger fzf search with string (fzf 0.59+) |
+| `transform-search(cmd)` | - | Search with command output (fzf 0.59+) |
 
 ### Line Editing
 
@@ -151,10 +161,16 @@ action-name:...     # Special: no closing char needed (must be last)
 | `forward-word` | `alt-f`, `shift-right` | Move to next word |
 | `beginning-of-line` | `ctrl-a`, `home` | Move to line start |
 | `end-of-line` | `ctrl-e`, `end` | Move to line end |
-| `backward-delete-char` | `ctrl-h`, `bspace` | Delete char before cursor |
+| `backward-delete-char` | `ctrl-h`, `ctrl-bspace`, `bspace` | Delete char before cursor |
+| `backward-delete-char/eof` | - | Like `backward-delete-char`, but aborts fzf when the query is empty |
 | `delete-char` | `del` | Delete char at cursor |
+| `delete-char/eof` | `ctrl-d` | Like `delete-char`, but aborts fzf when the query is empty |
 | `backward-kill-word` | `alt-bs` | Delete word before cursor |
 | `kill-word` | `alt-d` | Delete word after cursor |
+| `backward-subword` | - | Move to previous subword boundary (fzf 0.66+) |
+| `forward-subword` | - | Move to next subword boundary (fzf 0.66+) |
+| `kill-subword` | - | Delete subword after cursor (fzf 0.66+) |
+| `backward-kill-subword` | - | Delete subword before cursor (fzf 0.66+) |
 | `kill-line` | - | Delete to end of line |
 | `unix-line-discard` | `ctrl-u` | Delete entire line |
 | `unix-word-rubout` | `ctrl-w` | Delete word (Unix style) |
@@ -187,16 +203,20 @@ action-name:...     # Special: no closing char needed (must be last)
 |--------|-------------|
 | `change-prompt(str)` | Change prompt text |
 | `transform-prompt(cmd)` | Transform prompt with command |
-| `change-header(str)` | Change header text |
+| `change-header(str)` | Change header text (doesn't affect `--header-lines`) |
 | `transform-header(cmd)` | Transform header with command |
+| `change-header-lines(N)` | Change the number of `--header-lines` (fzf 0.70+) |
+| `change-footer(str)` | Change footer text (fzf 0.63+) |
 | `change-border-label(str)` | Change border label |
 | `transform-border-label(cmd)` | Transform border label |
 | `change-list-label(str)` | Change list label |
 | `change-input-label(str)` | Change input label |
 | `change-header-label(str)` | Change header label |
-| `change-ghost(str)` | Change ghost text |
-| `change-pointer(str)` | Change pointer character |
-| `change-nth(expr)` | Change --nth option |
+| `change-footer-label(str)` | Change footer label (fzf 0.63+) |
+| `change-ghost(str)` | Change ghost text (fzf 0.61+) |
+| `change-pointer(str)` | Change pointer character (fzf 0.61+) |
+| `change-nth(expr)` | Change `--nth` option (rotate through `\|`-separated sets) |
+| `change-with-nth(expr)` | Change `--with-nth` option; requires `--with-nth` set initially (fzf 0.70+) |
 
 ### Visibility Toggles
 
@@ -218,15 +238,22 @@ action-name:...     # Special: no closing char needed (must be last)
 | `toggle-search` | Toggle search functionality |
 | `enable-search` | Enable search |
 | `disable-search` | Disable search |
-| `toggle-wrap` | Toggle line wrap |
+| `toggle-wrap` | Toggle char-level line wrap (fzf 0.54+; **not** the `ctrl-/` default since 0.68 — see note below) |
+| `toggle-wrap-word` | Toggle word-level line wrap — **bound to `ctrl-/` and `alt-/` by default** (fzf 0.68+) |
 | `toggle-hscroll` | Toggle horizontal scroll |
 | `toggle-track` | Toggle global tracking |
 | `track-current` | Track current item |
-| `toggle-track-current` | Toggle tracking current item |
-| `toggle-raw` | Toggle raw mode |
-| `enable-raw` | Enable raw mode |
-| `disable-raw` | Disable raw mode |
+| `toggle-track-current` | Toggle tracking current item (fzf 0.49+) |
+| `untrack-current` | Stop tracking current item; no-op if global tracking is on (fzf 0.49+) |
+| `toggle-raw` | Toggle raw mode (fzf 0.66+) |
+| `enable-raw` | Enable raw mode (fzf 0.66+) |
+| `disable-raw` | Disable raw mode (fzf 0.66+) |
 | `toggle-multi-line` | Toggle multi-line display |
+
+> **`ctrl-/` and `alt-/` default to `toggle-wrap-word`, not `toggle-wrap`.**
+> fzf 0.54 introduced `toggle-wrap` and bound `ctrl-/`/`alt-/` to it; fzf 0.68
+> added `toggle-wrap-word` and **rebound those keys to it**. Bind `toggle-wrap`
+> explicitly if you want char-level wrapping.
 
 ## Command Execution
 
@@ -249,7 +276,7 @@ fzf --bind 'ctrl-y:execute-silent(echo {} | pbcopy)'
 
 ### become()
 
-Replace fzf with command (using execve):
+Replace fzf with command (using execve) — fzf 0.38+ (Windows support added in 0.51):
 
 ```bash
 fzf --bind 'enter:become(vim {})'
@@ -304,23 +331,28 @@ fzf --bind 'enter:transform:[[ -n {} ]] && echo accept || echo abort'
 
 | Action | Description |
 |--------|-------------|
-| `transform(cmd)` | Run cmd, output is action sequence |
+| `transform(cmd)` | Run cmd, output is action sequence (fzf 0.45+) |
 | `transform-query(cmd)` | Set query to command output |
 | `transform-prompt(cmd)` | Set prompt to command output |
 | `transform-header(cmd)` | Set header to command output |
+| `transform-header-lines(cmd)` | Set `--header-lines` count from command output (fzf 0.70+) |
+| `transform-footer(cmd)` | Set footer to command output (fzf 0.63+) |
 | `transform-border-label(cmd)` | Set border label |
 | `transform-preview-label(cmd)` | Set preview label |
 | `transform-list-label(cmd)` | Set list label |
 | `transform-input-label(cmd)` | Set input label |
 | `transform-header-label(cmd)` | Set header label |
-| `transform-ghost(cmd)` | Set ghost text |
-| `transform-pointer(cmd)` | Set pointer |
-| `transform-nth(cmd)` | Set nth option |
-| `transform-search(cmd)` | Trigger search with output |
+| `transform-footer-label(cmd)` | Set footer label (fzf 0.63+) |
+| `transform-ghost(cmd)` | Set ghost text (fzf 0.61+) |
+| `transform-pointer(cmd)` | Set pointer (fzf 0.61+) |
+| `transform-nth(cmd)` | Set `--nth` option (fzf 0.59+) |
+| `transform-with-nth(cmd)` | Set `--with-nth` option (fzf 0.70+) |
+| `transform-search(cmd)` | Trigger search with output (fzf 0.59+) |
 
 ### Background Transform
 
-Each transform has a `bg-transform*` variant for async execution:
+Each `transform*` action has a `bg-transform*` variant for async execution, plus
+`bg-cancel` to cancel running background transforms (all fzf 0.63+):
 
 ```bash
 # Won't block UI
@@ -365,7 +397,8 @@ Events trigger actions automatically based on state changes.
 | `jump` | Successfully jumped in jump mode |
 | `jump-cancel` | Jump mode cancelled |
 | `click-header` | Mouse click in header |
-| `click-footer` | Mouse click in footer |
+| `click-footer` | Mouse click in footer (fzf 0.63+) |
+| `every(N)` | Every `N` seconds (`N` may be fractional, min `0.01`) (fzf 0.73+) |
 
 ### Event Examples
 
@@ -381,6 +414,9 @@ fzf --bind 'focus:transform-header:file --brief {}'
 
 # Initialize after load
 fzf --sync --bind 'load:select-all'
+
+# Timer-driven refresh: reload a process list every 2 seconds (fzf 0.73+)
+fzf --bind 'start,every(2):reload-sync(ps -ef)'
 ```
 
 ## Miscellaneous Actions
@@ -390,6 +426,7 @@ fzf --sync --bind 'load:select-all'
 | `ignore` | Do nothing |
 | `bell` | Ring terminal bell |
 | `jump` | EasyMotion-like 2-keystroke movement |
+| `sigstop` | Suspend fzf with `SIGSTOP` (default `ctrl-z`; resume with `fg`) |
 | `exclude` | Exclude current item from results |
 | `exclude-multi` | Exclude selected items from results |
 
@@ -403,10 +440,25 @@ Available in command execution:
 | `FZF_ACTION` | Name of last action |
 | `FZF_KEY` | Name of last key pressed |
 | `FZF_PROMPT` | Current prompt string |
+| `FZF_POINTER` | Current pointer string |
+| `FZF_GHOST` | Current ghost string |
 | `FZF_MATCH_COUNT` | Number of matches |
 | `FZF_SELECT_COUNT` | Number of selections |
 | `FZF_TOTAL_COUNT` | Total items |
 | `FZF_POS` | Current position (1-based) |
+| `FZF_CURRENT_ITEM` | Text of the current item; unset if the list is empty (fzf 0.73+) |
 | `FZF_LINES` | fzf height in lines |
 | `FZF_COLUMNS` | fzf width in columns |
-| `FZF_PORT` | HTTP server port (with --listen) |
+| `FZF_DIRECTION` | List direction (`up` or `down`) |
+| `FZF_INPUT_STATE` | Input state (`enabled`, `disabled`, `hidden`) |
+| `FZF_NTH` | Current `--nth` option |
+| `FZF_WITH_NTH` | Current `--with-nth` option |
+| `FZF_WRAP` | Wrapping mode (`char` / `word`) when enabled (fzf 0.68+) |
+| `FZF_RAW` | In raw mode only: `1` if current item matches, else `0` (fzf 0.66+) |
+| `FZF_IDLE_TIME` | Whole seconds since last user activity (fzf 0.73+) |
+| `FZF_IDLE_TIME_MS` | Milliseconds since last user activity (fzf 0.73+) |
+| `FZF_CLICK_HEADER_WORD` | Clicked word, on `click-header` (fzf 0.59+) |
+| `FZF_CLICK_HEADER_NTH` | Clicked field index, on `click-header` (fzf 0.59+) |
+| `FZF_CLICK_FOOTER_WORD` | Clicked word, on `click-footer` (fzf 0.63+) |
+| `FZF_PORT` | HTTP server port (with `--listen`) |
+| `FZF_SOCK` | Unix socket path (with `--listen` on a `.sock` path) (fzf 0.66+) |

@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.16.0"
+    "version": "0.17.0"
   },
   "plugins": [
     {
@@ -169,7 +169,7 @@
     },
     {
       "name": "fzf",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "source": "./plugins/fzf",
       "description": "Command-line fuzzy finder for interactive filtering. Use when searching files, command history (CTRL-R), creating interactive menus, or integrating with ripgrep, fd, and git. Triggers on fzf, fuzzy finder, ** completion, or CTRL-T/CTRL-R/ALT-C keybindings.",
       "author": {
