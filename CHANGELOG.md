@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.25.0] - 2026-06-05
+
+### Added
+- obsidian-bases skill: new skill for authoring **Obsidian Bases** (`.base` files) — the YAML format that turns notes into database-like table/cards/list/map views with filters, computed formulas, and summary aggregations — ported **verbatim** from the upstream [obsidian-bases](https://github.com/kepano/obsidian-skills/tree/main/skills/obsidian-bases) skill by Steph Ango (@kepano), MIT (obsidian-bases skill v1.0.0). Ships a `SKILL.md` spine (creation workflow; the `.base` schema; filter syntax + operators and recursive and/or/not; the three property types and the `file.*` properties table; the `this` keyword; formula syntax; key functions + the Duration `.days` caveat and date arithmetic; the four view types; default summary formulas; three complete worked examples — task tracker, reading list, daily-notes index; base embedding; YAML quoting rules; troubleshooting) plus `references/FUNCTIONS_REFERENCE.md` (the complete per-type function reference: global, Any, Date, Duration, String, Number, List, File, Link, Object, RegExp). The reference file is byte-identical to upstream; `SKILL.md` adds only a `## Credits` attribution block
+
 ## [0.24.1] - 2026-06-05
 
 ### Fixed
@@ -467,7 +472,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.24.1...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.25.0...HEAD
+[0.25.0]: https://github.com/dashed/claude-marketplace/compare/v0.24.1...v0.25.0
 [0.24.1]: https://github.com/dashed/claude-marketplace/compare/v0.24.0...v0.24.1
 [0.24.0]: https://github.com/dashed/claude-marketplace/compare/v0.23.0...v0.24.0
 [0.23.0]: https://github.com/dashed/claude-marketplace/compare/v0.22.0...v0.23.0
