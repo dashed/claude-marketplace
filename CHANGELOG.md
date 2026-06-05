@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.25.1] - 2026-06-05
+
+### Added
+- obsidian-bases skill: folded in four stable items from the current official Bases docs that the upstream port omitted (obsidian-bases skill v1.0.1) — each verified against help.obsidian.md before adding:
+  - `random()` global function (`random(): number`, refreshes on each view load) in `references/FUNCTIONS_REFERENCE.md`. Source: https://help.obsidian.md/bases/functions
+  - `file.file` property (the file object itself, only usable in specific functions) in the `SKILL.md` file-properties table. Source: https://help.obsidian.md/bases/syntax
+  - an Arithmetic Operators table (`+` `-` `*` `/` `%` `( )`) under Formula Syntax in `SKILL.md`. Source: https://help.obsidian.md/bases/syntax
+  - the inline `base` code-block embed method (define a base in a note via a fenced ` ```base ` block) in `SKILL.md`. Source: https://help.obsidian.md/bases/syntax
+  - `SKILL.md` `## Credits` now notes these local additions.
+- Deliberately NOT added (could not be confirmed against the official docs): a view-level `sort:` YAML key (docs show only `order`/`groupBy`; sorting is UI-only on the Views page) and Duration `.years`/`.months`/`.weeks` fields (the official functions page has no Duration field table at all). Left out to avoid shipping unverified syntax.
+
 ## [0.25.0] - 2026-06-05
 
 ### Added
@@ -472,7 +483,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.25.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.25.1...HEAD
+[0.25.1]: https://github.com/dashed/claude-marketplace/compare/v0.25.0...v0.25.1
 [0.25.0]: https://github.com/dashed/claude-marketplace/compare/v0.24.1...v0.25.0
 [0.24.1]: https://github.com/dashed/claude-marketplace/compare/v0.24.0...v0.24.1
 [0.24.0]: https://github.com/dashed/claude-marketplace/compare/v0.23.0...v0.24.0

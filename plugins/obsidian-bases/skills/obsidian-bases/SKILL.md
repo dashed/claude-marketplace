@@ -140,6 +140,7 @@ filters:
 | `file.backlinks` | List | Files linking to this file |
 | `file.embeds` | List | Embeds in the note |
 | `file.properties` | Object | All frontmatter properties |
+| `file.file` | File | The file object itself (only usable in specific functions) |
 
 ### The `this` Keyword
 
@@ -171,6 +172,17 @@ formulas:
   # Calculate days until due date
   days_until_due: 'if(due_date, (date(due_date) - today()).days, "")'
 ```
+
+### Arithmetic Operators
+
+| Operator | Description |
+|----------|-------------|
+| `+` | plus |
+| `-` | minus |
+| `*` | multiply |
+| `/` | divide |
+| `%` | modulo |
+| `( )` | parentheses (grouping) |
 
 ## Key Functions
 
@@ -413,7 +425,7 @@ views:
 
 ## Embedding Bases
 
-Embed in Markdown files:
+Embed a `.base` file in Markdown:
 
 ```markdown
 ![[MyBase.base]]
@@ -421,6 +433,22 @@ Embed in Markdown files:
 <!-- Specific view -->
 ![[MyBase.base#View Name]]
 ```
+
+You can also define a base **inline** in a note using a fenced `base` code block (the block body is the same YAML as a `.base` file):
+
+````markdown
+```base
+filters:
+  and:
+    - file.hasTag("book")
+views:
+  - type: table
+    name: "Books"
+    order:
+      - file.name
+      - author
+```
+````
 
 ## YAML Quoting Rules
 
@@ -498,4 +526,4 @@ formulas:
 
 ## Credits
 
-Ported from the [obsidian-bases](https://github.com/kepano/obsidian-skills/tree/main/skills/obsidian-bases) skill by Steph Ango (@kepano), licensed under MIT.
+Ported from the [obsidian-bases](https://github.com/kepano/obsidian-skills/tree/main/skills/obsidian-bases) skill by Steph Ango (@kepano), licensed under MIT. This copy adds a few items from the current [official Bases docs](https://help.obsidian.md/bases/syntax) (the `random()` function, the `file.file` property, the arithmetic-operators table, and the inline `base` code-block embed).

@@ -4,6 +4,19 @@ All notable changes to the obsidian-bases skill in this marketplace will be docu
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.0.1] - 2026-06-05
+
+### Added
+- Folded in four stable items from the current official Bases docs that the upstream port omitted (each verified against help.obsidian.md before adding):
+  - `random()` global function (`random(): number`, refreshes on each view load) in `references/FUNCTIONS_REFERENCE.md`. Source: https://help.obsidian.md/bases/functions
+  - `file.file` property (the file object itself, only usable in specific functions) in the `SKILL.md` file-properties table. Source: https://help.obsidian.md/bases/syntax
+  - an Arithmetic Operators table (`+` `-` `*` `/` `%` `( )`) under Formula Syntax in `SKILL.md`. Source: https://help.obsidian.md/bases/syntax
+  - the inline `base` code-block embed method (define a base in a note via a fenced ` ```base ` block) in `SKILL.md`. Source: https://help.obsidian.md/bases/syntax
+- `SKILL.md` `## Credits` now records these local additions.
+
+### Notes
+- Deliberately left out (unverifiable against official docs): a view-level `sort:` YAML key (sorting is documented only as a UI interaction; the schema shows `order`/`groupBy`) and Duration `.years`/`.months`/`.weeks` fields (no Duration field table exists in the official functions docs). Omitted to avoid shipping unverified syntax.
+
 ## [1.0.0] - 2026-06-05
 
 ### Added

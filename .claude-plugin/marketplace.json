@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.25.0"
+    "version": "0.25.1"
   },
   "plugins": [
     {
@@ -757,7 +757,7 @@
     },
     {
       "name": "obsidian-bases",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "source": "./plugins/obsidian-bases",
       "description": "Create and edit Obsidian Bases (.base files) with views, filters, formulas, and summaries. Use when working with .base files, creating database-like views of notes, or when the user mentions Bases, table views, card views, filters, or formulas in Obsidian.",
       "author": {

@@ -12,6 +12,7 @@
 | `min()` | `min(n1, n2, ...): number` | Smallest number |
 | `max()` | `max(n1, n2, ...): number` | Largest number |
 | `number()` | `number(any): number` | Convert to number |
+| `random()` | `random(): number` | Random number between 0 and 1 (refreshes on each view load) |
 | `link()` | `link(path, display?): Link` | Create a link |
 | `list()` | `list(element): List` | Wrap in list if not already |
 | `file()` | `file(path): file` | Get file object |
