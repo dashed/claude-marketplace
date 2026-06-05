@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.23.0"
+    "version": "0.24.0"
   },
   "plugins": [
     {
@@ -729,6 +729,28 @@
         "devops",
         "yaml",
         "cli"
+      ],
+      "strict": false,
+      "skills": ["./skills"]
+    },
+    {
+      "name": "obsidian-markdown",
+      "version": "1.0.0",
+      "source": "./plugins/obsidian-markdown",
+      "description": "Create and edit Obsidian Flavored Markdown with wikilinks, embeds, callouts, properties, and other Obsidian-specific syntax. Use when working with .md files in Obsidian, or when the user mentions wikilinks, callouts, frontmatter, tags, embeds, or Obsidian notes.",
+      "author": {
+        "name": "Steph Ango"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/obsidian-markdown",
+      "license": "MIT",
+      "keywords": [
+        "obsidian",
+        "markdown",
+        "wikilinks",
+        "callouts",
+        "frontmatter",
+        "notes",
+        "pkm"
       ],
       "strict": false,
       "skills": ["./skills"]

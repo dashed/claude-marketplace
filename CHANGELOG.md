@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.24.0] - 2026-06-05
+
+### Added
+- obsidian-markdown skill: new skill for authoring **Obsidian Flavored Markdown** — the Obsidian-specific extensions on top of CommonMark/GFM (wikilinks `[[Note]]`, block IDs `^id`, embeds `![[...]]`, callouts `> [!type]`, frontmatter properties, tags, `%%comments%%`, `==highlights==`, LaTeX math, Mermaid, footnotes) — ported **verbatim** from the upstream [obsidian-markdown](https://github.com/kepano/obsidian-skills/tree/main/skills/obsidian-markdown) skill by Steph Ango (@kepano), MIT (obsidian-markdown skill v1.0.0). Ships a `SKILL.md` spine (creating-a-note workflow, per-feature syntax sections, complete worked example) plus three `references/` files (`CALLOUTS.md` — the 13 callout types + aliases, foldable/nested/custom-CSS; `EMBEDS.md` — note/image/audio/PDF/list/search embeds; `PROPERTIES.md` — property types, default props, tag rules). Reference files are byte-identical to upstream; `SKILL.md` adds only a `## Credits` attribution block
+
 ### Changed
 - README.md: added a prominent `> [!WARNING]` admonition clarifying that this is Alberto Leal's personal marketplace built solely for his own workflow — he is the only intended/supported user, the skills and MCP servers encode personal conventions and may change or break without notice, and anyone else uses it entirely at their own risk with no support, stability, or backward-compatibility guarantees
 
@@ -453,7 +458,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.23.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.24.0...HEAD
+[0.24.0]: https://github.com/dashed/claude-marketplace/compare/v0.23.0...v0.24.0
 [0.23.0]: https://github.com/dashed/claude-marketplace/compare/v0.22.0...v0.23.0
 [0.22.0]: https://github.com/dashed/claude-marketplace/compare/v0.21.0...v0.22.0
 [0.21.0]: https://github.com/dashed/claude-marketplace/compare/v0.20.1...v0.21.0
