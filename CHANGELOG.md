@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.26.0] - 2026-06-05
+
+### Changed
+- jj skill: expanded coverage of the "already-pushed / colocated-repo" reality that greenfield examples never exercised (jj skill v1.7.0) — every claim re-verified against live `jj` 0.41.0 before shipping:
+  - **SKILL.md**: new "Colocated repos: Git sees `@` as uncommitted" pitfall (Git's `HEAD` tracks `@`'s parent, so `@`'s changes look uncommitted to Git; `git checkout`/`git switch` and git-based tooling can abort — *only* when the target branch touches the same files — fixed by parking `@` with `jj new <bookmark>`); a one-line "reorder a pushed/stacked branch" pointer in Pushing Changes; broadened the "Immutable commit error" note to include untracked remote bookmarks and to show `--ignore-immutable` in both global and subcommand position; refined the merge-commit pitfall to note empty/description-less `@` auto-abandons.
+  - **references/github-workflow.md**: new "Reordering an Already-Pushed / Stacked Branch" recipe (`jj rebase --ignore-immutable -s … -d …` → `jj git push --bookmark …`, which is force-with-lease-safe by default; plain-git `git push --force-with-lease` alternative).
+  - **references/commands.md**: documented that `jj squash --from <child> --into <parent>` relocates the child's bookmark onto the parent (with the `-m`/`--use-destination-message` non-interactive caveat), and that `--ignore-immutable` works in subcommand position.
+
+### Fixed
+- jj skill: corrected the immutable-commits default in `references/configuration.md` (two sites). The real default is `builtin_immutable_heads()` = `trunk() | tags() | untracked_remote_bookmarks()` — trunk, tags, and **untracked** remote bookmarks — not `trunk() | tags()` as previously labeled "the default". Branches pushed with `jj git push` are tracked (mutable); branches managed by external git tooling (git/gh/git-chain) arrive untracked (immutable). This aligns `configuration.md` with the already-correct `references/revsets.md`. (Note: the source improvement proposal's own wording — "any commit a remote bookmark points to" — was itself inaccurate; verification against jj 0.41.0 established the untracked-only rule, and the invalid `jj git push --force-with-lease` it suggested was dropped since `jj git push` is lease-safe by default.)
+
 ## [0.25.1] - 2026-06-05
 
 ### Added
@@ -483,7 +494,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.25.1...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.26.0...HEAD
+[0.26.0]: https://github.com/dashed/claude-marketplace/compare/v0.25.1...v0.26.0
 [0.25.1]: https://github.com/dashed/claude-marketplace/compare/v0.25.0...v0.25.1
 [0.25.0]: https://github.com/dashed/claude-marketplace/compare/v0.24.1...v0.25.0
 [0.24.1]: https://github.com/dashed/claude-marketplace/compare/v0.24.0...v0.24.1

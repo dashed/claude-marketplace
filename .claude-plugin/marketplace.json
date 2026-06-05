@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.25.1"
+    "version": "0.26.0"
   },
   "plugins": [
     {
@@ -146,7 +146,7 @@
     },
     {
       "name": "jj",
-      "version": "1.6.0",
+      "version": "1.7.0",
       "source": "./plugins/jj",
       "description": "Jujutsu (jj) version control system - a Git-compatible VCS with novel features. Use when working with jj repositories, managing stacked commits, needing automatic rebasing with first-class conflict handling, using revsets to select commits, or wanting enhanced Git workflows. Triggers on mentions of 'jj', 'jujutsu', change IDs, or operation log.",
       "author": {

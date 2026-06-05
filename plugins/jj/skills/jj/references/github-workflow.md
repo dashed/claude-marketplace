@@ -89,6 +89,18 @@ jj git push --bookmark your-feature
 
 The `-` suffix is revset syntax: `your-feature-` means "parent of your-feature".
 
+### Reordering an Already-Pushed / Stacked Branch
+
+```shell
+jj rebase --ignore-immutable -s <change> -d <dest>   # reorder; descendants auto-rebase
+jj git push --bookmark <name>                        # force-with-lease-safe by default (no flag)
+
+# when interleaving with plain git tooling instead:
+git push --force-with-lease origin <branch>
+```
+
+`jj git push` only updates the remote if it still matches what jj last fetched (built-in lease safety) — don't reach for `--force`. `--ignore-immutable` works in global *or* subcommand position (`jj rebase --ignore-immutable …` or `jj --ignore-immutable rebase …`).
+
 ## Working with Others' Bookmarks
 
 By default, `jj git fetch` doesn't import new remote bookmarks locally:

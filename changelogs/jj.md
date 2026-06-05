@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-06-05
+
+Closes the "already-pushed / colocated-repo" gap that greenfield examples never exercised. Every claim was re-verified against live `jj` 0.41.0 before shipping (including correcting two inaccuracies in the source improvement proposal itself).
+
+### Added
+- SKILL.md: "Colocated repos: Git sees `@` as uncommitted" pitfall — Git's `HEAD` tracks `@`'s parent, so `@`'s changes look uncommitted to Git; `git checkout`/`git switch` (and git-based tooling: gh, git-chain, hooks) can abort, but *only* when the target branch touches the same files as the `@`-vs-parent diff. Fix: park `@` with `jj new <bookmark>` before the git operation.
+- SKILL.md: one-line "reorder a pushed/stacked branch" pointer in Pushing Changes, linking to the full recipe.
+- references/github-workflow.md: "Reordering an Already-Pushed / Stacked Branch" recipe — `jj rebase --ignore-immutable -s <change> -d <dest>` then `jj git push --bookmark <name>` (force-with-lease-safe by default; no `--force` flag), with the plain-git `git push --force-with-lease origin <branch>` alternative noted.
+- references/commands.md: `jj squash --from <child> --into <parent>` relocates the child's bookmark onto the parent (with `-m`/`--use-destination-message` non-interactive caveat); `--ignore-immutable` also works in subcommand position.
+
+### Changed
+- SKILL.md: broadened the "Immutable commit error" troubleshooting note to include **untracked remote bookmarks** (e.g. branches pushed via git/gh/git-chain, not `jj git push`) and to show `--ignore-immutable` in both global and subcommand position.
+- SKILL.md: refined the "Working Copy Changes on Merge Commits" pitfall — an empty, description-less, bookmark-less `@` is auto-abandoned when you move off it, so a manual `jj abandon` is usually unnecessary.
+- SKILL.md: removed a duplicate "Searching Files (Non-Interactive)" block (the retained "Searching File Contents" section is a superset) and folded the `jj split` file-path workaround inline, to stay under the 500-line cap.
+
+### Fixed
+- references/configuration.md: corrected the immutable-commits default at two sites. The real default is `builtin_immutable_heads()` = `trunk() | tags() | untracked_remote_bookmarks()` (trunk, tags, and **untracked** remote bookmarks) — not `trunk() | tags()` as previously labeled "the default". Branches pushed with `jj git push` are tracked (mutable); branches managed by external git tooling arrive untracked (immutable). Now consistent with `references/revsets.md`, which was already correct.
+
 ## [1.6.0] - 2026-05-25
 
 ### Added

@@ -230,6 +230,8 @@ jj squash -i --from r1::rN        # Interactive pick from range
 
 `--from` accepts full revset expressions (not just single commits). `--into` defaults to `@` when omitted.
 
+**Bookmark relocation:** `jj squash --from <child> --into <parent>` folds the child into the parent *and* moves the child's bookmark onto the parent. Squashing two *described* commits opens an editor — pass `-m "<msg>"` or `--use-destination-message` for agent/non-interactive use.
+
 ### `jj split`
 
 Split commit into two:
@@ -701,7 +703,7 @@ Available on all commands:
 jj -R <path>                      # Use different repo
 jj --at-op <op-id>                # Load at operation
 jj --ignore-working-copy          # Skip working copy snapshot
-jj --ignore-immutable             # Allow modifying immutable
+jj --ignore-immutable             # Allow modifying immutable (also valid after the subcommand: jj <cmd> --ignore-immutable)
 jj --no-integrate-operation       # Run without impacting repo state
 jj --color <when>                 # always/never/auto
 jj --no-pager                     # Disable pager

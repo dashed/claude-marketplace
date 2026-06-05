@@ -250,7 +250,8 @@ jj fix
 # Override built-in trunk() detection
 'trunk()' = 'latest(remote_bookmarks(exact:"main", exact:"origin") | remote_bookmarks(exact:"master", exact:"origin"))'
 
-# Customize immutable commits
+# Customize immutable commits (narrower than the default — DROPS protection of
+# untracked remote bookmarks; default is trunk() | tags() | untracked_remote_bookmarks())
 'immutable_heads()' = 'trunk() | tags()'
 
 # Pattern aliases (0.39+): use as name:value in revsets
@@ -602,12 +603,17 @@ The immutable system protects commits from accidental modification:
 
 `mutable()` is useful in revsets — e.g., `reachable(@, mutable())` returns your working stack (all commits reachable from `@` that aren't immutable).
 
+The default (`builtin_immutable_heads()`) protects `trunk()`, tags, and **untracked** remote bookmarks. Branches you push with `jj git push` are *tracked* → remain mutable; branches managed by external git tooling (`git`/`gh`/`git-chain`) arrive *untracked* → immutable.
+
 ```toml
 [revset-aliases]
-# Default: trunk and tags are immutable
+# Default: trunk, tags, and untracked remote bookmarks are immutable
+'immutable_heads()' = 'trunk() | tags() | untracked_remote_bookmarks()'
+
+# Narrower: trunk and tags only (DROPS untracked-remote-bookmark protection)
 'immutable_heads()' = 'trunk() | tags()'
 
-# More restrictive: only trunk
+# Most restrictive: only trunk
 'immutable_heads()' = 'trunk()'
 
 # Include release branches

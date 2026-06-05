@@ -213,6 +213,8 @@ jj git push --all
 jj git push --bookmark <name> --option key=value
 ```
 
+**Reorder a pushed/stacked branch:** `jj rebase --ignore-immutable -s <change> -d <dest>` (descendants auto-rebase), then `jj git push --bookmark <name>` — `jj git push` is force-with-lease-safe by default (no flag). See [references/github-workflow.md](references/github-workflow.md).
+
 ### Resolving Conflicts
 
 ```bash
@@ -312,6 +314,15 @@ jj git init --colocate    # Add jj to existing Git repo
 
 In colocated repos, Git changes are auto-imported. If git and jj disagree, use `jj git import` / `jj git export`. Best practice: primarily use jj commands.
 
+### Colocated repos: Git sees `@` as uncommitted
+
+Git's `HEAD` tracks `@`'s **parent** (`@-`), so `@`'s own changes look uncommitted to git. `git checkout`/`git switch` (and git-based tooling — `gh`, git-chain, hooks) **can abort** — but only when the target branch touches the *same files* as the `@`-vs-parent diff (`error: Your local changes to the following files would be overwritten by checkout … Please commit your changes or stash them before you switch branches. Aborting`); with no file overlap the checkout succeeds and carries the change over. Fix — park `@` so the tree is fully committed first:
+
+```bash
+jj new <bookmark>         # empty commit on the tip → clean, fully-committed tree
+git checkout <bookmark>   # now succeeds
+```
+
 ## Configuration
 
 Edit config with `jj config edit --user` (or `--repo` for per-repo config, stored outside the repo since 0.38):
@@ -386,9 +397,11 @@ jj abandon <unwanted>     # Remove one version
 jj restore --from xyz/1 --to xyz  # Restore to previous version
 ```
 
-**Immutable commit error** - Can't modify trunk/tagged commits by default:
+**Immutable commit error** - Can't modify `trunk()`, tags, or **untracked remote bookmarks** (e.g. branches pushed via `git`/`gh`/git-chain, not `jj git push`) by default:
 ```bash
-jj --ignore-immutable <command>  # Override protection
+jj --ignore-immutable <command>   # Override globally (before the subcommand)
+jj <command> --ignore-immutable   # Or after the subcommand — both work
+# then push
 ```
 
 ## Non-Interactive Workflows
@@ -417,14 +430,6 @@ jj squash -m "Combined commit message"
 
 **Note:** If either commit has an empty description, jj automatically uses the non-empty one without opening an editor.
 
-### Searching Files (Non-Interactive)
-
-```bash
-jj file search "pattern"                  # Regex search (default)
-jj file search --pattern "glob:*.rs"      # Glob pattern
-jj file search -r <rev> "pattern"         # Search at specific revision
-```
-
 ### Conflict Resolution Without Merge Tool
 
 ```bash
@@ -439,15 +444,10 @@ jj restore --from <rev> <file>      # Take file from specific revision
 ### Inherently Interactive Commands
 
 These commands cannot be made non-interactive:
-- `jj split` (without file arguments) - requires diff selection
+- `jj split` (without file arguments) - requires diff selection (workaround: pass file paths, e.g. `jj split -m "First commit" src/file1.rs`)
 - `jj diffedit` - opens diff editor by design
 - `jj resolve` (without `--tool`) - opens merge tool
 - `jj arrange` - TUI by design
-
-**Workaround for split:** Provide file paths to avoid interactive selection:
-```bash
-jj split -m "First commit" src/file1.rs src/file2.rs
-```
 
 ## Common Pitfalls
 
@@ -470,7 +470,7 @@ Some `jj git push` flag combinations don't work together:
 
 ### Working Copy Changes on Merge Commits
 
-When you `jj edit` a merge commit, changes appear as "working copy changes" - this is expected. Use `jj new` to trigger snapshot, then `jj abandon @` to remove the empty commit.
+When you `jj edit` a merge commit, changes appear as "working copy changes" - this is expected. Run `jj new` to start a fresh commit on top. An empty, description-less, bookmark-less `@` is **auto-abandoned** when you move off it (e.g. via `jj new`), so a manual `jj abandon` is usually unnecessary.
 
 ### Bookmark Movement Refused
 
