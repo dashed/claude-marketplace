@@ -4,6 +4,11 @@
 
 A curated collection of Agent Skills for extending Claude Code and Codex capabilities. This marketplace is configured for local use and makes it easy to install and manage custom skills.
 
+> [!WARNING]
+> **This is Alberto Leal's personal Claude Code plugin marketplace.** It is built solely for my own workflow, and I am the only intended and supported user. The skills and MCP servers here encode my personal conventions and assumptions, and may change, break, or disappear at any time without notice or migration path.
+>
+> You are welcome to read, fork, or borrow from it — but if you are not me, **use it entirely at your own risk.** There are no support, stability, or backward-compatibility guarantees for anyone else.
+
 ## Claude Code Quick Start
 
 ```bash

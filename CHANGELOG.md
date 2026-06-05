@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- README.md: added a prominent `> [!WARNING]` admonition clarifying that this is Alberto Leal's personal marketplace built solely for his own workflow — he is the only intended/supported user, the skills and MCP servers encode personal conventions and may change or break without notice, and anyone else uses it entirely at their own risk with no support, stability, or backward-compatibility guarantees
+
 ## [0.23.0] - 2026-06-04
 
 ### Added
