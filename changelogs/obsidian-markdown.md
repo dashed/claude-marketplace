@@ -4,6 +4,15 @@ All notable changes to the obsidian-markdown skill in this marketplace will be d
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.0.1] - 2026-06-05
+
+### Fixed
+- Corrected three details to match the current official Obsidian docs (first local divergence from the verbatim upstream port):
+  - **Tag rules** (`SKILL.md`, `references/PROPERTIES.md`): replaced the inaccurate "numbers (not first character)" restriction with the actual rule — a tag must contain at least one non-numeric character (`#1984` invalid, `#y1984` valid) — and noted that most Unicode characters, including emoji, are allowed. Source: https://help.obsidian.md/tags
+  - **Property types** (`references/PROPERTIES.md`): removed "Links" from the type table (the core set is six types: Text, List, Number, Checkbox, Date, Date & time); wikilinks are stored inside a quoted Text/List value, preserved as an explanatory note. Source: https://help.obsidian.md/properties
+  - **Embeds** (`references/EMBEDS.md`): added the omitted canvas embed `![[My canvas.canvas]]` (renders shapes but not card text). Source: https://help.obsidian.md/embeds
+- `SKILL.md` `## Credits` now records that this copy carries minor local accuracy corrections.
+
 ## [1.0.0] - 2026-06-05
 
 ### Added

@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.24.0"
+    "version": "0.24.1"
   },
   "plugins": [
     {
@@ -735,7 +735,7 @@
     },
     {
       "name": "obsidian-markdown",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "source": "./plugins/obsidian-markdown",
       "description": "Create and edit Obsidian Flavored Markdown with wikilinks, embeds, callouts, properties, and other Obsidian-specific syntax. Use when working with .md files in Obsidian, or when the user mentions wikilinks, callouts, frontmatter, tags, embeds, or Obsidian notes.",
       "author": {

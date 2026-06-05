@@ -31,7 +31,8 @@ due: 2024-02-01T14:30:00
 | Date | `date: 2024-01-15` |
 | Date & Time | `due: 2024-01-15T14:30:00` |
 | List | `tags: [one, two]` or YAML list |
-| Links | `related: "[[Other Note]]"` |
+
+These are the core property types. Links are **not** a separate type — store a wikilink inside a Text or List value, quoting it so YAML doesn't misparse the brackets: `related: "[[Other Note]]"`, or a YAML list of `"[[...]]"` entries.
 
 ## Default Properties
 
@@ -48,7 +49,7 @@ due: 2024-02-01T14:30:00
 #tag_with_underscores
 ```
 
-Tags can contain: letters (any language), numbers (not first character), underscores `_`, hyphens `-`, forward slashes `/` (for nesting).
+Tags can contain: letters (any language), numbers, underscores `_`, hyphens `-`, forward slashes `/` (for nesting), and most Unicode characters (including emoji). A tag must contain at least one non-numeric character (`#1984` is invalid; `#y1984` is valid).
 
 In frontmatter:
 

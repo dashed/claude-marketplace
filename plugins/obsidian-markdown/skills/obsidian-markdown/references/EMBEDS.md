@@ -38,6 +38,14 @@
 ![[document.pdf#height=400]]
 ```
 
+## Embed Canvas
+
+```markdown
+![[My canvas.canvas]]
+```
+
+An embedded canvas displays its shapes but not the text inside cards.
+
 ## Embed Lists
 
 ```markdown

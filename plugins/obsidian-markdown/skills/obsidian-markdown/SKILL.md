@@ -100,7 +100,7 @@ See [PROPERTIES.md](references/PROPERTIES.md) for all property types, tag syntax
 #nested/tag             Nested tag with hierarchy
 ```
 
-Tags can contain letters, numbers (not first character), underscores, hyphens, and forward slashes. Tags can also be defined in frontmatter under the `tags` property.
+Tags can contain letters, numbers, underscores (`_`), hyphens (`-`), forward slashes (`/` for nesting), and most Unicode characters (including emoji), but must contain at least one non-numeric character (`#1984` is not a valid tag, but `#y1984` is). Tags can also be defined in frontmatter under the `tags` property.
 
 ## Comments
 
@@ -197,4 +197,4 @@ Reviewed in [[Meeting Notes 2024-01-10#Decisions]].
 
 ## Credits
 
-Ported from the [obsidian-markdown](https://github.com/kepano/obsidian-skills/tree/main/skills/obsidian-markdown) skill by Steph Ango (@kepano), licensed under MIT.
+Ported from the [obsidian-markdown](https://github.com/kepano/obsidian-skills/tree/main/skills/obsidian-markdown) skill by Steph Ango (@kepano), licensed under MIT. This copy carries minor local corrections to align the tag rules, property types, and embed list with the current [official Obsidian docs](https://help.obsidian.md/obsidian-flavored-markdown).

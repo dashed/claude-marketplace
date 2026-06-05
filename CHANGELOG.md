@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.24.1] - 2026-06-05
+
+### Fixed
+- obsidian-markdown skill: corrected three details to match the current official Obsidian docs (obsidian-markdown skill v1.0.1) — a first marketplace-local divergence from the verbatim upstream port:
+  - **Tag rules**: removed the inaccurate "numbers (not first character)" restriction (in `SKILL.md` and `references/PROPERTIES.md`). The real rule is that a tag must contain at least one non-numeric character (`#1984` is invalid, `#y1984` is valid); also note that most Unicode characters, including emoji, are allowed. Source: https://help.obsidian.md/tags
+  - **Property types** (`references/PROPERTIES.md`): removed "Links" from the property-type table — the core set is six types (Text, List, Number, Checkbox, Date, Date & time). Wikilinks are not a distinct type; they are stored inside a quoted Text or List value (the `related: "[[Other Note]]"` example is preserved as a note). Source: https://help.obsidian.md/properties
+  - **Embeds** (`references/EMBEDS.md`): added the previously-omitted canvas embed (`![[My canvas.canvas]]`, which renders shapes but not card text). Source: https://help.obsidian.md/embeds
+  - `SKILL.md` `## Credits` now notes these local corrections.
+
 ## [0.24.0] - 2026-06-05
 
 ### Added
@@ -458,7 +467,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.24.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.24.1...HEAD
+[0.24.1]: https://github.com/dashed/claude-marketplace/compare/v0.24.0...v0.24.1
 [0.24.0]: https://github.com/dashed/claude-marketplace/compare/v0.23.0...v0.24.0
 [0.23.0]: https://github.com/dashed/claude-marketplace/compare/v0.22.0...v0.23.0
 [0.22.0]: https://github.com/dashed/claude-marketplace/compare/v0.21.0...v0.22.0
