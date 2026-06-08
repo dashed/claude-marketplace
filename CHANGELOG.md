@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.28.0] - 2026-06-08
+
+### Added
+- jq skill: new skill for **jq** — the command-line JSON processor and its filter language — scoped to the CLI + filter language + builtin library, authored against the jq source (jqlang/jq, dev tree past jq-1.8.2rc1) with every example verified on the installed CLI **jq-1.7.1** (jq skill v1.0.0). Ships a `SKILL.md` spine (the filter/stream mental model, install, invocation, seven runnable core workflows — extract with `-r`, `select`/`map`, reshape objects, `@csv`/`@tsv`, slurp+aggregate/`group_by`, `--arg`/`$ENV`, `-f` program file — plus agent usage, quick-reference, and troubleshooting) and four references: `cli.md` (every flag verified against `jq --help`, I/O & slurp modes, the full exit-code set, `$ARGS`/`$ENV`, modules, agent patterns), `language.md` (path expressions, pipe/comma, construction, operators, `//`, `if`/`try`/`?`, `reduce`/`foreach`, variables & destructuring + `?//`, `def`/recursion, `label`/`break`, string interpolation, assignment + path-expression semantics, modules), `builtins.md` (the function library grouped: types, arrays/objects, regex, format strings, math, dates, streaming, SQL-style, debug), and `version-features.md` (35 source-cited `feature → minimum jq version` rows for 1.7/1.7.1/1.8 + a labeled "Removed" subsection). Inline `(jq 1.X+)` version annotations throughout, sourced from the repo's `NEWS.md` cross-checked with the versioned manuals (`docs/content/manual/v1.6`→`v1.8`), git blame on `src/builtin.jq`, and empirical CLI boundary tests; bedrock (≤1.6, 2018) left unannotated ("unlisted = long-standing"). Documents three commonly-assumed features that do **not** exist in jq (`@base32`/`@base32d`, `toarray`, `dateadd`) and the 1.7 removals (`--argfile`, `leaf_paths`, `recurse_down`)
+
 ## [0.27.0] - 2026-06-05
 
 ### Added
@@ -499,7 +504,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.27.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.28.0...HEAD
+[0.28.0]: https://github.com/dashed/claude-marketplace/compare/v0.27.0...v0.28.0
 [0.27.0]: https://github.com/dashed/claude-marketplace/compare/v0.26.0...v0.27.0
 [0.26.0]: https://github.com/dashed/claude-marketplace/compare/v0.25.1...v0.26.0
 [0.25.1]: https://github.com/dashed/claude-marketplace/compare/v0.25.0...v0.25.1

@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.27.0"
+    "version": "0.28.0"
   },
   "plugins": [
     {
@@ -795,6 +795,28 @@
         "parquet",
         "csv",
         "cli"
+      ],
+      "strict": false,
+      "skills": ["./skills"]
+    },
+    {
+      "name": "jq",
+      "version": "1.0.0",
+      "source": "./plugins/jq",
+      "description": "jq — the command-line JSON processor and its filter language for filtering, transforming, and reshaping JSON. Use when extracting fields/nested paths on the CLI, `select`-ing arrays of objects, building new JSON, emitting CSV/TSV with `@csv`/`@tsv`, getting raw strings with `jq -r`, slurping (`-s`) and aggregating (`add`, `group_by`), NDJSON pipelines (`-c`), or injecting shell values with `--arg`/`--argjson`. Includes `(jq 1.X+)` annotations; the jq CLI/filter language, not bindings (jaq/gojq).",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/jq",
+      "license": "MIT",
+      "keywords": [
+        "jq",
+        "json",
+        "cli",
+        "filter",
+        "transform",
+        "ndjson",
+        "jqlang"
       ],
       "strict": false,
       "skills": ["./skills"]
