@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.27.0] - 2026-06-05
+
+### Added
+- duckdb skill: new skill for **DuckDB** — the in-process, columnar, vectorized OLAP SQL engine shipped as a single zero-dependency binary ("SQLite for analytics") — scoped to the CLI + SQL authoring surface and authored against the DuckDB source (dev tree past v1.5.3) with every example verified on the installed CLI **v1.3.2** (duckdb skill v1.0.0). Ships a `SKILL.md` spine (mental model, when-to-use vs SQLite/Postgres, install, the `duckdb` CLI at a glance, six runnable core workflows — direct file query, persistent vs `:memory:`, CSV→Parquet via `COPY`, friendly-SQL exploration, httpfs/S3, `ATTACH` Postgres/SQLite — plus agent-usage, quick-reference, and troubleshooting) and four references: `cli.md` (every flag + dot-command verified against `duckdb -help`/`.help`, output modes, non-interactive/agent patterns), `sql-dialect.md` (friendly-SQL differentiators: FROM-first, `SELECT * EXCLUDE/REPLACE`, `COLUMNS()`, `GROUP BY/ORDER BY ALL`, `QUALIFY`, `PIVOT`/`UNPIVOT`, ASOF/positional joins, nested types + lambdas + comprehensions, `SUMMARIZE`, `USING SAMPLE`, `PREPARE`), `data-io.md` (replacement scans, `read_csv`/`read_parquet`/`read_json`, `COPY … TO` with partitioning, `EXPORT`/`IMPORT DATABASE`, `ATTACH` for duckdb/sqlite/postgres/mysql, the extension system + httpfs/S3 `CREATE SECRET`, and EXPLAIN/PRAGMA/SET ops), and `version-features.md` (47 source-cited `feature → minimum DuckDB version` rows, 1.1.0→1.5.0). Inline `(duckdb vX.Y+)` version annotations throughout, sourced from duckdb.org release blogs cross-checked with git tags and empirical CLI boundary tests (no in-repo CHANGELOG exists); bedrock (≤1.0 GA, June 2024) left unannotated ("unlisted = long-standing"). Documents the verified nuance that database encryption's `ENCRYPTION_KEY` option already works in 1.3.x though documented as a 1.4.0 feature, and the `-readonly`-needs-a-file-DB gotcha
+
 ## [0.26.0] - 2026-06-05
 
 ### Changed
@@ -494,7 +499,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.26.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.27.0...HEAD
+[0.27.0]: https://github.com/dashed/claude-marketplace/compare/v0.26.0...v0.27.0
 [0.26.0]: https://github.com/dashed/claude-marketplace/compare/v0.25.1...v0.26.0
 [0.25.1]: https://github.com/dashed/claude-marketplace/compare/v0.25.0...v0.25.1
 [0.25.0]: https://github.com/dashed/claude-marketplace/compare/v0.24.1...v0.25.0

@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.26.0"
+    "version": "0.27.0"
   },
   "plugins": [
     {
@@ -773,6 +773,28 @@
         "formulas",
         "filters",
         "pkm"
+      ],
+      "strict": false,
+      "skills": ["./skills"]
+    },
+    {
+      "name": "duckdb",
+      "version": "1.0.0",
+      "source": "./plugins/duckdb",
+      "description": "DuckDB — in-process columnar OLAP SQL engine in a single binary (\"SQLite for analytics\"). Use when querying Parquet/CSV/JSON files directly with SQL, using the `duckdb` CLI shell (REPL or `-c`/`-json` one-shots), friendly SQL (FROM-first, `SELECT * EXCLUDE`, `GROUP BY ALL`, `SUMMARIZE`, `PIVOT`), converting CSV↔Parquet↔JSON via `COPY`, reading HTTP/S3 via httpfs, or `ATTACH`-ing Postgres/MySQL/SQLite. Includes `(duckdb vX.Y+)` annotations; the CLI/SQL engine, not client libraries.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/duckdb",
+      "license": "MIT",
+      "keywords": [
+        "duckdb",
+        "olap",
+        "analytics",
+        "sql",
+        "parquet",
+        "csv",
+        "cli"
       ],
       "strict": false,
       "skills": ["./skills"]
