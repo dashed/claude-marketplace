@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.28.0"
+    "version": "0.29.0"
   },
   "plugins": [
     {
@@ -817,6 +817,116 @@
         "transform",
         "ndjson",
         "jqlang"
+      ],
+      "strict": false,
+      "skills": ["./skills"]
+    },
+    {
+      "name": "psql",
+      "version": "1.0.0",
+      "source": "./plugins/psql",
+      "description": "psql \u2014 PostgreSQL's interactive terminal client and SQL script runner. Use when connecting to or inspecting a Postgres DB from a terminal, running SQL scripts or one-off queries in shells/CI/agents (`-c`/`-f`/`-qAtX`/`--csv`), using meta-commands (the `\\d` family, `\\copy`, `\\watch`, `\\gexec`, `\\if` scripting, `\\pset`/`\\x`, variables), `.psqlrc`, or fixing connection/auth issues. Includes `(pgNN+)` annotations. The psql client only \u2014 SQL syntax -> postgres-sql, server admin -> postgres-admin.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/psql",
+      "license": "MIT",
+      "keywords": [
+        "postgres",
+        "postgresql",
+        "psql",
+        "cli",
+        "sql",
+        "database",
+        "client"
+      ],
+      "strict": false,
+      "skills": ["./skills"]
+    },
+    {
+      "name": "postgres-sql",
+      "version": "1.0.0",
+      "source": "./plugins/postgres-sql",
+      "description": "The PostgreSQL SQL dialect & data types that set Postgres apart from generic SQL. Use when writing or debugging Postgres-specific SQL \u2014 upsert (`ON CONFLICT`), `RETURNING`, `MERGE`, CTEs, window frames, `GROUPING SETS`, `LATERAL`, generated/identity columns, partitioning, `jsonb`/jsonpath/SQL-JSON (`JSON_TABLE`), arrays, ranges, composite/enum/domain types, `uuidv7()`. Includes `(pgNN+)` annotations. Dialect & types \u2014 client -> psql, tuning -> postgres-performance, config -> postgres-admin.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/postgres-sql",
+      "license": "MIT",
+      "keywords": [
+        "postgres",
+        "postgresql",
+        "sql",
+        "jsonb",
+        "merge",
+        "upsert",
+        "partitioning"
+      ],
+      "strict": false,
+      "skills": ["./skills"]
+    },
+    {
+      "name": "postgres-performance",
+      "version": "1.0.0",
+      "source": "./plugins/postgres-performance",
+      "description": "PostgreSQL query & performance tuning. Use when a query is slow, reading an `EXPLAIN [ANALYZE]` plan (scan/join nodes, estimate skew), choosing an index type/columns (btree/GIN/GiST/SP-GiST/BRIN/hash; partial/expression/covering), fixing planner estimates with statistics, diagnosing MVCC bloat/VACUUM/autovacuum lag, or tuning planner GUCs (`random_page_cost`, `work_mem`). Includes `(pgNN+)` annotations. Tuning only \u2014 client -> psql, SQL -> postgres-sql, config -> postgres-admin.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/postgres-performance",
+      "license": "MIT",
+      "keywords": [
+        "postgres",
+        "postgresql",
+        "performance",
+        "explain",
+        "index",
+        "query-tuning",
+        "vacuum"
+      ],
+      "strict": false,
+      "skills": ["./skills"]
+    },
+    {
+      "name": "postgres-admin",
+      "version": "1.0.0",
+      "source": "./plugins/postgres-admin",
+      "description": "PostgreSQL server administration & operations. Use when configuring a server (`postgresql.conf`, `ALTER SYSTEM`, GUCs), managing roles/privileges (`GRANT`/`REVOKE`), authentication (`pg_hba.conf`, scram-sha-256), backup/restore (`pg_dump`, `pg_basebackup`, incremental, PITR), replication (streaming, logical, slots, failover), `pg_upgrade`, or monitoring (`pg_stat_activity`/`pg_stat_io`). Includes `(pgNN+)` annotations. Server ops \u2014 client psql, SQL postgres-sql, tuning postgres-performance.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/postgres-admin",
+      "license": "MIT",
+      "keywords": [
+        "postgres",
+        "postgresql",
+        "dba",
+        "replication",
+        "backup",
+        "pg_hba",
+        "monitoring"
+      ],
+      "strict": false,
+      "skills": ["./skills"]
+    },
+    {
+      "name": "postgres-extensions",
+      "version": "1.0.0",
+      "source": "./plugins/postgres-extensions",
+      "description": "PostgreSQL extension management and the bundled `contrib` catalog. Use when running `CREATE/ALTER/DROP EXTENSION`, listing extensions (`\\dx`), or choosing which contrib module enables a feature \u2014 FDWs (`postgres_fdw`, `dblink`), trigram search (`pg_trgm`), crypto/UUIDs (`pgcrypto`), types (`hstore`/`ltree`/`citext`), query stats (`pg_stat_statements`, `auto_explain`), forensics (`pageinspect`, `amcheck`). Covers trusted extensions & `shared_preload_libraries`. Includes `(pgNN+)` annotations.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/postgres-extensions",
+      "license": "MIT",
+      "keywords": [
+        "postgres",
+        "postgresql",
+        "extensions",
+        "contrib",
+        "postgres_fdw",
+        "pg_trgm",
+        "pg_stat_statements"
       ],
       "strict": false,
       "skills": ["./skills"]

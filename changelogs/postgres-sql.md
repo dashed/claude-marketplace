@@ -1,0 +1,19 @@
+# Changelog - postgres-sql
+
+All notable changes to the postgres-sql skill in this marketplace will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+
+## [1.0.0] - 2026-06-09
+
+### Added
+- Initial addition to the marketplace — a skill for the **PostgreSQL SQL dialect & data types**: the constructs and types that distinguish Postgres from generic ANSI SQL. Scoped to SQL authoring; the `psql` client (psql skill), query tuning (postgres-performance), administration (postgres-admin), and contrib (postgres-extensions) are explicitly deferred to sibling skills. Authored against the PostgreSQL source tree at **19beta1** (`doc/src/sgml/`), with every version pin verified against official release notes.
+- `SKILL.md` (401 lines): mental-model shift (declarative statements replace app-side loops); a disambiguation block + when-to-use table vs the four sibling Postgres skills; version-tag conventions; ten runnable core workflows (upsert/`ON CONFLICT`, `RETURNING` incl. `OLD`/`NEW`, `MERGE`, CTEs incl. recursive & data-modifying, window functions + frames, grouping/`DISTINCT ON`/`LATERAL`/`FILTER`, generated & identity columns, declarative partitioning, JSON/JSONB, and arrays/ranges/composite/enum/domain types); a version-annotated quick-reference; and troubleshooting.
+- `references/dml-returning.md`: full `INSERT ... ON CONFLICT` grammar (conflict-target inference, `excluded`, partial indexes, `DO SELECT` pg19beta), `RETURNING` incl. `OLD`/`NEW` (pg18+), the complete `MERGE` grammar with per-version notes (pg15 base; `RETURNING`/`merge_action()`/`WHEN NOT MATCHED BY SOURCE`/views pg17+), a `MERGE`-vs-`ON CONFLICT` decision table, and data-modifying CTE semantics.
+- `references/queries.md`: CTEs (`MATERIALIZED`/`NOT MATERIALIZED` pg12+, recursive, `SEARCH`/`CYCLE` pg14+), window functions + the full frame-clause grammar (`GROUPS`/frame exclusion pg11+), `GROUPING SETS`/`ROLLUP`/`CUBE` + `GROUPING()`, `DISTINCT ON`, `LATERAL`, and `FILTER`.
+- `references/json.md`: `json` vs `jsonb`, the complete operator set (navigation, containment/existence, modify), the jsonpath language + `@@`/`@?` (pg12+), processing/construction functions, and the **precise SQL/JSON pg16-vs-pg17 split**.
+- `references/data-types.md`: arrays, ranges & multiranges (pg14+), composite/row types, enums, domains, generated columns (`STORED` pg12+, `VIRTUAL` pg18+ and now default), identity vs `serial` (pg10+), and notable functions (`gen_random_uuid()` builtin pg13+, `uuidv7()`/`uuidv4()` pg18+, `ANY_VALUE()` pg16+).
+- `references/partitioning.md`: declarative partitioning end to end — range/list (pg10+), hash & `DEFAULT` (pg11+), `ATTACH`/`DETACH ... CONCURRENTLY` (pg14+), sub-partitioning, partition-wise join/aggregate dials, and pg19-beta `MERGE`/`SPLIT PARTITIONS`.
+- `references/version-features.md`: 32 source-cited `feature → minimum PostgreSQL version` rows (pg10→pg19beta), a "what's bedrock" list, a dedicated section nailing the SQL/JSON pg16-vs-pg17 split, `server_version_num` version-checking guidance, and per-major-version release-note citations.
+- Inline `(pgNN+)` version annotations throughout, verified against the official PostgreSQL release notes (Appendix E) and the in-repo 19beta1 SGML docs; **bedrock** (stable since the 9.x era) left unannotated ("unlisted = long-standing"), with the taggable surface starting at pg10. Mirrors the duckdb skill's structure, tone, and version-annotation approach.
+- Documents the verified, commonly-mis-pinned nuance that `JSON()`/`JSON_SCALAR()`/`JSON_SERIALIZE()` are **pg17** (not pg16, despite being constructors), while `IS JSON` and the `JSON_ARRAY`/`JSON_OBJECT` constructor family are pg16; and that `VIRTUAL` generated columns became the **default** kind in pg18 (a behavior change affecting bare `GENERATED ALWAYS AS (...)` DDL).
