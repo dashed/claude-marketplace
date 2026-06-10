@@ -1,10 +1,7 @@
-#!/usr/bin/env -S uv run --script
+#!/usr/bin/env -S uv run --no-config --script
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["mcp>=0.1.0"]
-#
-# [project.optional-dependencies]
-# dev = ["pytest>=7.0", "pytest-asyncio>=0.21.0"]
+# dependencies = ["mcp>=1.9.4,<2"]
 # ///
 """
 `mcp_sequential_thinking.py` – **Model Context Protocol** server for dynamic,
@@ -420,9 +417,10 @@ _thinking_server = SequentialThinkingServer()
 
 # Mirrors the ToolAnnotations set on the TypeScript reference server
 # (sequentialthinking/index.ts). The title lives inside annotations rather
-# than as a top-level Tool.title because mcp==1.9.4 exposes the title only
-# through ToolAnnotations.title — both FastMCP.tool() and types.Tool lack a
-# top-level title field on this SDK.
+# than as a top-level Tool.title so the tool renders identically across the
+# whole supported SDK range (mcp>=1.9.4,<2): 1.9.4 has no top-level title
+# field on FastMCP.tool()/types.Tool, and newer SDKs still surface
+# annotations.title.
 _SEQUENTIAL_THINKING_ANNOTATIONS = ToolAnnotations(
     title="Sequential Thinking",
     readOnlyHint=True,
@@ -496,13 +494,13 @@ async def sequentialthinking(
         input_data["needsMoreThoughts"] = needsMoreThoughts
 
     # The TS reference server returns ``{"error": ..., "status": "failed"}``
-    # alongside an ``isError=true`` content flag on uncaught exceptions. On
-    # the pinned mcp==1.9.4 SDK we cannot set ``isError=true`` from a
-    # FastMCP-decorated tool without raising, and raising would re-wrap the
-    # body as ``"Error executing tool sequentialthinking: <msg>"`` — which
-    # breaks clients that ``json.loads`` the content text. Catching here
-    # preserves the TS body shape; the ``isError`` bit is a known divergence
-    # that closes when we upgrade past 1.9.4.
+    # alongside an ``isError=true`` content flag on uncaught exceptions. A
+    # FastMCP-decorated tool can only set ``isError=true`` by raising, and
+    # raising re-wraps the body as ``"Error executing tool
+    # sequentialthinking: <msg>"`` (verified on mcp 1.9.4 and 1.27.2 alike) —
+    # which breaks clients that ``json.loads`` the content text. Catching
+    # here preserves the TS body shape; the ``isError`` bit is a deliberate
+    # divergence kept for body-shape compatibility.
     try:
         return _thinking_server.process_thought(input_data)
     except Exception as exc:

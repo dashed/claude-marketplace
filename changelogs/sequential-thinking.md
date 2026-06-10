@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-06-10
+
+### Fixed
+- README: corrected the advertised tool id to the plugin-namespaced form `mcp__plugin_sequential-thinking_sequential-thinking__sequentialthinking` — the form Claude Code actually registers for a plugin install (verified against the live installed plugin). The bare `mcp__sequential-thinking__sequentialthinking` form previously documented only applies to a directly-configured (non-plugin) MCP server
+- README: the "How it is wired" `.mcp.json` snippet now matches the real file (includes the `--no-config` flag added in 1.0.2) and explains why the flag is there
+- Script shebang now includes `--no-config` (`#!/usr/bin/env -S uv run --no-config --script`) so direct execution (`./mcp_sequential_thinking.py`) gets the same package-index isolation as the `.mcp.json` launch path, instead of re-hitting the resolution failure fixed in 1.0.2
+- Corrected stale code comments claiming the SDK was "pinned mcp==1.9.4" — the dependency was an unbounded `mcp>=0.1.0` that floats to the latest release (resolved to 1.27.2 at the time of this fix). Verified on the current SDK that the try/except error-shape workaround is still required (raising from a FastMCP tool still re-wraps the message), so runtime behavior is unchanged; only the rationale was wrong
+- Synced `.claude-plugin/plugin.json` and `pyproject.toml` versions with the marketplace version (both were stuck at 1.0.0)
+
+### Changed
+- Bounded the `mcp` dependency to `>=1.9.4,<2` in both the PEP 723 script block and the pyproject `dev` extra, so a future mcp 2.x release cannot silently break the server or the test suite (which relies on private SDK API: `mcp._tool_manager`, `fn_metadata.arg_model`)
+- Removed the nonstandard `[project.optional-dependencies]` table from the PEP 723 inline metadata — it is not part of the inline-script-metadata spec, uv ignores it, and the dev dependencies actually live in `pyproject.toml`
+- Added plugin-install guidance for `DISABLE_THOUGHT_LOGGING` to the README (set via an `env` block on the server entry in `.mcp.json`)
+
+> Note: this release intentionally diverges `scripts/mcp_sequential_thinking.py` from the verbatim `mcp-personal` copy (shebang, dependency bound, two comment corrections). Port these upstream to re-converge.
+
 ## [1.0.2] - 2026-06-04
 
 ### Fixed

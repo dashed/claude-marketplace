@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.29.0"
+    "version": "0.29.1"
   },
   "plugins": [
     {
@@ -81,7 +81,7 @@
     },
     {
       "name": "ultrathink",
-      "version": "1.1.1",
+      "version": "1.1.2",
       "source": "./plugins/ultrathink",
       "description": "Invoke deep sequential thinking for complex problem-solving. Use when the user says 'use ultrathink', 'ultrathink', or when tackling problems that require careful step-by-step reasoning, planning, hypothesis generation, or multi-step analysis.",
       "author": {
@@ -513,7 +513,7 @@
     },
     {
       "name": "sequential-thinking",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "source": "./plugins/sequential-thinking",
       "description": "MCP server exposing a single sequentialthinking tool for dynamic, reflective, step-by-step problem-solving. Use when a task needs structured reasoning, planning, hypothesis generation, branching to explore alternatives, or revising earlier steps while keeping a running chain of thoughts.",
       "author": {

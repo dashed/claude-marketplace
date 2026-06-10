@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-06-10
+
+### Added
+- Note distinguishing this skill from Claude Code's native `ultrathink` extended-thinking keyword: the bare word also raises the model's internal thinking budget, so both can trigger on the same prompt; the skill complements the keyword by externalizing reasoning as visible `sequentialthinking` tool calls
+
+### Changed
+- Made the `DISABLE_THOUGHT_LOGGING` guidance actionable for plugin installs (add an `"env"` block to the server entry in the plugin's `.mcp.json`)
+- Documented the `≥ 1` constraints the server enforces on `thoughtNumber`, `totalThoughts`, `revisesThought`, and `branchFromThought` in the parameter table
+
 ## [1.1.1] - 2026-05-30
 
 ### Fixed

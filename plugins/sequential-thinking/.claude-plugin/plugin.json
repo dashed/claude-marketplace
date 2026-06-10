@@ -1,6 +1,6 @@
 {
   "name": "sequential-thinking",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "MCP server exposing a single `sequentialthinking` tool for dynamic, reflective, step-by-step problem-solving. Use when a task needs structured reasoning, planning, hypothesis generation, branching to explore alternatives, or revising earlier steps while keeping a running chain of thoughts.",
   "author": {
     "name": "Alberto Leal"

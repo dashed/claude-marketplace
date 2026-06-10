@@ -8,6 +8,8 @@ license: MIT
 
 Ultrathink activates the Sequential Thinking MCP tool (`mcp__plugin_sequential-thinking_sequential-thinking__sequentialthinking`) to enable deep, structured reasoning through complex problems.
 
+> **Note:** Claude Code also treats the bare word "ultrathink" in a prompt as a native extended-thinking keyword that raises the model's internal thinking budget. This skill is complementary, not a replacement: it externalizes reasoning as a visible, revisable chain of `sequentialthinking` tool calls in the transcript, where internal thinking is not shown. Saying "ultrathink" can trigger both at once — that is expected.
+
 ## Prerequisites
 
 This skill drives the Sequential Thinking MCP tool, provided by the companion `sequential-thinking` plugin in this marketplace. The MCP server must be installed and enabled for the tool to exist — if it is unavailable, enable the `sequential-thinking` plugin first.
@@ -19,7 +21,7 @@ The exact tool id depends on how the server is installed:
 
 If unsure, use whichever `…sequentialthinking` tool is listed in your available tools.
 
-Optional: set the `DISABLE_THOUGHT_LOGGING` environment variable to `true` on the MCP server to suppress thought logging to stderr.
+Optional: to suppress the thought-box logging the server writes to stderr, set `DISABLE_THOUGHT_LOGGING=true` on the server — for a plugin install, add `"env": {"DISABLE_THOUGHT_LOGGING": "true"}` to the server entry in the plugin's `.mcp.json`.
 
 ## When to Use
 
@@ -51,11 +53,11 @@ mcp__plugin_sequential-thinking_sequential-thinking__sequentialthinking:
 |-----------|------|----------|-------------|
 | `thought` | string | Yes | Current thinking step - analysis, revision, question, or realization |
 | `nextThoughtNeeded` | boolean | Yes | True if more thinking needed, false when done |
-| `thoughtNumber` | integer | Yes | Current thought number in sequence |
-| `totalThoughts` | integer | Yes | Estimated total thoughts (can adjust up/down) |
+| `thoughtNumber` | integer | Yes | Current thought number in sequence (≥ 1) |
+| `totalThoughts` | integer | Yes | Estimated total thoughts (≥ 1, can adjust up/down) |
 | `isRevision` | boolean | No | Whether this revises previous thinking |
-| `revisesThought` | integer | No | Which thought number is being reconsidered |
-| `branchFromThought` | integer | No | Branching point thought number |
+| `revisesThought` | integer | No | Which thought number is being reconsidered (≥ 1) |
+| `branchFromThought` | integer | No | Branching point thought number (≥ 1) |
 | `branchId` | string | No | Branch identifier |
 | `needsMoreThoughts` | boolean | No | Signal that more thoughts needed at "end" |
 

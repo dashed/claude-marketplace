@@ -17,8 +17,11 @@ The server registers one tool with the model:
   alternatives, revise earlier steps, and adjust the planned thought count on
   the fly. History is kept in memory for the lifetime of the process.
 
-Once the plugin is enabled, the tool is available to Claude as
-`mcp__sequential-thinking__sequentialthinking`.
+Once the plugin is enabled, Claude Code namespaces the tool as
+`mcp__plugin_sequential-thinking_sequential-thinking__sequentialthinking`
+(pattern: `mcp__plugin_<plugin>_<server>__<tool>`). Only a directly-configured
+(non-plugin) MCP server registers the bare
+`mcp__sequential-thinking__sequentialthinking` form.
 
 ### Tool parameters
 
@@ -44,11 +47,18 @@ these values as strings.
   the server suppresses the formatted thought box that is otherwise written to
   stderr. All other behavior is unchanged.
 
+  For a plugin install, set it by adding an `env` block to the server entry
+  in the plugin's `.mcp.json`:
+
+  ```json
+  "env": { "DISABLE_THOUGHT_LOGGING": "true" }
+  ```
+
 ## Prerequisites
 
 - **[uv](https://docs.astral.sh/uv/)** — the server is launched with
   `uv run --script`. The script is a PEP 723 inline-dependency script
-  (`requires-python >=3.10`, `mcp>=0.1.0`); uv resolves and caches the
+  (`requires-python >=3.10`, `mcp>=1.9.4,<2`); uv resolves and caches the
   dependencies automatically on first run. No manual `pip install` is needed.
 
 ## How it is wired
@@ -60,7 +70,7 @@ The plugin declares the server in `.mcp.json`:
   "mcpServers": {
     "sequential-thinking": {
       "command": "uv",
-      "args": ["run", "--script", "${CLAUDE_PLUGIN_ROOT}/scripts/mcp_sequential_thinking.py"]
+      "args": ["run", "--no-config", "--script", "${CLAUDE_PLUGIN_ROOT}/scripts/mcp_sequential_thinking.py"]
     }
   }
 }
@@ -68,3 +78,7 @@ The plugin declares the server in `.mcp.json`:
 
 `${CLAUDE_PLUGIN_ROOT}` is expanded by Claude Code to the installed plugin
 directory, so the server runs regardless of where the plugin is checked out.
+`--no-config` keeps uv from adopting the *consuming* repo's
+`pyproject.toml`/`uv.toml` (e.g. a private default package index), which would
+otherwise break dependency resolution when Claude Code is launched from such a
+directory.

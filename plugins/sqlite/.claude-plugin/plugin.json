@@ -1,6 +1,6 @@
 {
   "name": "sqlite",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MCP server exposing SQLite database tools (query, execute, list_tables, describe_table, create_table). Read-only by default; writes are opt-in via --allow-writes or MCP_SQLITE_ALLOW_WRITES=true. Use when inspecting, querying, or (when enabled) modifying SQLite databases.",
   "author": {
     "name": "Alberto Leal"

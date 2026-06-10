@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.29.1] - 2026-06-10
+
+### Fixed
+- sequential-thinking plugin (v1.0.3): audit fixes — corrected the README's advertised tool id to the plugin-namespaced `mcp__plugin_sequential-thinking_sequential-thinking__sequentialthinking` form (the README still showed the directly-configured form) and re-synced the README `.mcp.json` snippet with the real file (`--no-config`, added in 1.0.2); added `--no-config` to the script shebang so direct execution gets the same index isolation as the plugin launch path; bounded the `mcp` dependency to `>=1.9.4,<2` (was an unbounded `mcp>=0.1.0` silently floating to 1.27.x while code comments claimed "pinned mcp==1.9.4" — comments corrected, runtime behavior verified unchanged on the current SDK: all 58 tests pass and the stdio handshake succeeds); removed the nonstandard `[project.optional-dependencies]` table from the PEP 723 block. The server script now intentionally diverges from the verbatim `mcp-personal` copy — port upstream to re-converge
+- ultrathink skill (v1.1.2): documented the interplay with Claude Code's native `ultrathink` extended-thinking keyword (both can trigger on the same prompt; the skill externalizes reasoning as visible tool calls), made the `DISABLE_THOUGHT_LOGGING` guidance actionable for plugin installs, and noted the server's `≥ 1` numeric parameter constraints
+- Synced `.claude-plugin/plugin.json` versions with marketplace.json across all four MCP plugins (file-search → 1.0.1, fuzzy-search → 1.1.1, sqlite → 1.0.1, sequential-thinking → 1.0.3) — all were stuck at their initial 1.0.0
+
 ## [0.29.0] - 2026-06-09
 
 ### Added
@@ -514,7 +521,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.29.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.29.1...HEAD
+[0.29.1]: https://github.com/dashed/claude-marketplace/compare/v0.29.0...v0.29.1
 [0.29.0]: https://github.com/dashed/claude-marketplace/compare/v0.28.0...v0.29.0
 [0.28.0]: https://github.com/dashed/claude-marketplace/compare/v0.27.0...v0.28.0
 [0.27.0]: https://github.com/dashed/claude-marketplace/compare/v0.26.0...v0.27.0
