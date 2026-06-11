@@ -7,8 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.33.0] - 2026-06-11
+
 ### Added
 - linear skill (v2.5.0): `create-project --team <team-key-or-name>` flag — resolves by team key then name, errors cleanly on no match, keeps the workspace-first-team default (now labeled as such with a hint). Closes the multi-team-workspace gap observed during the v2.4.0 live test; live-verified (key resolution, error path, cleanup) against the real workspace
+- fuzzy-filter skill (v1.0.1): full fzf extended-search token table (exact-boundary `'wild'`, inverse anchors, batch-mode `--exact` note) and a "Clipboard & editor hand-off" recipe section — batch analogs of interactive fif/fiv-style zsh helpers over `file:line:content` rows (`ffq`/`fifq`/`fivq` functions, single-file field-shift recipes); verified against fzf 0.73.1
+- fuzzy-search plugin (v1.1.2): README "Search query syntax (`fuzzy_filter`)" section with the full fzf extended-search token table
+- fzf skill (v1.1.1): documented `-e`/`--exact` mode with the `'`-prefix "unquote" footnote; `(fzf 0.55+)` exact-boundary-match annotation and 0.55/0.60 (`--accept-nth`) rows in references/version-features.md
+
+### Fixed
+- fuzzy-filter skill (v1.0.1): `--with-nth` does not affect `fzf --filter` output (it only restyles the interactive UI) — the "hide `file:line:` from output" recipe and field-scoping table now use `--accept-nth` `(fzf 0.60+)` with a `cut -d: -f3-` pre-0.60 fallback
 
 ## [0.32.1] - 2026-06-11
 
@@ -550,7 +558,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.32.1...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.33.0...HEAD
+[0.33.0]: https://github.com/dashed/claude-marketplace/compare/v0.32.1...v0.33.0
 [0.32.1]: https://github.com/dashed/claude-marketplace/compare/v0.32.0...v0.32.1
 [0.32.0]: https://github.com/dashed/claude-marketplace/compare/v0.31.0...v0.32.0
 [0.31.0]: https://github.com/dashed/claude-marketplace/compare/v0.30.0...v0.31.0
