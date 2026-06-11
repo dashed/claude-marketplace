@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- handoff skill (v1.3.0): `--tracked` option — git-visible workspace handoffs (cleans up any leftover `handoff-*.md` exclude line, stages the file, offers commit + push as the cross-machine transfer path, `git pull`-aware next-session starter)
+
 ## [0.36.0] - 2026-06-11
 
 ### Added

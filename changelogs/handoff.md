@@ -4,6 +4,11 @@ All notable changes to the handoff skill in this marketplace will be documented 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.3.0] - 2026-06-11
+
+### Added
+- `--tracked` option (also triggered by asking for a git-visible/committed/shared handoff): saves to the workspace root with the file visible to git — removes any leftover `handoff-*.md` line from `.git/info/exclude` (which would otherwise hide the file and make `git add` refuse without `-f`), stages the file, and offers (never auto-runs) commit + push since committing the handoff is the cross-machine transfer path; next-session starter becomes `git pull && claude "Read ./handoff-… and continue"`. `argument-hint` updated to `[--workspace | --tracked]`
+
 ## [1.2.0] - 2026-06-11
 
 ### Added
