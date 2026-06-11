@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.34.0] - 2026-06-11
+
 ### Added
 - statusline skill (v1.2.0): jj ⇄ git out-of-sync segment for colocated repos (git HEAD vs jj's `git_head()`, directional `git +N`/`jj +N` counts) and a detached-HEAD fallback (`detached @ <short-hash>`) without which jj-colocated repos never showed the git segment; both live-verified
 
@@ -564,7 +566,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.33.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.34.0...HEAD
+[0.34.0]: https://github.com/dashed/claude-marketplace/compare/v0.33.0...v0.34.0
 [0.33.0]: https://github.com/dashed/claude-marketplace/compare/v0.32.1...v0.33.0
 [0.32.1]: https://github.com/dashed/claude-marketplace/compare/v0.32.0...v0.32.1
 [0.32.0]: https://github.com/dashed/claude-marketplace/compare/v0.31.0...v0.32.0
