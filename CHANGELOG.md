@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- linear skill (v2.5.0): `create-project --team <team-key-or-name>` flag — resolves by team key then name, errors cleanly on no match, keeps the workspace-first-team default (now labeled as such with a hint). Closes the multi-team-workspace gap observed during the v2.4.0 live test; live-verified (key resolution, error path, cleanup) against the real workspace
+
 ## [0.32.1] - 2026-06-11
 
 ### Fixed

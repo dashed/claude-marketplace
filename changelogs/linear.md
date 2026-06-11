@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [2.5.0] - 2026-06-11
+
+### Added
+- `create-project` now takes a `--team <team-key-or-name>` flag — resolved first as a team key (e.g. `ENG`, case-insensitive exact) then as a name (case-insensitive, exact match preferred), erroring out with exit 1 if neither matches. Without the flag the legacy behavior (workspace's first team) is kept, with the output now noting it and hinting at `--team`. Closes the last multi-team-workspace gap noted in the 2.4.0 live test, where the test project landed in an arbitrary team
+- Live-verified against the real workspace: `--team REVENG` resolved by key and created the project in the right team (immediately trashed afterward); a bogus `--team` exits 1 without creating anything
+
+### Changed
+- SKILL.md project-planning examples and the `linear-ops.ts` help/usage text document the new flag
+
 ## [2.4.1] - 2026-06-11
 
 ### Fixed

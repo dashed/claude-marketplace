@@ -164,9 +164,9 @@ See [Project Management Commands](#project-management-commands) for full referen
 
 #### Recommended Workflow
 
-1. **Create the project first**:
+1. **Create the project first** (pass `--team` in multi-team workspaces — the default is the workspace's first team):
    ```bash
-   npx tsx scripts/linear-ops.ts create-project "Phase X: Feature Name" "My Initiative"
+   npx tsx scripts/linear-ops.ts create-project "Phase X: Feature Name" "My Initiative" --team ENG
    ```
 
 2. **Set project state to Planned**:
@@ -528,8 +528,8 @@ For advanced project and initiative management patterns, see **[projects.md](pro
 **Quick reference** - common project commands:
 
 ```bash
-# Create project linked to initiative
-npx tsx scripts/linear-ops.ts create-project "Phase X: Name" "My Initiative"
+# Create project linked to initiative (--team takes a team key or name)
+npx tsx scripts/linear-ops.ts create-project "Phase X: Name" "My Initiative" --team ENG
 
 # Update project status
 npx tsx scripts/linear-ops.ts project-status "Phase X" in-progress

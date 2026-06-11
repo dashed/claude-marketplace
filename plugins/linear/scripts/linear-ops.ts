@@ -13,7 +13,7 @@
  *   set-parent <parent> <child-issues...>    Set parent-child relationships
  *   list-sub-issues <parent>                 List sub-issues of a parent
  *   create-initiative <name> [description]   Create a new initiative
- *   create-project <name> [initiative]       Create a project (optionally linked to initiative)
+ *   create-project <name> [initiative] [--team <key-or-name>]  Create a project
  *   create-project-update <project> <body>   Create a project update
  *   create-initiative-update <init> <body>   Create an initiative update
  *   add-link <project|initiative> <url> <label>  Add external link to project or initiative
@@ -30,6 +30,7 @@ import {
   InitiativeUpdateHealthType,
   ProjectStatusType,
 } from '@linear/sdk';
+import { findTeamByKey, findTeamByName } from './lib/linear-utils';
 import {
   getAllLabels,
   getLabelsByCategory,
@@ -188,23 +189,50 @@ const commands: Record<string, (...args: string[]) => Promise<void>> = {
     }
   },
 
-  async 'create-project'(name: string, initiativeName?: string) {
+  async 'create-project'(name: string, ...rest: string[]) {
     if (!name) {
-      console.error('Usage: create-project <name> [initiative-name]');
-      console.error('Example: create-project "Phase 1: Foundation" "Q1 2025 Goals"');
+      console.error('Usage: create-project <name> [initiative-name] [--team <team-key-or-name>]');
+      console.error('Example: create-project "Phase 1: Foundation" "Q1 2025 Goals" --team ENG');
       process.exit(1);
     }
+
+    // Extract --team from the remaining args; the first leftover positional is
+    // the optional initiative name.
+    let teamArg: string | undefined;
+    const positionals: string[] = [];
+    for (let i = 0; i < rest.length; i++) {
+      if (rest[i] === '--team' && rest[i + 1]) {
+        teamArg = rest[i + 1];
+        i++;
+      } else {
+        positionals.push(rest[i]);
+      }
+    }
+    const initiativeName = positionals[0];
 
     console.log(`Creating project: ${name}...`);
 
-    // Get first team (required for project)
-    const teams = await client.teams();
-    if (teams.nodes.length === 0) {
-      console.error('[ERROR] No teams found in your workspace');
-      process.exit(1);
+    // Resolve the team: --team accepts a team key (ENG) or name, otherwise
+    // fall back to the workspace's first team (legacy behavior).
+    let team: { id: string; name: string };
+    if (teamArg) {
+      const found =
+        (await findTeamByKey(client, teamArg)) ?? (await findTeamByName(client, teamArg));
+      if (!found) {
+        console.error(`[ERROR] Team "${teamArg}" not found (tried key and name match)`);
+        process.exit(1);
+      }
+      team = found;
+      console.log(`  Using team: ${team.name}`);
+    } else {
+      const teams = await client.teams();
+      if (teams.nodes.length === 0) {
+        console.error('[ERROR] No teams found in your workspace');
+        process.exit(1);
+      }
+      team = teams.nodes[0];
+      console.log(`  Using team: ${team.name} (workspace default — pass --team to choose)`);
     }
-    const team = teams.nodes[0];
-    console.log(`  Using team: ${team.name}`);
 
     // Find initiative if specified
     let initiativeId: string | undefined;
@@ -1271,8 +1299,9 @@ Commands:
   create-initiative <name> [description]
     Create a new initiative
 
-  create-project <name> [initiative-name]
+  create-project <name> [initiative-name] [--team <team-key-or-name>]
     Create a project, optionally linked to an initiative
+    --team accepts a team key (e.g. ENG) or name; defaults to the workspace's first team
 
   project-status <project-name> <state>
     Update project state
@@ -1336,7 +1365,7 @@ Examples:
   npx tsx linear-ops.ts set-parent ENG-100 ENG-101 ENG-102
   npx tsx linear-ops.ts list-sub-issues ENG-100
   npx tsx linear-ops.ts create-initiative "Q1 2025 Goals" "Key initiatives for Q1"
-  npx tsx linear-ops.ts create-project "Phase 1: Foundation" "Q1 2025 Goals"
+  npx tsx linear-ops.ts create-project "Phase 1: Foundation" "Q1 2025 Goals" --team ENG
   npx tsx linear-ops.ts create-project-update "My Project" "## Summary\\n\\nWork completed"
   npx tsx linear-ops.ts create-initiative-update "My Initiative" "## Phase Complete"
   npx tsx linear-ops.ts add-link "Phase 6A" "https://github.com/org/repo/docs/plan.md" "Implementation Plan"
