@@ -2,6 +2,13 @@
 
 Sections for a handoff document. Scale to the work — omit sections with nothing in them. Reference artifacts (PRDs, plans, ADRs, issues, commits, diffs) by path or URL; never duplicate their content.
 
+## Header
+
+- **Created**: ISO timestamp
+- **Project**: repo name / path
+- **Branch / commit**: branch @ short SHA
+- **Dirty files**: `git status --short` output, or "clean"
+
 ## Goal
 
 What the overall task is and why. One paragraph max; link the originating issue/PRD if one exists.
@@ -25,6 +32,10 @@ Choices made and *why* — especially ones that would look arbitrary or wrong wi
 ## Dead ends tried
 
 Approaches that failed and why, so the next agent doesn't re-explore them.
+
+## Verify state
+
+Exact commands to confirm the baseline before continuing (tests, build, running services), each with its expected result. If a command's outcome differs, the repo moved since the handoff — re-assess before following "Next steps".
 
 ## Suggested skills
 

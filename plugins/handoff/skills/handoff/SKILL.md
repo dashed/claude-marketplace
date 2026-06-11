@@ -8,6 +8,8 @@ Write a handoff document summarising the current conversation so a fresh agent c
 
 Structure the document using [references/handoff-template.md](references/handoff-template.md). Scale sections to the work and omit empty ones — but always capture decisions-with-rationale and dead ends tried when they exist: those are the two things a fresh agent cannot recover from artifacts.
 
+Anchor the document to verifiable state: timestamp, branch, commit SHA, dirty files, and the exact commands to re-verify the baseline (tests, build, running services) with their expected results. The repo may move between sessions — anchors make staleness detectable instead of silently misleading.
+
 Include a "suggested skills" section in the document, which suggests skills that the agent should invoke.
 
 Do not duplicate content already captured in other artifacts (PRDs, plans, ADRs, issues, commits, diffs). Reference them by path or URL instead.
