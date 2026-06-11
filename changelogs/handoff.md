@@ -4,7 +4,17 @@ All notable changes to the handoff skill in this marketplace will be documented 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [1.1.0] - 2026-06-11
+## [1.2.0] - 2026-06-11
+
+### Added
+- Predictable filename (`handoff-<project>-<YYYY-MM-DD-HHMM>.md`, also in `--workspace` mode) and a closing path announcement with a ready-to-paste starter for the next session — a temp-dir doc with an unspecified name was effectively lost
+- `references/handoff-template.md` (progressive disclosure): Header / Goal / Done / In progress / Next steps / Decisions & rationale / Dead ends tried / Verify state / Suggested skills / Open questions; sections scale to the work, but decisions-with-rationale and dead-ends-tried are always captured when present
+- State anchors (timestamp, branch, commit SHA, dirty files) plus a "Verify state" section with exact baseline-verification commands and expected results, making staleness detectable
+- Scope guidance: suggest `--resume`/`--continue` for same-machine resumable sessions; durable facts go to memory, the handoff carries task state only
+- `--workspace` mode now adds `handoff-*.md` to `.git/info/exclude` (not `.gitignore`) so docs stay invisible to `git status`
+
+### Changed
+- These additions substantially extend the upstream skill — the body is no longer verbatim from mattpocock/skills (upstream's five core instructions are retained unchanged)
 
 ### Added
 - `--workspace` option (also triggered by asking for the document in the workspace): saves the handoff doc to the workspace root as `HANDOFF.md` instead of the OS temp directory, left untracked and uncommitted unless asked; `argument-hint` updated to mention the flag. Second divergence from upstream, which is temp-dir only

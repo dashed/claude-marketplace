@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- handoff skill (v1.1.0): `--workspace` option — save the handoff doc to the workspace root as `HANDOFF.md` instead of the OS temp directory (left untracked/uncommitted unless asked); second documented divergence from upstream
+- handoff skill (v1.1.0): `--workspace` option — save the handoff doc to the workspace root instead of the OS temp directory (left untracked/uncommitted unless asked)
+- handoff skill (v1.2.0): predictable `handoff-<project>-<timestamp>.md` filenames with a closing path announcement + next-session starter; `references/handoff-template.md` section template (decisions-with-rationale and dead-ends-tried always captured); state anchors + verify-state commands for staleness detection; when-not-to-use guidance (`--resume`/`--continue`, memory vs handoff separation); `--workspace` docs auto-ignored via `.git/info/exclude`. Body no longer verbatim from upstream (core instructions retained)
 
 ## [0.35.0] - 2026-06-11
 
