@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.35.0] - 2026-06-11
+
 ### Added
 - handoff skill: new skill ported from [mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/productivity/handoff) (MIT, body verbatim; handoff skill v1.0.0) — compacts the current conversation into a handoff document for a fresh agent (OS temp dir, "suggested skills" section, artifact references instead of duplication, secret/PII redaction, optional argument tailoring the doc to the next session's focus). Only marketplace divergence: frontmatter description extended with house-convention "Use when..." triggers
 
@@ -569,7 +571,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.34.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.35.0...HEAD
+[0.35.0]: https://github.com/dashed/claude-marketplace/compare/v0.34.0...v0.35.0
 [0.34.0]: https://github.com/dashed/claude-marketplace/compare/v0.33.0...v0.34.0
 [0.33.0]: https://github.com/dashed/claude-marketplace/compare/v0.32.1...v0.33.0
 [0.32.1]: https://github.com/dashed/claude-marketplace/compare/v0.32.0...v0.32.1
