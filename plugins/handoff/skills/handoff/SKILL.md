@@ -19,3 +19,7 @@ Redact any sensitive information, such as API keys, passwords, or personally ide
 If the user passed arguments, treat them as a description of what the next session will focus on and tailor the doc accordingly.
 
 When finished, tell the user the full path of the document and give a ready-to-paste starter for the next session, e.g. `claude "Read /tmp/handoff-myrepo-2026-06-11-1430.md and continue"`.
+
+## When NOT to use this
+
+If the next session is on the same machine and the conversation is resumable, suggest `claude --resume`/`--continue` instead — a handoff doc earns its keep for cross-machine moves, post-compaction recovery, or agent-to-agent transfer. Durable facts (user preferences, environment quirks) belong in memory, not the handoff; carry only task state here.
