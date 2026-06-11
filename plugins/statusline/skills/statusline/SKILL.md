@@ -92,11 +92,15 @@ vcs_info=""
 
 # jj repository check
 if jj root -R "$current_dir" --ignore-working-copy >/dev/null 2>&1; then
-    jj_data=$(jj --no-pager --ignore-working-copy -R "$current_dir" log --no-graph -r @ -T 'if(local_bookmarks, local_bookmarks.join(","), "-") ++ "\t" ++ change_id.short(8) ++ "\t" ++ if(conflict, "conflict", "") ++ "\t" ++ commit_id' 2>/dev/null)
+    # NB: every field needs a non-empty placeholder — IFS=tab read collapses
+    # consecutive tabs (tab is IFS whitespace), so an empty field would shift
+    # the columns.
+    jj_data=$(jj --no-pager --ignore-working-copy -R "$current_dir" log --no-graph -r @ -T 'if(local_bookmarks, local_bookmarks.join(","), "-") ++ "\t" ++ change_id.short(8) ++ "\t" ++ if(conflict, "conflict", "-") ++ "\t" ++ commit_id' 2>/dev/null)
 
     if [ -n "$jj_data" ]; then
         IFS=$'\t' read -r bookmarks change_id conflict_status commit_hash <<< "$jj_data"
         if [ "$bookmarks" = "-" ]; then bookmarks=""; fi
+        if [ "$conflict_status" = "-" ]; then conflict_status=""; fi
 
         modified_count=$(jj --no-pager --ignore-working-copy -R "$current_dir" diff --summary 2>/dev/null | wc -l | tr -d ' ')
 
@@ -142,6 +146,12 @@ fi
 # git repository check (independent — shows alongside jj for colocated repos)
 if git -C "$current_dir" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     branch=$(git -C "$current_dir" branch --show-current 2>/dev/null)
+    if [ -z "$branch" ]; then
+        # Detached HEAD (git checkout <hash>, bisect, jj-colocated repos):
+        # --show-current prints nothing, so fall back to the short hash.
+        detached=$(git -C "$current_dir" rev-parse --short HEAD 2>/dev/null)
+        [ -n "$detached" ] && branch="detached @ ${detached}"
+    fi
     if [ -n "$branch" ]; then
         status_parts=()
 
@@ -181,6 +191,28 @@ if git -C "$current_dir" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     fi
 fi
 
+# jj ⇄ git sync check (colocated repos): compare git's actual HEAD with jj's
+# last-imported view of it (git_head()). They diverge when git moves without a
+# jj command running afterward — and the jj calls above use
+# --ignore-working-copy precisely so this script never triggers the re-import.
+if [ -n "$jj_data" ]; then
+    jj_git_head=$(jj --no-pager --ignore-working-copy -R "$current_dir" log --no-graph -r 'git_head()' -T 'commit_id' 2>/dev/null)
+    git_head=$(git -C "$current_dir" rev-parse HEAD 2>/dev/null)
+    if [ -n "$jj_git_head" ] && [ -n "$git_head" ] && [ "$jj_git_head" != "$git_head" ]; then
+        git_ahead=$(git -C "$current_dir" rev-list --count "$jj_git_head..$git_head" 2>/dev/null || echo 0)
+        jj_ahead=$(git -C "$current_dir" rev-list --count "$git_head..$jj_git_head" 2>/dev/null || echo 0)
+        sync_parts=()
+        [ "${git_ahead:-0}" -gt 0 ] && sync_parts+=("git +${git_ahead}")
+        [ "${jj_ahead:-0}" -gt 0 ] && sync_parts+=("jj +${jj_ahead}")
+        if [ ${#sync_parts[@]} -gt 0 ]; then
+            sync=$(printf '%s, ' "${sync_parts[@]}"); sync=${sync%, }
+            vcs_info="${vcs_info} [jj ⇄ git out of sync: ${sync}]"
+        else
+            vcs_info="${vcs_info} [jj ⇄ git out of sync]"
+        fi
+    fi
+fi
+
 echo "${model_name} | ${current_dir}${vcs_info}"
 ```
 
@@ -195,6 +227,10 @@ Opus 4.6 | /path/to/project [jj @ uoylmlmx]
 Opus 4.6 | /path/to/project [jj main @ kntqzsqt: conflict, 3 modified, 1 behind]
 # git-only repo
 Opus 4.6 | /path/to/project [git master: 2 staged, 1 modified]
+# Detached HEAD (checkout by hash, bisect, jj-colocated)
+Opus 4.6 | /path/to/project [git detached @ d7ead68: 1 modified]
+# Colocated repo where git moved without jj noticing (e.g. direct git commit)
+Opus 4.6 | /path/to/project [jj @ snzksmsp] [git detached @ 76137d1] [jj ⇄ git out of sync: git +1]
 # No VCS
 Opus 4.6 | /tmp
 ```
@@ -203,9 +239,12 @@ Opus 4.6 | /tmp
 
 - **Dual VCS**: Both jj and git blocks run independently; colocated repos show both
 - **jj ahead/behind**: Uses `commit_id` (renders as full git commit hash) then `git rev-list --count` against the first bookmark's remote tracking ref
+- **Detached HEAD fallback**: `git branch --show-current` prints nothing when detached, so the git segment falls back to `detached @ <short-hash>`. Without this, jj-colocated repos would *never* show the git segment — jj keeps git permanently detached
+- **jj ⇄ git sync check**: compares `git rev-parse HEAD` with jj's last-imported `git_head()`; the segment appears only when they diverge, with directional counts (`git +N` / `jj +N`). Divergence happens when git commands run without a jj command following — and stays visible because this script's `--ignore-working-copy` calls never trigger jj's auto-import
+- **IFS tab gotcha**: every jj template field needs a non-empty placeholder (`"-"`) — tab is IFS *whitespace*, so `read` collapses consecutive tabs instead of preserving empty fields. An empty field shifts the columns (this bug once made every repo show `conflict` and silently disabled jj ahead/behind)
 - **`--ignore-working-copy`**: Prevents expensive snapshot operations in the statusline
 - **`--no-pager`**: Ensures jj doesn't page when running non-interactively
-- **Performance**: 2-3 subprocess calls for jj, 3-5 for git; acceptable for statusline frequency
+- **Performance**: 2-3 subprocess calls for jj, 3-5 for git, plus 2-3 for the sync check in colocated repos; acceptable for statusline frequency
 
 ## Multi-Line Example
 

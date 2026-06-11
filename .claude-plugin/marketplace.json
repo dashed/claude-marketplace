@@ -459,7 +459,7 @@
     },
     {
       "name": "statusline",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "source": "./plugins/statusline",
       "description": "Configure the Claude Code status line with VCS-aware scripts showing git branch, jj change ID, bookmarks, context usage, and costs. Use when setting up a statusline, customizing the status bar, or adding VCS info to the status line.",
       "author": {

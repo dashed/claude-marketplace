@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- statusline skill (v1.2.0): jj ⇄ git out-of-sync segment for colocated repos (git HEAD vs jj's `git_head()`, directional `git +N`/`jj +N` counts) and a detached-HEAD fallback (`detached @ <short-hash>`) without which jj-colocated repos never showed the git segment; both live-verified
+
+### Fixed
+- statusline skill (v1.2.0): IFS tab field-collapse bug in the jj template parsing made every jj repo show a phantom `conflict` and silently disabled jj ahead/behind — empty template fields now use `-` placeholders
+
 ## [0.33.0] - 2026-06-11
 
 ### Added
