@@ -4,6 +4,11 @@ All notable changes to the handoff skill in this marketplace will be documented 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.1.0] - 2026-06-11
+
+### Added
+- `--workspace` option (also triggered by asking for the document in the workspace): saves the handoff doc to the workspace root as `HANDOFF.md` instead of the OS temp directory, left untracked and uncommitted unless asked; `argument-hint` updated to mention the flag. Second divergence from upstream, which is temp-dir only
+
 ## [1.0.0] - 2026-06-11
 
 ### Added

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- handoff skill (v1.1.0): `--workspace` option — save the handoff doc to the workspace root as `HANDOFF.md` instead of the OS temp directory (left untracked/uncommitted unless asked); second documented divergence from upstream
+
 ## [0.35.0] - 2026-06-11
 
 ### Added
