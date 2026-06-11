@@ -1,0 +1,33 @@
+{
+  "name": "kubernetes",
+  "version": "1.0.0+codex.ef1fe52f5744",
+  "description": "Author and operate Kubernetes workloads with kubectl and YAML manifests \u2014 the kubectl CLI plus core resource authoring (Deployments, StatefulSets, Jobs/CronJobs, Services, Ingress, ConfigMaps/Secrets, PV/PVC, RBAC). Use when writing/debugging manifests, running kubectl (apply/diff/rollout/logs/exec/debug), fixing CrashLoopBackOff/Pending pods, managing contexts, or checking RBAC with auth can-i. Includes `(k8s 1.X+)` annotations. For installing/running a lightweight cluster see the k3s skill.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "kubernetes",
+    "kubectl",
+    "k8s",
+    "manifests",
+    "deployment",
+    "rbac",
+    "cli"
+  ],
+  "interface": {
+    "displayName": "Kubernetes",
+    "shortDescription": "Author and operate Kubernetes workloads with kubectl and YAML manifests \u2014 the kubectl CLI plus core resource authoring (Deployments, StatefulSets, Jobs/CronJobs, Services...",
+    "longDescription": "Author and operate Kubernetes workloads with kubectl and YAML manifests \u2014 the kubectl CLI plus core resource authoring (Deployments, StatefulSets, Jobs/CronJobs, Services, Ingress, ConfigMaps/Secrets, PV/PVC, RBAC). Use when writing/debugging manifests, running kubectl (apply/diff/rollout/logs/exec/debug), fixing CrashLoopBackOff/Pending pods, managing contexts, or checking RBAC with auth can-i. Includes `(k8s 1.X+)` annotations. For installing/running a lightweight cluster see the k3s skill.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $kubernetes for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/kubernetes",
+  "skills": "./skills/"
+}

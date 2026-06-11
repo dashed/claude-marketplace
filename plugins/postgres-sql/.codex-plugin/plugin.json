@@ -1,0 +1,33 @@
+{
+  "name": "postgres-sql",
+  "version": "1.0.0+codex.b2021964a7df",
+  "description": "The PostgreSQL SQL dialect & data types that set Postgres apart from generic SQL. Use when writing or debugging Postgres-specific SQL \u2014 upsert (`ON CONFLICT`), `RETURNING`, `MERGE`, CTEs, window frames, `GROUPING SETS`, `LATERAL`, generated/identity columns, partitioning, `jsonb`/jsonpath/SQL-JSON (`JSON_TABLE`), arrays, ranges, composite/enum/domain types, `uuidv7()`. Includes `(pgNN+)` annotations. Dialect & types \u2014 client -> psql, tuning -> postgres-performance, config -> postgres-admin.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "postgres",
+    "postgresql",
+    "sql",
+    "jsonb",
+    "merge",
+    "upsert",
+    "partitioning"
+  ],
+  "interface": {
+    "displayName": "Postgres SQL",
+    "shortDescription": "The PostgreSQL SQL dialect & data types that set Postgres apart from generic SQL. Use when writing or debugging Postgres-specific SQL \u2014 upsert (`ON CONFLICT`), `RETURNING`...",
+    "longDescription": "The PostgreSQL SQL dialect & data types that set Postgres apart from generic SQL. Use when writing or debugging Postgres-specific SQL \u2014 upsert (`ON CONFLICT`), `RETURNING`, `MERGE`, CTEs, window frames, `GROUPING SETS`, `LATERAL`, generated/identity columns, partitioning, `jsonb`/jsonpath/SQL-JSON (`JSON_TABLE`), arrays, ranges, composite/enum/domain types, `uuidv7()`. Includes `(pgNN+)` annotations. Dialect & types \u2014 client -> psql, tuning -> postgres-performance, config -> postgres-admin.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $postgres-sql for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/postgres-sql",
+  "skills": "./skills/"
+}

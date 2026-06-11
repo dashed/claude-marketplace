@@ -1,0 +1,34 @@
+{
+  "name": "hledger",
+  "version": "1.0.0+codex.972faf92d443",
+  "description": "Plain-text double-entry accounting with hledger. Use when recording transactions, checking balances, generating financial reports, importing CSV bank statements, budgeting, tracking time, managing multiple currencies, or doing year-end closing.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "hledger",
+    "accounting",
+    "ledger",
+    "plain-text",
+    "double-entry",
+    "finance",
+    "budget",
+    "csv-import"
+  ],
+  "interface": {
+    "displayName": "Hledger",
+    "shortDescription": "Plain-text double-entry accounting with hledger. Use when recording transactions, checking balances, generating financial reports, importing CSV bank statements, budgeting...",
+    "longDescription": "Plain-text double-entry accounting with hledger. Use when recording transactions, checking balances, generating financial reports, importing CSV bank statements, budgeting, tracking time, managing multiple currencies, or doing year-end closing.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $hledger for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/hledger",
+  "skills": "./skills/"
+}

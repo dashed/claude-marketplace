@@ -1,0 +1,34 @@
+{
+  "name": "k3s",
+  "version": "1.0.1+codex.fcf8ac695236",
+  "description": "The k3s lightweight CNCF-certified Kubernetes distribution as a single binary (bundles containerd, flannel, CoreDNS, Traefik, ServiceLB, local-path-provisioner, metrics-server). Use when installing/running a lightweight cluster, bootstrapping single-node or HA control planes, joining agent nodes, embedded etcd vs external datastore, managing tokens, rotating certs, etcd snapshots, secrets encryption, airgap installs, disabling components, or upgrading k3s. Includes `(k3s vX.Y+)` annotations.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "k3s",
+    "kubernetes",
+    "k8s",
+    "cluster",
+    "etcd",
+    "rancher",
+    "devops",
+    "cli"
+  ],
+  "interface": {
+    "displayName": "k3s",
+    "shortDescription": "The k3s lightweight CNCF-certified Kubernetes distribution as a single binary (bundles containerd, flannel, CoreDNS, Traefik, ServiceLB, local-path-provisioner, metrics-server)...",
+    "longDescription": "The k3s lightweight CNCF-certified Kubernetes distribution as a single binary (bundles containerd, flannel, CoreDNS, Traefik, ServiceLB, local-path-provisioner, metrics-server). Use when installing/running a lightweight cluster, bootstrapping single-node or HA control planes, joining agent nodes, embedded etcd vs external datastore, managing tokens, rotating certs, etcd snapshots, secrets encryption, airgap installs, disabling components, or upgrading k3s. Includes `(k3s vX.Y+)` annotations.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $k3s for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/k3s",
+  "skills": "./skills/"
+}

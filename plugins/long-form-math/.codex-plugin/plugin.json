@@ -1,0 +1,34 @@
+{
+  "name": "long-form-math",
+  "version": "1.0.0+codex.75fd613f0378",
+  "description": "Write mathematics in a long-form, understanding-focused style with detailed proofs and rich exposition. Use when explaining mathematical concepts, writing proofs, tutoring math, creating educational math content, or when the user asks for mathematical explanations. Inspired by Jay Cummings' Real Analysis and Chartrand's Mathematical Proofs.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "mathematics",
+    "proofs",
+    "exposition",
+    "long-form",
+    "tutoring",
+    "education",
+    "real-analysis",
+    "writing"
+  ],
+  "interface": {
+    "displayName": "Long Form Math",
+    "shortDescription": "Write mathematics in a long-form, understanding-focused style with detailed proofs and rich exposition. Use when explaining mathematical concepts, writing proofs, tutoring math...",
+    "longDescription": "Write mathematics in a long-form, understanding-focused style with detailed proofs and rich exposition. Use when explaining mathematical concepts, writing proofs, tutoring math, creating educational math content, or when the user asks for mathematical explanations. Inspired by Jay Cummings' Real Analysis and Chartrand's Mathematical Proofs.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $long-form-math for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/long-form-math",
+  "skills": "./skills/"
+}

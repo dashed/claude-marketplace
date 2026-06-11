@@ -1,0 +1,36 @@
+{
+  "name": "pup",
+  "version": "1.0.0+codex.11a3907714e9",
+  "description": "Datadog CLI (pup) for observability, monitoring, logs, APM, security, and infrastructure. Use when querying Datadog metrics, searching logs, managing monitors, investigating incidents, or performing Datadog API operations.",
+  "author": {
+    "name": "Datadog"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "datadog",
+    "cli",
+    "monitoring",
+    "observability",
+    "logs",
+    "metrics",
+    "apm",
+    "security",
+    "infrastructure",
+    "incidents"
+  ],
+  "interface": {
+    "displayName": "Pup",
+    "shortDescription": "Datadog CLI (pup) for observability, monitoring, logs, APM, security, and infrastructure. Use when querying Datadog metrics, searching logs, managing monitors, investigating...",
+    "longDescription": "Datadog CLI (pup) for observability, monitoring, logs, APM, security, and infrastructure. Use when querying Datadog metrics, searching logs, managing monitors, investigating incidents, or performing Datadog API operations.",
+    "developerName": "Datadog",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $pup for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/pup",
+  "skills": "./skills/"
+}

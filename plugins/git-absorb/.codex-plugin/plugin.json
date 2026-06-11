@@ -1,0 +1,31 @@
+{
+  "name": "git-absorb",
+  "version": "1.1.0+codex.dc8775e4d0e2",
+  "description": "Automatically fold uncommitted changes into appropriate commits. Use for applying review feedback and maintaining atomic commit history.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "git",
+    "workflow",
+    "commits",
+    "rebase",
+    "fixup"
+  ],
+  "interface": {
+    "displayName": "Git Absorb",
+    "shortDescription": "Automatically fold uncommitted changes into appropriate commits. Use for applying review feedback and maintaining atomic commit history.",
+    "longDescription": "Automatically fold uncommitted changes into appropriate commits. Use for applying review feedback and maintaining atomic commit history.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $git-absorb for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/git-absorb",
+  "skills": "./skills/"
+}

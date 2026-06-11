@@ -1,0 +1,33 @@
+{
+  "name": "uv",
+  "version": "1.0.0+codex.9fecea4111b3",
+  "description": "uv \u2014 Astral's fast Python package & project manager, one binary replacing pip/pipx/pyenv/poetry/virtualenv. Use when managing Python projects with pyproject.toml + uv.lock (uv init/add/sync/lock/run), running PEP 723 inline-dependency scripts, running one-off tools with uvx, installing/pinning Python versions (uv python), migrating from pip (uv pip), building/publishing packages, or configuring indexes/resolution/cache. Includes `(uv 0.X+)` version annotations. The uv CLI, not ruff/ty.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "uv",
+    "python",
+    "packaging",
+    "pip",
+    "venv",
+    "astral",
+    "cli"
+  ],
+  "interface": {
+    "displayName": "uv",
+    "shortDescription": "uv \u2014 Astral's fast Python package & project manager, one binary replacing pip/pipx/pyenv/poetry/virtualenv. Use when managing Python projects with pyproject.toml + uv.lock (uv...",
+    "longDescription": "uv \u2014 Astral's fast Python package & project manager, one binary replacing pip/pipx/pyenv/poetry/virtualenv. Use when managing Python projects with pyproject.toml + uv.lock (uv init/add/sync/lock/run), running PEP 723 inline-dependency scripts, running one-off tools with uvx, installing/pinning Python versions (uv python), migrating from pip (uv pip), building/publishing packages, or configuring indexes/resolution/cache. Includes `(uv 0.X+)` version annotations. The uv CLI, not ruff/ty.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $uv for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/uv",
+  "skills": "./skills/"
+}

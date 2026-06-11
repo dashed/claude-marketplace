@@ -1,0 +1,36 @@
+{
+  "name": "mermaid-cli",
+  "version": "1.0.0+codex.894cf4b2a2f1",
+  "description": "Generate, validate, and fix diagrams from Mermaid markup using mmdc. Use when creating flowcharts, sequence diagrams, class diagrams, converting .mmd files to images/SVG/PDF, or validating and fixing Mermaid diagram syntax.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "mermaid",
+    "diagrams",
+    "flowchart",
+    "sequence-diagram",
+    "svg",
+    "png",
+    "pdf",
+    "visualization",
+    "cli",
+    "mmdc"
+  ],
+  "interface": {
+    "displayName": "Mermaid CLI",
+    "shortDescription": "Generate, validate, and fix diagrams from Mermaid markup using mmdc. Use when creating flowcharts, sequence diagrams, class diagrams, converting .mmd files to images/SVG/PDF, or...",
+    "longDescription": "Generate, validate, and fix diagrams from Mermaid markup using mmdc. Use when creating flowcharts, sequence diagrams, class diagrams, converting .mmd files to images/SVG/PDF, or validating and fixing Mermaid diagram syntax.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $mermaid-cli for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/mermaid-cli",
+  "skills": "./skills/"
+}

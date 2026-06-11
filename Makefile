@@ -1,4 +1,4 @@
-.PHONY: help sync validate validate-strict validate-yaml validate-json validate-structure clean test test-codex-skills test-codex-installer lint-codex-skills lint-codex-installer typecheck-codex-skills typecheck-codex-installer format-codex-skills format-codex-installer format-codex-skills-check format-codex-installer-check manage-codex-skills test-tmux-build test-tmux test-tmux-local test-tmux-shell test-session-registry test-session-registry-local test-registry test-create-session test-list-sessions test-cleanup-sessions test-session-integration test-playwright-build test-playwright test-playwright-local test-playwright-shell lint lint-python lint-python-fix lint-shellcheck lint-shellcheck-strict lint-fix type-check format format-check format-playwright format-playwright-check lint-playwright setup-linear lint-typescript typecheck-typescript format-typescript format-check-typescript test-linear test-chrome-cdp lint-chrome-cdp format-chrome-cdp format-chrome-cdp-check typecheck-chrome-cdp build-react-bp validate-react-bp test-react-bp lint-react-bp format-react-bp format-react-bp-check typecheck-react-bp test-sequential-thinking test-file-search test-fuzzy-search test-sqlite
+.PHONY: help sync sync-codex-plugins check-codex-plugins validate validate-strict validate-yaml validate-json validate-structure clean test test-codex-skills test-codex-installer lint-codex-skills lint-codex-installer typecheck-codex-skills typecheck-codex-installer format-codex-skills format-codex-installer format-codex-skills-check format-codex-installer-check manage-codex-skills test-tmux-build test-tmux test-tmux-local test-tmux-shell test-session-registry test-session-registry-local test-registry test-create-session test-list-sessions test-cleanup-sessions test-session-integration test-playwright-build test-playwright test-playwright-local test-playwright-shell lint lint-python lint-python-fix lint-shellcheck lint-shellcheck-strict lint-fix type-check format format-check format-playwright format-playwright-check lint-playwright setup-linear lint-typescript typecheck-typescript format-typescript format-check-typescript test-linear test-chrome-cdp lint-chrome-cdp format-chrome-cdp format-chrome-cdp-check typecheck-chrome-cdp build-react-bp validate-react-bp test-react-bp lint-react-bp format-react-bp format-react-bp-check typecheck-react-bp test-sequential-thinking test-file-search test-fuzzy-search test-sqlite
 
 # Default target
 .DEFAULT_GOAL := help
@@ -14,7 +14,7 @@ help: ## Show this help message
 	@echo "$(CYAN)Claude Marketplace - Makefile Commands$(NC)"
 	@echo ""
 	@echo "$(GREEN)Setup:$(NC)"
-	@grep -E '^(sync|init|manage-codex-skills):.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(CYAN)%-30s$(NC) %s\n", $$1, $$2}'
+	@grep -E '^(sync|sync-codex-plugins|check-codex-plugins|init|manage-codex-skills):.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(CYAN)%-30s$(NC) %s\n", $$1, $$2}'
 	@echo ""
 	@echo "$(GREEN)Validation:$(NC)"
 	@grep -E '^validate.*:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(CYAN)%-30s$(NC) %s\n", $$1, $$2}'
@@ -30,6 +30,12 @@ sync: ## Sync dependencies with uv (manual - uv run does this automatically)
 	@echo "$(CYAN)Syncing dependencies with uv...$(NC)"
 	uv sync
 	@echo "$(GREEN)✓ Dependencies synced$(NC)"
+
+sync-codex-plugins: ## Generate Codex plugin manifests and marketplace from Claude metadata
+	@./scripts/sync_codex_plugins.py
+
+check-codex-plugins: ## Check generated Codex plugin manifests and marketplace are current
+	@./scripts/sync_codex_plugins.py --check
 
 validate: ## Run all validation checks
 	@echo "$(CYAN)Running all validation checks...$(NC)"
@@ -82,11 +88,11 @@ test-cov: ## Run tests with coverage report
 		echo "$(YELLOW)Bash tests are located in tests/bash/ (run with make test-tmux)$(NC)"; \
 	fi
 
-CODEX_SKILLS_FILES := scripts/install_codex_skills.py scripts/manage_codex_skills.py tests/test_install_codex_skills.py tests/test_manage_codex_skills.py
+CODEX_SKILLS_FILES := scripts/install_codex_skills.py scripts/manage_codex_skills.py scripts/sync_codex_plugins.py tests/test_install_codex_skills.py tests/test_manage_codex_skills.py tests/test_sync_codex_plugins.py
 
-test-codex-skills: lint-codex-skills typecheck-codex-skills format-codex-skills-check ## Run Codex skills checks and unit tests
+test-codex-skills: lint-codex-skills typecheck-codex-skills format-codex-skills-check check-codex-plugins ## Run Codex skill/plugin checks and unit tests
 	@echo "$(CYAN)Running Codex skills tests...$(NC)"
-	@uv run pytest tests/test_install_codex_skills.py tests/test_manage_codex_skills.py -v
+	@uv run pytest tests/test_install_codex_skills.py tests/test_manage_codex_skills.py tests/test_sync_codex_plugins.py -v
 
 test-codex-installer: test-codex-skills ## Alias for Codex skills checks and tests
 

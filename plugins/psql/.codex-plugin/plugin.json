@@ -1,0 +1,33 @@
+{
+  "name": "psql",
+  "version": "1.0.0+codex.1127e9d9868e",
+  "description": "psql \u2014 PostgreSQL's interactive terminal client and SQL script runner. Use when connecting to or inspecting a Postgres DB from a terminal, running SQL scripts or one-off queries in shells/CI/agents (`-c`/`-f`/`-qAtX`/`--csv`), using meta-commands (the `\\d` family, `\\copy`, `\\watch`, `\\gexec`, `\\if` scripting, `\\pset`/`\\x`, variables), `.psqlrc`, or fixing connection/auth issues. Includes `(pgNN+)` annotations. The psql client only \u2014 SQL syntax -> postgres-sql, server admin -> postgres-admin.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "postgres",
+    "postgresql",
+    "psql",
+    "cli",
+    "sql",
+    "database",
+    "client"
+  ],
+  "interface": {
+    "displayName": "psql",
+    "shortDescription": "psql \u2014 PostgreSQL's interactive terminal client and SQL script runner. Use when connecting to or inspecting a Postgres DB from a terminal, running SQL scripts or one-off queries...",
+    "longDescription": "psql \u2014 PostgreSQL's interactive terminal client and SQL script runner. Use when connecting to or inspecting a Postgres DB from a terminal, running SQL scripts or one-off queries in shells/CI/agents (`-c`/`-f`/`-qAtX`/`--csv`), using meta-commands (the `\\d` family, `\\copy`, `\\watch`, `\\gexec`, `\\if` scripting, `\\pset`/`\\x`, variables), `.psqlrc`, or fixing connection/auth issues. Includes `(pgNN+)` annotations. The psql client only \u2014 SQL syntax -> postgres-sql, server admin -> postgres-admin.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $psql for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/psql",
+  "skills": "./skills/"
+}

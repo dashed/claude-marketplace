@@ -1,0 +1,33 @@
+{
+  "name": "fuzzy-filter",
+  "version": "1.0.1+codex.f10cdba150ab",
+  "description": "The non-interactive `rg`/`fd`/`rga` \u2192 `fzf --filter` pipeline \u2014 scan with a regex tool, then fuzzy-rank the lines without a TUI. Use when fuzzy-matching file paths, code lines, or document/PDF text from a script or one-shot command, reproducing the fuzzy-search MCP on the bare CLI, or piping fuzzy-ranked results into xargs/an editor. The CLI technique; for the INTERACTIVE picker use the fzf skill, for tool-call ergonomics use the fuzzy-search MCP.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "fzf",
+    "ripgrep",
+    "fuzzy-search",
+    "fzf-filter",
+    "rga",
+    "pipeline",
+    "cli"
+  ],
+  "interface": {
+    "displayName": "Fuzzy Filter",
+    "shortDescription": "The non-interactive `rg`/`fd`/`rga` \u2192 `fzf --filter` pipeline \u2014 scan with a regex tool, then fuzzy-rank the lines without a TUI. Use when fuzzy-matching file paths, code lines...",
+    "longDescription": "The non-interactive `rg`/`fd`/`rga` \u2192 `fzf --filter` pipeline \u2014 scan with a regex tool, then fuzzy-rank the lines without a TUI. Use when fuzzy-matching file paths, code lines, or document/PDF text from a script or one-shot command, reproducing the fuzzy-search MCP on the bare CLI, or piping fuzzy-ranked results into xargs/an editor. The CLI technique; for the INTERACTIVE picker use the fzf skill, for tool-call ergonomics use the fuzzy-search MCP.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $fuzzy-filter for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/fuzzy-filter",
+  "skills": "./skills/"
+}

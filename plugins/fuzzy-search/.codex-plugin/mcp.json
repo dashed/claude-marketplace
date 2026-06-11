@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "fuzzy-search": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--no-config",
+        "--script",
+        "scripts/mcp_fuzzy_search.py"
+      ],
+      "cwd": "."
+    }
+  }
+}

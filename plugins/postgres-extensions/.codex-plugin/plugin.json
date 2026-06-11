@@ -1,0 +1,33 @@
+{
+  "name": "postgres-extensions",
+  "version": "1.0.0+codex.9a43e78ee1a2",
+  "description": "PostgreSQL extension management and the bundled `contrib` catalog. Use when running `CREATE/ALTER/DROP EXTENSION`, listing extensions (`\\dx`), or choosing which contrib module enables a feature \u2014 FDWs (`postgres_fdw`, `dblink`), trigram search (`pg_trgm`), crypto/UUIDs (`pgcrypto`), types (`hstore`/`ltree`/`citext`), query stats (`pg_stat_statements`, `auto_explain`), forensics (`pageinspect`, `amcheck`). Covers trusted extensions & `shared_preload_libraries`. Includes `(pgNN+)` annotations.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "postgres",
+    "postgresql",
+    "extensions",
+    "contrib",
+    "postgres_fdw",
+    "pg_trgm",
+    "pg_stat_statements"
+  ],
+  "interface": {
+    "displayName": "Postgres Extensions",
+    "shortDescription": "PostgreSQL extension management and the bundled `contrib` catalog. Use when running `CREATE/ALTER/DROP EXTENSION`, listing extensions (`\\dx`), or choosing which contrib module...",
+    "longDescription": "PostgreSQL extension management and the bundled `contrib` catalog. Use when running `CREATE/ALTER/DROP EXTENSION`, listing extensions (`\\dx`), or choosing which contrib module enables a feature \u2014 FDWs (`postgres_fdw`, `dblink`), trigram search (`pg_trgm`), crypto/UUIDs (`pgcrypto`), types (`hstore`/`ltree`/`citext`), query stats (`pg_stat_statements`, `auto_explain`), forensics (`pageinspect`, `amcheck`). Covers trusted extensions & `shared_preload_libraries`. Includes `(pgNN+)` annotations.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $postgres-extensions for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/postgres-extensions",
+  "skills": "./skills/"
+}

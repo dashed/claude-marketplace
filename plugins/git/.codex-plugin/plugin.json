@@ -1,0 +1,37 @@
+{
+  "name": "git",
+  "version": "1.1.0+codex.b50ece3cc6e4",
+  "description": "Advanced Git CLI mastery, recovery, and troubleshooting (git 2.54+). Use when recovering lost commits/branches/stashes (reflog, fsck), undoing a bad reset/merge/rebase, rewriting history (interactive rebase, filter-repo), resolving conflicts (rerere), worktrees, bisect, cherry-pick, stash, refspecs and --force-with-lease, .gitattributes/hooks, git internals, or confusing git errors. For commit messages use conventional-commits; stacked branches git-chain; auto-fixup git-absorb; Jujutsu jj.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "git",
+    "version-control",
+    "vcs",
+    "rebase",
+    "reflog",
+    "recovery",
+    "worktree",
+    "bisect",
+    "merge",
+    "history-rewriting",
+    "cli"
+  ],
+  "interface": {
+    "displayName": "Git",
+    "shortDescription": "Advanced Git CLI mastery, recovery, and troubleshooting (git 2.54+). Use when recovering lost commits/branches/stashes (reflog, fsck), undoing a bad reset/merge/rebase, rewriting...",
+    "longDescription": "Advanced Git CLI mastery, recovery, and troubleshooting (git 2.54+). Use when recovering lost commits/branches/stashes (reflog, fsck), undoing a bad reset/merge/rebase, rewriting history (interactive rebase, filter-repo), resolving conflicts (rerere), worktrees, bisect, cherry-pick, stash, refspecs and --force-with-lease, .gitattributes/hooks, git internals, or confusing git errors. For commit messages use conventional-commits; stacked branches git-chain; auto-fixup git-absorb; Jujutsu jj.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $git for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/git",
+  "skills": "./skills/"
+}

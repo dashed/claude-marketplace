@@ -6,7 +6,7 @@ Comprehensive test suite for claude-marketplace tools and plugins.
 
 This directory contains tests for:
 - **tmux tools**: Bash-based integration tests for tmux helper scripts (pane-health.sh, wait-for-text.sh, find-sessions.sh)
-- **Python tools**: pytest tests for repository scripts, including the Codex skills installer
+- **Python tools**: pytest tests for repository scripts, including Codex skill links and plugin sync
 
 ## Directory Structure
 
@@ -14,6 +14,7 @@ This directory contains tests for:
 tests/
 ├── test_install_codex_skills.py # Tests for scripts/install_codex_skills.py
 ├── test_manage_codex_skills.py  # Tests for scripts/manage_codex_skills.py
+├── test_sync_codex_plugins.py   # Tests for scripts/sync_codex_plugins.py
 ├── bash/                      # Bash integration tests
 │   ├── test-pane-health.sh   # Tests for pane-health.sh
 │   ├── test-wait-for-text.sh # Tests for wait-for-text.sh
@@ -64,8 +65,9 @@ This will:
 
 - **`make test`** - Run pytest tests (for Python validators)
 - **`make test-cov`** - Run tests with coverage report
-- **`make test-codex-skills`** - Run Codex skills installer/manager Ruff, ty, format, and pytest checks
+- **`make test-codex-skills`** - Run Codex skill/plugin Ruff, ty, format, sync, and pytest checks
 - **`make test-codex-installer`** - Backward-compatible alias for `make test-codex-skills`
+- **`make check-codex-plugins`** - Check generated Codex plugin metadata is current
 
 ### Running Tests Manually
 
@@ -121,6 +123,16 @@ Tests for `scripts/manage_codex_skills.py`:
 - ✅ Requires `--force` before replacing conflicting symlinks
 - ✅ Resolves interactive selection tokens
 - ✅ Exercises non-interactive CLI actions
+
+#### test_sync_codex_plugins.py
+Tests for `scripts/sync_codex_plugins.py`:
+
+- ✅ Generates `.agents/plugins/marketplace.json`
+- ✅ Generates `.codex-plugin/plugin.json` for skill plugins
+- ✅ Generates Codex MCP configs with plugin-relative `cwd`
+- ✅ Rewrites Claude plugin-root variables in MCP args
+- ✅ Detects generated-file drift with `--check`
+- ✅ Keeps dry runs read-only
 
 ### tmux Tools Tests
 

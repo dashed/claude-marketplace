@@ -1,0 +1,33 @@
+{
+  "name": "obsidian-markdown",
+  "version": "1.0.1+codex.9553629c1290",
+  "description": "Create and edit Obsidian Flavored Markdown with wikilinks, embeds, callouts, properties, and other Obsidian-specific syntax. Use when working with .md files in Obsidian, or when the user mentions wikilinks, callouts, frontmatter, tags, embeds, or Obsidian notes.",
+  "author": {
+    "name": "Steph Ango"
+  },
+  "license": "MIT",
+  "keywords": [
+    "obsidian",
+    "markdown",
+    "wikilinks",
+    "callouts",
+    "frontmatter",
+    "notes",
+    "pkm"
+  ],
+  "interface": {
+    "displayName": "Obsidian Markdown",
+    "shortDescription": "Create and edit Obsidian Flavored Markdown with wikilinks, embeds, callouts, properties, and other Obsidian-specific syntax. Use when working with .md files in Obsidian, or when...",
+    "longDescription": "Create and edit Obsidian Flavored Markdown with wikilinks, embeds, callouts, properties, and other Obsidian-specific syntax. Use when working with .md files in Obsidian, or when the user mentions wikilinks, callouts, frontmatter, tags, embeds, or Obsidian notes.",
+    "developerName": "Steph Ango",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $obsidian-markdown for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/obsidian-markdown",
+  "skills": "./skills/"
+}

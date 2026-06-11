@@ -1,0 +1,33 @@
+{
+  "name": "postgres-performance",
+  "version": "1.0.0+codex.72f689ebf70f",
+  "description": "PostgreSQL query & performance tuning. Use when a query is slow, reading an `EXPLAIN [ANALYZE]` plan (scan/join nodes, estimate skew), choosing an index type/columns (btree/GIN/GiST/SP-GiST/BRIN/hash; partial/expression/covering), fixing planner estimates with statistics, diagnosing MVCC bloat/VACUUM/autovacuum lag, or tuning planner GUCs (`random_page_cost`, `work_mem`). Includes `(pgNN+)` annotations. Tuning only \u2014 client -> psql, SQL -> postgres-sql, config -> postgres-admin.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "postgres",
+    "postgresql",
+    "performance",
+    "explain",
+    "index",
+    "query-tuning",
+    "vacuum"
+  ],
+  "interface": {
+    "displayName": "Postgres Performance",
+    "shortDescription": "PostgreSQL query & performance tuning. Use when a query is slow, reading an `EXPLAIN [ANALYZE]` plan (scan/join nodes, estimate skew), choosing an index type/columns...",
+    "longDescription": "PostgreSQL query & performance tuning. Use when a query is slow, reading an `EXPLAIN [ANALYZE]` plan (scan/join nodes, estimate skew), choosing an index type/columns (btree/GIN/GiST/SP-GiST/BRIN/hash; partial/expression/covering), fixing planner estimates with statistics, diagnosing MVCC bloat/VACUUM/autovacuum lag, or tuning planner GUCs (`random_page_cost`, `work_mem`). Includes `(pgNN+)` annotations. Tuning only \u2014 client -> psql, SQL -> postgres-sql, config -> postgres-admin.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $postgres-performance for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/postgres-performance",
+  "skills": "./skills/"
+}

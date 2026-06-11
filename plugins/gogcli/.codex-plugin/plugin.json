@@ -1,0 +1,35 @@
+{
+  "name": "gogcli",
+  "version": "1.0.0+codex.be9afbfe6b08",
+  "description": "Drive Google Workspace from the terminal with the `gog` CLI (gogcli). Use when sending/searching Gmail, managing Calendar events, uploading to Drive, editing Docs/Sheets/Slides, posting to Chat, managing Tasks/Contacts, administering Workspace via DWD, or building agent workflows needing JSON output, OAuth/service-account auth, Pub/Sub watches, and a command sandbox. Covers Gmail, Calendar, Drive, Docs, Slides, Sheets, Chat, Tasks, Contacts, Classroom, Forms, Keep, Admin.",
+  "author": {
+    "name": "Peter Steinberger (steipete)"
+  },
+  "license": "MIT",
+  "keywords": [
+    "google",
+    "gmail",
+    "calendar",
+    "drive",
+    "sheets",
+    "docs",
+    "cli",
+    "workspace",
+    "automation"
+  ],
+  "interface": {
+    "displayName": "Gogcli",
+    "shortDescription": "Drive Google Workspace from the terminal with the `gog` CLI (gogcli). Use when sending/searching Gmail, managing Calendar events, uploading to Drive, editing Docs/Sheets/Slides...",
+    "longDescription": "Drive Google Workspace from the terminal with the `gog` CLI (gogcli). Use when sending/searching Gmail, managing Calendar events, uploading to Drive, editing Docs/Sheets/Slides, posting to Chat, managing Tasks/Contacts, administering Workspace via DWD, or building agent workflows needing JSON output, OAuth/service-account auth, Pub/Sub watches, and a command sandbox. Covers Gmail, Calendar, Drive, Docs, Slides, Sheets, Chat, Tasks, Contacts, Classroom, Forms, Keep, Admin.",
+    "developerName": "Peter Steinberger (steipete)",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $gogcli for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/gogcli",
+  "skills": "./skills/"
+}

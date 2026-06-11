@@ -1,0 +1,32 @@
+{
+  "name": "conventional-commits",
+  "version": "1.0.0+codex.06db8a7232d8",
+  "description": "Format git commit messages following Conventional Commits 1.0.0 specification. Use when the user asks to commit changes, create a git commit, or mentions committing code. Ensures consistent, semantic commit messages that support automated changelog generation and semantic versioning.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "git",
+    "commits",
+    "conventional-commits",
+    "changelog",
+    "semver",
+    "versioning"
+  ],
+  "interface": {
+    "displayName": "Conventional Commits",
+    "shortDescription": "Format git commit messages following Conventional Commits 1.0.0 specification. Use when the user asks to commit changes, create a git commit, or mentions committing code. Ensures...",
+    "longDescription": "Format git commit messages following Conventional Commits 1.0.0 specification. Use when the user asks to commit changes, create a git commit, or mentions committing code. Ensures consistent, semantic commit messages that support automated changelog generation and semantic versioning.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $conventional-commits for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/conventional-commits",
+  "skills": "./skills/"
+}

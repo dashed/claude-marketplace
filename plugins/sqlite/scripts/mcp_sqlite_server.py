@@ -70,7 +70,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp import Context, FastMCP
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s | %(message)s")
 logger = logging.getLogger(__name__)
@@ -137,9 +137,7 @@ async def lifespan(mcp: FastMCP) -> AsyncIterator[SQLiteContext]:
         action="store_true",
         help="Allow write operations (INSERT, UPDATE, DELETE, CREATE TABLE)",
     )
-    parser.add_argument(
-        "--db-path", type=str, help="Default database path", default=None
-    )
+    parser.add_argument("--db-path", type=str, help="Default database path", default=None)
 
     # Parse known args to allow MCP to handle its own args
     args, _ = parser.parse_known_args()
@@ -147,15 +145,21 @@ async def lifespan(mcp: FastMCP) -> AsyncIterator[SQLiteContext]:
     # Override with environment variable if set
     allow_writes = args.allow_writes or ALLOW_WRITES
 
-    logger.info(
-        f"SQLite MCP Server started (writes: {'enabled' if allow_writes else 'disabled'})"
-    )
+    logger.info(f"SQLite MCP Server started (writes: {'enabled' if allow_writes else 'disabled'})")
 
     context = SQLiteContext(db_path=args.db_path, allow_writes=allow_writes)
     yield context
 
 
 mcp = FastMCP("SQLite Database", lifespan=lifespan)
+
+
+def sqlite_context(ctx: Context) -> SQLiteContext:
+    """Return the SQLite lifespan context for the active MCP request."""
+    context = ctx.request_context.lifespan_context
+    if not isinstance(context, SQLiteContext):
+        raise RuntimeError("SQLite MCP server context is unavailable")
+    return context
 
 
 # ---------------------------------------------------------------------------
@@ -180,9 +184,9 @@ mcp = FastMCP("SQLite Database", lifespan=lifespan)
         "  query('SELECT COUNT(*) as count FROM orders', 'sales.db')"
     )
 )
-async def query(query: str, db_path: str | None = None) -> dict[str, Any]:
+async def query(query: str, ctx: Context, db_path: str | None = None) -> dict[str, Any]:
     """Execute a SELECT query and return results."""
-    context: SQLiteContext = mcp.context  # type: ignore[attr-defined]
+    context = sqlite_context(ctx)
 
     if not query.strip().upper().startswith("SELECT"):
         return {"error": "Only SELECT queries are allowed in query tool"}
@@ -226,9 +230,9 @@ async def query(query: str, db_path: str | None = None) -> dict[str, Any]:
         "  execute('DELETE FROM sessions WHERE expired = 1', 'sessions.db')"
     )
 )
-async def execute(query: str, db_path: str | None = None) -> dict[str, Any]:
+async def execute(query: str, ctx: Context, db_path: str | None = None) -> dict[str, Any]:
     """Execute INSERT, UPDATE, or DELETE queries."""
-    context: SQLiteContext = mcp.context  # type: ignore[attr-defined]
+    context = sqlite_context(ctx)
 
     if not context.allow_writes:
         return {
@@ -238,9 +242,7 @@ async def execute(query: str, db_path: str | None = None) -> dict[str, Any]:
     # Basic safety check - only allow specific write operations
     query_upper = query.strip().upper()
     if not any(query_upper.startswith(op) for op in ["INSERT", "UPDATE", "DELETE"]):
-        return {
-            "error": "Only INSERT, UPDATE, and DELETE queries are allowed in execute tool"
-        }
+        return {"error": "Only INSERT, UPDATE, and DELETE queries are allowed in execute tool"}
 
     try:
         conn = context.get_connection(db_path)
@@ -275,15 +277,13 @@ async def execute(query: str, db_path: str | None = None) -> dict[str, Any]:
         "  list_tables('./data/analytics.db')  # Relative path"
     )
 )
-async def list_tables(db_path: str | None = None) -> dict[str, Any]:
+async def list_tables(ctx: Context, db_path: str | None = None) -> dict[str, Any]:
     """List all tables in the database."""
-    context: SQLiteContext = mcp.context  # type: ignore[attr-defined]
+    context = sqlite_context(ctx)
 
     try:
         conn = context.get_connection(db_path)
-        cursor = conn.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
-        )
+        cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")
         tables = [row["name"] for row in cursor.fetchall()]
         conn.close()
 
@@ -313,9 +313,11 @@ async def list_tables(db_path: str | None = None) -> dict[str, Any]:
         "  describe_table('settings', './config/app.db')  # Relative path"
     )
 )
-async def describe_table(table_name: str, db_path: str | None = None) -> dict[str, Any]:
+async def describe_table(
+    table_name: str, ctx: Context, db_path: str | None = None
+) -> dict[str, Any]:
     """Get detailed information about a table's schema."""
-    context: SQLiteContext = mcp.context  # type: ignore[attr-defined]
+    context = sqlite_context(ctx)
 
     try:
         conn = context.get_connection(db_path)
@@ -347,9 +349,7 @@ async def describe_table(table_name: str, db_path: str | None = None) -> dict[st
             "SELECT name, sql FROM sqlite_master WHERE type='index' AND tbl_name=?",
             (table_name,),
         )
-        indexes = [
-            {"name": row["name"], "sql": row["sql"]} for row in cursor.fetchall()
-        ]
+        indexes = [{"name": row["name"], "sql": row["sql"]} for row in cursor.fetchall()]
 
         conn.close()
 
@@ -402,10 +402,11 @@ async def describe_table(table_name: str, db_path: str | None = None) -> dict[st
 async def create_table(
     table_name: str,
     columns: list[dict[str, str]],
+    ctx: Context,
     db_path: str | None = None,
 ) -> dict[str, Any]:
     """Create a new table with specified columns."""
-    context: SQLiteContext = mcp.context  # type: ignore[attr-defined]
+    context = sqlite_context(ctx)
 
     if not context.allow_writes:
         return {
@@ -461,15 +462,11 @@ def _query_sync(
         return {"error": str(e)}
 
 
-def _list_tables_sync(
-    context: SQLiteContext, db_path: str | None = None
-) -> dict[str, Any]:
+def _list_tables_sync(context: SQLiteContext, db_path: str | None = None) -> dict[str, Any]:
     """Synchronous version of list_tables for CLI."""
     try:
         conn = context.get_connection(db_path)
-        cursor = conn.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
-        )
+        cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")
         tables = [row["name"] for row in cursor.fetchall()]
         conn.close()
 
@@ -512,9 +509,7 @@ def _describe_table_sync(
             "SELECT name, sql FROM sqlite_master WHERE type='index' AND tbl_name=?",
             (table_name,),
         )
-        indexes = [
-            {"name": row["name"], "sql": row["sql"]} for row in cursor.fetchall()
-        ]
+        indexes = [{"name": row["name"], "sql": row["sql"]} for row in cursor.fetchall()]
 
         conn.close()
 

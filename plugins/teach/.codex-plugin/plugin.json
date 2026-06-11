@@ -1,0 +1,34 @@
+{
+  "name": "teach",
+  "version": "1.0.0+codex.8eb336f0cf2f",
+  "description": "Run a Socratic teaching loop that quizzes you on a coding session until you've confirmed mastery of every concept. Use when you want to learn or lock in a Claude Code session, understand a transcript/PR/design decision, be quizzed on recent work, or prepare to teach someone else \u2014 or when the user runs `/teach` or asks to be taught or quizzed on a topic. Sources sessions from ~/.claude/projects/ and tracks a per-concept checklist until every item is confirmed.",
+  "author": {
+    "name": "alexknowshtml"
+  },
+  "license": "UNLICENSED",
+  "keywords": [
+    "teaching",
+    "learning",
+    "socratic",
+    "quiz",
+    "mastery",
+    "sessions",
+    "education",
+    "review"
+  ],
+  "interface": {
+    "displayName": "Teach",
+    "shortDescription": "Run a Socratic teaching loop that quizzes you on a coding session until you've confirmed mastery of every concept. Use when you want to learn or lock in a Claude Code session...",
+    "longDescription": "Run a Socratic teaching loop that quizzes you on a coding session until you've confirmed mastery of every concept. Use when you want to learn or lock in a Claude Code session, understand a transcript/PR/design decision, be quizzed on recent work, or prepare to teach someone else \u2014 or when the user runs `/teach` or asks to be taught or quizzed on a topic. Sources sessions from ~/.claude/projects/ and tracks a per-concept checklist until every item is confirmed.",
+    "developerName": "alexknowshtml",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $teach for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/teach",
+  "skills": "./skills/"
+}

@@ -1,0 +1,33 @@
+{
+  "name": "file-search",
+  "version": "1.0.1+codex.bb27efd1ad1b",
+  "description": "MCP server exposing search_files and filter_files tools for fast file-NAME discovery powered by fd (regex/glob) and fzf (fuzzy matching). Use when locating files by name or partial path \u2014 not for searching file contents.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "file-search",
+    "fd",
+    "fzf",
+    "fuzzy-search",
+    "file-discovery",
+    "find"
+  ],
+  "interface": {
+    "displayName": "File Search",
+    "shortDescription": "MCP server exposing search_files and filter_files tools for fast file-NAME discovery powered by fd (regex/glob) and fzf (fuzzy matching). Use when locating files by name or...",
+    "longDescription": "MCP server exposing search_files and filter_files tools for fast file-NAME discovery powered by fd (regex/glob) and fzf (fuzzy matching). Use when locating files by name or partial path \u2014 not for searching file contents.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "MCP"
+    ],
+    "defaultPrompt": [
+      "Use the file-search MCP tools for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/file-search",
+  "mcpServers": "./.codex-plugin/mcp.json"
+}

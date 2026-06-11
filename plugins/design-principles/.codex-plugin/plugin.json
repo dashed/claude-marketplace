@@ -1,0 +1,34 @@
+{
+  "name": "design-principles",
+  "version": "1.0.0+codex.920b2baa1b93",
+  "description": "Guide AI-assisted UI generation toward enterprise-grade design. Use when building UIs, creating dashboards, designing SaaS applications, or generating styled frontend code. Enforces 4px grids, typography hierarchies, and consistent depth strategies.",
+  "author": {
+    "name": "Dammyjay93"
+  },
+  "license": "MIT",
+  "keywords": [
+    "ui",
+    "design",
+    "interface",
+    "frontend",
+    "dashboard",
+    "styling",
+    "enterprise",
+    "saas"
+  ],
+  "interface": {
+    "displayName": "Design Principles",
+    "shortDescription": "Guide AI-assisted UI generation toward enterprise-grade design. Use when building UIs, creating dashboards, designing SaaS applications, or generating styled frontend code...",
+    "longDescription": "Guide AI-assisted UI generation toward enterprise-grade design. Use when building UIs, creating dashboards, designing SaaS applications, or generating styled frontend code. Enforces 4px grids, typography hierarchies, and consistent depth strategies.",
+    "developerName": "Dammyjay93",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $design-principles for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/design-principles",
+  "skills": "./skills/"
+}

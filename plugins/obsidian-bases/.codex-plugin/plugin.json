@@ -1,0 +1,33 @@
+{
+  "name": "obsidian-bases",
+  "version": "1.0.1+codex.123229908a7c",
+  "description": "Create and edit Obsidian Bases (.base files) with views, filters, formulas, and summaries. Use when working with .base files, creating database-like views of notes, or when the user mentions Bases, table views, card views, filters, or formulas in Obsidian.",
+  "author": {
+    "name": "Steph Ango"
+  },
+  "license": "MIT",
+  "keywords": [
+    "obsidian",
+    "bases",
+    "database",
+    "views",
+    "formulas",
+    "filters",
+    "pkm"
+  ],
+  "interface": {
+    "displayName": "Obsidian Bases",
+    "shortDescription": "Create and edit Obsidian Bases (.base files) with views, filters, formulas, and summaries. Use when working with .base files, creating database-like views of notes, or when the...",
+    "longDescription": "Create and edit Obsidian Bases (.base files) with views, filters, formulas, and summaries. Use when working with .base files, creating database-like views of notes, or when the user mentions Bases, table views, card views, filters, or formulas in Obsidian.",
+    "developerName": "Steph Ango",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $obsidian-bases for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/obsidian-bases",
+  "skills": "./skills/"
+}

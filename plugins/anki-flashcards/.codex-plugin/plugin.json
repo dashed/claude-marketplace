@@ -1,0 +1,33 @@
+{
+  "name": "anki-flashcards",
+  "version": "1.0.0+codex.44cbe9d8f95c",
+  "description": "Create and manage Anki flashcards via the AnkiConnect API. Use when the user wants to create flashcards, add cards to Anki, manage Anki decks, review Anki statistics, or interact with Anki in any way. Requires Anki desktop app running with AnkiConnect add-on installed.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "anki",
+    "flashcards",
+    "spaced-repetition",
+    "ankiconnect",
+    "study",
+    "learning",
+    "memorization"
+  ],
+  "interface": {
+    "displayName": "Anki Flashcards",
+    "shortDescription": "Create and manage Anki flashcards via the AnkiConnect API. Use when the user wants to create flashcards, add cards to Anki, manage Anki decks, review Anki statistics, or interact...",
+    "longDescription": "Create and manage Anki flashcards via the AnkiConnect API. Use when the user wants to create flashcards, add cards to Anki, manage Anki decks, review Anki statistics, or interact with Anki in any way. Requires Anki desktop app running with AnkiConnect add-on installed.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $anki-flashcards for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/anki-flashcards",
+  "skills": "./skills/"
+}

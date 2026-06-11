@@ -1,0 +1,33 @@
+{
+  "name": "ripgrep",
+  "version": "1.0.0+codex.cbca580e1ed9",
+  "description": "Fast, gitignore-aware recursive content search with the `ripgrep` (`rg`) command-line tool \u2014 a smarter, faster `grep`. Use when searching code or text for a regex across a directory tree, filtering by file type or glob, listing/counting matches, doing search-and-replace previews, or gitignore-aware code search. Triggers on mentions of ripgrep or rg. The rg CLI tool, distinct from the file-search/fuzzy-search MCP servers.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "ripgrep",
+    "rg",
+    "grep",
+    "search",
+    "regex",
+    "code-search",
+    "cli"
+  ],
+  "interface": {
+    "displayName": "Ripgrep",
+    "shortDescription": "Fast, gitignore-aware recursive content search with the `ripgrep` (`rg`) command-line tool \u2014 a smarter, faster `grep`. Use when searching code or text for a regex across a...",
+    "longDescription": "Fast, gitignore-aware recursive content search with the `ripgrep` (`rg`) command-line tool \u2014 a smarter, faster `grep`. Use when searching code or text for a regex across a directory tree, filtering by file type or glob, listing/counting matches, doing search-and-replace previews, or gitignore-aware code search. Triggers on mentions of ripgrep or rg. The rg CLI tool, distinct from the file-search/fuzzy-search MCP servers.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $ripgrep for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/ripgrep",
+  "skills": "./skills/"
+}

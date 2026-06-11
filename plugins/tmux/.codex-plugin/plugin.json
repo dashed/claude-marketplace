@@ -1,0 +1,32 @@
+{
+  "name": "tmux",
+  "version": "1.5.0+codex.b02f9ba3d35c",
+  "description": "Remote control tmux sessions for interactive CLIs (python, gdb, etc.) by sending keystrokes and scraping pane output. Use when debugging applications, running interactive REPLs (Python, gdb, ipdb, psql, mysql, node), automating terminal workflows, or when user mentions tmux, debugging, or interactive shells.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "Vibecoded",
+  "keywords": [
+    "tmux",
+    "terminal",
+    "multiplexer",
+    "interactive",
+    "debugging",
+    "repl"
+  ],
+  "interface": {
+    "displayName": "tmux",
+    "shortDescription": "Remote control tmux sessions for interactive CLIs (python, gdb, etc.) by sending keystrokes and scraping pane output. Use when debugging applications, running interactive REPLs...",
+    "longDescription": "Remote control tmux sessions for interactive CLIs (python, gdb, etc.) by sending keystrokes and scraping pane output. Use when debugging applications, running interactive REPLs (Python, gdb, ipdb, psql, mysql, node), automating terminal workflows, or when user mentions tmux, debugging, or interactive shells.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $tmux for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/tmux",
+  "skills": "./skills/"
+}

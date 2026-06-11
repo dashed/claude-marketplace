@@ -1,0 +1,30 @@
+{
+  "name": "linear",
+  "version": "2.5.0+codex.ce8445ed102a",
+  "description": "Managing Linear issues, projects, and teams. Use when working with Linear tasks, creating issues, updating status, querying projects, or managing team workflows.",
+  "author": {
+    "name": "Will Smith"
+  },
+  "license": "MIT",
+  "keywords": [
+    "linear",
+    "project-management",
+    "issues",
+    "teams"
+  ],
+  "interface": {
+    "displayName": "Linear",
+    "shortDescription": "Managing Linear issues, projects, and teams. Use when working with Linear tasks, creating issues, updating status, querying projects, or managing team workflows.",
+    "longDescription": "Managing Linear issues, projects, and teams. Use when working with Linear tasks, creating issues, updating status, querying projects, or managing team workflows.",
+    "developerName": "Will Smith",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $linear for this task."
+    ]
+  },
+  "repository": "https://github.com/wrsmith108/linear-claude-skill",
+  "skills": "./skills/"
+}

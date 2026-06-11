@@ -1,0 +1,34 @@
+{
+  "name": "playwright",
+  "version": "1.0.0+codex.57943a780137",
+  "description": "Browser automation with Playwright for Python. Use when testing websites, taking screenshots, filling forms, scraping web content, or automating browser interactions. Triggers on browser, web testing, screenshots, selenium, puppeteer, or playwright.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "playwright",
+    "browser",
+    "automation",
+    "testing",
+    "screenshots",
+    "web",
+    "scraping",
+    "python"
+  ],
+  "interface": {
+    "displayName": "Playwright",
+    "shortDescription": "Browser automation with Playwright for Python. Use when testing websites, taking screenshots, filling forms, scraping web content, or automating browser interactions. Triggers on...",
+    "longDescription": "Browser automation with Playwright for Python. Use when testing websites, taking screenshots, filling forms, scraping web content, or automating browser interactions. Triggers on browser, web testing, screenshots, selenium, puppeteer, or playwright.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $playwright for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/playwright",
+  "skills": "./skills/"
+}

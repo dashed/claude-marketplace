@@ -1,0 +1,34 @@
+{
+  "name": "style-extractor",
+  "version": "1.0.0+codex.a093aed1b458",
+  "description": "Extract and document writing styles from source texts into reusable style guides. Use when analyzing an author's voice, creating a style guide from a book or document, capturing writing patterns for replication, or building a writing style rubric.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "writing",
+    "style",
+    "voice",
+    "extraction",
+    "style-guide",
+    "rubric",
+    "analysis",
+    "authorship"
+  ],
+  "interface": {
+    "displayName": "Style Extractor",
+    "shortDescription": "Extract and document writing styles from source texts into reusable style guides. Use when analyzing an author's voice, creating a style guide from a book or document, capturing...",
+    "longDescription": "Extract and document writing styles from source texts into reusable style guides. Use when analyzing an author's voice, creating a style guide from a book or document, capturing writing patterns for replication, or building a writing style rubric.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $style-extractor for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/style-extractor",
+  "skills": "./skills/"
+}

@@ -24,13 +24,29 @@ A curated collection of Agent Skills for extending Claude Code and Codex capabil
 
 ## Codex Quick Start
 
-Codex reads repository skills from `.agents/skills`. This repo keeps the source skill folders in `plugins/`, so run the helper script to create Codex-compatible symlinks:
+Codex can read this repo as a local plugin marketplace. Generate Codex-native plugin manifests and the Codex marketplace file from the Claude marketplace metadata:
+
+```bash
+./scripts/sync_codex_plugins.py
+# or
+make sync-codex-plugins
+```
+
+Then restart Codex or start a new Codex thread from this repo root. Re-run the sync after editing `.claude-plugin/marketplace.json`, plugin skills, or MCP configs:
+
+```bash
+./scripts/sync_codex_plugins.py --check
+# or
+make check-codex-plugins
+```
+
+The sync writes `.agents/plugins/marketplace.json`, each plugin's `.codex-plugin/plugin.json`, and Codex-specific MCP configs when needed. Generated plugin versions include a content hash so Codex can see a new installable version after plugin files change.
+
+The older direct skill symlink flow is still available when you want repo-local `.agents/skills` entries instead of installing plugins:
 
 ```bash
 ./scripts/install_codex_skills.py
 ```
-
-Then restart Codex or start a new Codex thread from this repo root. Re-run the script after adding new plugin folders.
 
 For day-to-day toggling, use the interactive manager:
 
@@ -187,10 +203,16 @@ uv run --with playwright playwright install
 ### Install skills for Codex
 
 ```bash
-./scripts/install_codex_skills.py
+./scripts/sync_codex_plugins.py
 ```
 
-Codex can then discover the skills from `.agents/skills` when launched from this repository or one of its subdirectories.
+Codex can then discover the local plugin marketplace from `.agents/plugins/marketplace.json` when launched from this repository or one of its subdirectories.
+
+For legacy direct skill links:
+
+```bash
+./scripts/install_codex_skills.py
+```
 
 To enable, disable, or uninstall skills interactively:
 
@@ -221,7 +243,7 @@ make manage-codex-skills
 
 3. Update the CHANGELOG.md
 4. Commit your changes
-5. Re-run `./scripts/install_codex_skills.py` if you use Codex with this repo.
+5. Re-run `./scripts/sync_codex_plugins.py` if you use Codex with this repo.
 
 ### Method 2: Direct Installation
 
@@ -237,6 +259,9 @@ cp -r plugins/your-skill .claude/skills/
 # Codex repo-local links
 ./scripts/install_codex_skills.py
 
+# Codex plugin marketplace metadata
+./scripts/sync_codex_plugins.py
+
 # Codex personal links
 ./scripts/install_codex_skills.py --dest "$HOME/.agents/skills"
 
@@ -249,11 +274,15 @@ cp -r plugins/your-skill .claude/skills/
 ```
 claude-marketplace/
 ├── .agents/
-│   └── skills/              # Generated Codex symlinks
+│   ├── plugins/
+│   │   └── marketplace.json  # Generated Codex plugin marketplace
+│   └── skills/               # Optional generated Codex symlinks
 ├── .claude-plugin/
 │   └── marketplace.json      # Marketplace manifest
 ├── plugins/
 │   └── skill-creator/        # Plugin directory
+│       ├── .codex-plugin/
+│       │   └── plugin.json   # Generated Codex plugin manifest
 │       └── skills/
 │           └── skill-creator/
 │               ├── SKILL.md      # Skill definition
@@ -261,7 +290,8 @@ claude-marketplace/
 │               └── references/   # Optional documentation
 ├── scripts/
 │   ├── install_codex_skills.py # Codex symlink installer
-│   └── manage_codex_skills.py  # Codex interactive manager
+│   ├── manage_codex_skills.py  # Codex interactive manager
+│   └── sync_codex_plugins.py   # Codex plugin metadata sync
 ├── CHANGELOG.md              # Version history
 └── README.md                 # This file
 ```
@@ -272,6 +302,7 @@ claude-marketplace/
 - [Plugin Marketplaces Guide](https://docs.claude.com/en/docs/claude-code/plugin-marketplaces)
 - [Anthropic Skills Repository](https://github.com/anthropics/skills)
 - [OpenAI Codex Skills Documentation](https://developers.openai.com/codex/skills)
+- [OpenAI Codex Plugins Documentation](https://developers.openai.com/codex/plugins)
 - [OpenAI Skills Catalog](https://github.com/openai/skills)
 
 ## Version

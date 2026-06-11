@@ -1,0 +1,34 @@
+{
+  "name": "walkthrough-to-obsidian",
+  "version": "1.0.0+codex.f17c26adf4b8",
+  "description": "Convert game walkthroughs and guides from plain text into structured, interlinked Obsidian markdown pages. Use when the user wants to convert a walkthrough, FAQ, guide, or reference document into Obsidian vault pages. Triggers on mentions of converting walkthroughs, guides, or FAQs to Obsidian, or splitting a large text file into Obsidian pages.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "obsidian",
+    "walkthrough",
+    "guide",
+    "conversion",
+    "markdown",
+    "wiki",
+    "knowledge-base",
+    "gaming"
+  ],
+  "interface": {
+    "displayName": "Walkthrough To Obsidian",
+    "shortDescription": "Convert game walkthroughs and guides from plain text into structured, interlinked Obsidian markdown pages. Use when the user wants to convert a walkthrough, FAQ, guide, or...",
+    "longDescription": "Convert game walkthroughs and guides from plain text into structured, interlinked Obsidian markdown pages. Use when the user wants to convert a walkthrough, FAQ, guide, or reference document into Obsidian vault pages. Triggers on mentions of converting walkthroughs, guides, or FAQs to Obsidian, or splitting a large text file into Obsidian pages.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $walkthrough-to-obsidian for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/walkthrough-to-obsidian",
+  "skills": "./skills/"
+}

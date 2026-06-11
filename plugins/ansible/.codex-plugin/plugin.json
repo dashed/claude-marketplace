@@ -1,0 +1,34 @@
+{
+  "name": "ansible",
+  "version": "1.0.0+codex.d84bbb4d8ae8",
+  "description": "ansible-core \u2014 the agentless, push-based SSH automation engine that runs idempotent tasks from declarative YAML playbooks. Use when writing/running playbooks, ad-hoc commands, inventory, roles, collections (ansible-galaxy), Ansible Vault, ansible.cfg, or ansible-doc lookups. Covers the ten ansible* CLIs, FQCN, become, variable precedence, and check/diff mode, with `(ansible-core X.Y+)` annotations. This is ansible-core, not the community package's collection modules.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "ansible",
+    "ansible-core",
+    "playbook",
+    "automation",
+    "configuration-management",
+    "devops",
+    "yaml",
+    "cli"
+  ],
+  "interface": {
+    "displayName": "Ansible",
+    "shortDescription": "ansible-core \u2014 the agentless, push-based SSH automation engine that runs idempotent tasks from declarative YAML playbooks. Use when writing/running playbooks, ad-hoc commands...",
+    "longDescription": "ansible-core \u2014 the agentless, push-based SSH automation engine that runs idempotent tasks from declarative YAML playbooks. Use when writing/running playbooks, ad-hoc commands, inventory, roles, collections (ansible-galaxy), Ansible Vault, ansible.cfg, or ansible-doc lookups. Covers the ten ansible* CLIs, FQCN, become, variable precedence, and check/diff mode, with `(ansible-core X.Y+)` annotations. This is ansible-core, not the community package's collection modules.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $ansible for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/ansible",
+  "skills": "./skills/"
+}

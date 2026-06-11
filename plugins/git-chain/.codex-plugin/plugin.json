@@ -1,0 +1,34 @@
+{
+  "name": "git-chain",
+  "version": "1.0.0+codex.004f73123e73",
+  "description": "Manage and rebase chains of dependent Git branches (stacked branches). Use when working with multiple dependent PRs, feature branches that build on each other, or maintaining clean branch hierarchies. Automates rebasing or merging entire branch chains.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "git",
+    "workflow",
+    "branches",
+    "stacked",
+    "rebase",
+    "merge",
+    "chain",
+    "dependent"
+  ],
+  "interface": {
+    "displayName": "Git Chain",
+    "shortDescription": "Manage and rebase chains of dependent Git branches (stacked branches). Use when working with multiple dependent PRs, feature branches that build on each other, or maintaining...",
+    "longDescription": "Manage and rebase chains of dependent Git branches (stacked branches). Use when working with multiple dependent PRs, feature branches that build on each other, or maintaining clean branch hierarchies. Automates rebasing or merging entire branch chains.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $git-chain for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/git-chain",
+  "skills": "./skills/"
+}

@@ -1,0 +1,33 @@
+{
+  "name": "duckdb",
+  "version": "1.0.0+codex.61bd3d2fefa6",
+  "description": "DuckDB \u2014 in-process columnar OLAP SQL engine in a single binary (\"SQLite for analytics\"). Use when querying Parquet/CSV/JSON files directly with SQL, using the `duckdb` CLI shell (REPL or `-c`/`-json` one-shots), friendly SQL (FROM-first, `SELECT * EXCLUDE`, `GROUP BY ALL`, `SUMMARIZE`, `PIVOT`), converting CSV\u2194Parquet\u2194JSON via `COPY`, reading HTTP/S3 via httpfs, or `ATTACH`-ing Postgres/MySQL/SQLite. Includes `(duckdb vX.Y+)` annotations; the CLI/SQL engine, not client libraries.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "duckdb",
+    "olap",
+    "analytics",
+    "sql",
+    "parquet",
+    "csv",
+    "cli"
+  ],
+  "interface": {
+    "displayName": "Duckdb",
+    "shortDescription": "DuckDB \u2014 in-process columnar OLAP SQL engine in a single binary (\"SQLite for analytics\"). Use when querying Parquet/CSV/JSON files directly with SQL, using the `duckdb` CLI shell...",
+    "longDescription": "DuckDB \u2014 in-process columnar OLAP SQL engine in a single binary (\"SQLite for analytics\"). Use when querying Parquet/CSV/JSON files directly with SQL, using the `duckdb` CLI shell (REPL or `-c`/`-json` one-shots), friendly SQL (FROM-first, `SELECT * EXCLUDE`, `GROUP BY ALL`, `SUMMARIZE`, `PIVOT`), converting CSV\u2194Parquet\u2194JSON via `COPY`, reading HTTP/S3 via httpfs, or `ATTACH`-ing Postgres/MySQL/SQLite. Includes `(duckdb vX.Y+)` annotations; the CLI/SQL engine, not client libraries.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $duckdb for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/duckdb",
+  "skills": "./skills/"
+}

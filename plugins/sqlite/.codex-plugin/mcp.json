@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "sqlite": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--no-config",
+        "--script",
+        "scripts/mcp_sqlite_server.py"
+      ],
+      "cwd": "."
+    }
+  }
+}
