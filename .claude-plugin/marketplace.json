@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.30.0"
+    "version": "0.31.0"
   },
   "plugins": [
     {
@@ -948,6 +948,28 @@
         "manifests",
         "deployment",
         "rbac",
+        "cli"
+      ],
+      "strict": false,
+      "skills": ["./skills"]
+    },
+    {
+      "name": "uv",
+      "version": "1.0.0",
+      "source": "./plugins/uv",
+      "description": "uv — Astral's fast Python package & project manager, one binary replacing pip/pipx/pyenv/poetry/virtualenv. Use when managing Python projects with pyproject.toml + uv.lock (uv init/add/sync/lock/run), running PEP 723 inline-dependency scripts, running one-off tools with uvx, installing/pinning Python versions (uv python), migrating from pip (uv pip), building/publishing packages, or configuring indexes/resolution/cache. Includes `(uv 0.X+)` version annotations. The uv CLI, not ruff/ty.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/uv",
+      "license": "MIT",
+      "keywords": [
+        "uv",
+        "python",
+        "packaging",
+        "pip",
+        "venv",
+        "astral",
         "cli"
       ],
       "strict": false,

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.31.0] - 2026-06-11
+
+### Added
+- uv skill: new skill for **uv** — Astral's fast Python package & project manager (one binary replacing pip/pipx/pyenv/poetry/virtualenv) — authored against the uv source (dev tree past **0.11.20**; the repo's meticulous `CHANGELOG.md` as the primary version source) with every flag and workflow empirically verified on the installed **uv 0.11.2** (uv skill v1.0.0). Ships a `SKILL.md` spine (the four-surface mental model — projects/scripts/tools/python, install + self-update, six verified core workflows, quick-reference, troubleshooting) and four references: `projects.md` (`uv init/add/sync/lock/run/tree/export`, dependency groups (PEP 735) vs extras, `[tool.uv.sources]`, workspaces, `uv version` + bump, `uv build`/`uv publish` incl. trusted publishing, the universal-lockfile model), `scripts-tools-python.md` (PEP 723 inline-metadata scripts + script lockfiles, `uvx`/`uv tool`, `uv python` toolchain management, `uv venv`), `pip-config.md` (the `uv pip` interface + deviations from pip, caching, config discovery (`[tool.uv]` vs `uv.toml`) + `UV_*` env vars, named indexes + auth (`uv auth`), resolution strategies/overrides/constraints/`--exclude-newer`, `--torch-backend` where it actually lives), and `version-features.md` (37 source-cited `feature → minimum uv version` rows (0.4.x→0.11.x, preview features labeled) plus a "Breaking/renamed across 0.x minors" subsection — `uv version` repurposed 0.7.0, `--index-url` deprecation 0.4.23, `uv_build` default 0.8.0, TLS overhaul 0.11.0). Inline `(uv 0.X+)` annotations throughout; bedrock (≤0.4.0, Aug 2024) left unannotated ("unlisted = long-standing"). Writer verification against the live binary corrected several details over the research dossier (e.g. `uv auth` subcommands are `login/logout/token/dir`; `uv sync`/`uv run` have only `--no-dev`/`--only-dev`, not `--dev`; `uv tool upgrade` has no `--upgrade-package`), and the hidden 0.11.20-only `uv upgrade` command was deliberately left undocumented
+
 ## [0.30.0] - 2026-06-11
 
 ### Added
@@ -529,7 +534,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.30.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.31.0...HEAD
+[0.31.0]: https://github.com/dashed/claude-marketplace/compare/v0.30.0...v0.31.0
 [0.30.0]: https://github.com/dashed/claude-marketplace/compare/v0.29.1...v0.30.0
 [0.29.1]: https://github.com/dashed/claude-marketplace/compare/v0.29.0...v0.29.1
 [0.29.0]: https://github.com/dashed/claude-marketplace/compare/v0.28.0...v0.29.0

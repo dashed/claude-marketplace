@@ -120,6 +120,7 @@ make test-codex-skills
 | **postgres-admin** | PostgreSQL server administration & operations (DBA work on a running cluster). Use when configuring a server (`postgresql.conf`, `ALTER SYSTEM`, GUCs), managing roles/privileges, authentication (`pg_hba.conf`, scram-sha-256), backup/restore (`pg_dump`, `pg_basebackup`, incremental, PITR), replication & HA (streaming, logical pub/sub, slots, failover), `pg_upgrade`, or monitoring (`pg_stat_activity`, `pg_stat_io`, `pg_stat_progress_*`). Includes `(pgNN+)` version annotations + a version-features lookup. Tool: [PostgreSQL](https://github.com/postgres/postgres) | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/postgres-admin) |
 | **postgres-extensions** | PostgreSQL extension management and the bundled `contrib` catalog. Use when running `CREATE EXTENSION`/`ALTER EXTENSION ... UPDATE`/`DROP EXTENSION`, listing extensions (`\dx`), or choosing which contrib module enables a feature — FDWs (`postgres_fdw`, `dblink`), trigram/fuzzy search (`pg_trgm`, `fuzzystrmatch`), crypto/UUIDs (`pgcrypto`), `hstore`/`ltree`/`citext`/`cube`, query stats (`pg_stat_statements`, `auto_explain`), storage forensics (`pageinspect`, `amcheck`, `pg_surgery`). Covers trusted extensions & `shared_preload_libraries`. Includes `(pgNN+)` version annotations + a version-features lookup. Tool: [PostgreSQL](https://github.com/postgres/postgres) | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/postgres-extensions) |
 | **kubernetes** | Author and operate Kubernetes workloads with kubectl and YAML manifests — the kubectl CLI plus core resource authoring (Deployments, StatefulSets, Jobs/CronJobs, Services, Ingress, ConfigMaps/Secrets, PV/PVC, RBAC). Use when writing/debugging manifests, running kubectl (apply/diff/rollout/logs/exec/debug), fixing CrashLoopBackOff/Pending pods, managing contexts/namespaces, generating manifests with `--dry-run=client`, or checking RBAC with `auth can-i`. Includes `(k8s 1.X+)` version annotations + a version-features lookup. For installing/running a lightweight cluster see the **k3s** skill. Tool: [kubernetes](https://github.com/kubernetes/kubernetes) | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/kubernetes) |
+| **uv** | uv — Astral's fast Python package & project manager, one binary replacing pip/pipx/pyenv/poetry/virtualenv. Use when managing Python projects with `pyproject.toml` + `uv.lock` (`uv init/add/sync/lock/run`), running PEP 723 inline-dependency scripts, running one-off tools with `uvx`, installing/pinning Python versions (`uv python`), migrating from pip (`uv pip`), building/publishing packages, or configuring indexes/resolution/cache. Includes `(uv 0.X+)` version annotations + a version-features lookup. Tool: [uv](https://github.com/astral-sh/uv) | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/uv) |
 
 ### Chrome CDP Setup
 
@@ -274,6 +275,6 @@ claude-marketplace/
 
 ## Version
 
-Current version: **0.30.0**
+Current version: **0.31.0**
 
 See [CHANGELOG.md](CHANGELOG.md) for version history.
