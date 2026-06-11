@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- handoff skill: new skill ported from [mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/productivity/handoff) (MIT, body verbatim; handoff skill v1.0.0) — compacts the current conversation into a handoff document for a fresh agent (OS temp dir, "suggested skills" section, artifact references instead of duplication, secret/PII redaction, optional argument tailoring the doc to the next session's focus). Only marketplace divergence: frontmatter description extended with house-convention "Use when..." triggers
+
 ## [0.34.0] - 2026-06-11
 
 ### Added

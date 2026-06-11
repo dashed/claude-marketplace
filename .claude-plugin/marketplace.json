@@ -974,6 +974,27 @@
       ],
       "strict": false,
       "skills": ["./skills"]
+    },
+    {
+      "name": "handoff",
+      "version": "1.0.0",
+      "source": "./plugins/handoff",
+      "description": "Compact the current conversation into a handoff document for another agent to pick up. Use when ending a session with unfinished work, transferring context to a fresh agent or a new session, approaching context limits, or when the user says \"handoff\", \"write a handoff doc\", or \"continue this in another session\".",
+      "author": {
+        "name": "Matt Pocock"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/handoff",
+      "license": "MIT",
+      "keywords": [
+        "handoff",
+        "context",
+        "session",
+        "compaction",
+        "productivity",
+        "agents"
+      ],
+      "strict": false,
+      "skills": ["./skills"]
     }
   ]
 }
