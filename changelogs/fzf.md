@@ -4,6 +4,13 @@ All notable changes to the fzf skill in this marketplace will be documented in t
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.1.1] - 2026-06-11
+
+### Added
+- Search Syntax: documented `-e`/`--exact` mode and the upstream footnote that under `--exact` the `'`-prefix "unquotes" a term (making it fuzzy), matching the fzf README
+- `(fzf 0.55+)` version annotation on the `'wild'` exact-boundary-match token in SKILL.md, plus a corresponding row in references/version-features.md (verified against the fzf CHANGELOG 0.55.0 section)
+- `0.60 | --accept-nth` row in references/version-features.md (choose output fields; works in `--filter` batch mode too) — the flag was documented in options.md but missing from the version lookup
+
 ## [1.1.0] - 2026-06-04
 
 ### Added

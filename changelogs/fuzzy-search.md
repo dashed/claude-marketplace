@@ -5,7 +5,10 @@ documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [1.1.2] - 2026-06-11
+
+### Added
+- README: "Search query syntax (`fuzzy_filter`)" section with the full fzf extended-search token table (fuzzy, exact `'`, exact-boundary `'…'`, `^`/`$` anchors, `!` inverse variants, `|` OR, smart-case, not-regex) — matching what the server's tool descriptions already document
 
 ### Fixed
 - Synced `.claude-plugin/plugin.json` version with the marketplace version 1.1.1 (was stuck at 1.0.0)

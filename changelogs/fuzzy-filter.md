@@ -4,6 +4,19 @@ All notable changes to the fuzzy-filter skill in this marketplace will be docume
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.0.1] - 2026-06-11
+
+### Added
+- `references/pipelines.md`: "Clipboard & editor hand-off" section — batch analogs of the classic interactive fif/fiv-style shell helpers over `file:line:content` rows (best content hit → clipboard via pbcopy; best hit → `code`/`cursor --goto file:line` via `--accept-nth='{1}:{2}'`), including reusable `ffq` (no hand-off, ranked rows only)/`fifq`/`fivq` function forms; verified against fzf 0.73.1
+- Content-search recipes for a single-file target — rg drops the path column so rows become `line:content` and fields shift to `--nth=2..` — plus the `-H`/`--with-filename` fix that pins the standard `file:line:content` shape
+
+### Changed
+- Expanded the "Fuzzy Filter Syntax" table from a terse recap to the full upstream token set — added `'wild'` exact-boundary-match `(fzf 0.55+)`, `!^prefix`, and `!suffix$` inverse-anchor rows — so the skill no longer defers to the fzf skill for the full table
+- Documented that `--exact` also applies in batch mode (`fzf --exact --filter Q`), with the `'`-prefix inverting to mean "unquote" (fuzzy)
+
+### Fixed
+- `--with-nth` does **not** affect `--filter` output (it only restyles the interactive UI; batch mode always prints the full row) — the "hide `file:line:` from the OUTPUT" recipe in pipelines.md and the SKILL.md field-scoping table claimed otherwise. Replaced with `--accept-nth` `(fzf 0.60+)` plus a `cut -d: -f3-` pre-0.60 fallback, and corrected the field-scoping table and output notes
+
 ## [1.0.0] - 2026-06-04
 
 ### Added

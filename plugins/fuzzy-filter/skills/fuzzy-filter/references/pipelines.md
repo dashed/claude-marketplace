@@ -4,8 +4,9 @@ A catalog of non-interactive `rg`/`fd`/`rga` → `fzf --filter` pipelines, plus 
 **exact command equivalent of each fuzzy-search MCP tool** so you can replicate
 the MCP on the bare command line.
 
-All recipes verified against **ripgrep 14.1.1**, **fzf 0.55**, **fd 8.6**, and
-**ripgrep-all 0.10.9**. Version-specific flags are annotated.
+All recipes verified against **ripgrep 14.1.1**, **fzf 0.55** (`--accept-nth`
+recipes against **fzf 0.73**), **fd 8.6**, and **ripgrep-all 0.10.9**.
+Version-specific flags are annotated.
 
 ## Table of Contents
 
@@ -15,6 +16,7 @@ All recipes verified against **ripgrep 14.1.1**, **fzf 0.55**, **fd 8.6**, and
 - [Document & PDF search](#document--pdf-search)
 - [NUL-safe end-to-end](#nul-safe-end-to-end)
 - [Limiting, sorting, hand-off](#limiting-sorting-hand-off)
+- [Clipboard & editor hand-off](#clipboard--editor-hand-off)
 - [Replicate the MCP](#replicate-the-mcp)
 
 ## Mental model
@@ -70,14 +72,25 @@ rg --line-number --no-heading --color=never 'fn \w+' src \
 rg --line-number --no-heading --color=never -t py . . \
   | fzf --filter 'async def' --delimiter : --nth=3..
 
-# Hide the file:line: prefix from the OUTPUT but still match content
+# Emit ONLY chosen fields in the output — use --accept-nth        (fzf 0.60+)
+#   (--with-nth does NOT work here: it changes the interactive display only;
+#    --filter always prints the full row without --accept-nth)
 rg --line-number --no-heading --color=never . PATH \
-  | fzf --filter 'QUERY' --delimiter : --nth=3.. --with-nth=3..
+  | fzf --filter 'QUERY' --delimiter : --nth=3.. --accept-nth=3..
+# pre-0.60 fallback: append `| cut -d: -f3-` instead
+
+# Single FILE target: rg drops the path column → rows are line:content, fields shift
+rg --line-number --no-heading --color=never . src/app.py \
+  | fzf --filter 'QUERY' --delimiter : --nth=2..        # content is field 2..
+# …or pin the standard file:line:content shape with -H / --with-filename
+rg -H --line-number --no-heading --color=never . src/app.py \
+  | fzf --filter 'QUERY' --delimiter : --nth=1,3..
 ```
 
 > `--color=never` is mandatory before `--filter`: ANSI codes corrupt matching and
-> field splitting. `--nth` chooses what fzf *matches*; `--with-nth` chooses what
-> it *displays*; the full row is printed unless you set `--with-nth`.
+> field splitting. `--nth` chooses what fzf *matches*; `--accept-nth` `(fzf 0.60+)`
+> chooses what it *prints* — the full row otherwise. (`--with-nth` only restyles
+> the interactive UI; it does not change `--filter` output.)
 
 ## Document & PDF search
 
@@ -146,6 +159,58 @@ rg --line-number --no-heading --color=never . . \
 > `fzf --filter` already ranks best-first, so `head -n N` is the idiomatic
 > "limit" (the MCP's `limit` argument does the same truncation). For a stable
 > alphabetical order instead of relevance, append `| sort`.
+
+## Clipboard & editor hand-off
+
+Batch analogs of the classic interactive `rg | fzf` shell helpers ("find in
+files, then copy the line / open it in the editor"). All operate on the
+standard `file:line:content` rows.
+
+```bash
+# Best-matching line's CONTENT → clipboard (macOS; Linux: xclip -sel clip / wl-copy)
+rg --line-number --no-heading --color=never . PATH \
+  | fzf --filter 'QUERY' --delimiter : --nth=1,3.. --accept-nth=3.. \
+  | head -n1 \
+  | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr -d '\n' | pbcopy
+# pre-0.60 fzf: drop --accept-nth, insert `cut -d: -f3-` after head
+
+# Best hit → VS Code at the right line (Cursor: same with `cursor --goto`)
+code --goto "$(rg --line-number --no-heading --color=never . PATH \
+  | fzf --filter 'QUERY' --delimiter : --nth=1,3.. --accept-nth='{1}:{2}' \
+  | head -n1)"
+```
+
+As reusable shell functions (fuzzy QUERY first, optional PATH second):
+
+```zsh
+# ffq QUERY [PATH] — no hand-off: just print the ranked file:line:content rows
+ffq() {
+  rg --line-number --no-heading --color=never --with-filename . "${2:-.}" \
+    | fzf --filter "$1" --delimiter : --nth=1,3..
+}
+
+# fifq QUERY [PATH] — copy the best fuzzy content hit to the clipboard
+fifq() {
+  rg --line-number --no-heading --color=never --with-filename . "${2:-.}" \
+    | fzf --filter "$1" --delimiter : --nth=1,3.. --accept-nth=3.. \
+    | head -n1 \
+    | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | tr -d '\n' | pbcopy
+}
+
+# fivq QUERY [PATH] — open the best fuzzy hit in VS Code at file:line
+# (Cursor: duplicate as ficq with `cursor --goto`)
+fivq() {
+  local best
+  best=$(rg --line-number --no-heading --color=never --with-filename . "${2:-.}" \
+    | fzf --filter "$1" --delimiter : --nth=1,3.. --accept-nth='{1}:{2}' \
+    | head -n1) && [ -n "$best" ] && code --goto "$best"
+}
+```
+
+`--with-filename` (`-H`) pins the `file:line:content` shape even when PATH is a
+single file — without it rg drops the path column and the field numbers shift
+(see [Content search](#content-search)). For vim/nvim (`"$EDITOR" "+line" file`)
+see [Limiting, sorting, hand-off](#limiting-sorting-hand-off).
 
 ## Replicate the MCP
 

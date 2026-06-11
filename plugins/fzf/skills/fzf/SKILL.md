@@ -126,12 +126,16 @@ fzf uses extended-search mode by default. Multiple search terms are separated by
 |-------|------------|-------------|
 | `sbtrkt` | Fuzzy match | Items matching `sbtrkt` |
 | `'wild` | Exact match | Items containing `wild` exactly |
-| `'wild'` | Exact boundary | Items with `wild` at word boundaries |
+| `'wild'` | Exact boundary | Items with `wild` at word boundaries `(fzf 0.55+)` |
 | `^music` | Prefix match | Items starting with `music` |
 | `.mp3$` | Suffix match | Items ending with `.mp3` |
 | `!fire` | Inverse match | Items NOT containing `fire` |
 | `!^music` | Inverse prefix | Items NOT starting with `music` |
 | `!.mp3$` | Inverse suffix | Items NOT ending with `.mp3` |
+
+**Exact mode**: Start fzf with `-e`/`--exact` to make bare terms exact-match
+instead of fuzzy (no need to quote every word). Note that when `--exact` is
+set, the `'`-prefix "unquotes" the term — `'sbtrkt` becomes a fuzzy match.
 
 **OR operator**: Use `|` to match any of several patterns:
 ```bash

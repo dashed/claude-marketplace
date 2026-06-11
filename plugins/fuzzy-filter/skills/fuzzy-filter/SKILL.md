@@ -85,19 +85,24 @@ sigils make terms exact. Space-separated terms are **AND**ed.
 |---|---|---|
 | `sbtrkt` | Fuzzy (subsequence) | matches `SubstringTracking` |
 | `'wild` | Exact substring | contains `wild` literally |
+| `'wild'` | Exact at word boundaries `(fzf 0.55+)` | `wild` as a whole word |
 | `^core` | Prefix | starts with `core` |
 | `.py$` | Suffix | ends with `.py` |
 | `!fire` | Inverse | does **not** contain `fire` |
+| `!^core` | Inverse prefix | does **not** start with `core` |
+| `!.py$` | Inverse suffix | does **not** end with `.py` |
 | `a$ \| b$ \| c$` | OR | ends with `a`, `b`, or `c` |
 
 So `def test_ seer credit` means: fuzzy-`def test_` **AND** fuzzy-`seer` **AND**
 fuzzy-`credit`, in any order. This is **not** a regex — `.`, `*`, `(`, `[` are
-literal characters here, not metacharacters. For the full table, see the **fzf
-skill's "Search Syntax"** section.
+literal characters here, not metacharacters. (Same language as the **fzf
+skill's "Search Syntax"** section — batch and interactive use the same matcher.)
 
 > **Smart-case applies to the fuzzy query too:** an all-lowercase query is
 > case-insensitive; any uppercase letter makes it case-sensitive — the same rule
-> rg/fd use.
+> rg/fd use. `--exact` also works in batch mode (`fzf --exact --filter Q`): bare
+> terms become exact substring matches, and the `'`-prefix flips to mean
+> "unquote" (fuzzy).
 
 ## Fuzzy FILE Search
 
@@ -172,7 +177,9 @@ keeps polluting your results.
 
 > The full output row (including `file:line:`) is still **printed** — `--nth`
 > only controls what fzf *matches on*, not what it emits. That's what lets you
-> pipe the result into an editor at the right line.
+> pipe the result into an editor at the right line. To emit only chosen fields,
+> use `--accept-nth` `(fzf 0.60+)` — e.g. `--accept-nth='{1}:{2}'` prints
+> `file:line` ready for `code --goto`.
 
 ## Field Scoping Deep-Dive
 
@@ -185,7 +192,8 @@ delimiter-separated fields fzf *searches*; `--with-nth` selects which fields it
 | `--delimiter :` | How a line splits into fields | `:` for `rg` rows; `\t` for `rga --json` once flattened |
 | `--nth=1,3..` | Fields fzf **matches** on | path + content (skip line#) |
 | `--nth=3..` | — | content only |
-| `--with-nth=3..` | Fields fzf **displays** | hide `file:line:` in output |
+| `--accept-nth=3..` | Fields fzf **prints** `(fzf 0.60+)` | content only; `'{1}:{2}'` → `file:line` |
+| `--with-nth=3..` | Fields fzf **displays** (interactive UI only — no effect on `--filter` output) | hide `file:line:` on screen |
 
 Field ranges: `N` (one field), `N..` (N to end), `..N`, `N..M`, and comma-joined
 lists like `1,3..`. Negative indices count from the end (`-1` = last field).
@@ -251,7 +259,8 @@ extraction/outline commands (the CLI analog of the MCP's PDF tools), see
 ## References
 
 - [references/pipelines.md](references/pipelines.md) — full recipe catalog
-  (files/content/docs, NUL-safe, limiting, sorting, xargs hand-off) **plus the
+  (files/content/docs, NUL-safe, limiting, sorting, xargs/clipboard/editor
+  hand-off — best hit → pbcopy or `code`/`cursor --goto file:line`) **plus the
   exact MCP-equivalent command for every fuzzy-search tool**.
 - [references/pdf.md](references/pdf.md) — rga configuration and PDF page
   extraction/outline via `pdftotext`/PyMuPDF (CLI analog of the MCP's PDF tools).

@@ -50,6 +50,7 @@ Every version below was verified by locating the feature **under its introducing
 | 0.63 | Footer — `--footer[=STRING]`, `--footer-border`, `--footer-label`, `--footer-label-pos`; `change-footer` / `transform-footer` / `bg-transform-footer` (+ `*-footer-label`) actions; `footer*` colors | footer |
 | 0.63 | `bg-transform*` async actions + `bg-cancel`; `{*}` placeholder (all matched items) | async actions / placeholders |
 | 0.61 | `change-ghost` / `transform-ghost` (ghost text); `change-pointer` / `transform-pointer` (pointer sign) | actions |
+| 0.60 | `--accept-nth=N[,..]` (choose output fields on accept; also works in `--filter` batch mode; template form `'{1}:{2}'`) | fields / output |
 
 ## fzf 0.50 to 0.59
 
@@ -59,6 +60,7 @@ Every version below was verified by locating the feature **under its introducing
 | 0.59 | `transform-nth` action; `search` / `transform-search` actions; `$FZF_CLICK_HEADER_WORD` / `$FZF_CLICK_HEADER_NTH` on `click-header` | search / header |
 | 0.59 | `--scheme=path` sets `--tiebreak=pathname,length`; new `pathname` tiebreak (prioritize file-name matches) | scoring |
 | 0.58 | `--list-border`, `--input-border`, `--header-border` border types; `--style` presets (e.g. `--style full`) | borders / style |
+| 0.55 | `'wild'` exact-boundary-match (term single-quoted at both ends → exact match with both ends at word boundaries) | search syntax |
 | 0.54 | `--wrap` (char-level line wrap) + `--wrap-sign` + `toggle-wrap` action | list wrapping |
 | 0.53 | `--tmux` option (built-in tmux popup; replaces the `fzf-tmux` script — needs tmux 3.3+) | tmux |
 

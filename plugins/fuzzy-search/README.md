@@ -31,6 +31,29 @@ Once the plugin is enabled, the tools are available to Claude under the
 plugin-namespaced ids, e.g.
 `mcp__plugin_fuzzy-search_fuzzy-search__fuzzy_search_content`.
 
+### Search query syntax (`fuzzy_filter`)
+
+The `fuzzy_filter` argument is passed to `fzf --filter` and uses fzf's
+extended-search syntax. Space-separated terms are ANDed; a bare term is a
+fuzzy (subsequence) match:
+
+| Token | Match type | Description |
+|-------|------------|-------------|
+| `sbtrkt` | fuzzy-match | Items that match `sbtrkt` |
+| `'wild` | exact-match (quoted) | Items that include `wild` |
+| `'wild'` | exact-boundary-match (quoted both ends) | Items that include `wild` at word boundaries (fzf 0.55+) |
+| `^music` | prefix-exact-match | Items that start with `music` |
+| `.mp3$` | suffix-exact-match | Items that end with `.mp3` |
+| `!fire` | inverse-exact-match | Items that do not include `fire` |
+| `!^music` | inverse-prefix-exact-match | Items that do not start with `music` |
+| `!.mp3$` | inverse-suffix-exact-match | Items that do not end with `.mp3` |
+
+A single `|` term acts as an OR for the adjacent terms: `^core go$ | rb$ | py$`
+matches items that start with `core` and end with `go`, `rb`, or `py`. Queries
+are smart-case (all-lowercase → case-insensitive; any uppercase letter →
+case-sensitive). `.`, `*`, `(`, `[` are literal characters, not regex
+metacharacters.
+
 ## Prerequisites
 
 - **[uv](https://docs.astral.sh/uv/)** — the server is launched with
