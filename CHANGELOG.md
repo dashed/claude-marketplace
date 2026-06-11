@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.36.0] - 2026-06-11
+
 ### Added
 - handoff skill (v1.1.0): `--workspace` option — save the handoff doc to the workspace root instead of the OS temp directory (left untracked/uncommitted unless asked)
 - handoff skill (v1.2.0): predictable `handoff-<project>-<timestamp>.md` filenames with a closing path announcement + next-session starter; `references/handoff-template.md` section template (decisions-with-rationale and dead-ends-tried always captured); state anchors + verify-state commands for staleness detection; when-not-to-use guidance (`--resume`/`--continue`, memory vs handoff separation); `--workspace` docs auto-ignored via `.git/info/exclude`. Body no longer verbatim from upstream (core instructions retained)
@@ -575,7 +577,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.35.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.36.0...HEAD
+[0.36.0]: https://github.com/dashed/claude-marketplace/compare/v0.35.0...v0.36.0
 [0.35.0]: https://github.com/dashed/claude-marketplace/compare/v0.34.0...v0.35.0
 [0.34.0]: https://github.com/dashed/claude-marketplace/compare/v0.33.0...v0.34.0
 [0.33.0]: https://github.com/dashed/claude-marketplace/compare/v0.32.1...v0.33.0
