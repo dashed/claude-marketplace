@@ -4,6 +4,11 @@ All notable changes to the k3s skill in this marketplace will be documented in t
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.0.1] - 2026-06-11
+
+### Changed
+- `SKILL.md` disambiguation note: now points to the new sibling **kubernetes** skill for `kubectl`/resource/manifest usage ("k3s hands you a working API endpoint and a kubeconfig; the kubernetes skill is everything you do against it") instead of deferring generically to "Kubernetes documentation".
+
 ## [1.0.0] - 2026-06-04
 
 ### Added

@@ -119,6 +119,7 @@ make test-codex-skills
 | **postgres-performance** | PostgreSQL query & performance tuning — reading `EXPLAIN`/`EXPLAIN ANALYZE` plans, choosing & designing indexes, fixing planner row-estimate errors with statistics, and diagnosing MVCC bloat/VACUUM. Use when a query is slow, choosing an index type (btree/GIN/GiST/SP-GiST/BRIN/hash) or strategy (partial/expression/covering), autovacuum lags, or tuning planner GUCs (`random_page_cost`, `work_mem`, `effective_cache_size`). Includes `(pgNN+)` version annotations + a version-features lookup. Tool: [PostgreSQL](https://github.com/postgres/postgres) | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/postgres-performance) |
 | **postgres-admin** | PostgreSQL server administration & operations (DBA work on a running cluster). Use when configuring a server (`postgresql.conf`, `ALTER SYSTEM`, GUCs), managing roles/privileges, authentication (`pg_hba.conf`, scram-sha-256), backup/restore (`pg_dump`, `pg_basebackup`, incremental, PITR), replication & HA (streaming, logical pub/sub, slots, failover), `pg_upgrade`, or monitoring (`pg_stat_activity`, `pg_stat_io`, `pg_stat_progress_*`). Includes `(pgNN+)` version annotations + a version-features lookup. Tool: [PostgreSQL](https://github.com/postgres/postgres) | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/postgres-admin) |
 | **postgres-extensions** | PostgreSQL extension management and the bundled `contrib` catalog. Use when running `CREATE EXTENSION`/`ALTER EXTENSION ... UPDATE`/`DROP EXTENSION`, listing extensions (`\dx`), or choosing which contrib module enables a feature — FDWs (`postgres_fdw`, `dblink`), trigram/fuzzy search (`pg_trgm`, `fuzzystrmatch`), crypto/UUIDs (`pgcrypto`), `hstore`/`ltree`/`citext`/`cube`, query stats (`pg_stat_statements`, `auto_explain`), storage forensics (`pageinspect`, `amcheck`, `pg_surgery`). Covers trusted extensions & `shared_preload_libraries`. Includes `(pgNN+)` version annotations + a version-features lookup. Tool: [PostgreSQL](https://github.com/postgres/postgres) | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/postgres-extensions) |
+| **kubernetes** | Author and operate Kubernetes workloads with kubectl and YAML manifests — the kubectl CLI plus core resource authoring (Deployments, StatefulSets, Jobs/CronJobs, Services, Ingress, ConfigMaps/Secrets, PV/PVC, RBAC). Use when writing/debugging manifests, running kubectl (apply/diff/rollout/logs/exec/debug), fixing CrashLoopBackOff/Pending pods, managing contexts/namespaces, generating manifests with `--dry-run=client`, or checking RBAC with `auth can-i`. Includes `(k8s 1.X+)` version annotations + a version-features lookup. For installing/running a lightweight cluster see the **k3s** skill. Tool: [kubernetes](https://github.com/kubernetes/kubernetes) | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/kubernetes) |
 
 ### Chrome CDP Setup
 
@@ -273,6 +274,6 @@ claude-marketplace/
 
 ## Version
 
-Current version: **0.29.1**
+Current version: **0.30.0**
 
 See [CHANGELOG.md](CHANGELOG.md) for version history.

@@ -25,7 +25,7 @@ k3s is a fully CNCF-certified Kubernetes distribution packaged as a **single sel
 - **Config in one place** — `/etc/rancher/k3s/`: `config.yaml`, `k3s.yaml` (kubeconfig), `registries.yaml`
 - **Easy to slim down** — `--disable` any bundled component to bring your own
 
-> **Disambiguation:** This skill is about the **k3s distribution and its `k3s` CLI** — installation, the `server`/`agent` lifecycle, bundled components, tokens, etcd snapshots, certs. It does **not** teach generic Kubernetes or `kubectl` usage; for that, use Kubernetes documentation. Anything k3s-specific (what it adds, bundles, or changes) belongs here.
+> **Disambiguation:** This skill is about the **k3s distribution and its `k3s` CLI** — installation, the `server`/`agent` lifecycle, bundled components, tokens, etcd snapshots, certs. It does **not** teach generic Kubernetes or `kubectl` usage; for that, use the sibling **kubernetes** skill (the `kubectl` + resource/manifest layer — k3s hands you a working API endpoint and a kubeconfig; that skill is everything you do against it). Anything k3s-specific (what it adds, bundles, or changes) belongs here.
 
 ## When to Use This Skill
 

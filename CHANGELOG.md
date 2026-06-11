@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.30.0] - 2026-06-11
+
+### Added
+- kubernetes skill: new skill for **Kubernetes** — the `kubectl` CLI + core resource/manifest authoring layer — authored against the Kubernetes source (dev tree ~1.37; per-minor `CHANGELOG/CHANGELOG-1.x.md` + the feature-gate stage metadata in `pkg/features/kube_features.go`) with CLI items empirically verified on the installed kubectl **v1.28.2** (client-side; no cluster) (kubernetes skill v1.0.0). Ships a `SKILL.md` spine (declarative desired-state mental model, kubeconfig/contexts, six core workflows — deploy+expose, inspect a failing pod, apply/diff/rollout, exec/logs/port-forward, offline manifest generation with `--dry-run=client`, RBAC checks with `auth can-i` — plus quick-reference and a Pod-status troubleshooting table) and four references: `kubectl.md` (verbs, output formats/jsonpath, client vs server-side apply, rollout, debug with ephemeral containers, drain/taint, explain/api-resources, kustomize, scripting patterns — every flag verified against kubectl 1.28.2 `--help`; documents which `kubectl create` generators work offline and that `run`/`expose`/`autoscale`/`create role` contact the API server even under `--dry-run=client`), `workloads.md` (Pod spec essentials incl. native sidecars, Deployment/StatefulSet/DaemonSet, Job/CronJob incl. podFailurePolicy & successPolicy, HPA v2, PDB, scheduling/affinity/topology spread — field shapes verified against `staging/src/k8s.io/api/`), `cluster-resources.md` (Service/Ingress/NetworkPolicy, ConfigMap/Secret incl. update-propagation caveats, PV/PVC/StorageClass, RBAC, ServiceAccount bound tokens, DNS, downward API, kubeconfig structure), and `version-features.md` (41 source-cited `feature → minimum Kubernetes version` rows annotated by GA version with beta-on noted, plus explicitly-flagged not-yet-GA items). Inline `(k8s 1.X+)` annotations throughout; bedrock (GA ≤ ~1.20) left unannotated ("unlisted = long-standing"). Cross-linked with the k3s skill (k3s = the distribution/cluster layer; kubernetes = everything you run against it)
+
+### Changed
+- k3s skill: disambiguation note now points to the new sibling kubernetes skill for `kubectl`/resource usage instead of deferring to "Kubernetes documentation" (k3s skill v1.0.1)
+
 ## [0.29.1] - 2026-06-10
 
 ### Fixed
@@ -521,7 +529,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.29.1...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.30.0...HEAD
+[0.30.0]: https://github.com/dashed/claude-marketplace/compare/v0.29.1...v0.30.0
 [0.29.1]: https://github.com/dashed/claude-marketplace/compare/v0.29.0...v0.29.1
 [0.29.0]: https://github.com/dashed/claude-marketplace/compare/v0.28.0...v0.29.0
 [0.28.0]: https://github.com/dashed/claude-marketplace/compare/v0.27.0...v0.28.0

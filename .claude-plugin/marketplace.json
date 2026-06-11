@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.29.1"
+    "version": "0.30.0"
   },
   "plugins": [
     {
@@ -666,7 +666,7 @@
     },
     {
       "name": "k3s",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "source": "./plugins/k3s",
       "description": "The k3s lightweight CNCF-certified Kubernetes distribution as a single binary (bundles containerd, flannel, CoreDNS, Traefik, ServiceLB, local-path-provisioner, metrics-server). Use when installing/running a lightweight cluster, bootstrapping single-node or HA control planes, joining agent nodes, embedded etcd vs external datastore, managing tokens, rotating certs, etcd snapshots, secrets encryption, airgap installs, disabling components, or upgrading k3s. Includes `(k3s vX.Y+)` annotations.",
       "author": {
@@ -927,6 +927,28 @@
         "postgres_fdw",
         "pg_trgm",
         "pg_stat_statements"
+      ],
+      "strict": false,
+      "skills": ["./skills"]
+    },
+    {
+      "name": "kubernetes",
+      "version": "1.0.0",
+      "source": "./plugins/kubernetes",
+      "description": "Author and operate Kubernetes workloads with kubectl and YAML manifests — the kubectl CLI plus core resource authoring (Deployments, StatefulSets, Jobs/CronJobs, Services, Ingress, ConfigMaps/Secrets, PV/PVC, RBAC). Use when writing/debugging manifests, running kubectl (apply/diff/rollout/logs/exec/debug), fixing CrashLoopBackOff/Pending pods, managing contexts, or checking RBAC with auth can-i. Includes `(k8s 1.X+)` annotations. For installing/running a lightweight cluster see the k3s skill.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/kubernetes",
+      "license": "MIT",
+      "keywords": [
+        "kubernetes",
+        "kubectl",
+        "k8s",
+        "manifests",
+        "deployment",
+        "rbac",
+        "cli"
       ],
       "strict": false,
       "skills": ["./skills"]
