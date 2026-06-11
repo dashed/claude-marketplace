@@ -14,6 +14,7 @@ import { fileURLToPath } from 'url';
 import { linkProjectToInitiative, DEFAULT_INITIATIVE_ID } from './initiative';
 import { ensureLabelsExist, extractUniqueLabels } from './labels';
 import { verifyProjectCreation } from './verify';
+import { formatLinearError } from './errors';
 
 const client = new LinearClient({ apiKey: process.env.LINEAR_API_KEY });
 
@@ -134,44 +135,21 @@ export async function createProject(teamId: string, config: ProjectConfig): Prom
     result.verification.issues.push(`Initiative link failed: ${linkResult.error}`);
   }
 
-  // Step 3: Set content via projectUpdate
+  // Step 3: Set content via typed updateProject
   console.log('Step 3: Setting project content...');
   try {
-    const mutation = `
-      mutation UpdateProjectContent($id: String!, $input: ProjectUpdateInput!) {
-        projectUpdate(id: $id, input: $input) {
-          success
-        }
-      }
-    `;
-
-    const response = await fetch('https://api.linear.app/graphql', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: process.env.LINEAR_API_KEY || '',
-      },
-      body: JSON.stringify({
-        query: mutation,
-        variables: {
-          id: projectId,
-          input: {
-            content: config.content,
-            description: config.shortDescription.substring(0, 255),
-          },
-        },
-      }),
+    const payload = await client.updateProject(projectId, {
+      content: config.content,
+      description: config.shortDescription.substring(0, 255),
     });
-
-    const mutationResult = await response.json();
-    if (mutationResult.data?.projectUpdate?.success) {
+    if (payload.success) {
       result.project.contentSet = true;
       console.log('  ✓ Content set');
     } else {
-      console.log(`  ⚠ Content setting failed: ${JSON.stringify(mutationResult.errors)}`);
+      console.log('  ⚠ Content setting failed: API returned success: false');
     }
   } catch (error) {
-    console.log(`  ⚠ Content setting error: ${error}`);
+    console.log(`  ⚠ Content setting error: ${formatLinearError(error)}`);
   }
 
   // Step 4: Ensure all labels exist
@@ -223,11 +201,12 @@ export async function createProject(teamId: string, config: ProjectConfig): Prom
         });
       }
     } catch (error) {
+      const message = formatLinearError(error);
       result.issues.failed.push({
         title: issueConfig.title,
-        error: String(error),
+        error: message,
       });
-      console.log(`  ✗ ${issueConfig.title}: ${error}`);
+      console.log(`  ✗ ${issueConfig.title}: ${message}`);
     }
   }
 

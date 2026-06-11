@@ -8,21 +8,28 @@ Common issues and solutions when working with Linear via MCP, CLI, or API.
 
 ### Which MCP Server to Use
 
-**Always use the official Linear MCP server** at `mcp.linear.app`:
+**Always use the official Linear MCP server** at `mcp.linear.app` over native HTTP transport:
+
+```bash
+claude mcp add --transport http --scope user linear-server https://mcp.linear.app/mcp
+```
+
+Or in `.mcp.json`:
 
 ```json
 {
   "mcpServers": {
-    "linear": {
-      "command": "npx",
-      "args": ["mcp-remote", "https://mcp.linear.app/sse"],
-      "env": { "LINEAR_API_KEY": "your_api_key" }
+    "linear-server": {
+      "type": "http",
+      "url": "https://mcp.linear.app/mcp"
     }
   }
 }
 ```
 
-> **WARNING**: Do NOT use deprecated community servers (`linear-mcp-server` npm package, `jerhadf/linear-mcp-server`). They have critical bugs.
+Authentication is via OAuth: run `/mcp`, pick the server, and log in through the browser. The server does not read `LINEAR_API_KEY`.
+
+> **WARNING**: The old `/sse` endpoint and the `npx mcp-remote https://mcp.linear.app/sse` shim are deprecated. A config still pointing at `/sse` fails OAuth with `SDK auth failed: Protected resource https://mcp.linear.app/mcp does not match expected https://mcp.linear.app/sse` — fix it by re-adding the server with the `/mcp` URL above. Do NOT use deprecated community servers (`linear-mcp-server` npm package, `jerhadf/linear-mcp-server`) either. They have critical bugs.
 
 ---
 
@@ -90,21 +97,29 @@ node scripts/linear-api.mjs help
 - Batch-friendly for scripting
 - Can be imported as ES module for programmatic use
 
-### Quick Comment by Issue Number
+### Quick Comment
 
-Add comments without needing to look up UUIDs:
+The interactive default is the MCP `save_comment` tool (resolves the issue for you — no UUID lookup needed). To attach a comment alongside a bulk state change, `scripts/sync.ts` takes a `--comment` flag:
 
 ```bash
-# Simple comment (use the issue number, e.g., 123 for PROJ-123)
-node scripts/linear-helpers.mjs add-comment 123 "Fixed in PR #25"
-
-# Multi-line comment (use quotes)
-node scripts/linear-helpers.mjs add-comment 123 "## Resolved
-
-Implementation complete. All tests passing."
+# Comment while updating state (one command)
+npx tsx scripts/sync.ts --issues PROJ-123 --state Done --comment "Fixed in PR #25"
 ```
 
-**Pattern**: Use MCP for issue creation, helper scripts for status updates and comments, and direct GraphQL for searches and complex queries.
+For a comment on its own (multi-line, no state change), a short SDK call is the cleanest path:
+
+```typescript
+import { LinearClient } from '@linear/sdk'
+const client = new LinearClient({ apiKey: process.env.LINEAR_API_KEY })
+
+const issues = await client.issues({ filter: { number: { eq: 123 } } })
+await client.createComment({
+  issueId: issues.nodes[0].id,
+  body: '## Resolved\n\nImplementation complete. All tests passing.',
+})
+```
+
+**Pattern**: MCP tools are the interactive default (issue creation, single status updates, comments, and filtered searches via `list_issues`). Reach for SDK scripts for anything bulk, scripted, or multi-step — including typed `filter` searches. Raw GraphQL is a last-resort escape hatch via the SDK's `rawRequest`, not a separate toolchain.
 
 ---
 
@@ -124,10 +139,10 @@ linear issues update ENG-123 -s "STATE_ID"
 
 If using the official server, use `state: "Done"` (not `status: "Done"`).
 
-If still failing, use the helper script:
+If still failing, use the bundled SDK script (state name followed by issue identifiers; bare numbers work too, the prefix is stripped automatically):
 
 ```bash
-node scripts/linear-helpers.mjs update-status Done 123 124 125
+npx tsx scripts/linear-ops.ts status Done ENG-123 ENG-124
 ```
 
 ### SSE Connection Timeout

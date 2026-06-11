@@ -3,6 +3,7 @@ name: linear
 description: Managing Linear issues, projects, and teams. Use when working with Linear tasks, creating issues, updating status, querying projects, or managing team workflows.
 allowed-tools:
   - mcp__linear
+  - mcp__linear-server
   - WebFetch(domain:linear.app)
   - Bash
 ---
@@ -17,7 +18,7 @@ Tools and workflows for managing issues, projects, and teams in Linear.
 
 **This skill supports multiple tool backends. Use whichever is available:**
 
-1. **MCP Tools (mcp__linear)** - Use if available in your tool set
+1. **MCP Tools** (`mcp__linear-server__*` or `mcp__linear__*`, depending on the configured server name) - Use if available in your tool set
 2. **Linear CLI (`linear` command)** - Always available via Bash
 3. **Helper Scripts** - For complex operations
 
@@ -81,16 +82,7 @@ cat .env
 
 2. Add `LINEAR_API_KEY` to `.env` (never commit this file)
 
-3. Configure MCP to use environment variable:
-   ```json
-   {
-     "mcpServers": {
-       "linear": {
-         "env": { "LINEAR_API_KEY": "${LINEAR_API_KEY}" }
-       }
-     }
-   }
-   ```
+3. Note: the official MCP server authenticates via OAuth and does not read `LINEAR_API_KEY` — the key is only used by this skill's SDK/GraphQL scripts (`scripts/query.ts`, `scripts/linear-ops.ts`)
 
 4. Use `varlock load` to validate before operations
 
@@ -312,32 +304,40 @@ npx tsx scripts/linear-ops.ts link-initiative "Phase 11" "Q2 Goals"
 
 ## Tool Selection
 
-Choose the right tool for the task:
+Three tiers, in order. Reach for the lowest tier that fits:
 
-| Tool | When to Use |
-|------|-------------|
-| **MCP (Official Server)** | Most operations - PREFERRED |
-| **Helper Scripts** | Bulk operations, when MCP unavailable |
-| **SDK scripts** | Complex operations (loops, conditionals) |
-| **GraphQL API** | Operations not supported by MCP/SDK |
+| Tier | Tool | When to Use |
+|------|------|-------------|
+| 1 | **MCP tools** (official server) | Interactive, one-off operations in conversation — view/create/update a single issue, quick searches. The interactive default. |
+| 2 | **SDK scripts** (`npx tsx` + `@linear/sdk`) | The **programmatic default**: bulk, scripted, multi-step, conditional, or repeatable work — anything the API supports, fully typed. See [sdk.md](sdk.md). |
+| 3 | **Raw GraphQL** via the SDK's `client.client.rawRequest` | Rare escape hatch only. The SDK is generated from the same GraphQL schema, so "not supported by the SDK" is almost never true. |
+
+The bundled scripts (`scripts/linear-ops.ts`, `scripts/sync.ts`, etc.) are Tier-2 SDK scripts — use them, or write your own, for anything beyond a single interactive action. `scripts/query.ts` is the Tier-3 CLI for ad-hoc raw GraphQL.
 
 ### MCP Server Configuration
 
-**Use the official Linear MCP server** at `mcp.linear.app`:
+**Use the official Linear MCP server** at `mcp.linear.app` over native HTTP transport:
+
+```bash
+claude mcp add --transport http --scope user linear-server https://mcp.linear.app/mcp
+```
+
+Or in `.mcp.json`:
 
 ```json
 {
   "mcpServers": {
-    "linear": {
-      "command": "npx",
-      "args": ["mcp-remote", "https://mcp.linear.app/sse"],
-      "env": { "LINEAR_API_KEY": "your_api_key" }
+    "linear-server": {
+      "type": "http",
+      "url": "https://mcp.linear.app/mcp"
     }
   }
 }
 ```
 
-> **WARNING**: Do NOT use deprecated community servers. See [troubleshooting.md](troubleshooting.md) for details.
+The server authenticates via **OAuth** — run `/mcp`, pick the server, and log in through the browser. `LINEAR_API_KEY` is not used by the MCP connection; it is only needed for this skill's SDK/GraphQL scripts.
+
+> **WARNING**: The old `/sse` endpoint and the `npx mcp-remote https://mcp.linear.app/sse` shim are deprecated — OAuth against `/sse` now fails with "Protected resource https://mcp.linear.app/mcp does not match expected ...". Do NOT use deprecated community servers either. See [troubleshooting.md](troubleshooting.md) for details.
 
 ### MCP Reliability (Official Server)
 
@@ -351,11 +351,13 @@ Choose the right tool for the task:
 ### Quick Status Update
 
 ```bash
-# Via MCP - use human-readable state names
-update_issue with id="issue-uuid", state="Done"
+# Via MCP - use human-readable state names (the official server consolidates
+# create/update into save_* tools; there is no update_issue)
+save_issue with id="issue-uuid", state="Done"
 
-# Via helper script (bulk operations)
-node scripts/linear-helpers.mjs update-status Done 123 124 125
+# Via SDK script (bulk operations) - takes a state name then issue identifiers
+# (bare numbers like 123 work too; the prefix is stripped automatically)
+npx tsx scripts/linear-ops.ts status Done ENG-123 ENG-124
 ```
 
 ### Helper Script Reference
@@ -416,14 +418,20 @@ This saves images to `/tmp/shared-image-0.png`, `/tmp/shared-image-1.png`, etc.
 npx tsx scripts/linear-ops.ts create-issue "Project Name" "Issue title" "Description"
 ```
 
-> **Note**: If you need to target a specific team and `create-issue` picks the wrong one, use GraphQL with explicit `teamId`:
+> **Note**: `create-issue` resolves the team from the target project, so it picks the right team automatically. If you still need manual control over the team, use a short SDK call instead of the helper — look up the project's team, then create the issue with an explicit `teamId`:
 >
-> ```bash
-> # Get the project's team
-> npx tsx scripts/query.ts 'query { projects(filter: { name: { containsIgnoreCase: "PROJECT NAME" } }) { nodes { id name teams { nodes { id name key } } } } }'
+> ```typescript
+> // npx tsx in a small script, or inline. @linear/sdk is fully typed.
+> import { LinearClient } from '@linear/sdk'
+> const client = new LinearClient({ apiKey: process.env.LINEAR_API_KEY })
 >
-> # Create with explicit teamId
-> npx tsx scripts/query.ts 'mutation { issueCreate(input: { teamId: "TEAM_UUID", projectId: "PROJECT_UUID", title: "Issue title", description: "Description" }) { success issue { id identifier url } } }'
+> // Get the project's team
+> const projects = await client.projects({ filter: { name: { containsIgnoreCase: 'PROJECT NAME' } } })
+> const project = projects.nodes[0]
+> const teamId = (await project.teams()).nodes[0].id
+>
+> // Create with explicit teamId
+> await client.createIssue({ teamId, projectId: project.id, title: 'Issue title' })
 > ```
 
 ### Step 3: Upload the image and attach to the issue
@@ -442,7 +450,7 @@ The script will:
 
 | Problem | Cause | Fix |
 |---------|-------|-----|
-| `create-issue` picks wrong team | Multiple teams in workspace | Use GraphQL with explicit teamId (see Step 2) |
+| `create-issue` picks wrong team | Need a non-default team in a multi-team workspace | Resolve the team from the project via SDK and pass an explicit `teamId` (see Step 2) |
 | `upload-image.ts` "Issue not found" | Issue was deleted before attaching | Ensure issue exists first |
 | Image not found on disk | Shared inline, not as file | Extract from session JSONL (Step 1) |
 
@@ -489,7 +497,7 @@ npx tsx scripts/linear-ops.ts labels suggest "Fix XSS vulnerability"
 
 ## SDK Automation Scripts
 
-**Use only when MCP tools are insufficient.** For complex operations involving loops, mapping, or bulk updates, write TypeScript scripts using `@linear/sdk`. See `sdk.md` for:
+**The right tool for anything programmatic, bulk, or repeatable** — use MCP for interactive single operations, and SDK scripts (`npx tsx` + `@linear/sdk`) for everything scripted. For loops, mapping, conditionals, or bulk updates, write TypeScript using `@linear/sdk`. See [sdk.md](sdk.md) for:
 
 - Complete script patterns and templates
 - Common automation examples (bulk updates, filtering, reporting)
@@ -499,14 +507,13 @@ Scripts provide full type hints and are easier to debug than raw GraphQL for mul
 
 ## GraphQL API
 
-**Fallback only.** Use when operations aren't supported by MCP or SDK.
+**Fallback only — and not a separate toolchain.** Raw GraphQL is reached *through* the SDK's `client.client.rawRequest` escape hatch, not a parallel set of tools. The bundled `scripts/query.ts` is exactly that: a thin CLI wrapper around `rawRequest`. Use it only for the rare query the typed SDK doesn't already cover.
 
 See **[api.md](api.md)** for complete documentation including:
 - Authentication and setup
-- Example queries and mutations
+- The `rawRequest` escape hatch and example queries/mutations
 - Timeout handling patterns
-- MCP timeout workarounds
-- Shell script compatibility
+- Shell quoting compatibility
 
 **Quick ad-hoc query:**
 

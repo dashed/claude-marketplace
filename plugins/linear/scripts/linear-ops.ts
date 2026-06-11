@@ -24,7 +24,12 @@
  *   whoami                                   Show current user and organization
  */
 
-import { LinearClient, ProjectUpdateHealthType, InitiativeUpdateHealthType } from '@linear/sdk';
+import {
+  LinearClient,
+  ProjectUpdateHealthType,
+  InitiativeUpdateHealthType,
+  ProjectStatusType,
+} from '@linear/sdk';
 import {
   getAllLabels,
   getLabelsByCategory,
@@ -35,6 +40,8 @@ import {
   formatSuggestions,
   formatAgentSelection,
   formatAgentMatrix,
+  formatLinearError,
+  findProjectStatusByType,
 } from './lib';
 
 // Validate API key early
@@ -85,26 +92,30 @@ const commands: Record<string, (...args: string[]) => Promise<void>> = {
 
     console.log(`Creating issue in project: ${projectName}...`);
 
-    // Find project by name
-    const projects = await client.projects({
+    // Find project by name (paginated so the Nth project past the first page
+    // is still findable).
+    const allProjects = await client.paginate((variables) => client.projects(variables), {
       filter: { name: { containsIgnoreCase: projectName } },
+      first: 50,
     });
 
-    if (projects.nodes.length === 0) {
+    if (allProjects.length === 0) {
       console.error(`[ERROR] Project "${projectName}" not found`);
       process.exit(1);
     }
 
-    const project = projects.nodes[0];
+    const project = allProjects[0];
     console.log(`  Found project: ${project.name}`);
 
-    // Get team from project
-    const teams = await client.teams();
-    if (teams.nodes.length === 0) {
-      console.error('[ERROR] No teams found in your workspace');
+    // Resolve the team from the matched project. In multi-team workspaces a
+    // project can span teams; prefer the project's first team for deterministic
+    // behavior rather than the workspace's first team overall.
+    const projectTeams = await project.teams();
+    const team = projectTeams.nodes[0];
+    if (!team) {
+      console.error(`[ERROR] Project "${project.name}" has no associated team`);
       process.exit(1);
     }
-    const team = teams.nodes[0];
     console.log(`  Using team: ${team.name}`);
 
     // Resolve label names to IDs if provided
@@ -238,22 +249,23 @@ const commands: Record<string, (...args: string[]) => Promise<void>> = {
       process.exit(1);
     }
 
-    // Map user-friendly names to API values (Linear UI shows "In Progress" but API uses "started")
-    const stateMap: Record<string, string> = {
-      backlog: 'backlog',
-      planned: 'planned',
-      'in-progress': 'started',
-      inprogress: 'started',
-      started: 'started', // Accept legacy value for backwards compatibility
-      paused: 'paused',
-      completed: 'completed',
-      canceled: 'canceled',
+    // Map user-friendly names (Linear UI shows "In Progress" but the API
+    // category type is "started") to the modern ProjectStatus category type.
+    const stateMap: Record<string, ProjectStatusType> = {
+      backlog: ProjectStatusType.Backlog,
+      planned: ProjectStatusType.Planned,
+      'in-progress': ProjectStatusType.Started,
+      inprogress: ProjectStatusType.Started,
+      started: ProjectStatusType.Started, // Accept legacy value for backwards compatibility
+      paused: ProjectStatusType.Paused,
+      completed: ProjectStatusType.Completed,
+      canceled: ProjectStatusType.Canceled,
     };
 
     const normalizedInput = state.toLowerCase().replace(/\s+/g, '-');
-    const apiState = stateMap[normalizedInput];
+    const targetType = stateMap[normalizedInput];
 
-    if (!apiState) {
+    if (!targetType) {
       console.error(`[ERROR] Invalid state: ${state}`);
       console.error('Valid states: backlog, planned, in-progress, paused, completed, canceled');
       process.exit(1);
@@ -274,16 +286,21 @@ const commands: Record<string, (...args: string[]) => Promise<void>> = {
 
     const project = projects.nodes[0];
     console.log(`  Found project: ${project.name}`);
-    console.log(`  Current state: ${project.state}`);
+    const currentStatus = await project.status;
+    console.log(`  Current state: ${currentStatus?.name || 'None'}`);
 
-    // Update project state using the SDK's updateProject method
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (client as any).updateProject(project.id, {
-      state: apiState,
-    });
+    // Resolve the workspace ProjectStatus for the requested category type and
+    // update via the modern { statusId } path (Project.state is deprecated).
+    const targetStatus = await findProjectStatusByType(client, targetType);
+    if (!targetStatus) {
+      console.error(`[ERROR] No project status of type "${targetType}" found in this workspace`);
+      process.exit(1);
+    }
+
+    await client.updateProject(project.id, { statusId: targetStatus.id });
 
     console.log(`\n[SUCCESS] Project state updated!`);
-    console.log(`  ${project.name}: ${project.state} -> ${displayState}`);
+    console.log(`  ${project.name}: ${currentStatus?.name || 'None'} -> ${targetStatus.name}`);
   },
 
   async 'link-initiative'(projectName: string, initiativeName: string) {
@@ -321,9 +338,8 @@ const commands: Record<string, (...args: string[]) => Promise<void>> = {
     const initiative = initiatives.nodes[0];
     console.log(`  Found initiative: ${initiative.name}`);
 
-    // Link project to initiative using createInitiativeToProject
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (client as any).createInitiativeToProject({
+    // Link project to initiative using the typed createInitiativeToProject
+    await client.createInitiativeToProject({
       projectId: project.id,
       initiativeId: initiative.id,
     });
@@ -368,34 +384,21 @@ const commands: Record<string, (...args: string[]) => Promise<void>> = {
     const initiative = initiatives.nodes[0];
     console.log(`  Found initiative: ${initiative.name}`);
 
-    // Find the initiative-to-project link by querying initiativeToProjects
-    // Note: Linear SDK filter doesn't support nested entity filters well,
-    // so we fetch all links for the initiative and filter client-side
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const allLinks = await (client as any).initiativeToProjects({
-      filter: {
-        initiativeId: { eq: initiative.id },
-      },
-    });
+    // Fetch the initiative-to-project links scoped to this project, then match
+    // on initiativeId client-side to find the specific link to delete.
+    const projectModel = await client.project(project.id);
+    const links = await projectModel.initiativeToProjects();
+    const link = links.nodes.find((l) => l.initiativeId === initiative.id);
 
-    // Find the specific link for our project
-    const matchingLinks = (allLinks.nodes || []).filter(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (l: any) => l.projectId === project.id,
-    );
-
-    if (matchingLinks.length === 0) {
+    if (!link) {
       console.error(
         `[ERROR] Project "${project.name}" is not linked to initiative "${initiative.name}"`,
       );
       process.exit(1);
     }
 
-    const link = matchingLinks[0];
-
     // Delete the initiative-to-project link
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (client as any).deleteInitiativeToProject(link.id);
+    await client.deleteInitiativeToProject(link.id);
 
     console.log(`\n[SUCCESS] Project unlinked from initiative!`);
     console.log(`  Project: ${project.name}`);
@@ -544,49 +547,15 @@ const commands: Record<string, (...args: string[]) => Promise<void>> = {
       console.log(`  Found initiative: ${entityName}`);
     }
 
-    // Use GraphQL directly since SDK doesn't expose entityExternalLinkCreate
-    const API_URL = 'https://api.linear.app/graphql';
-    const mutation = `
-      mutation CreateExternalLink($input: EntityExternalLinkCreateInput!) {
-        entityExternalLinkCreate(input: $input) {
-          success
-          entityExternalLink {
-            id
-            label
-            url
-          }
-        }
-      }
-    `;
-
-    const input: Record<string, string> = { url, label };
-    if (entityType === 'project') {
-      input.projectId = entityId;
-    } else {
-      input.initiativeId = entityId;
-    }
-
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: API_KEY!,
-      },
-      body: JSON.stringify({
-        query: mutation,
-        variables: { input },
-      }),
+    // Create the external link via the typed SDK method.
+    const payload = await client.createEntityExternalLink({
+      url,
+      label,
+      ...(entityType === 'project' ? { projectId: entityId } : { initiativeId: entityId }),
     });
 
-    const data = await response.json();
-
-    if (data.errors) {
-      console.error('[ERROR] GraphQL errors:', JSON.stringify(data.errors, null, 2));
-      process.exit(1);
-    }
-
-    if (data.data.entityExternalLinkCreate.success) {
-      const link = data.data.entityExternalLinkCreate.entityExternalLink;
+    const link = await payload.entityExternalLink;
+    if (payload.success && link) {
       console.log('\n[SUCCESS] External link added!');
       console.log(`  ID:    ${link.id}`);
       console.log(`  Label: ${link.label}`);
@@ -668,8 +637,7 @@ const commands: Record<string, (...args: string[]) => Promise<void>> = {
         console.log(`  [OK] ${issue.identifier} -> ${normalizedState}`);
         success++;
       } catch (error) {
-        const msg = error instanceof Error ? error.message : String(error);
-        console.log(`  [ERROR] Issue #${issueNum}: ${msg}`);
+        console.log(`  [ERROR] Issue #${issueNum}: ${formatLinearError(error)}`);
         failed++;
       }
     }
@@ -852,8 +820,7 @@ const commands: Record<string, (...args: string[]) => Promise<void>> = {
         console.log(`  [OK] ${child.identifier} -> child of ${parent.identifier}`);
         success++;
       } catch (error) {
-        const msg = error instanceof Error ? error.message : String(error);
-        console.log(`  [ERROR] Issue #${childNum}: ${msg}`);
+        console.log(`  [ERROR] Issue #${childNum}: ${formatLinearError(error)}`);
         failed++;
       }
     }
@@ -1404,6 +1371,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error('\n[ERROR]', error.message);
+  console.error('\n[ERROR]', formatLinearError(error));
   process.exit(1);
 });

@@ -138,7 +138,12 @@ function checkMcpConfig(): { found: boolean; hasLinear: boolean; path?: string }
       try {
         const content = readFileSync(mcpPath, 'utf8');
         const config = JSON.parse(content);
-        const hasLinear = !!(config.mcpServers?.linear || config.servers?.linear);
+        const hasLinear = !!(
+          config.mcpServers?.linear ||
+          config.mcpServers?.['linear-server'] ||
+          config.servers?.linear ||
+          config.servers?.['linear-server']
+        );
         return { found: true, hasLinear, path: mcpPath };
       } catch {
         return { found: true, hasLinear: false, path: mcpPath };
@@ -206,18 +211,18 @@ async function runSetupCheck(): Promise<SetupResult> {
     log(`  [OK] Linear MCP configured in ${mcpResult.path}\n`);
   } else if (mcpResult.found) {
     log(`  [INFO] .mcp.json found but Linear not configured\n`);
-    log('  To add Linear MCP, add to your .mcp.json:\n');
-    log('  {');
-    log('    "mcpServers": {');
-    log('      "linear": {');
-    log('        "command": "npx",');
-    log('        "args": ["-y", "linear-mcp-server"],');
-    log('        "env": { "LINEAR_API_KEY": "${LINEAR_API_KEY}" }');
-    log('      }');
-    log('    }');
-    log('  }\n');
+    log("  To add Linear's official MCP server (OAuth-based, no API key needed):\n");
+    log(
+      '    claude mcp add --transport http --scope user linear-server https://mcp.linear.app/mcp\n',
+    );
+    log('  Then run /mcp in Claude Code and authenticate with Linear via OAuth.\n');
   } else {
     log('  [INFO] No .mcp.json found (MCP tools will not be available)\n');
+    log("  To add Linear's official MCP server (OAuth-based, no API key needed):\n");
+    log(
+      '    claude mcp add --transport http --scope user linear-server https://mcp.linear.app/mcp\n',
+    );
+    log('  Then run /mcp in Claude Code and authenticate with Linear via OAuth.\n');
   }
 
   // Summary
@@ -227,7 +232,7 @@ async function runSetupCheck(): Promise<SetupResult> {
     log('========================================\n');
     log('Quick commands:');
     log('  - Create initiative: npx tsx scripts/linear-ops.ts create-initiative "Name"');
-    log('  - Update status:     node scripts/linear-helpers.mjs update-status Done 123');
+    log('  - Update status:     npx tsx scripts/linear-ops.ts status Done ENG-123');
     log('  - Query API:         npx tsx scripts/query.ts "query { viewer { name } }"');
     log('');
     return { ready: true, issues: [], suggestions: [] };

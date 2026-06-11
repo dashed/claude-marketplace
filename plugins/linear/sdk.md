@@ -1,284 +1,504 @@
 # Linear SDK Automation Scripts
 
-Reference for writing TypeScript automation scripts using the Linear SDK.
+Reference for writing TypeScript automation scripts against `@linear/sdk`. This is the
+**programmatic path** for the skill's bundled scripts: anything the Linear API supports,
+fully typed, driven from a `.ts` file run with `npx tsx`.
 
-## Tool Selection Hierarchy
+## When to use this vs. other tools
 
-Always prefer simpler tools first:
+- **MCP tools** — the interactive default. One issue, a quick lookup, a status change in
+  conversation. No script, no API key.
+- **SDK scripts (this file)** — the programmatic default. Loops, bulk updates, conditional
+  logic, data export, multi-step flows, anything that needs typed models and N operations.
+  The SDK is generated from Linear's GraphQL schema, so it exposes essentially the whole API.
+- **Raw GraphQL via `client.client.rawRequest`** — a rare escape hatch, not a peer tier.
+  Because the SDK is generated from the same schema, "the field isn't exposed by the SDK" is
+  almost never true. Reach for it only for an operation the typed methods genuinely lack.
 
-1. **MCP tools (first choice)** - For simple operations like creating/updating single issues, basic queries
-2. **SDK scripts (complex operations)** - For loops, bulk updates, conditional logic, data transformations
-3. **GraphQL API (fallback)** - Only when MCP and SDK don't support the operation
-
-## Overview
-
-For complex Linear operations involving loops, mapping, or conditional logic, write TypeScript scripts using `@linear/sdk`. The SDK provides:
-
-- Full TypeScript type hints and autocomplete
-- Simpler syntax for iteration and data transformation
-- Better error handling than raw GraphQL
-- Easier debugging
-
-Run scripts with: `npx tsx script.ts`
-
-## Basic Setup
+## Setup
 
 ```typescript
-import { LinearClient } from '@linear/sdk'
+import { LinearClient } from "@linear/sdk";
 
-const client = new LinearClient({
-  apiKey: process.env.LINEAR_API_KEY
-})
+const client = new LinearClient({ apiKey: process.env.LINEAR_API_KEY });
+```
 
-async function main() {
-  // Your automation logic here
+- Personal API key: `new LinearClient({ apiKey })` — the key is sent verbatim as the
+  `Authorization` header (no `Bearer ` prefix).
+- OAuth access token: `new LinearClient({ accessToken })` — the SDK adds the `Bearer ` prefix
+  (and leaves it alone if you already included one). The token comes from the OAuth2 token
+  endpoint; an app can act either as itself (`actor=app`) or on behalf of the authorizing user
+  (`actor=user`). See https://linear.app/developers/oauth-2-0-authentication.
+- `LinearClientOptions` extends `RequestInit`, so you can pass custom `headers`, and override
+  `apiUrl` (defaults to `https://api.linear.app/graphql`).
+
+Set `LINEAR_API_KEY` in the environment and run with `npx tsx script.ts`.
+
+## Core querying + the lazy-relation trap
+
+Top-level queries hang off the client. Single fetches resolve a model; plural fetches resolve
+a **connection** (`{ nodes, pageInfo }`):
+
+```typescript
+const me = await client.viewer;                 // current user (a getter, still await it)
+const issue = await client.issue("ISS-123");     // by id or identifier
+const issues = await client.issues({ first: 50 }); // IssueConnection
+const teams = await client.teams();
+const projects = await client.projects({ first: 50 });
+const states = await client.workflowStates({ filter: { team: { key: { eq: "ENG" } } } });
+const labels = await client.issueLabels();
+const initiatives = await client.initiatives();
+const statuses = await client.projectStatuses();
+```
+
+There is **no field selection** at this layer — every model comes back with all its scalar
+fields. You narrow results with pagination variables (`first`, `after`) and `filter`, not by
+choosing fields.
+
+### The #1 correctness trap: relation getters are lazy
+
+On a model, **relation getters return a Promise and cost an extra API round-trip each time you
+`await` them.** `issue.state`, `issue.assignee`, `issue.team`, `issue.project`, `issue.parent`,
+`issue.cycle` are all lazy. Accessing `issue.state.type` synchronously is a bug — `issue.state`
+is a `Promise`, not a `WorkflowState`.
+
+For each lazy relation the SDK also exposes a **synchronous `<rel>Id` getter** that returns the
+cached id with **no** round-trip. Prefer the id when the id is all you need:
+
+```typescript
+issue.stateId;     // synchronous string | undefined — no network call
+issue.assigneeId;  // synchronous string | undefined
+issue.teamId;      // synchronous string | undefined
+issue.projectId;   // synchronous string | undefined
+
+const state = await issue.state;   // one round-trip
+console.log(state?.type);          // now safe: "started" | "completed" | ...
+```
+
+Doing this in a loop is a textbook N+1. Resolving `await issue.assignee` for 200 issues fires
+200 extra requests. Avoid it by filtering server-side, comparing ids, or resolving relations
+once into a lookup map:
+
+```typescript
+// GOOD: no per-issue round-trips — compare cached ids
+const open = issues.nodes.filter(
+  (i) => i.priority === 1 && i.stateId === targetStateId
+);
+
+// GOOD: resolve users once, then map by id
+const users = await client.users();
+const byId = new Map(users.nodes.map((u) => [u.id, u.name]));
+const report = issues.nodes.map((i) => ({
+  id: i.identifier,
+  assignee: i.assigneeId ? byId.get(i.assigneeId) ?? "Unknown" : "Unassigned",
+}));
+
+// BAD: N+1 — one extra request per issue
+// for (const i of issues.nodes) console.log((await i.assignee)?.name);
+```
+
+Nested **connections** are methods, not getters — call them: `issue.comments()`,
+`issue.children()`, `issue.attachments()`, `issue.labels()`. They return connections you
+paginate like any other.
+
+```typescript
+const comments = await issue.comments();
+for (const c of comments.nodes) console.log(c.body);
+```
+
+> Note: `client.team(id)` / `client.project(id)` take a **UUID**, not a human key like `"ENG"`.
+> To resolve a team by its key, filter: `client.teams({ filter: { key: { eq: "ENG" } } })`.
+
+## Filtering cookbook
+
+`filter:` takes typed comparators. The common ones:
+
+- **String** (`title`, `name`, …): `eq`, `neq`, `in`, `nin`, `contains`, `notContains`,
+  `containsIgnoreCase`, `startsWith`, `endsWith`, `eqIgnoreCase`.
+- **Number** (`priority`, `estimate`): `eq`, `neq`, `in`, `nin`, `gt`, `gte`, `lt`, `lte`.
+- **Date** (`createdAt`, `updatedAt`, `dueDate`): the same comparators on a `DateTimeOrDuration`
+  scalar, accepting either an ISO timestamp **or a relative ISO-8601 duration** added to *now* —
+  e.g. `"-P2W1D"` (two weeks and a day ago), `"-P1D"`, `"-PT4H"`. (Per the GraphQL schema's
+  `DateTimeOrDuration` scalar; see https://linear.app/developers/filtering.)
+- **Id** (`id`): `eq`, `neq`, `in`, `nin`.
+- **Nullable** variants add `null: true | false`.
+
+```typescript
+const recent = await client.issues({
+  filter: {
+    state: { type: { eq: "started" } },          // nested relation filter
+    priority: { lte: 2 },                          // number comparator
+    updatedAt: { gt: "-P2W" },                     // relative duration
+    title: { containsIgnoreCase: "migration" },
+  },
+});
+```
+
+Logical `and:[...]` / `or:[...]` nest arbitrarily:
+
+```typescript
+filter: {
+  or: [
+    { priority: { eq: 1 } },
+    { and: [{ priority: { eq: 2 } }, { dueDate: { lt: "-P0D" } }] },
+  ],
 }
-
-main().catch(console.error)
 ```
 
-**Authentication**: Set `LINEAR_API_KEY` environment variable or pass directly to client.
-
-## Common Patterns
-
-### Fetching and Filtering Issues
+Nested **relation filters** drill into related entities:
 
 ```typescript
-// Get all issues from a team
-const team = await client.team('TEAM-KEY')
-const issues = await team.issues()
-
-// Filter with TypeScript instead of complex GraphQL
-const highPriorityOpen = issues.nodes.filter(issue =>
-  issue.priority === 1 &&
-  issue.state.type === 'started'
-)
-
-console.log(`Found ${highPriorityOpen.length} high priority issues`)
+filter: { team: { key: { eq: "ENG" } } }
+filter: { team: { name: { eq: "Engineering" } } }
+filter: { project: { name: { contains: "Q3" } } }
+filter: { assignee: { email: { eq: "dev@example.com" } } }
+filter: { state: { type: { eq: "completed" } } }
 ```
 
-### Bulk Updates with Loops
+Collection filters on **to-many** relations (e.g. `labels`) use `every` / `some` / `length`:
 
 ```typescript
-// Update multiple issues based on conditions
-const team = await client.team('ENG')
-const issues = await team.issues({
-  filter: { state: { name: { eq: 'In Review' } } }
-})
+filter: { labels: { some: { name: { eq: "bug" } } } }   // has at least one "bug" label
+filter: { labels: { every: { name: { neq: "wontfix" } } } } // every label is not "wontfix"
+filter: { labels: { length: { eq: 0 } } }               // no labels at all
+```
 
-for (const issue of issues.nodes) {
-  // Check condition with full type safety
-  if (issue.assignee && issue.estimate && issue.estimate > 5) {
-    await issue.update({
-      priority: 2, // Set to high priority
-      labels: ['needs-split']
-    })
-    console.log(`Updated ${issue.identifier}: ${issue.title}`)
+(There is no `none` operator on collection filters in this SDK; express "has none" with
+`every: { ... neq ... }` or a `length` comparator.)
+
+Filtering server-side is also how you sidestep the lazy-relation trap: prefer
+`filter: { assignee: { isMe: { eq: true } } }` over fetching every issue and awaiting
+`issue.assignee`.
+
+## Pagination
+
+**The default page size is 50, and an unpaginated call silently truncates** — `client.issues()`
+returns at most 50 nodes with no error. Always paginate when a result set could exceed that.
+
+`connection.pageInfo` carries `hasNextPage` and `endCursor`. Three ways to exhaust a connection:
+
+```typescript
+import { LinearDocument } from "@linear/sdk";
+
+// 1. client.paginate — exhaustively pages and returns a flat array. Simplest.
+const all = await client.paginate(client.issues, {
+  filter: { team: { key: { eq: "ENG" } } },
+  orderBy: LinearDocument.PaginationOrderBy.UpdatedAt,
+});
+console.log(`Total: ${all.length}`);
+
+// 2. fetchNext — accumulates pages in place onto connection.nodes, returns the connection.
+let conn = await client.issues({ first: 100 });
+while (conn.pageInfo.hasNextPage) {
+  conn = await conn.fetchNext();
+}
+console.log(`Total: ${conn.nodes.length}`); // nodes accumulate across fetchNext() calls
+
+// 3. Manual cursor loop, if you need to process page-by-page.
+let after: string | undefined;
+do {
+  const page = await client.issues({ first: 100, after });
+  for (const issue of page.nodes) {
+    /* ... */
+  }
+  after = page.pageInfo.hasNextPage ? page.pageInfo.endCursor ?? undefined : undefined;
+} while (after);
+```
+
+`client.paginate(fn, args)` passes `fn` the connection query (e.g. `client.issues`) and the
+query args; it returns `Promise<T[]>` of every node, managing `after` cursors for you. It
+*does* honor a `first` you put in `args` (used as the per-page size; it defaults to 50 when you
+omit one) — so pass a larger `first` (e.g. `100`) to page in bigger chunks and cut round-trips.
+
+## Mutations
+
+Mutations are **verb-first methods on the client**. Each returns a payload with `success`, a
+numeric `lastSyncId`, and a **lazy** entity getter (a re-fetch) alongside a synchronous id:
+
+```typescript
+const payload = await client.createIssue({
+  teamId: team.id,            // REQUIRED
+  title: "Investigate flaky test",
+  description: "Markdown body",
+  assigneeId: user.id,        // flat string id
+  stateId: stateId,           // flat string id
+  projectId: projectId,       // flat string id
+  parentId: parentId,         // flat string id (sub-issue)
+  priority: 2,
+  labelIds: ["<label-uuid-1>", "<label-uuid-2>"], // label UUIDs — NOT label names
+});
+
+console.log(payload.success, payload.lastSyncId);
+const created = await payload.issue; // lazy re-fetch — costs a round-trip
+console.log(created?.identifier);
+```
+
+`IssueCreateInput` essentials: **`teamId` is required**; id fields (`stateId`, `projectId`,
+`parentId`, `assigneeId`, `cycleId`) are **flat strings**; labels are **`labelIds: string[]`**
+of label UUIDs. There is no `labels: [...]` field — passing label names will not compile and
+will not work. Resolve names to ids first (`client.issueLabels({ filter: { name: { eq } } })`).
+
+Common mutations:
+
+```typescript
+await client.updateIssue(id, { stateId, priority: 1 });
+await client.deleteIssue(id);                          // trashes the issue
+await client.createComment({ issueId, body: "Looks good" });
+await client.createProject({ name, teamIds: [teamId] });
+await client.updateProject(id, { statusId });          // see status note below
+await client.createProjectUpdate({ projectId, body, health: "onTrack" });
+await client.createInitiativeUpdate({ initiativeId, body });
+await client.createInitiativeToProject({ initiativeId, projectId });
+await client.createEntityExternalLink({ url, label, projectId }); // links to project/initiative/release, not an issue
+await client.createAttachment({ issueId, url, title });
+await client.attachmentLinkURL(issueId, url);          // positional args
+```
+
+Batch update many issues in one request (ids are UUIDs):
+
+```typescript
+const batch = await client.updateIssueBatch(
+  ["<uuid-1>", "<uuid-2>", "<uuid-3>"],
+  { stateId: doneStateId }
+);
+console.log(batch.success);
+for (const issue of batch.issues) {  // .issues is a synchronous Issue[] here
+  console.log(issue.identifier);
+}
+```
+
+Models also carry their own mutation methods: `await issue.update({ priority: 1 })`,
+`await issue.archive()`, `await project.archive()`. (Note: the `Issue` model has **no**
+`addComment` method — use `client.createComment({ issueId, body })`.)
+
+> **Project status:** `Project.state` (a string) is **deprecated**. Use project statuses:
+> read them from `client.projectStatuses()`, then `client.updateProject(id, { statusId })`.
+> The current status on a project is `await project.status` (lazy) / `project.statusId` (sync).
+
+## Error handling & rate limits
+
+Every thrown error is a `LinearError` subclass: `InvalidInputLinearError`,
+`AuthenticationLinearError`, `ForbiddenLinearError`, `RatelimitedLinearError`,
+`NetworkLinearError`, `InternalLinearError`, `UsageLimitExceededLinearError`,
+`FeatureNotAccessibleLinearError`, and others. A `LinearError` carries `type` (a
+`LinearErrorType`), `errors[]` (each with `type` / `message` / `userError` / `path`),
+`status`, `query`, and `variables`.
+
+```typescript
+import {
+  LinearError,
+  InvalidInputLinearError,
+  RatelimitedLinearError,
+} from "@linear/sdk";
+
+try {
+  await client.createIssue({ teamId, title: "x" });
+} catch (error) {
+  if (error instanceof InvalidInputLinearError) {
+    console.error("Bad input:", error.errors?.map((e) => e.message).join("; "));
+  } else if (error instanceof LinearError) {
+    console.error(`Linear error (${error.type}, HTTP ${error.status}):`, error.message);
+  } else {
+    throw error;
   }
 }
 ```
 
-### Mapping Issues to Custom Format
+`RatelimitedLinearError` additionally exposes values parsed from the response headers. The API
+enforces **two independent budgets** per window — a request count and a query-complexity score —
+each surfaced through its own `x-ratelimit-*` headers:
+
+| Field | Header | Meaning |
+|-------|--------|---------|
+| `retryAfter` | `retry-after` | Seconds to wait before retrying |
+| `requestsLimit` / `requestsRemaining` | `x-ratelimit-requests-limit` / `-remaining` | Request budget for the window |
+| `requestsResetAt` | `x-ratelimit-requests-reset` | **Unix timestamp** when the request budget resets |
+| `complexityLimit` / `complexityRemaining` | `x-ratelimit-complexity-limit` / `-remaining` | Query-complexity budget |
+| `complexityResetAt` | `x-ratelimit-complexity-reset` | **Unix timestamp** when the complexity budget resets |
+
+(`*ResetAt` are Unix timestamps, not seconds-from-now like `retryAfter`.) **The SDK does not
+retry for you** — honor `retryAfter` yourself:
 
 ```typescript
-// Extract and transform issue data
-const team = await client.team('PRODUCT')
-const issues = await team.issues()
-
-const report = issues.nodes.map(issue => ({
-  id: issue.identifier,
-  title: issue.title,
-  assignee: issue.assignee?.name ?? 'Unassigned',
-  daysOld: Math.floor(
-    (Date.now() - issue.createdAt.getTime()) / (1000 * 60 * 60 * 24)
-  ),
-  labels: issue.labels.nodes.map(l => l.name).join(', ')
-}))
-
-// Output as JSON or CSV
-console.log(JSON.stringify(report, null, 2))
-```
-
-### Working with Projects and Milestones
-
-```typescript
-// Get project and all its issues
-const project = await client.project('PROJECT-ID')
-const projectData = await project.issues()
-
-// Group by state
-const byState = projectData.nodes.reduce((acc, issue) => {
-  const stateName = issue.state.name
-  acc[stateName] = (acc[stateName] || 0) + 1
-  return acc
-}, {} as Record<string, number>)
-
-console.log('Issues by state:', byState)
-```
-
-### Creating Multiple Issues from Data
-
-```typescript
-interface TaskTemplate {
-  title: string
-  description: string
-  assigneeEmail: string
-}
-
-const tasks: TaskTemplate[] = [
-  { title: 'Task 1', description: 'Do thing', assigneeEmail: 'user@example.com' },
-  { title: 'Task 2', description: 'Do other', assigneeEmail: 'user@example.com' }
-]
-
-const team = await client.team('ENG')
-const users = await client.users()
-
-for (const task of tasks) {
-  const assignee = users.nodes.find(u => u.email === task.assigneeEmail)
-
-  await client.createIssue({
-    teamId: team.id,
-    title: task.title,
-    description: task.description,
-    assigneeId: assignee?.id,
-    priority: 3
-  })
-
-  console.log(`Created: ${task.title}`)
-}
-```
-
-### Pagination for Large Datasets
-
-```typescript
-// Handle paginated results
-let hasMore = true
-let after: string | undefined
-
-const allIssues = []
-
-while (hasMore) {
-  const response = await client.issues({
-    first: 50,
-    after
-  })
-
-  allIssues.push(...response.nodes)
-
-  hasMore = response.pageInfo.hasNextPage
-  after = response.pageInfo.endCursor
-}
-
-console.log(`Total issues: ${allIssues.length}`)
-```
-
-### Conditional Logic with Type Safety
-
-```typescript
-const issues = await client.issues({
-  filter: { team: { key: { eq: 'ENG' } } }
-})
-
-for (const issue of issues.nodes) {
-  // TypeScript knows all available properties
-  const needsAttention =
-    !issue.assignee ||
-    (issue.priority === 1 && issue.state.type !== 'started') ||
-    (issue.dueDate && new Date(issue.dueDate) < new Date())
-
-  if (needsAttention) {
-    await issue.addComment({
-      body: '⚠️ This issue needs attention'
-    })
+async function withRetry<T>(fn: () => Promise<T>, attempts = 3): Promise<T> {
+  for (let i = 0; ; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (error instanceof RatelimitedLinearError && i < attempts - 1) {
+        const waitSec = error.retryAfter ?? 2 ** i;
+        await new Promise((r) => setTimeout(r, waitSec * 1000));
+        continue;
+      }
+      throw error;
+    }
   }
 }
+
+const issue = await withRetry(() => client.issue("ISS-123"));
 ```
 
-## Script Template
+## Raw escape hatch
+
+When (rarely) you need raw GraphQL, the underlying client is reachable at `client.client`:
+
+Both `request` and `rawRequest` are generic over `<Data, Variables>` — when you supply a type
+argument you must supply both:
+
+```typescript
+// request() returns just data; rawRequest() returns { data, headers, status, errors }
+const data = await client.client.request<
+  { viewer: { id: string; name: string } },
+  Record<string, unknown>
+>(`query { viewer { id name } }`);
+
+const raw = await client.client.rawRequest<
+  { viewer: { id: string } },
+  Record<string, unknown>
+>(`query { viewer { id } }`, {});
+console.log(raw.status, raw.headers);
+
+client.client.setHeader("x-custom", "value"); // persists on subsequent requests
+```
+
+Prefer the typed methods above; this exists for the genuine gaps only.
+
+## File upload & attachments
+
+Uploading a file is a 3-step flow: ask Linear for a pre-signed URL, PUT the bytes, then
+reference the permanent `assetUrl`. `fileUpload(contentType, filename, size)` returns an
+`UploadPayload` whose `uploadFile` carries `uploadUrl`, `assetUrl`, and a `headers: {key,value}[]`
+list — **every one of those headers must be replayed on the PUT** (alongside the `Content-Type`
+you passed), or the upload is rejected. See https://linear.app/developers/uploading-files.
+
+```typescript
+import { readFile } from "node:fs/promises";
+
+async function uploadAsset(filePath: string, contentType: string, filename: string) {
+  const bytes = await readFile(filePath);
+
+  // 1. Request an upload slot.
+  const payload = await client.fileUpload(contentType, filename, bytes.byteLength);
+  const uploadFile = payload.uploadFile;
+  if (!payload.success || !uploadFile) throw new Error("Upload prep failed");
+
+  // 2. PUT the bytes to the pre-signed URL with the headers Linear returned.
+  const headers: Record<string, string> = { "Content-Type": contentType };
+  for (const h of uploadFile.headers) headers[h.key] = h.value;
+  const res = await fetch(uploadFile.uploadUrl, { method: "PUT", body: bytes, headers });
+  if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
+
+  // 3. Use the permanent asset URL.
+  return uploadFile.assetUrl;
+}
+
+const assetUrl = await uploadAsset("./diagram.png", "image/png", "diagram.png");
+
+// Embed in markdown (e.g. an issue description/comment):
+await client.createComment({ issueId, body: `![diagram](${assetUrl})` });
+
+// Or attach it to an issue:
+await client.createAttachment({ issueId, url: assetUrl, title: "diagram.png" });
+```
+
+## Webhooks (brief)
+
+Verify and route webhooks with the dedicated subpath export `@linear/sdk/webhooks`. The
+`LinearWebhookClient` recomputes the HMAC-SHA256 of the **raw request body** keyed by your
+signing secret, compares it timing-safely against the `linear-signature` header, and enforces a
+60-second replay window. (The top-level `LinearWebhooks` export is a deprecated alias.)
+
+The timestamp it checks comes from the payload's own `webhookTimestamp` field (a Unix-ms number),
+falling back to the `linear-timestamp` header when absent — pass whichever you have. Sign with
+the **raw bytes**, never a re-serialized JSON string, or the HMAC won't match.
+
+```typescript
+import { LinearWebhookClient } from "@linear/sdk/webhooks";
+
+const webhooks = new LinearWebhookClient(process.env.LINEAR_WEBHOOK_SECRET!);
+
+// Manual verify/parse against a raw body Buffer + the `linear-signature` header.
+// NOTE: both verify() and parseData() THROW on a bad signature or stale timestamp —
+// verify() only ever returns `true` (it does not return `false`). Wrap in try/catch.
+const ok = webhooks.verify(rawBody, signature, timestamp);     // true | throws
+const payload = webhooks.parseData(rawBody, signature, timestamp); // verifies + parses, or throws
+
+// Or build a handler that works for both Node http and Fetch-API runtimes:
+const handler = webhooks.createHandler();
+handler.on("Issue", (p) => console.log("issue event", p.action));
+handler.on("*", (p) => console.log("any event", p.type));
+// Node:   http.createServer((req, res) => handler(req, res))
+// Fetch:  export default { fetch: (req) => handler(req) }
+```
+
+## Script template
 
 ```typescript
 #!/usr/bin/env tsx
-import { LinearClient } from '@linear/sdk'
+import { LinearClient, LinearDocument, LinearError, RatelimitedLinearError } from "@linear/sdk";
 
-const LINEAR_API_KEY = process.env.LINEAR_API_KEY
+const LINEAR_API_KEY = process.env.LINEAR_API_KEY;
 if (!LINEAR_API_KEY) {
-  console.error('LINEAR_API_KEY environment variable required')
-  process.exit(1)
+  console.error("LINEAR_API_KEY environment variable required");
+  process.exit(1);
 }
 
-const client = new LinearClient({ apiKey: LINEAR_API_KEY })
+const client = new LinearClient({ apiKey: LINEAR_API_KEY });
 
-async function main() {
-  // Your automation logic
-  const me = await client.viewer
-  console.log(`Running as: ${me.name}`)
-
-  // Example: Get my open issues
-  const myIssues = await client.issues({
-    filter: {
-      assignee: { id: { eq: me.id } },
-      state: { type: { eq: 'started' } }
+async function withRetry<T>(fn: () => Promise<T>, attempts = 3): Promise<T> {
+  for (let i = 0; ; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (error instanceof RatelimitedLinearError && i < attempts - 1) {
+        await new Promise((r) => setTimeout(r, (error.retryAfter ?? 2 ** i) * 1000));
+        continue;
+      }
+      throw error;
     }
-  })
-
-  console.log(`You have ${myIssues.nodes.length} in-progress issues`)
-
-  for (const issue of myIssues.nodes) {
-    console.log(`- ${issue.identifier}: ${issue.title}`)
   }
 }
 
-main().catch(error => {
-  console.error('Error:', error.message)
-  process.exit(1)
-})
+async function main() {
+  const me = await client.viewer;
+  console.log(`Running as: ${me.name}`);
+
+  // Paginate exhaustively — never rely on the silent 50-item default.
+  const myOpen = await client.paginate(client.issues, {
+    filter: {
+      assignee: { isMe: { eq: true } },
+      state: { type: { eq: "started" } },
+    },
+    orderBy: LinearDocument.PaginationOrderBy.UpdatedAt,
+  });
+
+  console.log(`You have ${myOpen.length} in-progress issues`);
+  for (const issue of myOpen) {
+    // Use the synchronous id getters in loops — no N+1 round-trips.
+    console.log(`- ${issue.identifier}: ${issue.title} [state ${issue.stateId}]`);
+  }
+}
+
+main().catch((error) => {
+  if (error instanceof LinearError) {
+    console.error(`Linear error (${error.type}):`, error.message);
+  } else {
+    console.error("Error:", error instanceof Error ? error.message : error);
+  }
+  process.exit(1);
+});
 ```
 
-## Running Scripts
+## Running scripts
 
 ```bash
-# Direct execution
-npx tsx automation.ts
-
-# With environment variable
-LINEAR_API_KEY=lin_api_xxx npx tsx automation.ts
-
-# Make executable (requires shebang)
-chmod +x automation.ts
-./automation.ts
+npx tsx automation.ts                          # direct
+LINEAR_API_KEY=lin_api_xxx npx tsx automation.ts  # with inline env
 ```
 
-## When to Use Each Tool
+## Version note
 
-**Use MCP tools (prefer first):**
-- Single issue operations (get, create, update)
-- Simple queries with known parameters
-- Basic filtering (by assignee, team, state, labels)
-- Interactive workflows in conversation
-- Creating/updating projects
-
-**Use SDK scripts (when MCP insufficient):**
-- Iterating over multiple items with complex logic
-- Mapping/transforming data for export or reports
-- Bulk updates with conditional logic
-- Multi-step operations requiring intermediate state
-- Operations needing debugging or iteration
-
-**Use GraphQL API (fallback only):**
-- Operations not supported by MCP or SDK
-- When you need specific fields not exposed by SDK
-
-## Dependencies
-
-Scripts require:
-- `@linear/sdk` package
-- `tsx` for execution (via npx or installed)
-- `LINEAR_API_KEY` environment variable
-
-Install in project: `npm install @linear/sdk`
-
-## API Reference
-
-Full SDK documentation: https://linear.app/developers/sdk.md
-
-The SDK is auto-generated from Linear's GraphQL API and includes type definitions for all operations.
+Authored against **`@linear/sdk` 86.0.0** and verified against the official source at
+https://github.com/linear/linear (`packages/sdk/src`). The SDK is auto-generated from Linear's
+GraphQL API; method, model, and input shapes track the schema. Full reference:
+https://linear.app/developers/sdk

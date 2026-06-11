@@ -6,6 +6,7 @@
  */
 import { LinearClient } from '@linear/sdk';
 import { fileURLToPath } from 'url';
+import { formatLinearError } from './errors';
 
 const client = new LinearClient({ apiKey: process.env.LINEAR_API_KEY });
 
@@ -19,7 +20,7 @@ export const INITIATIVES = {
 } as const;
 
 /**
- * Link a project to an initiative using initiativeToProjectCreate mutation.
+ * Link a project to an initiative using the typed createInitiativeToProject SDK call.
  *
  * This is the ONLY correct way to link projects. Do NOT use:
  * - projectUpdate with initiativeIds (doesn't exist)
@@ -30,45 +31,15 @@ export async function linkProjectToInitiative(
   initiativeId: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const mutation = `
-      mutation LinkProjectToInitiative($initiativeId: String!, $projectId: String!) {
-        initiativeToProjectCreate(input: {
-          initiativeId: $initiativeId,
-          projectId: $projectId
-        }) {
-          success
-          initiativeToProject {
-            id
-          }
-        }
-      }
-    `;
-
-    const response = await fetch('https://api.linear.app/graphql', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: process.env.LINEAR_API_KEY || '',
-      },
-      body: JSON.stringify({
-        query: mutation,
-        variables: { initiativeId, projectId },
-      }),
-    });
-
-    const result = await response.json();
-
-    if (result.errors) {
-      // Check if already linked
-      if (result.errors[0]?.message?.includes('already exists')) {
-        return { success: true }; // Already linked is fine
-      }
-      return { success: false, error: result.errors[0]?.message };
-    }
-
-    return { success: result.data?.initiativeToProjectCreate?.success === true };
+    const payload = await client.createInitiativeToProject({ initiativeId, projectId });
+    return { success: payload.success === true };
   } catch (error) {
-    return { success: false, error: String(error) };
+    // Already-linked is not an error condition for our purposes.
+    const message = formatLinearError(error);
+    if (message.includes('already exists')) {
+      return { success: true };
+    }
+    return { success: false, error: message };
   }
 }
 
@@ -76,44 +47,16 @@ export async function linkProjectToInitiative(
  * Check if a project is linked to an initiative
  *
  * Note: Linear uses initiativeToProject edges, not a direct initiative field.
- * We query from the initiative side to find linked projects.
+ * We query the project's linked initiatives to check membership.
  */
 export async function isProjectLinkedToInitiative(
   projectId: string,
   initiativeId: string,
 ): Promise<boolean> {
   try {
-    // Query initiative's projects to check if this project is linked
-    const query = `
-      query CheckInitiativeProjects($initiativeId: String!) {
-        initiative(id: $initiativeId) {
-          id
-          projects {
-            nodes {
-              id
-            }
-          }
-        }
-      }
-    `;
-
-    const response = await fetch('https://api.linear.app/graphql', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: process.env.LINEAR_API_KEY || '',
-      },
-      body: JSON.stringify({
-        query,
-        variables: { initiativeId },
-      }),
-    });
-
-    const result = await response.json();
-    const projectIds =
-      result.data?.initiative?.projects?.nodes?.map((p: { id: string }) => p.id) || [];
-
-    return projectIds.includes(projectId);
+    const project = await client.project(projectId);
+    const initiatives = await project.initiatives();
+    return initiatives.nodes.some((i) => i.id === initiativeId);
   } catch {
     return false;
   }
@@ -121,16 +64,19 @@ export async function isProjectLinkedToInitiative(
 
 /**
  * Get all projects and their initiative links
+ *
+ * Paginates over every project so workspaces with more than one page of
+ * projects are fully covered.
  */
 export async function getProjectInitiativeStatus(): Promise<
   Array<{ id: string; name: string; initiative: string | null }>
 > {
-  const projects = await client.projects();
-  const results = [];
+  const projects = await client.paginate((variables) => client.projects(variables), { first: 100 });
 
-  for (const proj of projects.nodes) {
+  const results: Array<{ id: string; name: string; initiative: string | null }> = [];
+  for (const proj of projects) {
     const initiatives = await proj.initiatives();
-    const initiative = initiatives?.nodes?.[0];
+    const initiative = initiatives.nodes[0];
     results.push({
       id: proj.id,
       name: proj.name,

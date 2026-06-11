@@ -18,7 +18,7 @@
  *   npx tsx create-project-update.ts "Phase 1" "## At Risk\n\nBlocked on API" atRisk
  */
 
-import { LinearClient } from '@linear/sdk';
+import { LinearClient, ProjectUpdateHealthType } from '@linear/sdk';
 import { EXIT_CODES } from './lib/exit-codes.js';
 import {
   HealthStatus,
@@ -27,6 +27,17 @@ import {
   getLinearClient,
   findProjectByName,
 } from './lib/linear-utils.js';
+import { formatLinearError } from './lib/errors.js';
+
+/**
+ * Map our user-facing health vocabulary to the SDK's ProjectUpdateHealthType
+ * enum. The enum's values are identical strings, so this is a safe lookup.
+ */
+const HEALTH_TYPE_MAP: Record<HealthStatus, ProjectUpdateHealthType> = {
+  onTrack: ProjectUpdateHealthType.OnTrack,
+  atRisk: ProjectUpdateHealthType.AtRisk,
+  offTrack: ProjectUpdateHealthType.OffTrack,
+};
 
 function printUsage(): void {
   console.error('Usage:');
@@ -61,31 +72,23 @@ async function createProjectUpdate(
   body: string,
   health: HealthStatus,
 ): Promise<ProjectUpdateResult> {
-  // Use rawRequest since SDK may not have projectUpdateCreate typed
-  const mutation = `
-    mutation CreateProjectUpdate($projectId: String!, $body: String!, $health: ProjectUpdateHealthType!) {
-      projectUpdateCreate(input: {
-        projectId: $projectId,
-        body: $body,
-        health: $health
-      }) {
-        success
-        projectUpdate {
-          id
-          url
-          createdAt
-        }
-      }
-    }
-  `;
-
-  const result = await client.client.rawRequest(mutation, {
+  const payload = await client.createProjectUpdate({
     projectId,
     body,
-    health,
+    health: HEALTH_TYPE_MAP[health],
   });
 
-  return (result.data as { projectUpdateCreate: ProjectUpdateResult }).projectUpdateCreate;
+  const update = await payload.projectUpdate;
+  return {
+    success: payload.success,
+    projectUpdate: update
+      ? {
+          id: update.id,
+          url: update.url,
+          createdAt: update.createdAt.toISOString(),
+        }
+      : undefined,
+  };
 }
 
 async function main(): Promise<void> {
@@ -178,17 +181,7 @@ async function main(): Promise<void> {
     );
   } catch (error) {
     console.error('Error creating project update:');
-    if (error instanceof Error) {
-      console.error(error.message);
-
-      // Check for common GraphQL errors
-      if ('errors' in error && Array.isArray((error as Record<string, unknown>).errors)) {
-        console.error('\nGraphQL Errors:');
-        console.error(JSON.stringify((error as Record<string, unknown>).errors, null, 2));
-      }
-    } else {
-      console.error(error);
-    }
+    console.error(formatLinearError(error));
     process.exit(EXIT_CODES.API_ERROR);
   }
 }

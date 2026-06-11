@@ -81,6 +81,12 @@ export {
   AGENT_DESCRIPTIONS,
 } from './agent-selection';
 
+// Typed error handling
+export { formatLinearError, isRetryableLinearError } from './errors';
+
+// Project status resolution
+export { findProjectStatusByType } from './project-status';
+
 // Verification utilities
 export {
   verifyProjectCreation,

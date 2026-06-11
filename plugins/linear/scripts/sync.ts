@@ -16,12 +16,18 @@
  */
 
 import { LinearClient } from '@linear/sdk';
+import { formatLinearError } from './lib/errors.js';
 
 interface SyncOptions {
   issues: string[];
   state: string;
   comment?: string;
   dryRun: boolean;
+}
+
+interface ResolvedState {
+  id: string;
+  name: string;
 }
 
 function parseArgs(): SyncOptions {
@@ -99,40 +105,64 @@ async function main() {
     console.log('🔍 DRY RUN - no changes will be applied\n');
   }
 
-  // Extract team key from first issue identifier
-  const teamKey = options.issues[0]?.split('-')[0];
-  if (!teamKey) {
-    console.error('Error: Could not extract team key from issue identifier');
-    process.exit(1);
+  // Caches keyed by team key so repeated lookups are cheap and the target
+  // workflow state is resolved per team (states are team-scoped).
+  const targetStateByTeam = new Map<string, ResolvedState | null>();
+
+  async function resolveTargetState(teamKey: string): Promise<ResolvedState | null> {
+    if (targetStateByTeam.has(teamKey)) {
+      return targetStateByTeam.get(teamKey) ?? null;
+    }
+
+    let resolved: ResolvedState | null = null;
+    try {
+      const team = await client.team(teamKey);
+      const states = await team.states();
+      const match = states.nodes.find((s) => s.name.toLowerCase() === options.state.toLowerCase());
+      if (match) {
+        resolved = { id: match.id, name: match.name };
+      } else {
+        console.error(`\n❌ State "${options.state}" not found for team ${teamKey}`);
+        console.error('   Available states:');
+        states.nodes.forEach((s) => console.error(`     - ${s.name}`));
+      }
+    } catch (error) {
+      console.error(`\n❌ Could not look up team ${teamKey}: ${formatLinearError(error)}`);
+    }
+
+    targetStateByTeam.set(teamKey, resolved);
+    return resolved;
   }
 
-  // Find the target workflow state
-  console.log(`🔎 Looking up workflow state "${options.state}" for team ${teamKey}...`);
-
-  const team = await client.team(teamKey);
-  const states = await team.states();
-  const targetState = states.nodes.find(
-    (s) => s.name.toLowerCase() === options.state.toLowerCase(),
-  );
-
-  if (!targetState) {
-    console.error(`\n❌ Error: State "${options.state}" not found`);
-    console.error('\nAvailable states:');
-    states.nodes.forEach((s) => console.error(`  - ${s.name}`));
-    process.exit(1);
-  }
-
-  console.log(`✅ Found state: ${targetState.name} (${targetState.id})\n`);
-
-  // Process each issue
   const results: { identifier: string; success: boolean; error?: string }[] = [];
 
+  // Step 1: Resolve every issue to its id + target stateId (per-identifier team
+  // key, so mixed-team batches are handled correctly).
+  interface Resolved {
+    identifier: string;
+    issueId: string;
+    currentStateName?: string;
+    stateId: string;
+  }
+  const resolved: Resolved[] = [];
+
   for (const identifier of options.issues) {
-    process.stdout.write(`  ${identifier}: `);
+    const teamKey = identifier.split('-')[0];
+    const issueNumber = parseInt(identifier.split('-')[1] ?? '0', 10);
+
+    if (!teamKey || !issueNumber) {
+      console.log(`  ${identifier}: ❌ Invalid identifier`);
+      results.push({ identifier, success: false, error: 'Invalid identifier' });
+      continue;
+    }
+
+    const targetState = await resolveTargetState(teamKey);
+    if (!targetState) {
+      results.push({ identifier, success: false, error: `State "${options.state}" not found` });
+      continue;
+    }
 
     try {
-      // Fetch the issue by identifier
-      const issueNumber = parseInt(identifier.split('-')[1] ?? '0', 10);
       const issuesResult = await client.issues({
         filter: {
           team: { key: { eq: teamKey } },
@@ -142,35 +172,76 @@ async function main() {
 
       const issue = issuesResult.nodes[0];
       if (!issue) {
-        console.log('❌ Not found');
+        console.log(`  ${identifier}: ❌ Not found`);
         results.push({ identifier, success: false, error: 'Not found' });
         continue;
       }
 
       if (options.dryRun) {
         const currentState = await issue.state;
-        console.log(`Would update from "${currentState?.name}" → "${targetState.name}"`);
+        console.log(
+          `  ${identifier}: Would update from "${currentState?.name}" → "${targetState.name}"`,
+        );
         results.push({ identifier, success: true });
         continue;
       }
 
-      // Update the issue state
-      await issue.update({ stateId: targetState.id });
-
-      // Add comment if provided
-      if (options.comment) {
-        await client.createComment({ issueId: issue.id, body: options.comment });
-      }
-
-      console.log(`✅ Updated to "${targetState.name}"${options.comment ? ' + comment' : ''}`);
-      results.push({ identifier, success: true });
-
-      // Small delay to avoid rate limiting
-      await new Promise((resolve) => setTimeout(resolve, 150));
+      resolved.push({
+        identifier,
+        issueId: issue.id,
+        stateId: targetState.id,
+      });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      console.log(`❌ ${errorMessage}`);
-      results.push({ identifier, success: false, error: errorMessage });
+      const message = formatLinearError(error);
+      console.log(`  ${identifier}: ❌ ${message}`);
+      results.push({ identifier, success: false, error: message });
+    }
+  }
+
+  // Step 2: Apply state updates in batches grouped by target stateId (one
+  // updateIssueBatch call per state instead of a per-issue update loop).
+  if (!options.dryRun && resolved.length > 0) {
+    const byStateId = new Map<string, Resolved[]>();
+    for (const r of resolved) {
+      const group = byStateId.get(r.stateId);
+      if (group) {
+        group.push(r);
+      } else {
+        byStateId.set(r.stateId, [r]);
+      }
+    }
+
+    for (const [stateId, group] of byStateId) {
+      try {
+        await client.updateIssueBatch(
+          group.map((r) => r.issueId),
+          { stateId },
+        );
+        for (const r of group) {
+          console.log(`  ${r.identifier}: ✅ Updated to "${options.state}"`);
+          results.push({ identifier: r.identifier, success: true });
+        }
+      } catch (error) {
+        const message = formatLinearError(error);
+        for (const r of group) {
+          console.log(`  ${r.identifier}: ❌ ${message}`);
+          results.push({ identifier: r.identifier, success: false, error: message });
+        }
+      }
+    }
+
+    // Step 3: Add comments per-issue if requested (no batch API for comments).
+    if (options.comment) {
+      const succeeded = new Set(results.filter((r) => r.success).map((r) => r.identifier));
+      for (const r of resolved) {
+        if (!succeeded.has(r.identifier)) continue;
+        try {
+          await client.createComment({ issueId: r.issueId, body: options.comment });
+          console.log(`  ${r.identifier}: 💬 comment added`);
+        } catch (error) {
+          console.log(`  ${r.identifier}: ⚠️  comment failed: ${formatLinearError(error)}`);
+        }
+      }
     }
   }
 
@@ -191,6 +262,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error('Error:', error.message);
+  console.error('Error:', formatLinearError(error));
   process.exit(1);
 });

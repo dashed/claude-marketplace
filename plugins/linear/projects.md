@@ -100,7 +100,7 @@ linear projects list | grep -i "phase\|<feature-name>"
 
 # Check for existing issues (MCP may timeout - use CLI as fallback)
 linear issues list --filter "title:Phase N"
-# Or: mcp__linear__linear_search_issues with query="Phase N feature"
+# Or: the list_issues MCP tool (e.g. mcp__linear-server__list_issues) with query="Phase N feature"
 ```
 
 **Checklist before ANY create operation:**
@@ -172,16 +172,23 @@ grep -r "test.describe.skip" tests/e2e/journeys/admin/
 
 **CORRECTED scope**: "Un-skip E2E tests and fix any assertion failures" (not "implement API")
 
-**Update Linear immediately when scope changes:**
-```bash
-node scripts/linear-helpers.mjs add-comment 123 "## Scope Update
+**Update Linear immediately when scope changes** — use the MCP `save_comment` tool interactively, or a short SDK call to script it:
+```typescript
+import { LinearClient } from '@linear/sdk'
+const client = new LinearClient({ apiKey: process.env.LINEAR_API_KEY })
+
+const issues = await client.issues({ filter: { number: { eq: 123 } } })
+await client.createComment({
+  issueId: issues.nodes[0].id,
+  body: `## Scope Update
 
 **Discovery:** API endpoints are ALREADY COMPLETE!
 
 ### Actual Remaining Work
 1. Un-skip journey tests
 2. Fix any test assertion failures
-3. Verify tests pass"
+3. Verify tests pass`,
+})
 ```
 
 **NEVER assume issue descriptions are accurate. Verify codebase state first.**

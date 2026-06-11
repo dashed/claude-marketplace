@@ -149,35 +149,27 @@ export async function findInitiativeByName(
   client: LinearClient,
   name: string,
 ): Promise<InitiativeInfo | null> {
-  const query = `
-    query FindInitiative($filter: InitiativeFilter!) {
-      initiatives(filter: $filter, first: 10) {
-        nodes {
-          id
-          name
-          description
-        }
-      }
-    }
-  `;
-
-  const result = await client.client.rawRequest(query, {
+  const initiatives = await client.initiatives({
     filter: {
       name: { containsIgnoreCase: name },
     },
+    first: 10,
   });
 
-  const data = result.data as { initiatives: { nodes: InitiativeInfo[] } };
-  const initiatives = data.initiatives.nodes;
-
-  if (initiatives.length === 0) {
+  if (initiatives.nodes.length === 0) {
     return null;
   }
 
   // Prefer exact match (case-insensitive)
-  const exactMatch = initiatives.find((i) => i.name.toLowerCase() === name.toLowerCase());
+  const match =
+    initiatives.nodes.find((i) => i.name.toLowerCase() === name.toLowerCase()) ||
+    initiatives.nodes[0];
 
-  return exactMatch || initiatives[0];
+  return {
+    id: match.id,
+    name: match.name,
+    description: match.description ?? undefined,
+  };
 }
 
 /**
@@ -188,31 +180,19 @@ export async function findInitiativeByName(
  * @returns TeamInfo or null if not found
  */
 export async function findTeamByKey(client: LinearClient, key: string): Promise<TeamInfo | null> {
-  const query = `
-    query TeamByKey($filter: TeamFilter!) {
-      teams(filter: $filter, first: 1) {
-        nodes {
-          id
-          key
-          name
-        }
-      }
-    }
-  `;
-
-  const result = await client.client.rawRequest(query, {
+  const teams = await client.teams({
     filter: {
       key: { eq: key.toUpperCase() },
     },
+    first: 1,
   });
 
-  const data = result.data as {
-    teams: {
-      nodes: TeamInfo[];
-    };
-  };
+  const team = teams.nodes[0];
+  if (!team) {
+    return null;
+  }
 
-  return data.teams.nodes[0] || null;
+  return { id: team.id, key: team.key, name: team.name };
 }
 
 /**
@@ -226,38 +206,20 @@ export async function findTeamByKey(client: LinearClient, key: string): Promise<
  * @returns TeamInfo or null if not found
  */
 export async function findTeamByName(client: LinearClient, name: string): Promise<TeamInfo | null> {
-  const query = `
-    query TeamByName($filter: TeamFilter!) {
-      teams(filter: $filter, first: 10) {
-        nodes {
-          id
-          key
-          name
-        }
-      }
-    }
-  `;
-
-  const result = await client.client.rawRequest(query, {
+  const teams = await client.teams({
     filter: {
       name: { containsIgnoreCase: name },
     },
+    first: 10,
   });
 
-  const data = result.data as {
-    teams: {
-      nodes: TeamInfo[];
-    };
-  };
-
-  const teams = data.teams.nodes;
-
-  if (teams.length === 0) {
+  if (teams.nodes.length === 0) {
     return null;
   }
 
   // Prefer exact match (case-insensitive)
-  const exactMatch = teams.find((t) => t.name.toLowerCase() === name.toLowerCase());
+  const match =
+    teams.nodes.find((t) => t.name.toLowerCase() === name.toLowerCase()) || teams.nodes[0];
 
-  return exactMatch || teams[0];
+  return { id: match.id, key: match.key, name: match.name };
 }

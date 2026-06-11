@@ -17,9 +17,10 @@
  *   LINEAR_API_KEY=lin_api_xxx npx tsx phase-complete.ts "Phase 1" --dry-run
  */
 
-import { LinearClient } from '@linear/sdk';
+import { LinearClient, ProjectStatusType, ProjectUpdateHealthType } from '@linear/sdk';
 import { EXIT_CODES } from './lib/exit-codes.js';
 import { getLinearClient, findProjectByName as findProjectByNameBase } from './lib/linear-utils.js';
+import { formatLinearError, findProjectStatusByType } from './lib/index.js';
 
 interface ProjectStatus {
   id: string;
@@ -121,109 +122,61 @@ async function findProjectByName(
   return fetchProjectDetails(client, projectInfo.id);
 }
 
-async function fetchProjectDetailsOptimized(
-  client: LinearClient,
-  projectId: string,
-): Promise<Project> {
-  // Single GraphQL query to fetch project + status + issues with states
-  const result = await client.client.rawRequest<
-    {
-      project: {
-        id: string;
-        name: string;
-        slugId: string;
-        status: { id: string; name: string; type: string } | null;
-        issues: {
-          nodes: Array<{
-            identifier: string;
-            title: string;
-            state: { name: string; type: string } | null;
-          }>;
-        };
-      };
-    },
-    { projectId: string }
-  >(
-    `
-    query GetProjectDetails($projectId: String!) {
-      project(id: $projectId) {
-        id
-        name
-        slugId
-        status {
-          id
-          name
-          type
-        }
-        issues {
-          nodes {
-            identifier
-            title
-            state {
-              name
-              type
-            }
-          }
-        }
-      }
-    }
-  `,
-    { projectId },
-  );
+async function fetchProjectDetails(client: LinearClient, projectId: string): Promise<Project> {
+  const project = await client.project(projectId);
 
-  const project = result.data?.project;
-  if (!project) {
-    throw new Error(`Project not found: ${projectId}`);
+  // Resolve the project's current status (lazy relation).
+  const status = await project.status;
+
+  // Paginate over every issue so projects with more than one page (>50 issues)
+  // are fully counted.
+  const issueNodes = await client.paginate((variables) => project.issues(variables), {
+    first: 100,
+  });
+
+  // Issue.stateId is a synchronous getter (no round-trip), so the distinct
+  // states resolve in one workflowStates query instead of one lazy
+  // `issue.state` fetch per issue — an unbounded parallel fan-out that could
+  // hit rate limits on large projects.
+  const stateIds = [
+    ...new Set(issueNodes.map((issue) => issue.stateId).filter((id): id is string => Boolean(id))),
+  ];
+  const stateById = new Map<string, IssueState>();
+  if (stateIds.length > 0) {
+    const states = await client.workflowStates({
+      first: 250,
+      filter: { id: { in: stateIds } },
+    });
+    for (const state of states.nodes) {
+      stateById.set(state.id, { name: state.name, type: state.type });
+    }
   }
+
+  const issues: Issue[] = issueNodes.map((issue) => ({
+    identifier: issue.identifier,
+    title: issue.title,
+    state: (issue.stateId ? stateById.get(issue.stateId) : undefined) ?? {
+      name: 'Unknown',
+      type: 'unknown',
+    },
+  }));
 
   return {
     id: project.id,
     name: project.name,
     slugId: project.slugId,
-    status: project.status
-      ? {
-          id: project.status.id,
-          name: project.status.name,
-          type: project.status.type,
-        }
-      : null,
-    issues: {
-      nodes: project.issues.nodes.map((issue) => ({
-        identifier: issue.identifier,
-        title: issue.title,
-        state: issue.state
-          ? { name: issue.state.name, type: issue.state.type }
-          : { name: 'Unknown', type: 'unknown' },
-      })),
-    },
+    status: status ? { id: status.id, name: status.name, type: status.type } : null,
+    issues: { nodes: issues },
   };
 }
 
-async function fetchProjectDetails(client: LinearClient, projectId: string): Promise<Project> {
-  return fetchProjectDetailsOptimized(client, projectId);
-}
-
 async function getCompletedStatus(client: LinearClient): Promise<ProjectStatus | null> {
-  // Fetch all project statuses and find "Completed"
-  const result = await client.client.rawRequest<
-    {
-      projectStatuses: { nodes: ProjectStatus[] };
-    },
-    Record<string, never>
-  >(`
-    query {
-      projectStatuses {
-        nodes {
-          id
-          name
-          type
-        }
-      }
-    }
-  `);
-
-  const statuses = result.data?.projectStatuses?.nodes || [];
-  return statuses.find((s) => s.type === 'completed') || null;
+  // Fetch all project statuses and find the one of category type "completed".
+  const status = await findProjectStatusByType(client, ProjectStatusType.Completed);
+  if (!status) {
+    return null;
+  }
+  return { id: status.id, name: status.name, type: status.type };
 }
 
 async function updateProjectStatus(
@@ -231,27 +184,8 @@ async function updateProjectStatus(
   projectId: string,
   statusId: string,
 ): Promise<boolean> {
-  const result = await client.client.rawRequest<
-    {
-      projectUpdate: { success: boolean };
-    },
-    { id: string; statusId: string }
-  >(
-    `
-    mutation UpdateProjectStatus($id: String!, $statusId: String!) {
-      projectUpdate(id: $id, input: { statusId: $statusId }) {
-        success
-        project {
-          name
-          status { name }
-        }
-      }
-    }
-  `,
-    { id: projectId, statusId },
-  );
-
-  return result.data?.projectUpdate?.success || false;
+  const payload = await client.updateProject(projectId, { statusId });
+  return payload.success;
 }
 
 async function createProjectUpdate(
@@ -259,54 +193,19 @@ async function createProjectUpdate(
   projectId: string,
   body: string,
 ): Promise<string | null> {
-  const result = await client.client.rawRequest<
-    {
-      projectUpdateCreate: {
-        success: boolean;
-        projectUpdate: { id: string; url: string };
-      };
-    },
-    { projectId: string; body: string }
-  >(
-    `
-    mutation CreateProjectUpdate($projectId: String!, $body: String!) {
-      projectUpdateCreate(input: {
-        projectId: $projectId,
-        body: $body,
-        health: onTrack
-      }) {
-        success
-        projectUpdate {
-          id
-          url
-        }
-      }
-    }
-  `,
-    { projectId, body },
-  );
+  const payload = await client.createProjectUpdate({
+    projectId,
+    body,
+    health: ProjectUpdateHealthType.OnTrack,
+  });
 
-  return result.data?.projectUpdateCreate?.projectUpdate?.url || null;
+  const update = await payload.projectUpdate;
+  return update?.url || null;
 }
 
 async function archiveProject(client: LinearClient, projectId: string): Promise<boolean> {
-  const result = await client.client.rawRequest<
-    {
-      projectArchive: { success: boolean };
-    },
-    { id: string }
-  >(
-    `
-    mutation ArchiveProject($id: String!) {
-      projectArchive(id: $id) {
-        success
-      }
-    }
-  `,
-    { id: projectId },
-  );
-
-  return result.data?.projectArchive?.success || false;
+  const payload = await client.archiveProject(projectId);
+  return payload.success;
 }
 
 function generateCompletionSummary(project: Project): string {
@@ -476,9 +375,6 @@ async function main(): Promise<void> {
 }
 
 main().catch((error) => {
-  console.error('Error:', error.message);
-  if (error.errors) {
-    console.error('GraphQL Errors:', JSON.stringify(error.errors, null, 2));
-  }
+  console.error('Error:', formatLinearError(error));
   process.exit(EXIT_CODES.API_ERROR);
 });

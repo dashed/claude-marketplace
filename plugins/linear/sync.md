@@ -1,6 +1,6 @@
 # Linear Sync Patterns
 
-Auto-synchronize code changes with Linear issues using parallel agents. Ensures Linear reflects implementation progress in real-time.
+Synchronize code changes with Linear issues. Keeps Linear reflecting implementation progress as work lands.
 
 ## When to Use
 
@@ -10,34 +10,68 @@ Invoke sync when:
 - Closing out a phase with multiple issues
 - Before creating PRs (ensure Linear reflects current state)
 
+## The Sync Script
+
+`scripts/sync.ts` is an SDK script (`@linear/sdk`) for bulk issue **state** updates. Run it with `npx tsx` — `tsx` is the bundled runner (there is no `ts-node` dependency).
+
+```bash
+npx tsx scripts/sync.ts --issues ENG-432,ENG-433,ENG-434 --state Done
+```
+
+### Flags
+
+The script supports exactly these flags (see `scripts/sync.ts`):
+
+| Flag | Required | Description |
+|------|----------|-------------|
+| `--issues` | Yes | Comma-separated issue identifiers, e.g. `ENG-432,ENG-433` |
+| `--state` | Yes | Target workflow state name, e.g. `Done`, `"In Progress"`, `Backlog` |
+| `--comment` | No | Comment to add to each issue alongside the state change |
+| `--dry-run` | No | Preview changes without applying them |
+
+The team key is inferred from the first issue identifier (`ENG-432` → team `ENG`), and the state name is resolved to its UUID for that team automatically.
+
+> **Scope**: `sync.ts` updates issue *state* only. To change a **project's** status, use `scripts/linear-ops.ts project-status` (see below). To **verify** results, query the issues (see Verification).
+
 ## Sync Modes
 
-### Mode 1: CLI Bulk Sync
+### Mode 1: Bulk Issue Sync
 
 Update multiple issues to a target state:
 
 ```bash
-# Via SDK script
-npx ts-node scripts/sync.ts --issues ENG-432,ENG-433,ENG-434 --state Done
+# Update issues to Done
+npx tsx scripts/sync.ts --issues ENG-432,ENG-433,ENG-434,ENG-435 --state Done
 
-# Update project status
-npx ts-node scripts/sync.ts --project "Current Phase" --state completed
+# Output:
+#   ENG-432: ✅ Updated to "Done"
+#   ENG-433: ✅ Updated to "Done"
+#   ...
+#   📊 Summary: 4 succeeded, 0 failed
+
+# Preview first (no changes applied)
+npx tsx scripts/sync.ts --issues ENG-432,ENG-433 --state Done --dry-run
+
+# Update with a comment on each issue
+npx tsx scripts/sync.ts --issues ENG-432 --state Done --comment "Completed in PR #42"
 ```
+
+For a single issue or a quick interactive update, the MCP `save_issue` tool (with `state: "Done"`) is the simpler path. Use `sync.ts` when updating several issues at once.
 
 ### Mode 2: Agent-Spawned Sync
 
-Spawn a parallel agent via Task tool for autonomous sync:
+Spawn a parallel agent via the Task tool for autonomous sync:
 
 ```javascript
 Task({
   description: "Sync Current Phase to Linear",
   prompt: `
-    Update these Linear issues to Done status:
+    Update these Linear issues to Done:
     ENG-432, ENG-433, ENG-434, ENG-435, ENG-436, ENG-437
 
-    Then update project "Current Phase" status to "completed".
-
-    Use GraphQL mutations (MCP times out on bulk ops).
+    Use: npx tsx scripts/sync.ts --issues ENG-432,...,ENG-437 --state Done
+    Then mark project "Current Phase" completed:
+      npx tsx scripts/linear-ops.ts project-status "Current Phase" completed
     Report success/failure counts.
   `,
   subagent_type: "Linear-specialist"
@@ -66,101 +100,39 @@ Add to `.claude/settings.json`:
 
 The hook detects Linear issue references in changed files and outputs context for Claude to consider syncing.
 
-## Bulk Operations
+## Updating Project Status
 
-### Bulk Update Issues
-
-```bash
-# Update multiple issues to Done
-npx ts-node scripts/sync.ts --issues ENG-432,ENG-433,ENG-434,ENG-435 --state Done
-
-# Output:
-# ✅ ENG-432 → Done
-# ✅ ENG-433 → Done
-# ✅ ENG-434 → Done
-# ✅ ENG-435 → Done
-# Synced 4/4 issues to Done
-```
-
-### Update Project Status
+`sync.ts` does not touch projects. Update a project's status with `linear-ops.ts`:
 
 ```bash
-# By project name (searches for match)
-npx ts-node scripts/sync.ts --project "Current Phase" --state completed
+# By project name (partial match works)
+npx tsx scripts/linear-ops.ts project-status "Current Phase" completed
 
-# By project UUID (direct)
-npx ts-node scripts/sync.ts --project-id f41c0e8b-c59c-4aa1-8f50-d44c2820396f --state completed
+# Other states: backlog, planned, in-progress, paused, canceled
+npx tsx scripts/linear-ops.ts project-status "Current Phase" in-progress
 ```
 
-### Combined Sync
-
-```bash
-# Update issues AND project in one command
-npx ts-node scripts/sync.ts \
-  --issues ENG-432,ENG-433,ENG-434 \
-  --state Done \
-  --project "Current Phase" \
-  --project-state completed
-```
-
-## AgentDB Integration
-
-For swarm coordination, store sync state in AgentDB:
-
-```bash
-# Store pending sync context
-npx claude-flow memory store "linear:pending_sync" '["ENG-432","ENG-433"]' --namespace current-phase
-
-# Agent reads and processes
-npx claude-flow memory get "linear:pending_sync" --namespace current-phase
-
-# Store results for verification
-npx claude-flow memory store "linear:sync_results" '{"done":16,"failed":0}' --namespace current-phase
-```
-
-### Swarm Sync Pattern
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    COORDINATOR                               │
-│   Stores: current-phase:pending_sync = ["ENG-432", "ENG-433"...]  │
-└─────────────────────┬───────────────────────────────────────┘
-                      │
-        ┌─────────────┴─────────────┐
-        ▼                           ▼
-┌───────────────┐          ┌───────────────┐
-│  sync-agent-1 │          │  sync-agent-2 │
-│  ENG-432-437  │          │  ENG-441-448  │
-└───────┬───────┘          └───────┬───────┘
-        │                          │
-        └──────────┬───────────────┘
-                   ▼
-          ┌──────────────────┐
-          │     AgentDB      │
-          │ sync_results: {} │
-          └──────────────────┘
-```
+See [projects.md](projects.md) for the full project lifecycle.
 
 ## Parallel Agent Pattern
 
-Spawn multiple sync agents for independent issue batches:
+Spawn multiple sync agents for independent issue batches (single message, multiple Task calls):
 
 ```javascript
-// Parallel execution via Task tool (single message, multiple calls)
 [
   Task({
     description: "Sync ENG-432-437",
-    prompt: "Update ENG-432,433,434,435,436,437 to Done via GraphQL",
+    prompt: "Run: npx tsx scripts/sync.ts --issues ENG-432,ENG-433,ENG-434,ENG-435,ENG-436,ENG-437 --state Done",
     subagent_type: "Linear-specialist"
   }),
   Task({
     description: "Sync ENG-441-448",
-    prompt: "Update ENG-441,442,443,444,446,447,448 to Done via GraphQL",
+    prompt: "Run: npx tsx scripts/sync.ts --issues ENG-441,ENG-442,ENG-443,ENG-444,ENG-446,ENG-447,ENG-448 --state Done",
     subagent_type: "Linear-specialist"
   }),
   Task({
     description: "Update project status",
-    prompt: "Update project 'Current Phase' to completed state",
+    prompt: "Run: npx tsx scripts/linear-ops.ts project-status \"Current Phase\" completed",
     subagent_type: "Linear-specialist"
   })
 ]
@@ -168,40 +140,22 @@ Spawn multiple sync agents for independent issue batches:
 
 ## Verification
 
-Always verify sync completed successfully:
+`sync.ts` prints a per-issue result and a final `📊 Summary` line (and exits non-zero if any issue failed), so the run itself is the first check. To verify independently, query the issues:
 
 ```bash
-# Query updated issues
-npx ts-node scripts/sync.ts --verify ENG-432,ENG-433,ENG-434 --expected-state Done
-
-# Output:
-# ✅ ENG-432: Done
-# ✅ ENG-433: Done
-# ✅ ENG-434: Done
-# Verification passed: 3/3 in expected state
+npx tsx scripts/query.ts 'query { issues(filter: { number: { in: [432,433,434] } }) { nodes { identifier state { name } } } }'
 ```
+
+Or, for typed verification in a script, use the SDK (`client.issues({ filter: { ... } })` — see [sdk.md](sdk.md)).
 
 ## Error Handling
 
-Linear API can fail silently. The sync script handles:
+`sync.ts` is resilient by design:
 
-- **Rate limiting**: 100ms delay between mutations
-- **Timeout recovery**: Retries failed operations once
-- **Partial failure**: Reports individual issue failures
-- **State validation**: Verifies updates took effect
-
-```bash
-# With verbose output for debugging
-npx ts-node scripts/sync.ts --issues ENG-432,ENG-433 --state Done --verbose
-
-# Output includes:
-# [DEBUG] Getting workflow state ID for "Done"
-# [DEBUG] State ID: 12911ddd-92bf-41dd-866b-8071290cb250
-# [DEBUG] Getting UUIDs for 2 issues
-# [DEBUG] Updating ENG-432 (bcbb5f01-8a08-4f25-916c-c8d56f2eb671)
-# ✅ ENG-432 → Done
-# ...
-```
+- **Rate limiting**: 150ms delay between issue mutations
+- **Partial failure**: reports each issue individually and summarizes succeeded/failed counts
+- **Not found**: a missing identifier is reported and counted as failed, not fatal
+- **`--dry-run`**: shows the current → target state transition without writing
 
 ## Common Workflows
 
@@ -213,14 +167,12 @@ After completing a feature:
 # 1. Identify issues from git commits
 git log --oneline -10 | grep -oE 'ENG-[0-9]+'
 
-# 2. Bulk update to Done
-npx ts-node scripts/sync.ts --issues ENG-432,ENG-433,ENG-434 --state Done
+# 2. Preview, then bulk update to Done
+npx tsx scripts/sync.ts --issues ENG-432,ENG-433,ENG-434 --state Done --dry-run
+npx tsx scripts/sync.ts --issues ENG-432,ENG-433,ENG-434 --state Done
 
 # 3. Update project status
-npx ts-node scripts/sync.ts --project "Current Phase" --state completed
-
-# 4. Verify
-npx ts-node scripts/sync.ts --verify ENG-432,ENG-433,ENG-434 --expected-state Done
+npx tsx scripts/linear-ops.ts project-status "Current Phase" completed
 ```
 
 ### Phase Completion Sync
@@ -228,35 +180,29 @@ npx ts-node scripts/sync.ts --verify ENG-432,ENG-433,ENG-434 --expected-state Do
 When closing out a phase:
 
 ```bash
-# Get all phase issues
-npx ts-node scripts/sync.ts --list-project "Current Phase"
-
-# Review which need updating
-# ... identify issues still in Backlog/In Progress ...
+# Review issues still open in the phase
+npx tsx scripts/linear-ops.ts list-projects
+# (then inspect the project in Linear to see which issues remain)
 
 # Bulk update implemented issues
-npx ts-node scripts/sync.ts \
-  --issues ENG-432,ENG-433,...,ENG-472 \
-  --state Done
+npx tsx scripts/sync.ts --issues ENG-432,ENG-433,ENG-472 --state Done
 
-# Update project to completed
-npx ts-node scripts/sync.ts --project "Current Phase" --state completed
+# Mark the project completed
+npx tsx scripts/linear-ops.ts project-status "Current Phase" completed
 ```
 
 ### PR Preparation Sync
 
-Before creating a PR:
+Before creating a PR, move the referenced issues to your review state:
 
 ```bash
-# Ensure all referenced issues are updated
-npx ts-node scripts/sync.ts \
-  --from-branch feature/search-modal \
-  --state "In Review"
+npx tsx scripts/sync.ts --issues ENG-432,ENG-433 --state "In Review"
 ```
 
 ## Reference
 
 - **SKILL.md**: Main Linear skill documentation
-- **api.md**: GraphQL API reference
+- **api.md**: GraphQL API reference (raw GraphQL via the SDK's `rawRequest`)
 - **sdk.md**: SDK automation patterns
+- **projects.md**: Project & initiative management (including `project-status`)
 - **scripts/sync.ts**: Sync script implementation

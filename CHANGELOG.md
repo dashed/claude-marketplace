@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.32.0] - 2026-06-11
+
+### Changed
+- linear skill (v2.4.0): SDK-first overhaul authored by an agent team (2 researchers, 3 authors, 2 verifiers) and verified against the official `linear/linear` monorepo source plus live read-only API checks — `sdk.md` rewritten as a typecheck-verified `@linear/sdk` 86 reference (lazy-relation trap, filtering comparator cookbook, `paginate`/`fetchNext`, `LinearError` hierarchy + rate limits, `rawRequest` escape hatch, file upload, webhooks); tool routing recast as MCP-interactive / SDK-programmatic / raw-GraphQL-last-resort; all bundled scripts moved off raw GraphQL onto typed SDK calls (16 `rawRequest` + 5 hand-rolled `fetch` eliminated, `(client as any)` casts removed, `updateIssueBatch` bulk sync, modern `statusId` project updates, full pagination, typed error formatting via new `lib/errors.ts`); fixed the wrong-team `create-issue` bug, the nonexistent `linear-helpers.mjs` references, broken `sdk.md` examples, and `sync.md`'s fictional CLI. See `changelogs/linear.md` for the full breakdown
+
+### Fixed
+- linear skill (v2.3.2): replaced the deprecated MCP connection guidance (`npx mcp-remote https://mcp.linear.app/sse` + `LINEAR_API_KEY` env) with the current native HTTP transport (`claude mcp add --transport http linear-server https://mcp.linear.app/mcp`, OAuth) in `SKILL.md` and `troubleshooting.md` — the old `/sse` config now fails OAuth with a protected-resource mismatch, which is documented along with its fix; corrected dead tool references (`update_issue` → `save_issue`, community-server `linear_search_issues` → `list_issues`) verified against the live official server; removed the varlock step wiring `LINEAR_API_KEY` into the MCP env (the official server uses OAuth, not the key); added `mcp__linear-server` to `allowed-tools`; bumped `@linear/sdk` from `^68.1.0` to `^86.0.0` (latest in the official `linear/linear` monorepo — typecheck, all 66 unit tests, setup diagnostic, and a live read-only query pass on 86.0.0, and the only breaking schema removals in the 76→86 range are unused by the bundled scripts). Diverges the vendored skill from upstream `wrsmith108/linear-claude-skill`
+
 ## [0.31.0] - 2026-06-11
 
 ### Added
@@ -534,7 +542,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.31.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.32.0...HEAD
+[0.32.0]: https://github.com/dashed/claude-marketplace/compare/v0.31.0...v0.32.0
 [0.31.0]: https://github.com/dashed/claude-marketplace/compare/v0.30.0...v0.31.0
 [0.30.0]: https://github.com/dashed/claude-marketplace/compare/v0.29.1...v0.30.0
 [0.29.1]: https://github.com/dashed/claude-marketplace/compare/v0.29.0...v0.29.1

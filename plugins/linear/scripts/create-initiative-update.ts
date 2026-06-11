@@ -18,7 +18,7 @@
  *   npx tsx create-initiative-update.ts "Product Launch" "## At Risk\n\nBlocked on dependency" atRisk
  */
 
-import { LinearClient } from '@linear/sdk';
+import { LinearClient, InitiativeUpdateHealthType } from '@linear/sdk';
 import { EXIT_CODES } from './lib/exit-codes.js';
 import {
   HealthStatus,
@@ -27,6 +27,17 @@ import {
   getLinearClient,
   findInitiativeByName,
 } from './lib/linear-utils.js';
+import { formatLinearError } from './lib/errors.js';
+
+/**
+ * Map our user-facing health vocabulary to the SDK's InitiativeUpdateHealthType
+ * enum. The enum's values are identical strings, so this is a safe lookup.
+ */
+const HEALTH_TYPE_MAP: Record<HealthStatus, InitiativeUpdateHealthType> = {
+  onTrack: InitiativeUpdateHealthType.OnTrack,
+  atRisk: InitiativeUpdateHealthType.AtRisk,
+  offTrack: InitiativeUpdateHealthType.OffTrack,
+};
 
 function printUsage(): void {
   console.error('Usage:');
@@ -63,31 +74,23 @@ async function createInitiativeUpdate(
   body: string,
   health: HealthStatus,
 ): Promise<InitiativeUpdateResult> {
-  // Use rawRequest for initiativeUpdateCreate mutation
-  const mutation = `
-    mutation CreateInitiativeUpdate($initiativeId: String!, $body: String!, $health: InitiativeUpdateHealthType!) {
-      initiativeUpdateCreate(input: {
-        initiativeId: $initiativeId,
-        body: $body,
-        health: $health
-      }) {
-        success
-        initiativeUpdate {
-          id
-          url
-          createdAt
-        }
-      }
-    }
-  `;
-
-  const result = await client.client.rawRequest(mutation, {
+  const payload = await client.createInitiativeUpdate({
     initiativeId,
     body,
-    health,
+    health: HEALTH_TYPE_MAP[health],
   });
 
-  return (result.data as { initiativeUpdateCreate: InitiativeUpdateResult }).initiativeUpdateCreate;
+  const update = await payload.initiativeUpdate;
+  return {
+    success: payload.success,
+    initiativeUpdate: update
+      ? {
+          id: update.id,
+          url: update.url,
+          createdAt: update.createdAt.toISOString(),
+        }
+      : undefined,
+  };
 }
 
 async function main(): Promise<void> {
@@ -182,17 +185,7 @@ async function main(): Promise<void> {
     );
   } catch (error) {
     console.error('Error creating initiative update:');
-    if (error instanceof Error) {
-      console.error(error.message);
-
-      // Check for common GraphQL errors
-      if ('errors' in error && Array.isArray((error as Record<string, unknown>).errors)) {
-        console.error('\nGraphQL Errors:');
-        console.error(JSON.stringify((error as Record<string, unknown>).errors, null, 2));
-      }
-    } else {
-      console.error(error);
-    }
+    console.error(formatLinearError(error));
     process.exit(EXIT_CODES.API_ERROR);
   }
 }

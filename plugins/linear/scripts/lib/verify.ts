@@ -184,14 +184,17 @@ export async function verifyProjectsForInitiative(
   };
 
   for (const proj of projects.nodes) {
-    // Get issue count for project
-    const issues = await client.issues({
+    // Get issue count for project. Paginate fully so projects with more than
+    // one page of issues report an accurate count (the default page size of 50
+    // would otherwise cap—and mis-verify—larger projects).
+    const issues = await client.paginate((variables) => client.issues(variables), {
       filter: { project: { id: { eq: proj.id } } },
+      first: 100,
     });
 
     const verification = await verifyProjectCreation(
       proj.name,
-      issues.nodes.length,
+      issues.length,
       undefined,
       initiativeId,
     );

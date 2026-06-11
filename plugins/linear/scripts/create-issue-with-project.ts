@@ -26,6 +26,7 @@
 import { LinearClient } from '@linear/sdk';
 import { EXIT_CODES } from './lib/exit-codes.js';
 import { getLinearClient, findProjectByName, findTeamByKey } from './lib/linear-utils.js';
+import { formatLinearError } from './lib/errors.js';
 
 interface Args {
   team: string;
@@ -95,35 +96,18 @@ async function lookupStateByName(
   teamId: string,
   stateName: string,
 ): Promise<string | null> {
-  const query = `
-    query WorkflowStates($filter: WorkflowStateFilter!) {
-      workflowStates(filter: $filter, first: 1) {
-        nodes {
-          id
-          name
-        }
-      }
-    }
-  `;
-
-  const variables = {
-    filter: {
-      team: { id: { eq: teamId } },
-      name: { eq: stateName },
-    },
-  };
-
   try {
-    const result = await client.client.rawRequest(query, variables);
-    const data = result.data as {
-      workflowStates: {
-        nodes: Array<{ id: string; name: string }>;
-      };
-    };
+    const states = await client.workflowStates({
+      filter: {
+        team: { id: { eq: teamId } },
+        name: { eq: stateName },
+      },
+      first: 1,
+    });
 
-    return data.workflowStates.nodes[0]?.id || null;
+    return states.nodes[0]?.id || null;
   } catch (error) {
-    console.error('Error looking up state:', error);
+    console.error('Error looking up state:', formatLinearError(error));
     return null;
   }
 }
@@ -133,33 +117,16 @@ async function lookupLabelIds(
   teamId: string,
   labelNames: string[],
 ): Promise<string[]> {
-  const query = `
-    query Labels($filter: IssueLabelFilter!) {
-      issueLabels(filter: $filter, first: 50) {
-        nodes {
-          id
-          name
-        }
-      }
-    }
-  `;
-
-  const variables = {
-    filter: {
-      team: { id: { eq: teamId } },
-      name: { in: labelNames },
-    },
-  };
-
   try {
-    const result = await client.client.rawRequest(query, variables);
-    const data = result.data as {
-      issueLabels: {
-        nodes: Array<{ id: string; name: string }>;
-      };
-    };
+    const labels = await client.issueLabels({
+      filter: {
+        team: { id: { eq: teamId } },
+        name: { in: labelNames },
+      },
+      first: 50,
+    });
 
-    const foundLabels = data.issueLabels.nodes;
+    const foundLabels = labels.nodes;
     const foundNames = foundLabels.map((l) => l.name.toLowerCase());
     const missingLabels = labelNames.filter((name) => !foundNames.includes(name.toLowerCase()));
 
@@ -169,7 +136,7 @@ async function lookupLabelIds(
 
     return foundLabels.map((l) => l.id);
   } catch (error) {
-    console.error('Error looking up labels:', error);
+    console.error('Error looking up labels:', formatLinearError(error));
     return [];
   }
 }
@@ -241,66 +208,43 @@ async function main() {
   // Step 6: Create the issue with projectId
   console.log('Creating issue...');
 
-  const mutation = `
-    mutation CreateIssueWithProject($input: IssueCreateInput!) {
-      issueCreate(input: $input) {
-        success
-        issue {
-          id
-          identifier
-          title
-          url
-          project {
-            name
-          }
-        }
-      }
-    }
-  `;
-
-  const input: Record<string, unknown> = {
-    teamId: team.id,
-    title: args.title,
-    projectId: project.id,
-  };
-
-  if (args.description) input.description = args.description;
-  if (stateId) input.stateId = stateId;
-  if (assigneeId) input.assigneeId = assigneeId;
-  if (args.priority) input.priority = args.priority;
-  if (labelIds && labelIds.length > 0) input.labelIds = labelIds;
-
   try {
-    const result = await client.client.rawRequest(mutation, { input });
-    const data = result.data as {
-      issueCreate: {
-        success: boolean;
-        issue: {
-          id: string;
-          identifier: string;
-          title: string;
-          url: string;
-          project: { name: string } | null;
-        };
-      };
-    };
+    const payload = await client.createIssue({
+      teamId: team.id,
+      title: args.title,
+      projectId: project.id,
+      ...(args.description && { description: args.description }),
+      ...(stateId && { stateId }),
+      ...(assigneeId && { assigneeId }),
+      ...(args.priority && { priority: args.priority }),
+      ...(labelIds && labelIds.length > 0 && { labelIds }),
+    });
 
-    if (data.issueCreate.success) {
-      const issue = data.issueCreate.issue;
+    const issue = await payload.issue;
+    if (payload.success && issue) {
+      const output = {
+        id: issue.id,
+        identifier: issue.identifier,
+        title: issue.title,
+        url: issue.url,
+        // Use the matched project name; the project relation is unchanged here.
+        project: { name: project.name },
+      };
+
       console.log('');
       console.log('Issue created successfully!');
-      console.log(`  Identifier: ${issue.identifier}`);
-      console.log(`  Title: ${issue.title}`);
-      console.log(`  Project: ${issue.project?.name || 'None'}`);
-      console.log(`  URL: ${issue.url}`);
+      console.log(`  Identifier: ${output.identifier}`);
+      console.log(`  Title: ${output.title}`);
+      console.log(`  Project: ${output.project.name}`);
+      console.log(`  URL: ${output.url}`);
       console.log('');
-      console.log(JSON.stringify(issue, null, 2));
+      console.log(JSON.stringify(output, null, 2));
     } else {
       console.error('Error: Issue creation failed');
       process.exit(EXIT_CODES.API_ERROR);
     }
   } catch (error) {
-    console.error('Error creating issue:', error);
+    console.error('Error creating issue:', formatLinearError(error));
     process.exit(EXIT_CODES.API_ERROR);
   }
 }
