@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [2.4.1] - 2026-06-11
+
+### Fixed
+- `project-status` could land on a surprising status in workspaces that define several statuses of the same category type. Found by live end-to-end testing against a real workspace: it has two "To Do" statuses, one of them `started`-type at position 0, so `project-status X in-progress` resolved to "To Do" instead of "In Progress". `findProjectStatusByType` now accepts a preferred-name hint — a same-type status whose normalized name matches the user's input wins (e.g. `in-progress` → "In Progress"), falling back to lowest `position` as before
+
+### Verified (live end-to-end, with cleanup)
+- Exercised every refactored mutation path against a real workspace using clearly-marked, immediately-trashed test artifacts: `create-project`, `project-status` (statusId path, both before and after the fix), `create-issue` (team correctly resolved from the project, not the workspace-first team), `create-sub-issue`, `status`, `sync.ts` (`--dry-run` provably mutation-free; real run batched via one `updateIssueBatch` call + per-issue comments), `create-project-update` (typed payload), and `phase-complete --dry-run` (full pagination + the single-query state resolution). All test issues and the test project were trashed and verified gone
+
 ## [2.4.0] - 2026-06-11
 
 SDK-first overhaul, authored by an agent team and verified against the official `linear/linear` monorepo (`packages/sdk` source, schema, and SDK 86 typings) plus live read-only API checks. All gates pass: `tsc --noEmit`, eslint, prettier, 66/66 vitest, `setup.ts`, marketplace `validate-strict`.

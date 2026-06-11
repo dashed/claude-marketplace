@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.32.0"
+    "version": "0.32.1"
   },
   "plugins": [
     {
@@ -333,7 +333,7 @@
     },
     {
       "name": "linear",
-      "version": "2.4.0",
+      "version": "2.4.1",
       "source": "./plugins/linear",
       "description": "Managing Linear issues, projects, and teams. Use when working with Linear tasks, creating issues, updating status, querying projects, or managing team workflows.",
       "author": {

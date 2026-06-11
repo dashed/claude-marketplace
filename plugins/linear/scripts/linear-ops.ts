@@ -291,7 +291,9 @@ const commands: Record<string, (...args: string[]) => Promise<void>> = {
 
     // Resolve the workspace ProjectStatus for the requested category type and
     // update via the modern { statusId } path (Project.state is deprecated).
-    const targetStatus = await findProjectStatusByType(client, targetType);
+    // The user's input doubles as a name hint so e.g. "in-progress" picks a
+    // status named "In Progress" over another status of the same type.
+    const targetStatus = await findProjectStatusByType(client, targetType, normalizedInput);
     if (!targetStatus) {
       console.error(`[ERROR] No project status of type "${targetType}" found in this workspace`);
       process.exit(1);
