@@ -4,7 +4,7 @@ description: Compact the current conversation into a handoff document for anothe
 argument-hint: "What will the next session be used for? [--workspace]"
 ---
 
-Write a handoff document summarising the current conversation so a fresh agent can continue the work. Save to the temporary directory of the user's OS by default - not the current workspace. If the user passes `--workspace` (or asks for the document in the workspace), save it to the workspace root as `HANDOFF.md` instead; leave it untracked and do not commit it unless asked.
+Write a handoff document summarising the current conversation so a fresh agent can continue the work. Save to the temporary directory of the user's OS by default - not the current workspace. Name it `handoff-<project>-<YYYY-MM-DD-HHMM>.md` so multiple handoffs coexist and sort chronologically. If the user passes `--workspace` (or asks for the document in the workspace), save it to the workspace root instead (same filename); leave it untracked and do not commit it unless asked.
 
 Include a "suggested skills" section in the document, which suggests skills that the agent should invoke.
 
@@ -13,3 +13,5 @@ Do not duplicate content already captured in other artifacts (PRDs, plans, ADRs,
 Redact any sensitive information, such as API keys, passwords, or personally identifiable information.
 
 If the user passed arguments, treat them as a description of what the next session will focus on and tailor the doc accordingly.
+
+When finished, tell the user the full path of the document and give a ready-to-paste starter for the next session, e.g. `claude "Read /tmp/handoff-myrepo-2026-06-11-1430.md and continue"`.
