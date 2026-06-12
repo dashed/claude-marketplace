@@ -14,7 +14,8 @@ ENV/
 env/
 
 # uv
-uv.lock
+**/uv.lock
+!/uv.lock
 .uv/
 
 # Testing

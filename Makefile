@@ -10,6 +10,10 @@ YELLOW := \033[0;33m
 RED := \033[0;31m
 NC := \033[0m # No Color
 
+UV ?= uv
+UV_RUN ?= $(UV) run --no-config --locked
+UV_SYNC ?= $(UV) sync --no-config --locked
+
 help: ## Show this help message
 	@echo "$(CYAN)Claude Marketplace - Makefile Commands$(NC)"
 	@echo ""
@@ -28,7 +32,7 @@ help: ## Show this help message
 
 sync: ## Sync dependencies with uv (manual - uv run does this automatically)
 	@echo "$(CYAN)Syncing dependencies with uv...$(NC)"
-	uv sync
+	$(UV_SYNC)
 	@echo "$(GREEN)✓ Dependencies synced$(NC)"
 
 sync-codex-plugins: ## Generate Codex plugin manifests and marketplace from Claude metadata
@@ -39,40 +43,40 @@ check-codex-plugins: ## Check generated Codex plugin manifests and marketplace a
 
 validate: ## Run all validation checks
 	@echo "$(CYAN)Running all validation checks...$(NC)"
-	@uv run scripts/validators/validate_all.py
+	@$(UV_RUN) scripts/validators/validate_all.py
 
 validate-strict: ## Run all validation checks in strict mode (fail on warnings)
 	@echo "$(CYAN)Running all validation checks (strict mode)...$(NC)"
-	@uv run scripts/validators/validate_all.py --strict
+	@$(UV_RUN) scripts/validators/validate_all.py --strict
 
 validate-yaml: ## Validate YAML frontmatter in SKILL.md files
 	@echo "$(CYAN)Validating YAML frontmatter...$(NC)"
-	@uv run scripts/validators/validate_yaml.py
+	@$(UV_RUN) scripts/validators/validate_yaml.py
 
 validate-yaml-strict: ## Validate YAML frontmatter (strict mode)
 	@echo "$(CYAN)Validating YAML frontmatter (strict mode)...$(NC)"
-	@uv run scripts/validators/validate_yaml.py --strict
+	@$(UV_RUN) scripts/validators/validate_yaml.py --strict
 
 validate-json: ## Validate JSON manifests (plugin.json, marketplace.json)
 	@echo "$(CYAN)Validating JSON manifests...$(NC)"
-	@uv run scripts/validators/validate_json.py --all
+	@$(UV_RUN) scripts/validators/validate_json.py --all
 
 validate-json-strict: ## Validate JSON manifests (strict mode)
 	@echo "$(CYAN)Validating JSON manifests (strict mode)...$(NC)"
-	@uv run scripts/validators/validate_json.py --all --strict
+	@$(UV_RUN) scripts/validators/validate_json.py --all --strict
 
 validate-structure: ## Validate file structure and naming conventions
 	@echo "$(CYAN)Validating file structure...$(NC)"
-	@uv run scripts/validators/validate_structure.py
+	@$(UV_RUN) scripts/validators/validate_structure.py
 
 validate-structure-strict: ## Validate file structure (strict mode)
 	@echo "$(CYAN)Validating file structure (strict mode)...$(NC)"
-	@uv run scripts/validators/validate_structure.py --strict
+	@$(UV_RUN) scripts/validators/validate_structure.py --strict
 
 test: ## Run all tests (pytest + vitest)
 	@echo "$(CYAN)Running tests...$(NC)"
 	@if find tests -name 'test_*.py' -type f | grep -q .; then \
-		uv run pytest tests/ -v; \
+		$(UV_RUN) pytest tests/ -v; \
 	else \
 		echo "$(YELLOW)No Python tests found - skipping pytest$(NC)"; \
 		echo "$(YELLOW)Bash tests are located in tests/bash/ (run with make test-tmux)$(NC)"; \
@@ -82,7 +86,7 @@ test: ## Run all tests (pytest + vitest)
 test-cov: ## Run tests with coverage report
 	@echo "$(CYAN)Running tests with coverage...$(NC)"
 	@if find tests -name 'test_*.py' -type f | grep -q .; then \
-		uv run pytest tests/ -v --cov=scripts --cov-report=html --cov-report=term; \
+		$(UV_RUN) pytest tests/ -v --cov=scripts --cov-report=html --cov-report=term; \
 	else \
 		echo "$(YELLOW)No Python tests found - skipping pytest with coverage$(NC)"; \
 		echo "$(YELLOW)Bash tests are located in tests/bash/ (run with make test-tmux)$(NC)"; \
@@ -92,31 +96,31 @@ CODEX_SKILLS_FILES := scripts/install_codex_skills.py scripts/manage_codex_skill
 
 test-codex-skills: lint-codex-skills typecheck-codex-skills format-codex-skills-check check-codex-plugins ## Run Codex skill/plugin checks and unit tests
 	@echo "$(CYAN)Running Codex skills tests...$(NC)"
-	@uv run pytest tests/test_install_codex_skills.py tests/test_manage_codex_skills.py tests/test_sync_codex_plugins.py -v
+	@$(UV_RUN) pytest tests/test_install_codex_skills.py tests/test_manage_codex_skills.py tests/test_sync_codex_plugins.py -v
 
 test-codex-installer: test-codex-skills ## Alias for Codex skills checks and tests
 
 lint-codex-skills: ## Run Ruff on Codex skills scripts
 	@echo "$(CYAN)Linting Codex skills scripts with Ruff...$(NC)"
-	@uv run ruff check $(CODEX_SKILLS_FILES)
+	@$(UV_RUN) ruff check $(CODEX_SKILLS_FILES)
 
 lint-codex-installer: lint-codex-skills ## Alias for Codex skills Ruff checks
 
 typecheck-codex-skills: ## Run ty on Codex skills scripts
 	@echo "$(CYAN)Type checking Codex skills scripts with ty...$(NC)"
-	@uv run ty check $(CODEX_SKILLS_FILES)
+	@$(UV_RUN) ty check $(CODEX_SKILLS_FILES)
 
 typecheck-codex-installer: typecheck-codex-skills ## Alias for Codex skills ty checks
 
 format-codex-skills: ## Format Codex skills scripts with Ruff
 	@echo "$(CYAN)Formatting Codex skills scripts with Ruff...$(NC)"
-	@uv run ruff format $(CODEX_SKILLS_FILES)
+	@$(UV_RUN) ruff format $(CODEX_SKILLS_FILES)
 
 format-codex-installer: format-codex-skills ## Alias for Codex skills formatting
 
 format-codex-skills-check: ## Check Codex skills script formatting with Ruff
 	@echo "$(CYAN)Checking Codex skills script formatting with Ruff...$(NC)"
-	@uv run ruff format --check $(CODEX_SKILLS_FILES)
+	@$(UV_RUN) ruff format --check $(CODEX_SKILLS_FILES)
 
 format-codex-installer-check: format-codex-skills-check ## Alias for Codex skills format checks
 
@@ -235,11 +239,11 @@ lint: ## Run all linting checks (ruff + shellcheck + eslint)
 
 lint-python: ## Run Python linting checks (ruff)
 	@echo "$(CYAN)Running Python linting checks...$(NC)"
-	@uv run ruff check scripts/ tests/
+	@$(UV_RUN) ruff check scripts/ tests/
 
 lint-python-fix: ## Fix Python linting issues automatically
 	@echo "$(CYAN)Fixing Python linting issues...$(NC)"
-	@uv run ruff check --fix scripts/ tests/
+	@$(UV_RUN) ruff check --fix scripts/ tests/
 
 lint-shellcheck: ## Run shellcheck on all bash scripts (report only)
 	@echo "$(CYAN)Running shellcheck on bash scripts...$(NC)"
@@ -261,17 +265,17 @@ lint-fix: lint-python-fix ## Fix linting issues automatically (Python only)
 
 type-check: ## Run type checking (ty + tsc)
 	@echo "$(CYAN)Running type checks with ty...$(NC)"
-	@uv run ty check scripts/ tests/
+	@$(UV_RUN) ty check scripts/ tests/
 	@$(MAKE) typecheck-typescript
 
-format: ## Format code (black + prettier)
-	@echo "$(CYAN)Formatting code with black...$(NC)"
-	@uv run black scripts/ tests/
+format: ## Format code (Ruff + Prettier)
+	@echo "$(CYAN)Formatting Python code with Ruff...$(NC)"
+	@$(UV_RUN) ruff format scripts/ tests/
 	@$(MAKE) format-typescript
 
 format-check: ## Check code formatting without making changes
 	@echo "$(CYAN)Checking code formatting...$(NC)"
-	@uv run black --check scripts/ tests/
+	@$(UV_RUN) ruff format --check scripts/ tests/
 	@$(MAKE) format-check-typescript
 
 # Playwright Python scripts
@@ -279,16 +283,16 @@ PLAYWRIGHT_SCRIPTS := plugins/playwright/scripts
 
 format-playwright: ## Format playwright scripts with ruff
 	@echo "$(CYAN)Formatting playwright scripts with ruff...$(NC)"
-	@uv run ruff format $(PLAYWRIGHT_SCRIPTS)/
+	@$(UV_RUN) ruff format $(PLAYWRIGHT_SCRIPTS)/
 	@echo "$(GREEN)✓ Playwright scripts formatted$(NC)"
 
 format-playwright-check: ## Check playwright script formatting
 	@echo "$(CYAN)Checking playwright script formatting...$(NC)"
-	@uv run ruff format --check $(PLAYWRIGHT_SCRIPTS)/
+	@$(UV_RUN) ruff format --check $(PLAYWRIGHT_SCRIPTS)/
 
 lint-playwright: ## Type check playwright scripts with ty
 	@echo "$(CYAN)Type checking playwright scripts with ty...$(NC)"
-	@uv run ty check $(PLAYWRIGHT_SCRIPTS)/
+	@$(UV_RUN) ty check $(PLAYWRIGHT_SCRIPTS)/
 
 # Linear plugin TypeScript targets
 setup-linear: ## Install linear plugin dependencies
@@ -327,21 +331,21 @@ test-chrome-cdp: ## Run chrome-cdp plugin tests
 
 lint-chrome-cdp: ## Run ruff check on chrome-cdp plugin
 	@echo "$(CYAN)Linting chrome-cdp plugin...$(NC)"
-	@uv run ruff check $(CHROME_CDP_SRC)/ $(CHROME_CDP_TESTS)/
+	@$(UV_RUN) ruff check $(CHROME_CDP_SRC)/ $(CHROME_CDP_TESTS)/
 	@echo "$(GREEN)✓ Chrome CDP lint passed$(NC)"
 
 format-chrome-cdp: ## Format chrome-cdp plugin with ruff
 	@echo "$(CYAN)Formatting chrome-cdp plugin...$(NC)"
-	@uv run ruff format $(CHROME_CDP_SRC)/ $(CHROME_CDP_TESTS)/
+	@$(UV_RUN) ruff format $(CHROME_CDP_SRC)/ $(CHROME_CDP_TESTS)/
 	@echo "$(GREEN)✓ Chrome CDP formatted$(NC)"
 
 format-chrome-cdp-check: ## Check chrome-cdp plugin formatting
 	@echo "$(CYAN)Checking chrome-cdp formatting...$(NC)"
-	@uv run ruff format --check $(CHROME_CDP_SRC)/ $(CHROME_CDP_TESTS)/
+	@$(UV_RUN) ruff format --check $(CHROME_CDP_SRC)/ $(CHROME_CDP_TESTS)/
 
 typecheck-chrome-cdp: ## Run ty type check on chrome-cdp plugin
 	@echo "$(CYAN)Type checking chrome-cdp plugin...$(NC)"
-	@uv run ty check $(CHROME_CDP_SRC)/
+	@$(UV_RUN) ty check $(CHROME_CDP_SRC)/
 	@echo "$(GREEN)✓ Chrome CDP type check passed$(NC)"
 
 # React Best Practices plugin targets
@@ -366,21 +370,21 @@ test-react-bp: ## Run React Best Practices tests
 
 lint-react-bp: ## Run ruff check on React Best Practices scripts
 	@echo "$(CYAN)Linting React Best Practices scripts...$(NC)"
-	@uv run ruff check $(REACT_BP_SCRIPTS)/ $(REACT_BP_TESTS)/
+	@$(UV_RUN) ruff check $(REACT_BP_SCRIPTS)/ $(REACT_BP_TESTS)/
 	@echo "$(GREEN)✓ React Best Practices lint passed$(NC)"
 
 format-react-bp: ## Format React Best Practices scripts with ruff
 	@echo "$(CYAN)Formatting React Best Practices scripts...$(NC)"
-	@uv run ruff format $(REACT_BP_SCRIPTS)/ $(REACT_BP_TESTS)/
+	@$(UV_RUN) ruff format $(REACT_BP_SCRIPTS)/ $(REACT_BP_TESTS)/
 	@echo "$(GREEN)✓ React Best Practices formatted$(NC)"
 
 format-react-bp-check: ## Check React Best Practices script formatting
 	@echo "$(CYAN)Checking React Best Practices formatting...$(NC)"
-	@uv run ruff format --check $(REACT_BP_SCRIPTS)/ $(REACT_BP_TESTS)/
+	@$(UV_RUN) ruff format --check $(REACT_BP_SCRIPTS)/ $(REACT_BP_TESTS)/
 
 typecheck-react-bp: ## Run ty type check on React Best Practices scripts
 	@echo "$(CYAN)Type checking React Best Practices scripts...$(NC)"
-	@uv run ty check $(REACT_BP_SCRIPTS)/
+	@$(UV_RUN) ty check $(REACT_BP_SCRIPTS)/
 	@echo "$(GREEN)✓ React Best Practices type check passed$(NC)"
 
 SEQ_THINKING_DIR := plugins/sequential-thinking
@@ -450,7 +454,7 @@ status: ## Show project validation status
 init: ## Initialize development environment
 	@echo "$(CYAN)Initializing development environment...$(NC)"
 	@echo "$(YELLOW)1. Syncing dependencies with uv...$(NC)"
-	uv sync
+	$(UV_SYNC)
 	@echo "$(YELLOW)2. Setting up pre-commit hooks...$(NC)"
 	@if [ -f .git/hooks/pre-commit ]; then \
 		echo "  Pre-commit hook already exists"; \

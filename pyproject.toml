@@ -13,12 +13,6 @@ dependencies = [
     "pytest-xdist>=3.5.0",
 ]
 
-[project.optional-dependencies]
-dev = [
-    "black>=23.12.0",
-    "ruff>=0.1.8",
-]
-
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
@@ -33,10 +27,6 @@ python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = "-v --cov=scripts --cov-report=html --cov-report=term"
 
-[tool.black]
-line-length = 100
-target-version = ["py310"]
-
 [tool.ruff]
 line-length = 100
 target-version = "py310"
@@ -49,7 +39,8 @@ disallow_untyped_defs = true
 
 [dependency-groups]
 dev = [
-    "ty>=0.0.1a27",
+    "ruff>=0.15.16",
+    "ty>=0.0.48",
 ]
 
 [tool.ty]
