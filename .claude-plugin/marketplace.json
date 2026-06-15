@@ -995,6 +995,28 @@
       ],
       "strict": false,
       "skills": ["./skills"]
+    },
+    {
+      "name": "pytest",
+      "version": "1.0.0",
+      "source": "./plugins/pytest",
+      "description": "pytest — Python testing framework and idioms beyond unittest. Use when writing, running, or configuring pytest tests — plain `assert` (rewritten), DI `@pytest.fixture` (scopes/autouse/yield/conftest), `@pytest.mark.parametrize`, `skip`/`skipif`/`xfail` + markers, `raises`/`warns`/`approx`, fixtures (`tmp_path`/`monkeypatch`/`capsys`/`caplog`), the CLI (`-k`/`-m`/`-x`/`--lf`/`--pdb`), config (`pyproject.toml`/`pytest.ini`). Includes `(pytest N.M+)` annotations. Not unittest, tox, or coverage.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/pytest",
+      "license": "MIT",
+      "keywords": [
+        "pytest",
+        "testing",
+        "python",
+        "fixtures",
+        "parametrize",
+        "tdd",
+        "cli"
+      ],
+      "strict": false,
+      "skills": ["./skills"]
     }
   ]
 }

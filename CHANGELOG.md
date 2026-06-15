@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- pytest skill (v1.0.0): new skill for the **pytest testing framework** and the Python idioms that set it apart from `unittest` — plain `assert` (rewritten for rich introspection), dependency-injected `@pytest.fixture`, `@pytest.mark.parametrize`, `skip`/`skipif`/`xfail` + custom markers, `pytest.raises`/`warns`/`approx`, builtin fixtures (`tmp_path`/`monkeypatch`/`capsys`/`caplog`), the CLI (`-k`/`-m`/`-x`/`--lf`/`--pdb`/node ids), config (`pyproject.toml`/`pytest.ini`/`pytest.toml`, `addopts`, `testpaths`, `--import-mode`), and plugins/hooks (`conftest.py`, `pytest_*`, xdist/cov). `SKILL.md` (321 lines) + 9 references (fixtures, builtin-fixtures, parametrize, markers-skip-xfail, assertions, cli-usage, configuration, plugins-hooks, version-features). Includes inline `(pytest N.M+)` version annotations — bedrock (stable since pytest 6.x) left untagged, taggable surface from 7.0 — every pin verified against the pytest changelog, plus a `version-features.md` feature→version lookup. Authored against the pytest source tree at 9.1.0/9.2.0.dev0. Built by an opus agent team (TeamCreate) with per-domain authors + a dedicated version-tag auditor.
+
 ## [0.37.0] - 2026-06-11
 
 ### Added
