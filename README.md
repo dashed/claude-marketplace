@@ -92,6 +92,7 @@ make test-codex-skills
 | **ai-friendly-cli** | Build and refactor CLIs for AI agent compatibility. Use when making CLI tools machine-readable with structured JSON output, input hardening, schema introspection, dry-run safety, and MCP surfaces. | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/ai-friendly-cli) |
 | **skill-creator** | Create new skills, modify and improve existing skills, and measure skill performance. Use when creating, updating, evaluating, or optimizing skills. | [Anthropic](https://github.com/anthropics/skills/tree/main/skill-creator) |
 | **skill-reviewer** | Review and ensure skills maintain high quality standards. Use when creating new skills, updating existing skills, or auditing skill quality. Checks for progressive disclosure, mental model shift, appropriate scope, and documentation clarity. | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/skill-reviewer) |
+| **agent-skill-init** | Create a repo-local Agent Skill following the open [agentskills.io](https://agentskills.io) specification. Use when the user wants to create, scaffold, or initialize a new skill in the current repo, mentions a 'repo-local skill' or the agentskills.io spec, or needs a spec-compliant `SKILL.md` placed under `.agents/skills/` (or `.claude/skills/`). Scaffolds the directory, writes valid `name`/`description` frontmatter, and validates with `skills-ref`. | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/agent-skill-init) |
 | **git-absorb** | Automatically fold uncommitted changes into appropriate commits. Use for applying review feedback and maintaining atomic commit history. Tool: [git-absorb](https://github.com/tummychow/git-absorb) | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/git-absorb) |
 | **tmux** | Remote control tmux sessions for interactive CLIs (python, gdb, etc.) by sending keystrokes and scraping pane output. Use when debugging applications, running interactive REPLs (Python, gdb, ipdb, psql, mysql, node), or automating terminal workflows. Works with stock tmux on Linux/macOS. | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/tmux) |
 | **ultrathink** | Invoke deep sequential thinking for complex problem-solving. Use when tackling problems that require careful step-by-step reasoning, planning, hypothesis generation, or multi-step analysis. Trigger with "use ultrathink". | [dashed](https://github.com/dashed/claude-marketplace/tree/master/plugins/ultrathink) |
@@ -308,6 +309,6 @@ claude-marketplace/
 
 ## Version
 
-Current version: **0.38.0**
+Current version: **0.39.0**
 
 See [CHANGELOG.md](CHANGELOG.md) for version history.

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.39.0] - 2026-06-19
+
+### Added
+- agent-skill-init skill (v1.0.0): lightweight scaffolder for creating **repo-local Agent Skills** following the open [agentskills.io](https://agentskills.io) specification — distinct from skill-creator and skill-reviewer. Scaffolds the skill directory, writes a spec-compliant `SKILL.md` with valid `name`/`description` frontmatter under `.agents/skills/` (or `.claude/skills/`), and validates the result with `skills-ref`
+- agent-skill-init skill: vendored the official `skills-ref` validator verbatim (Apache-2.0, upstream commit `5d4c1fd`) under `plugins/agent-skill-init/skills/agent-skill-init/vendor/skills-ref/` so validation runs via `uv`/`uvx` with no external install; provenance and attribution in `vendor/VENDOR.md`
+
 ## [0.38.0] - 2026-06-15
 
 ### Added
@@ -587,7 +593,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.38.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.39.0...HEAD
+[0.39.0]: https://github.com/dashed/claude-marketplace/compare/v0.38.0...v0.39.0
 [0.38.0]: https://github.com/dashed/claude-marketplace/compare/v0.37.0...v0.38.0
 [0.37.0]: https://github.com/dashed/claude-marketplace/compare/v0.36.0...v0.37.0
 [0.36.0]: https://github.com/dashed/claude-marketplace/compare/v0.35.0...v0.36.0

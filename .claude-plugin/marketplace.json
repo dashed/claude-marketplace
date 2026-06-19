@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.38.0"
+    "version": "0.39.0"
   },
   "plugins": [
     {
@@ -75,6 +75,27 @@
         "audit",
         "documentation",
         "best-practices"
+      ],
+      "strict": false,
+      "skills": ["./skills"]
+    },
+    {
+      "name": "agent-skill-init",
+      "version": "1.0.0",
+      "source": "./plugins/agent-skill-init",
+      "description": "Create a repo-local Agent Skill following the open agentskills.io specification. Use when the user wants to create, scaffold, or initialize a new skill in the current repo, mentions a 'repo-local skill' or the agentskills.io spec, or needs a spec-compliant SKILL.md placed under .agents/skills/ (or .claude/skills/). Scaffolds the directory, writes valid name/description frontmatter, and validates with skills-ref.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/agent-skill-init",
+      "license": "MIT",
+      "keywords": [
+        "skills",
+        "agentskills",
+        "scaffold",
+        "spec",
+        "repo-local",
+        "skill-md"
       ],
       "strict": false,
       "skills": ["./skills"]

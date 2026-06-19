@@ -53,6 +53,18 @@
       "category": "Productivity"
     },
     {
+      "name": "agent-skill-init",
+      "source": {
+        "source": "local",
+        "path": "./plugins/agent-skill-init"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
       "name": "ultrathink",
       "source": {
         "source": "local",
@@ -585,6 +597,18 @@
       "source": {
         "source": "local",
         "path": "./plugins/handoff"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "pytest",
+      "source": {
+        "source": "local",
+        "path": "./plugins/pytest"
       },
       "policy": {
         "installation": "AVAILABLE",

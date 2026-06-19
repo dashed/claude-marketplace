@@ -1,0 +1,33 @@
+{
+  "name": "pytest",
+  "version": "1.0.0+codex.69cca59cd846",
+  "description": "pytest \u2014 Python testing framework and idioms beyond unittest. Use when writing, running, or configuring pytest tests \u2014 plain `assert` (rewritten), DI `@pytest.fixture` (scopes/autouse/yield/conftest), `@pytest.mark.parametrize`, `skip`/`skipif`/`xfail` + markers, `raises`/`warns`/`approx`, fixtures (`tmp_path`/`monkeypatch`/`capsys`/`caplog`), the CLI (`-k`/`-m`/`-x`/`--lf`/`--pdb`), config (`pyproject.toml`/`pytest.ini`). Includes `(pytest N.M+)` annotations. Not unittest, tox, or coverage.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "pytest",
+    "testing",
+    "python",
+    "fixtures",
+    "parametrize",
+    "tdd",
+    "cli"
+  ],
+  "interface": {
+    "displayName": "Pytest",
+    "shortDescription": "pytest \u2014 Python testing framework and idioms beyond unittest. Use when writing, running, or configuring pytest tests \u2014 plain `assert` (rewritten), DI `@pytest.fixture`...",
+    "longDescription": "pytest \u2014 Python testing framework and idioms beyond unittest. Use when writing, running, or configuring pytest tests \u2014 plain `assert` (rewritten), DI `@pytest.fixture` (scopes/autouse/yield/conftest), `@pytest.mark.parametrize`, `skip`/`skipif`/`xfail` + markers, `raises`/`warns`/`approx`, fixtures (`tmp_path`/`monkeypatch`/`capsys`/`caplog`), the CLI (`-k`/`-m`/`-x`/`--lf`/`--pdb`), config (`pyproject.toml`/`pytest.ini`). Includes `(pytest N.M+)` annotations. Not unittest, tox, or coverage.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $pytest for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/pytest",
+  "skills": "./skills/"
+}
