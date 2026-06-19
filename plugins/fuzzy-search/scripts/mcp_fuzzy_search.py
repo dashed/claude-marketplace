@@ -1319,7 +1319,10 @@ def get_pdf_outline(
         "  Example: 'function.*async' would find files containing async function definitions.\n\n"
         "IMPORTANT: Output lines are truncated to 2048 characters. If a line exceeds this limit,\n"
         "it will be truncated and '...' will be appended to indicate truncation.\n\n"
-        "Returns: { matches: string[] } or { error: string }"
+        "NOTE: In multiline mode the bytes read are capped (env MCP_FUZZY_MAX_BYTES,\n"
+        "MCP_FUZZY_MAX_FILE_BYTES). If a cap is hit the result gains 'truncated': true and a\n"
+        "'truncation_note' string; raise the caps (or set them to 0 to disable) to read more.\n\n"
+        "Returns: { matches: string[], truncated?: boolean, truncation_note?: string } or { error: string }"
     )
 )
 def fuzzy_search_files(
@@ -1639,7 +1642,11 @@ def fuzzy_search_files(
         '     fuzzy_filter="def test_ /test.py:" (matches src/test.py, lib/test.py)\n\n'
         "IMPORTANT: Content field is truncated to 2048 characters. If content exceeds this limit,\n"
         "it will be truncated and '...' will be appended to indicate truncation.\n\n"
-        "Returns: { matches: Array<{file: string, line: number, content: string}> } or { error: string }"
+        "NOTE: Large result sets are capped before ranking (env MCP_FUZZY_MAX_LINES,\n"
+        "MCP_FUZZY_MAX_BYTES). If a cap is hit the result gains 'truncated': true and a\n"
+        "'truncation_note' string and is ranked over the first N candidates only; narrow the\n"
+        "query or raise the caps (set to 0 to disable) to see more.\n\n"
+        "Returns: { matches: Array<{file: string, line: number, content: string}>, truncated?: boolean, truncation_note?: string } or { error: string }"
     )
 )
 def fuzzy_search_content(
@@ -2091,7 +2098,10 @@ def fuzzy_search_content(
         "    Note: Searching from root (/) requires confirm_root=True to prevent accidental slow searches.\n\n"
         "IMPORTANT: Both 'content' and 'match_text' fields are truncated to 2048 characters.\n"
         "If either field exceeds this limit, it will be truncated and '...' will be appended.\n\n"
-        "Returns: { matches: Array<{file, content, match_text, page?, page_index_0based?, page_label?}> }\n"
+        "NOTE: Large result sets are capped before ranking (env MCP_FUZZY_MAX_LINES,\n"
+        "MCP_FUZZY_MAX_BYTES). If a cap is hit the result gains 'truncated': true and a\n"
+        "'truncation_note' string; narrow the query or raise the caps (set to 0 to disable).\n\n"
+        "Returns: { matches: Array<{file, content, match_text, page?, page_index_0based?, page_label?}>, truncated?: boolean, truncation_note?: string }\n"
         "  - page: Physical page number (1-based) for PDF files\n"
         "  - page_index_0based: Zero-based page index for programmatic access (page - 1)\n"
         "  - page_label: Page label/alias as shown in PDF readers (e.g., 'v', 'ToC')"

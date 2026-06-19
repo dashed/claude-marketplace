@@ -35,7 +35,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Explicit truncation surfacing: when a cap trips, results gain additive
   `truncated: true` and `truncation_note` keys (and log a warning) instead of
   silently dropping data. The `{"matches": [...]}` shape and tool signatures are
-  unchanged; the new keys appear only when truncation occurs.
+  unchanged; the new keys appear only when truncation occurs. The three search
+  tools' descriptions document these keys and the cap env vars so callers can
+  interpret a truncated result.
 
 ### Changed
 - The `fuzzy_search_content` standard path now reads `rg --json` incrementally
