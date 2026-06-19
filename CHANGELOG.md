@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.40.0] - 2026-06-19
+
+### Added
+- statusline skill (v1.3.0): "Responsive Width-Aware Wrapping" section — detect the terminal width via the `COLUMNS`/`LINES` env vars (set by Claude Code v2.1.153+, with a `${COLUMNS:-80}` fallback) and wrap a long statusline onto multiple lines with a greedy segment packer that breaks at logical segment boundaries. Documents why `tput cols`/`stty size`/`/dev/tty` cannot work (Claude Code captures stdout, JSON arrives on stdin), the ANSI/OSC 8 measurement caveat, and that the stdin JSON carries no width field
+
 ## [0.39.0] - 2026-06-19
 
 ### Added
@@ -593,7 +598,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.39.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.40.0...HEAD
+[0.40.0]: https://github.com/dashed/claude-marketplace/compare/v0.39.0...v0.40.0
 [0.39.0]: https://github.com/dashed/claude-marketplace/compare/v0.38.0...v0.39.0
 [0.38.0]: https://github.com/dashed/claude-marketplace/compare/v0.37.0...v0.38.0
 [0.37.0]: https://github.com/dashed/claude-marketplace/compare/v0.36.0...v0.37.0

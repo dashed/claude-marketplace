@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.39.0"
+    "version": "0.40.0"
   },
   "plugins": [
     {
@@ -19,9 +19,16 @@
       },
       "repository": "https://github.com/anthropics/skills/tree/main/skill-creator",
       "license": "Apache-2.0",
-      "keywords": ["skills", "development", "creation", "tooling"],
+      "keywords": [
+        "skills",
+        "development",
+        "creation",
+        "tooling"
+      ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "git-absorb",
@@ -33,9 +40,17 @@
       },
       "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/git-absorb",
       "license": "MIT",
-      "keywords": ["git", "workflow", "commits", "rebase", "fixup"],
+      "keywords": [
+        "git",
+        "workflow",
+        "commits",
+        "rebase",
+        "fixup"
+      ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "tmux",
@@ -56,7 +71,9 @@
         "repl"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "skill-reviewer",
@@ -77,7 +94,9 @@
         "best-practices"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "agent-skill-init",
@@ -98,7 +117,9 @@
         "skill-md"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "ultrathink",
@@ -119,7 +140,9 @@
         "problem-solving"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "conventional-commits",
@@ -140,7 +163,9 @@
         "versioning"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "git-chain",
@@ -163,7 +188,9 @@
         "dependent"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "jj",
@@ -186,7 +213,9 @@
         "conflicts"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "fzf",
@@ -209,7 +238,9 @@
         "completion"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "playwright",
@@ -232,7 +263,9 @@
         "python"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "zellij",
@@ -256,7 +289,9 @@
         "sessions"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "design-principles",
@@ -279,7 +314,9 @@
         "saas"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "mermaid-cli",
@@ -304,7 +341,9 @@
         "mmdc"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "walkthrough-to-obsidian",
@@ -327,7 +366,9 @@
         "gaming"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "long-form-math",
@@ -350,7 +391,9 @@
         "writing"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "linear",
@@ -362,9 +405,16 @@
       },
       "repository": "https://github.com/wrsmith108/linear-claude-skill",
       "license": "MIT",
-      "keywords": ["linear", "project-management", "issues", "teams"],
+      "keywords": [
+        "linear",
+        "project-management",
+        "issues",
+        "teams"
+      ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "ai-friendly-cli",
@@ -376,9 +426,20 @@
       },
       "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/ai-friendly-cli",
       "license": "MIT",
-      "keywords": ["cli", "ai-agents", "llm", "machine-readable", "json-output", "input-validation", "mcp", "developer-experience"],
+      "keywords": [
+        "cli",
+        "ai-agents",
+        "llm",
+        "machine-readable",
+        "json-output",
+        "input-validation",
+        "mcp",
+        "developer-experience"
+      ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "chrome-cdp",
@@ -390,9 +451,17 @@
       },
       "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/chrome-cdp",
       "license": "MIT",
-      "keywords": ["chrome", "cdp", "browser", "devtools", "debugging"],
+      "keywords": [
+        "chrome",
+        "cdp",
+        "browser",
+        "devtools",
+        "debugging"
+      ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "react-best-practices",
@@ -404,9 +473,18 @@
       },
       "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/react-best-practices",
       "license": "MIT",
-      "keywords": ["react", "nextjs", "performance", "optimization", "vercel", "best-practices"],
+      "keywords": [
+        "react",
+        "nextjs",
+        "performance",
+        "optimization",
+        "vercel",
+        "best-practices"
+      ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "gogcli",
@@ -418,9 +496,21 @@
       },
       "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/gogcli",
       "license": "MIT",
-      "keywords": ["google", "gmail", "calendar", "drive", "sheets", "docs", "cli", "workspace", "automation"],
+      "keywords": [
+        "google",
+        "gmail",
+        "calendar",
+        "drive",
+        "sheets",
+        "docs",
+        "cli",
+        "workspace",
+        "automation"
+      ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "pup",
@@ -432,9 +522,22 @@
       },
       "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/pup",
       "license": "Apache-2.0",
-      "keywords": ["datadog", "cli", "monitoring", "observability", "logs", "metrics", "apm", "security", "infrastructure", "incidents"],
+      "keywords": [
+        "datadog",
+        "cli",
+        "monitoring",
+        "observability",
+        "logs",
+        "metrics",
+        "apm",
+        "security",
+        "infrastructure",
+        "incidents"
+      ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "style-extractor",
@@ -446,9 +549,20 @@
       },
       "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/style-extractor",
       "license": "MIT",
-      "keywords": ["writing", "style", "voice", "extraction", "style-guide", "rubric", "analysis", "authorship"],
+      "keywords": [
+        "writing",
+        "style",
+        "voice",
+        "extraction",
+        "style-guide",
+        "rubric",
+        "analysis",
+        "authorship"
+      ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "style-writer",
@@ -460,9 +574,19 @@
       },
       "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/style-writer",
       "license": "MIT",
-      "keywords": ["writing", "style", "voice", "application", "style-guide", "rubric", "evaluation"],
+      "keywords": [
+        "writing",
+        "style",
+        "voice",
+        "application",
+        "style-guide",
+        "rubric",
+        "evaluation"
+      ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "anki-flashcards",
@@ -474,13 +598,23 @@
       },
       "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/anki-flashcards",
       "license": "MIT",
-      "keywords": ["anki", "flashcards", "spaced-repetition", "ankiconnect", "study", "learning", "memorization"],
+      "keywords": [
+        "anki",
+        "flashcards",
+        "spaced-repetition",
+        "ankiconnect",
+        "study",
+        "learning",
+        "memorization"
+      ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "statusline",
-      "version": "1.2.0",
+      "version": "1.3.0",
       "source": "./plugins/statusline",
       "description": "Configure the Claude Code status line with VCS-aware scripts showing git branch, jj change ID, bookmarks, context usage, and costs. Use when setting up a statusline, customizing the status bar, or adding VCS info to the status line.",
       "author": {
@@ -488,9 +622,19 @@
       },
       "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/statusline",
       "license": "MIT",
-      "keywords": ["statusline", "status-bar", "git", "jj", "vcs", "prompt", "context-window"],
+      "keywords": [
+        "statusline",
+        "status-bar",
+        "git",
+        "jj",
+        "vcs",
+        "prompt",
+        "context-window"
+      ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "hledger",
@@ -502,9 +646,20 @@
       },
       "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/hledger",
       "license": "MIT",
-      "keywords": ["hledger", "accounting", "ledger", "plain-text", "double-entry", "finance", "budget", "csv-import"],
+      "keywords": [
+        "hledger",
+        "accounting",
+        "ledger",
+        "plain-text",
+        "double-entry",
+        "finance",
+        "budget",
+        "csv-import"
+      ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "git",
@@ -530,7 +685,9 @@
         "cli"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "sequential-thinking",
@@ -639,7 +796,9 @@
         "ripgrep-ecosystem"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "ripgrep",
@@ -661,7 +820,9 @@
         "cli"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "fuzzy-filter",
@@ -683,7 +844,9 @@
         "cli"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "k3s",
@@ -706,7 +869,9 @@
         "cli"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "teach",
@@ -729,7 +894,9 @@
         "review"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "ansible",
@@ -752,7 +919,9 @@
         "cli"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "obsidian-markdown",
@@ -774,7 +943,9 @@
         "pkm"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "obsidian-bases",
@@ -796,7 +967,9 @@
         "pkm"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "duckdb",
@@ -818,7 +991,9 @@
         "cli"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "jq",
@@ -840,13 +1015,15 @@
         "jqlang"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "psql",
       "version": "1.0.0",
       "source": "./plugins/psql",
-      "description": "psql \u2014 PostgreSQL's interactive terminal client and SQL script runner. Use when connecting to or inspecting a Postgres DB from a terminal, running SQL scripts or one-off queries in shells/CI/agents (`-c`/`-f`/`-qAtX`/`--csv`), using meta-commands (the `\\d` family, `\\copy`, `\\watch`, `\\gexec`, `\\if` scripting, `\\pset`/`\\x`, variables), `.psqlrc`, or fixing connection/auth issues. Includes `(pgNN+)` annotations. The psql client only \u2014 SQL syntax -> postgres-sql, server admin -> postgres-admin.",
+      "description": "psql — PostgreSQL's interactive terminal client and SQL script runner. Use when connecting to or inspecting a Postgres DB from a terminal, running SQL scripts or one-off queries in shells/CI/agents (`-c`/`-f`/`-qAtX`/`--csv`), using meta-commands (the `\\d` family, `\\copy`, `\\watch`, `\\gexec`, `\\if` scripting, `\\pset`/`\\x`, variables), `.psqlrc`, or fixing connection/auth issues. Includes `(pgNN+)` annotations. The psql client only — SQL syntax -> postgres-sql, server admin -> postgres-admin.",
       "author": {
         "name": "Alberto Leal"
       },
@@ -862,13 +1039,15 @@
         "client"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "postgres-sql",
       "version": "1.0.0",
       "source": "./plugins/postgres-sql",
-      "description": "The PostgreSQL SQL dialect & data types that set Postgres apart from generic SQL. Use when writing or debugging Postgres-specific SQL \u2014 upsert (`ON CONFLICT`), `RETURNING`, `MERGE`, CTEs, window frames, `GROUPING SETS`, `LATERAL`, generated/identity columns, partitioning, `jsonb`/jsonpath/SQL-JSON (`JSON_TABLE`), arrays, ranges, composite/enum/domain types, `uuidv7()`. Includes `(pgNN+)` annotations. Dialect & types \u2014 client -> psql, tuning -> postgres-performance, config -> postgres-admin.",
+      "description": "The PostgreSQL SQL dialect & data types that set Postgres apart from generic SQL. Use when writing or debugging Postgres-specific SQL — upsert (`ON CONFLICT`), `RETURNING`, `MERGE`, CTEs, window frames, `GROUPING SETS`, `LATERAL`, generated/identity columns, partitioning, `jsonb`/jsonpath/SQL-JSON (`JSON_TABLE`), arrays, ranges, composite/enum/domain types, `uuidv7()`. Includes `(pgNN+)` annotations. Dialect & types — client -> psql, tuning -> postgres-performance, config -> postgres-admin.",
       "author": {
         "name": "Alberto Leal"
       },
@@ -884,13 +1063,15 @@
         "partitioning"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "postgres-performance",
       "version": "1.0.0",
       "source": "./plugins/postgres-performance",
-      "description": "PostgreSQL query & performance tuning. Use when a query is slow, reading an `EXPLAIN [ANALYZE]` plan (scan/join nodes, estimate skew), choosing an index type/columns (btree/GIN/GiST/SP-GiST/BRIN/hash; partial/expression/covering), fixing planner estimates with statistics, diagnosing MVCC bloat/VACUUM/autovacuum lag, or tuning planner GUCs (`random_page_cost`, `work_mem`). Includes `(pgNN+)` annotations. Tuning only \u2014 client -> psql, SQL -> postgres-sql, config -> postgres-admin.",
+      "description": "PostgreSQL query & performance tuning. Use when a query is slow, reading an `EXPLAIN [ANALYZE]` plan (scan/join nodes, estimate skew), choosing an index type/columns (btree/GIN/GiST/SP-GiST/BRIN/hash; partial/expression/covering), fixing planner estimates with statistics, diagnosing MVCC bloat/VACUUM/autovacuum lag, or tuning planner GUCs (`random_page_cost`, `work_mem`). Includes `(pgNN+)` annotations. Tuning only — client -> psql, SQL -> postgres-sql, config -> postgres-admin.",
       "author": {
         "name": "Alberto Leal"
       },
@@ -906,13 +1087,15 @@
         "vacuum"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "postgres-admin",
       "version": "1.0.0",
       "source": "./plugins/postgres-admin",
-      "description": "PostgreSQL server administration & operations. Use when configuring a server (`postgresql.conf`, `ALTER SYSTEM`, GUCs), managing roles/privileges (`GRANT`/`REVOKE`), authentication (`pg_hba.conf`, scram-sha-256), backup/restore (`pg_dump`, `pg_basebackup`, incremental, PITR), replication (streaming, logical, slots, failover), `pg_upgrade`, or monitoring (`pg_stat_activity`/`pg_stat_io`). Includes `(pgNN+)` annotations. Server ops \u2014 client psql, SQL postgres-sql, tuning postgres-performance.",
+      "description": "PostgreSQL server administration & operations. Use when configuring a server (`postgresql.conf`, `ALTER SYSTEM`, GUCs), managing roles/privileges (`GRANT`/`REVOKE`), authentication (`pg_hba.conf`, scram-sha-256), backup/restore (`pg_dump`, `pg_basebackup`, incremental, PITR), replication (streaming, logical, slots, failover), `pg_upgrade`, or monitoring (`pg_stat_activity`/`pg_stat_io`). Includes `(pgNN+)` annotations. Server ops — client psql, SQL postgres-sql, tuning postgres-performance.",
       "author": {
         "name": "Alberto Leal"
       },
@@ -928,13 +1111,15 @@
         "monitoring"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "postgres-extensions",
       "version": "1.0.0",
       "source": "./plugins/postgres-extensions",
-      "description": "PostgreSQL extension management and the bundled `contrib` catalog. Use when running `CREATE/ALTER/DROP EXTENSION`, listing extensions (`\\dx`), or choosing which contrib module enables a feature \u2014 FDWs (`postgres_fdw`, `dblink`), trigram search (`pg_trgm`), crypto/UUIDs (`pgcrypto`), types (`hstore`/`ltree`/`citext`), query stats (`pg_stat_statements`, `auto_explain`), forensics (`pageinspect`, `amcheck`). Covers trusted extensions & `shared_preload_libraries`. Includes `(pgNN+)` annotations.",
+      "description": "PostgreSQL extension management and the bundled `contrib` catalog. Use when running `CREATE/ALTER/DROP EXTENSION`, listing extensions (`\\dx`), or choosing which contrib module enables a feature — FDWs (`postgres_fdw`, `dblink`), trigram search (`pg_trgm`), crypto/UUIDs (`pgcrypto`), types (`hstore`/`ltree`/`citext`), query stats (`pg_stat_statements`, `auto_explain`), forensics (`pageinspect`, `amcheck`). Covers trusted extensions & `shared_preload_libraries`. Includes `(pgNN+)` annotations.",
       "author": {
         "name": "Alberto Leal"
       },
@@ -950,7 +1135,9 @@
         "pg_stat_statements"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "kubernetes",
@@ -972,7 +1159,9 @@
         "cli"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "uv",
@@ -994,7 +1183,9 @@
         "cli"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "handoff",
@@ -1015,7 +1206,9 @@
         "agents"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     },
     {
       "name": "pytest",
@@ -1037,7 +1230,9 @@
         "cli"
       ],
       "strict": false,
-      "skills": ["./skills"]
+      "skills": [
+        "./skills"
+      ]
     }
   ]
 }

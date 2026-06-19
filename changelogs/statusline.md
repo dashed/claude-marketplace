@@ -4,6 +4,14 @@ All notable changes to the statusline skill in this marketplace will be document
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.3.0] - 2026-06-19
+
+### Added
+- "Responsive Width-Aware Wrapping" section: detect the terminal width via the `COLUMNS`/`LINES` env vars (set by Claude Code v2.1.153+, with a `${COLUMNS:-80}` fallback) and wrap a long statusline onto multiple lines with a greedy segment packer that breaks at logical segment boundaries
+- Documents what does NOT work for width detection and why — `tput cols`, `stty size`, language-level detection, and `/dev/tty` are non-functional because Claude Code captures stdout (no TTY) and pipes the JSON in on stdin
+- Caveats: ANSI/OSC 8 escapes inflate `${#seg}` (measure a plain-text shadow), oversized single segments need truncation, and `${#var}` counts code points not display columns
+- Note in "Available JSON Fields" that there is no `columns`/`width`/`lines` field in the stdin JSON, pointing readers to the `COLUMNS`/`LINES` env vars
+
 ## [1.2.0] - 2026-06-11
 
 ### Added

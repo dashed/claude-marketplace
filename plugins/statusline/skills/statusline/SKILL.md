@@ -76,6 +76,8 @@ The script receives JSON on stdin with these fields:
 
 Fields marked may be absent or null - use `jq` fallbacks like `// 0` or `// empty`.
 
+**No terminal width in the JSON.** There is no `columns`/`width`/`lines` field here. To lay out responsively (and wrap long lines), read the `COLUMNS`/`LINES` environment variables instead — see [Responsive Width-Aware Wrapping](#responsive-width-aware-wrapping).
+
 ## Reference Script (Git + jj — Dual VCS)
 
 Full-featured script showing both jj and git status independently (both appear for colocated repos):
@@ -268,6 +270,53 @@ printf -v bar '%*s' "$filled" ''
 printf -v empty '%*s' "$((bar_width - filled))" ''
 echo "[${bar// /▓}${empty// /░}] ${pct}%  \$${cost}"
 ```
+
+## Responsive Width-Aware Wrapping
+
+A long single-line statusline can overflow the terminal — Claude Code's docs warn that overflow "may get truncated or wrap awkwardly." You can detect the width and wrap cleanly yourself.
+
+**Width source — `COLUMNS`/`LINES` env vars only.** Claude Code sets `COLUMNS` and `LINES` to the current terminal dimensions before running the script (**requires Claude Code v2.1.153+**). Fall back to a default for older versions:
+
+```bash
+cols=${COLUMNS:-80}
+```
+
+**What does NOT work, and why:** Claude Code captures the script's stdout (it is not connected to the TTY) and pipes the JSON in on stdin, so there is no terminal for the script to query. `tput cols`, `stty size`, language-level width detection, and `/dev/tty` are all non-functional/undocumented — `COLUMNS` is the only supported mechanism.
+
+**Greedy segment packer.** Build the status as discrete logical segments, then pack them onto lines, breaking to a new line when the next segment would exceed the width budget:
+
+```bash
+cols=${COLUMNS:-80}          # set by Claude Code v2.1.153+; 80 = fallback
+budget=$((cols - 2))         # small margin; built-in spacing/padding width is undocumented
+sep=" | "; seplen=3
+
+# Each element = one logical, breakable unit (model, dir, "[git ...]", "[jj ...]", ...)
+segments=("$model_name" "$current_dir" "${vcs_segments[@]}")
+
+line=""; linelen=0; out=()
+for seg in "${segments[@]}"; do
+    [ -z "$seg" ] && continue
+    slen=${#seg}
+    if [ -z "$line" ]; then
+        line="$seg"; linelen=$slen
+    elif [ $((linelen + seplen + slen)) -le "$budget" ]; then
+        line+="${sep}${seg}"; linelen=$((linelen + seplen + slen))
+    else
+        out+=("$line"); line="$seg"; linelen=$slen   # wrap to next line
+    fi
+done
+[ -n "$line" ] && out+=("$line")
+printf '%s\n' "${out[@]}"      # each line = a separate status row
+```
+
+Wide terminal → one line; narrow → wraps cleanly at segment boundaries instead of overflowing.
+
+To integrate with the dual-VCS reference script above, push each `[jj …]` / `[git …]` / `[jj ⇄ git …]` block into a `vcs_segments` array instead of string-appending into `$vcs_info`.
+
+**Caveats:**
+- **ANSI/OSC 8 escapes inflate `${#seg}`** — it counts the escape bytes, so colored/hyperlinked segments wrap too early. Measure a plain-text shadow copy of each segment (strip escapes with `sed -E 's/\x1b\[[0-9;]*m//g'`) and pack on that length while emitting the colored version.
+- **A single segment wider than `budget`** (usually a long `current_dir`) can't break at a boundary. Truncate that one segment with a leading `…` (keep the tail) rather than letting it overflow.
+- **`${#var}` counts code points, not display columns** — fine for ASCII and the `▓░` bar glyphs (1 column each), but wide CJK/emoji may miscount. Acceptable as a statusline heuristic.
 
 ## Prerequisites
 
