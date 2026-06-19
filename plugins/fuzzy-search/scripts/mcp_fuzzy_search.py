@@ -132,13 +132,42 @@ FZF_EXECUTABLE = shutil.which("fzf")
 RGA_EXECUTABLE = shutil.which("rga")
 PANDOC_EXECUTABLE = shutil.which("pandoc")
 
+
+def _int_env(name: str, default: int) -> int:
+    """Read an integer environment variable, falling back to ``default`` on an
+    unset or non-integer value."""
+    try:
+        return int(os.getenv(name, str(default)))
+    except ValueError:
+        return default
+
+
 # Default timeout (in seconds) applied to rg / rga / fzf subprocess calls so a
 # pathological search can never hang the MCP server. Configurable via the
 # MCP_FUZZY_SEARCH_TIMEOUT environment variable.
-try:
-    SUBPROCESS_TIMEOUT = int(os.getenv("MCP_FUZZY_SEARCH_TIMEOUT", "30"))
-except ValueError:
-    SUBPROCESS_TIMEOUT = 30
+SUBPROCESS_TIMEOUT = _int_env("MCP_FUZZY_SEARCH_TIMEOUT", 30)
+
+# Bounded-memory caps. Each guards against a pathological search exhausting RAM
+# by feeding fzf (or buffering file contents) without limit. ``fzf --filter``
+# sorts its results, so it must read all of its input before emitting anything;
+# capping the candidate set on our side is what actually bounds memory. Each cap
+# is configurable via an environment variable; a value <= 0 disables that
+# individual cap (restoring the historical unbounded behavior). The defaults are
+# generous enough that typical repositories produce identical results.
+#
+# When a cap trips, the affected tool surfaces it explicitly (the repo's
+# "no silent caps" rule) by adding ``"truncated": true`` and a human-readable
+# ``"truncation_note"`` to its result and logging a warning.
+
+# Max candidate LINES sent to fzf in the standard content / documents paths.
+MCP_FUZZY_MAX_LINES = _int_env("MCP_FUZZY_MAX_LINES", 100_000)
+# Max TOTAL bytes of candidate text (standard paths) or concatenated file
+# contents (multiline paths) buffered before fzf.
+MCP_FUZZY_MAX_BYTES = _int_env("MCP_FUZZY_MAX_BYTES", 50 * 1024 * 1024)  # 50 MiB
+# Max bytes read from any SINGLE file in multiline modes (per-file cap).
+MCP_FUZZY_MAX_FILE_BYTES = _int_env(
+    "MCP_FUZZY_MAX_FILE_BYTES", 1 * 1024 * 1024
+)  # 1 MiB
 
 # fzf exit codes (based on fzf source code constants)
 FZF_EXIT_OK = 0  # Success with matches
@@ -205,6 +234,43 @@ def _rg_json_text(obj: Any) -> str:
         except Exception:
             return ""
     return ""
+
+
+def _read_file_capped(path_obj: Path, max_bytes: int) -> bytes | None:
+    """Read a file for multiline search, bounding how much is held in memory.
+
+    Reads at most ``max_bytes`` bytes (a per-file cap; ``max_bytes <= 0`` means
+    unlimited). Returns ``None`` for unreadable files and for binary files (those
+    containing a NUL byte), mirroring ripgrep's own binary-detection heuristic so
+    binary blobs never pollute the null-delimited fzf stream.
+    """
+    try:
+        with path_obj.open("rb") as f:
+            # Read one extra byte so an over-cap file can be detected, then trim.
+            data = f.read() if max_bytes <= 0 else f.read(max_bytes + 1)
+    except OSError:
+        return None
+    if b"\x00" in data:
+        return None
+    if max_bytes > 0 and len(data) > max_bytes:
+        data = data[:max_bytes]
+    return data
+
+
+def _with_truncation(
+    result: dict[str, Any], truncated: bool, note: str
+) -> dict[str, Any]:
+    """Attach an explicit truncation notice to a result when a cap tripped.
+
+    Keeps the ``{"matches": [...]}`` contract intact: the ``"truncated"`` and
+    ``"truncation_note"`` keys are additive and present only when something was
+    dropped (the repo's "no silent caps" rule). Also logs a warning.
+    """
+    if truncated:
+        result["truncated"] = True
+        result["truncation_note"] = note
+        logger.warning("fuzzy-search result truncated: %s", note)
+    return result
 
 
 def _get_page_label(doc, page_idx: int) -> str:
@@ -1294,6 +1360,8 @@ def fuzzy_search_files(
             )
         }
 
+    truncated = False
+    truncation_note = ""
     try:
         if multiline:
             # For multiline mode, get file list first, then read contents
@@ -1304,26 +1372,47 @@ def fuzzy_search_files(
             rg_list_cmd.append(search_path)
 
             # Get file list
-            file_list_result = subprocess.check_output(rg_list_cmd, text=True)
+            try:
+                file_list_result = subprocess.check_output(
+                    rg_list_cmd, text=True, timeout=SUBPROCESS_TIMEOUT
+                )
+            except subprocess.TimeoutExpired:
+                return {
+                    "error": f"ripgrep timed out after {SUBPROCESS_TIMEOUT}s while listing files"
+                }
             file_paths = [
                 str(Path(p).resolve()) for p in file_list_result.splitlines() if p
             ]
 
-            # Build multiline input with null separators
-            multiline_input = b""
-            for file_path in file_paths:
-                try:
-                    path_obj = Path(file_path)
-                    with path_obj.open("rb") as f:
-                        content = f.read()
-                        # Create record: filename: + content + null separator
-                        record = f"{file_path}:\n".encode() + content + b"\0"
-                        multiline_input += record
-                except (OSError, UnicodeDecodeError):
-                    continue  # Skip files that can't be read
+            # Build multiline input with null separators. Accumulate into a list
+            # and join once at the end (avoids the quadratic-time ``bytes +=``
+            # re-allocation), cap each file's size and the running total, and skip
+            # binary files so blobs never pollute the null-delimited fzf stream.
+            multiline_chunks = []
+            total_bytes = 0
+            for i, file_path in enumerate(file_paths):
+                content = _read_file_capped(Path(file_path), MCP_FUZZY_MAX_FILE_BYTES)
+                if content is None:
+                    continue  # unreadable or binary
+                # Create record: filename: + content + null separator
+                record = f"{file_path}:\n".encode() + content + b"\0"
+                if (
+                    MCP_FUZZY_MAX_BYTES > 0
+                    and total_bytes + len(record) > MCP_FUZZY_MAX_BYTES
+                ):
+                    truncated = True
+                    truncation_note = (
+                        f"Stopped reading file contents at MCP_FUZZY_MAX_BYTES="
+                        f"{MCP_FUZZY_MAX_BYTES} bytes after {i} of {len(file_paths)} "
+                        f"files; remaining files were not searched."
+                    )
+                    break
+                multiline_chunks.append(record)
+                total_bytes += len(record)
 
+            multiline_input = b"".join(multiline_chunks)
             if not multiline_input:
-                return {"matches": []}
+                return _with_truncation({"matches": []}, truncated, truncation_note)
 
             # Use fzf with multiline support
             fzf_cmd = [
@@ -1335,9 +1424,20 @@ def fuzzy_search_files(
             ]
 
             fzf_proc = subprocess.Popen(
-                fzf_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=False
+                fzf_cmd,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=False,
             )
-            out_bytes, err_bytes = fzf_proc.communicate(multiline_input)
+            try:
+                out_bytes, err_bytes = fzf_proc.communicate(
+                    multiline_input, timeout=SUBPROCESS_TIMEOUT
+                )
+            except subprocess.TimeoutExpired:
+                fzf_proc.kill()
+                fzf_proc.communicate()
+                return {"error": f"fzf timed out after {SUBPROCESS_TIMEOUT}s"}
 
             # Check fzf return code and handle errors
             if fzf_proc.returncode != 0:
@@ -1404,7 +1504,7 @@ def fuzzy_search_files(
         # Apply limit
         matches = matches[:limit]
 
-        return {"matches": matches}
+        return _with_truncation({"matches": matches}, truncated, truncation_note)
     except subprocess.CalledProcessError as exc:
         return {"error": str(exc)}
     except Exception as exc:
@@ -1635,6 +1735,8 @@ def fuzzy_search_content(
             )
         }
 
+    truncated = False
+    truncation_note = ""
     try:
         if multiline:
             # For multiline mode, get files and treat each as a single record
@@ -1672,27 +1774,35 @@ def fuzzy_search_content(
 
             # Build multiline input with file contents.
             # Accumulate into a list and join once at the end (avoids the
-            # quadratic-time ``bytes += record`` re-allocation) and skip binary
-            # files (those containing a NUL byte) so binary blobs never pollute
-            # the null-delimited fzf stream.
+            # quadratic-time ``bytes += record`` re-allocation), cap each file's
+            # size and the running total, and skip binary files (via
+            # ``_read_file_capped``) so binary blobs never pollute the
+            # null-delimited fzf stream.
             multiline_chunks = []
-            for file_path in file_paths:
-                try:
-                    path_obj = Path(file_path)
-                    with path_obj.open("rb") as f:
-                        content = f.read()
-                except OSError:
-                    continue
-                # Skip binary files (NUL byte present), mirroring ripgrep's own
-                # binary-detection heuristic.
-                if b"\x00" in content:
-                    continue
+            total_bytes = 0
+            for i, file_path in enumerate(file_paths):
+                content = _read_file_capped(Path(file_path), MCP_FUZZY_MAX_FILE_BYTES)
+                if content is None:
+                    continue  # unreadable or binary
                 # Create record: filename + content + null separator
-                multiline_chunks.append(f"{file_path}:\n".encode() + content + b"\0")
+                record = f"{file_path}:\n".encode() + content + b"\0"
+                if (
+                    MCP_FUZZY_MAX_BYTES > 0
+                    and total_bytes + len(record) > MCP_FUZZY_MAX_BYTES
+                ):
+                    truncated = True
+                    truncation_note = (
+                        f"Stopped reading file contents at MCP_FUZZY_MAX_BYTES="
+                        f"{MCP_FUZZY_MAX_BYTES} bytes after {i} of {len(file_paths)} "
+                        f"files; remaining files were not searched."
+                    )
+                    break
+                multiline_chunks.append(record)
+                total_bytes += len(record)
 
             multiline_input = b"".join(multiline_chunks)
             if not multiline_input:
-                return {"matches": []}
+                return _with_truncation({"matches": []}, truncated, truncation_note)
 
             # Use fzf with multiline support
             fzf_cmd = [
@@ -1794,75 +1904,110 @@ def fuzzy_search_content(
             if enable_debug:
                 logger.debug("rg: %s | fzf: %s", " ".join(rg_cmd), " ".join(fzf_cmd))
 
-            # Run ripgrep and collect its JSON output.
+            # Run ripgrep and parse its JSON output INCREMENTALLY. Reading the
+            # stream line-by-line (rather than buffering the whole thing with
+            # ``communicate()``) lets us stop as soon as the candidate caps are
+            # hit, so neither Python nor fzf ever holds more than the cap — this
+            # is what bounds memory (``fzf --filter`` itself buffers all of its
+            # input to sort it, so the cap must be applied before fzf).
             rg_proc = subprocess.Popen(
                 rg_cmd,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
             )
-            try:
-                rg_out, rg_err = rg_proc.communicate(timeout=SUBPROCESS_TIMEOUT)
-            except subprocess.TimeoutExpired:
-                rg_proc.kill()
-                rg_proc.communicate()
-                return {"error": f"ripgrep timed out after {SUBPROCESS_TIMEOUT}s"}
 
-            if rg_proc.returncode not in (0, 1):  # 1 = no matches (not an error)
+            # Parse the JSON stream into ``file:line:content`` lines for fzf,
+            # keeping a mapping back to the structured match dict so we can
+            # reconstruct results without re-splitting on ':'. The mapping is
+            # bounded by MCP_FUZZY_MAX_LINES, so it is no longer corpus-sized.
+            formatted_lines = []
+            line_to_data = {}
+            candidate_bytes = 0
+            try:
+                assert rg_proc.stdout is not None
+                for json_line in rg_proc.stdout:
+                    if (
+                        MCP_FUZZY_MAX_LINES > 0
+                        and len(formatted_lines) >= MCP_FUZZY_MAX_LINES
+                    ) or (
+                        MCP_FUZZY_MAX_BYTES > 0
+                        and candidate_bytes >= MCP_FUZZY_MAX_BYTES
+                    ):
+                        truncated = True
+                        truncation_note = (
+                            f"Candidate set capped at MCP_FUZZY_MAX_LINES="
+                            f"{MCP_FUZZY_MAX_LINES} lines / MCP_FUZZY_MAX_BYTES="
+                            f"{MCP_FUZZY_MAX_BYTES} bytes; ripgrep produced more "
+                            f"matches. Results are ranked over the first "
+                            f"{len(formatted_lines)} candidates only — narrow the "
+                            f"search or raise the caps."
+                        )
+                        break
+                    if not json_line.strip():
+                        continue
+                    try:
+                        record = json.loads(json_line)
+                    except json.JSONDecodeError:
+                        continue
+                    # Include both "match" and "context" records; context records
+                    # are what make the advertised -A/-B/-C flags actually appear.
+                    if record.get("type") not in ("match", "context"):
+                        continue
+                    data = record.get("data", {})
+                    file_path = _rg_json_text(data.get("path", {}))
+                    if not file_path:
+                        continue
+                    line_num = data.get("line_number") or 0
+                    # Line text (without the trailing newline) is what fzf matches
+                    # on and what we echo back; leading whitespace is preserved
+                    # here and only stripped for the returned ``content`` field.
+                    text = _rg_json_text(data.get("lines", {})).rstrip("\r\n")
+                    formatted = f"{file_path}:{line_num}:{text}"
+
+                    content = text.strip()
+                    if len(content) > 2048:
+                        content = content[:2048] + "..."
+
+                    formatted_lines.append(formatted)
+                    candidate_bytes += len(formatted) + 1  # +1 for the join newline
+                    # Map the exact formatted line back to its structured data. If
+                    # the same line recurs (e.g. overlapping context windows) the
+                    # first mapping wins, which is fine since the data is identical.
+                    line_to_data.setdefault(
+                        formatted,
+                        {
+                            "file": file_path,
+                            "line": int(line_num),
+                            "content": content,
+                        },
+                    )
+            finally:
+                # Stop ripgrep (it may still be producing output if we capped) and
+                # reap it so the killed pipe does not leak a zombie.
+                if rg_proc.stdout is not None:
+                    rg_proc.stdout.close()
+                if truncated:
+                    rg_proc.terminate()
+                try:
+                    rg_err = rg_proc.communicate(timeout=SUBPROCESS_TIMEOUT)[1]
+                except subprocess.TimeoutExpired:
+                    rg_proc.kill()
+                    rg_err = rg_proc.communicate()[1]
+
+            # A non-terminated ripgrep should exit 0 (matches) or 1 (no matches).
+            # When we terminated it early after capping, ignore its exit status.
+            if not truncated and rg_proc.returncode not in (0, 1):
                 return {
                     "error": (rg_err or "").strip()
                     or f"ripgrep failed with code {rg_proc.returncode}"
                 }
 
-            # Parse the JSON stream into ``file:line:content`` lines for fzf,
-            # keeping a mapping back to the structured match dict so we can
-            # reconstruct results without re-splitting on ':'.
-            formatted_lines = []
-            line_to_data = {}
-            for json_line in (rg_out or "").splitlines():
-                if not json_line.strip():
-                    continue
-                try:
-                    record = json.loads(json_line)
-                except json.JSONDecodeError:
-                    continue
-                # Include both "match" and "context" records; context records are
-                # what make the advertised -A/-B/-C flags actually appear.
-                if record.get("type") not in ("match", "context"):
-                    continue
-                data = record.get("data", {})
-                file_path = _rg_json_text(data.get("path", {}))
-                if not file_path:
-                    continue
-                line_num = data.get("line_number") or 0
-                # Line text (without the trailing newline) is what fzf matches on
-                # and what we echo back; leading whitespace is preserved here and
-                # only stripped for the returned ``content`` field.
-                text = _rg_json_text(data.get("lines", {})).rstrip("\r\n")
-                formatted = f"{file_path}:{line_num}:{text}"
-
-                content = text.strip()
-                if len(content) > 2048:
-                    content = content[:2048] + "..."
-
-                formatted_lines.append(formatted)
-                # Map the exact formatted line back to its structured data. If the
-                # same line recurs (e.g. overlapping context windows) the first
-                # mapping wins, which is fine since the data is identical.
-                line_to_data.setdefault(
-                    formatted,
-                    {
-                        "file": file_path,
-                        "line": int(line_num),
-                        "content": content,
-                    },
-                )
-
             if enable_debug:
                 logger.debug("rg produced %d candidate lines", len(formatted_lines))
 
             if not formatted_lines:
-                return {"matches": []}
+                return _with_truncation({"matches": []}, truncated, truncation_note)
 
             # Feed the formatted lines to fzf for fuzzy filtering.
             fzf_proc = subprocess.Popen(
@@ -1905,7 +2050,7 @@ def fuzzy_search_content(
         # Apply limit
         matches = matches[:limit]
 
-        return {"matches": matches}
+        return _with_truncation({"matches": matches}, truncated, truncation_note)
     except subprocess.CalledProcessError as exc:
         return {"error": str(exc)}
     except Exception as exc:
@@ -1994,6 +2139,8 @@ def fuzzy_search_documents(
             )
         }
 
+    truncated = False
+    truncation_note = ""
     try:
         # Build rga command - pass everything to match ripgrep's behavior
         rga_cmd = [rga_bin, "--json", "--no-heading"]
@@ -2064,8 +2211,24 @@ def fuzzy_search_documents(
             if "broken pipe" not in stderr_data.lower():
                 logger.debug(f"rga stderr: {stderr_data}")
 
-        # Process the stdout data
+        # Process the stdout data. Cap the candidate set fed to fzf so a huge
+        # document corpus cannot blow up memory (``fzf --filter`` buffers all of
+        # its input to sort it, so the bound must be applied here).
+        candidate_bytes = 0
         for line in stdout_data.splitlines():
+            if (
+                MCP_FUZZY_MAX_LINES > 0 and len(formatted_lines) >= MCP_FUZZY_MAX_LINES
+            ) or (MCP_FUZZY_MAX_BYTES > 0 and candidate_bytes >= MCP_FUZZY_MAX_BYTES):
+                truncated = True
+                truncation_note = (
+                    f"Candidate set capped at MCP_FUZZY_MAX_LINES="
+                    f"{MCP_FUZZY_MAX_LINES} lines / MCP_FUZZY_MAX_BYTES="
+                    f"{MCP_FUZZY_MAX_BYTES} bytes; ripgrep-all produced more "
+                    f"matches. Results are ranked over the first "
+                    f"{len(formatted_lines)} candidates only — narrow the search "
+                    f"or raise the caps."
+                )
+                break
             if not line.strip():
                 continue
 
@@ -2131,6 +2294,7 @@ def fuzzy_search_documents(
                     # Build formatted line for fzf
                     formatted = f"{file_path}:{line_num}:{text}"
                     formatted_lines.append(formatted)
+                    candidate_bytes += len(formatted) + 1  # +1 for the join newline
 
                     # Truncate content and match_text to 2048 characters if needed
                     if len(content) > 2048:
@@ -2163,7 +2327,7 @@ def fuzzy_search_documents(
 
         if not formatted_lines:
             logger.debug(f"No formatted lines from rga for path: {search_path}")
-            return {"matches": []}
+            return _with_truncation({"matches": []}, truncated, truncation_note)
 
         # Feed to fzf for fuzzy filtering
         fzf_input = "\n".join(formatted_lines)
@@ -2248,7 +2412,7 @@ def fuzzy_search_documents(
         # Apply limit
         matches = matches[:limit]
 
-        return {"matches": matches}
+        return _with_truncation({"matches": matches}, truncated, truncation_note)
     except subprocess.CalledProcessError as exc:
         return {"error": str(exc)}
     except Exception as exc:

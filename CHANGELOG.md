@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.41.0] - 2026-06-19
+
+### Fixed
+- fuzzy-search skill: unbounded memory on large result sets. The default `fuzzy_search_content` (standard) path buffered the entire `rg --json` stream plus a full candidate list, mapping, and fzf-input copy at once — amplifying a corpus ~150× (a measured ~20 MB corpus drove ~3 GB Python-side peak), and `limit` only trimmed returned rows without bounding peak. Peak is now bounded by configurable caps and independent of corpus size.
+- fuzzy-search skill: `fuzzy_search_files` multiline mode — added the missing `subprocess.check_output` timeout (the only subprocess call lacking one; could hang forever), replaced the O(n²) `bytes += record` accumulation with `b"".join(...)`, and added binary-file skipping, an fzf timeout, and fzf stderr capture.
+
+### Added
+- fuzzy-search skill: three env-configurable bounded-memory caps applied before fzf — `MCP_FUZZY_MAX_LINES` (default 100000), `MCP_FUZZY_MAX_BYTES` (default 50 MiB), `MCP_FUZZY_MAX_FILE_BYTES` (default 1 MiB); set any to `0` to disable. When a cap trips, results gain additive `truncated`/`truncation_note` keys (and log a warning) instead of silently dropping data; the `{"matches": [...]}` shape and tool signatures are unchanged.
+
+### Changed
+- fuzzy-search skill: the `fuzzy_search_content` standard path reads `rg --json` incrementally from the subprocess pipe (instead of `communicate()` buffering all output) and stops at the cap; the `{file, line, content}` reconstruction mapping is retained (so the existing context/colon-path/encoding fixes are not regressed) but is now bounded by the line cap. `fuzzy_search_files` multiline was brought to parity with the hardened multiline content path, and `fuzzy_search_documents` gained the same candidate cap on its parse loop.
+
 ## [0.40.0] - 2026-06-19
 
 ### Added
@@ -598,7 +610,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.40.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.41.0...HEAD
+[0.41.0]: https://github.com/dashed/claude-marketplace/compare/v0.40.0...v0.41.0
 [0.40.0]: https://github.com/dashed/claude-marketplace/compare/v0.39.0...v0.40.0
 [0.39.0]: https://github.com/dashed/claude-marketplace/compare/v0.38.0...v0.39.0
 [0.38.0]: https://github.com/dashed/claude-marketplace/compare/v0.37.0...v0.38.0

@@ -5,6 +5,50 @@ documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+## [1.2.0] - 2026-06-19
+
+### Fixed
+- Unbounded memory on large result sets. The default `fuzzy_search_content`
+  (standard) path buffered the entire `rg --json` stream plus a full candidate
+  list, mapping, and fzf-input copy simultaneously, amplifying a corpus by
+  roughly 150× — measured Python-side peak grew linearly with corpus size
+  (2 MB→299 MB, 10 MB→1497 MB, 20 MB→~3 GB), and the `limit` argument only
+  trimmed returned rows without bounding peak at all (limit=1, 20, and 5000 all
+  produced the same peak). Peak is now bounded by the configurable caps and
+  scales with the cap instead of the corpus (e.g. on a 10 MB corpus,
+  `MCP_FUZZY_MAX_LINES=5000`→10.7 MB peak, `=500`→1.2 MB peak), while default
+  caps leave normal repos byte-identical to before.
+- `fuzzy_search_files` multiline mode: the file-list `subprocess.check_output`
+  had no timeout (the only subprocess call in the server missing one) and could
+  hang forever; it now uses the standard `MCP_FUZZY_SEARCH_TIMEOUT`. Its
+  `multiline_input += record` accumulation was genuinely O(n²) on bytes and is
+  now `b"".join(...)`; it also now skips binary files, applies an fzf timeout,
+  and captures fzf stderr.
+
+### Added
+- Three bounded-memory caps, configurable via environment variables and applied
+  *before* fzf: `MCP_FUZZY_MAX_LINES` (default 100000), `MCP_FUZZY_MAX_BYTES`
+  (default 50 MiB), and `MCP_FUZZY_MAX_FILE_BYTES` (default 1 MiB, per-file in
+  multiline modes). Set any to `0` to disable that cap.
+- Explicit truncation surfacing: when a cap trips, results gain additive
+  `truncated: true` and `truncation_note` keys (and log a warning) instead of
+  silently dropping data. The `{"matches": [...]}` shape and tool signatures are
+  unchanged; the new keys appear only when truncation occurs.
+
+### Changed
+- The `fuzzy_search_content` standard path now reads `rg --json` incrementally
+  from the subprocess pipe (instead of `communicate()` buffering the whole
+  output) and stops as soon as a cap is reached. The
+  `file:line:content` → `{file, line, content}` reconstruction mapping is kept
+  (so the existing `rg --json` context/colon-path/encoding fixes are not
+  regressed) but is now bounded by the line cap rather than the corpus.
+- `fuzzy_search_files` multiline mode brought to parity with the already-hardened
+  multiline content path (timeout, `b"".join`, binary-skip, per-file/total
+  caps). `fuzzy_search_documents` gained the same candidate cap on its parse
+  loop.
+
 ## [1.1.2] - 2026-06-11
 
 ### Added

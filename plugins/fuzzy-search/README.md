@@ -86,6 +86,92 @@ The plugin declares the server in `.mcp.json`:
 `${CLAUDE_PLUGIN_ROOT}` is expanded by Claude Code to the installed plugin
 directory, so the server runs regardless of where the plugin is checked out.
 
+## Bounded memory
+
+The search tools cap how much candidate data they buffer so a search over a
+large tree (or a few huge files) cannot exhaust RAM. The `limit` argument only
+trims the number of *returned* rows — it does **not** bound peak memory, because
+`fzf --filter` sorts its input and therefore reads all of it before emitting
+results. The caps below are what actually bound memory; they are applied
+*before* fzf.
+
+| Environment variable | Default | What it caps |
+|----------------------|---------|--------------|
+| `MCP_FUZZY_MAX_LINES` | `100000` | Max candidate **lines** fed to fzf in the standard `fuzzy_search_content` and `fuzzy_search_documents` paths. |
+| `MCP_FUZZY_MAX_BYTES` | `52428800` (50 MiB) | Max **total bytes** of candidate text (standard paths) or concatenated file contents (multiline paths) buffered before fzf. |
+| `MCP_FUZZY_MAX_FILE_BYTES` | `1048576` (1 MiB) | Max bytes read from any **single file** in multiline modes. |
+
+Set any of these to `0` (or a negative value) to disable that individual cap and
+restore the historical unbounded behavior.
+
+### Choosing the caps
+
+`MCP_FUZZY_MAX_BYTES` is the primary memory backstop. The two standard-path caps
+are evaluated together and whichever is reached first wins; on a large or
+long-line corpus the byte cap trips before the line cap (at the default
+`100000` lines a corpus would need to average under ~520 bytes/line to hit the
+line cap before the 50 MiB byte cap), so the byte cap is what actually bounds
+peak in the worst case. The line cap mainly keeps the candidate *count* — and
+therefore fzf's ranking work — sane.
+
+Worst-case peak at the defaults is **roughly 150–200 MB** (measured), not
+gigabytes. Two ways to reach it, both bounded:
+
+- *Many short lines* — the line cap is a **count** cap, and each retained
+  candidate costs ~1.5 KB of Python working set (the `file:line:content` string,
+  its result-mapping entry, the joined fzf-input copy, and the JSON-derived
+  intermediate). Measured: 5000 lines→7.4 MB, 20000→29.6 MB, 50000→75 MB
+  (~1.5 KB/line, linear), so the default `100000` lines extrapolates to ~150 MB.
+- *Few long lines* — once the average line is ≳500 bytes the byte cap trips
+  first, holding the candidate text to ≤ 50 MiB, which lands peak in the same
+  ~150–200 MB range after fzf's own sort buffer.
+
+(The pre-fix code had **no** cap, so a ~20 MB corpus drove ~3 GB of Python-side
+peak; see the changelog for the full before/after measurements.) ~150–200 MB is
+acceptable for a developer tool, which is why the defaults are generous — they
+also govern *when* truncation fires, so lowering them would start truncating
+real searches that previously succeeded. Tune via the env vars for
+memory-constrained deployments.
+
+Tuning guidance:
+
+- **Tighter memory:** lower `MCP_FUZZY_MAX_BYTES` (e.g. `26214400` for 25 MiB).
+  This is the knob that moves the peak; lowering `MCP_FUZZY_MAX_LINES` alone has
+  little effect on memory because each line is small.
+- **More complete results:** raise `MCP_FUZZY_MAX_BYTES` / `MCP_FUZZY_MAX_LINES`,
+  or set them to `0` to disable the caps entirely (accepting unbounded memory).
+- **Large individual files in multiline mode:** raise `MCP_FUZZY_MAX_FILE_BYTES`
+  if you need to search files bigger than 1 MiB in full.
+
+Because truncation is surfaced (below), you can also just run the search and let
+the `truncated` flag tell you whether a higher cap is warranted for that query.
+
+**Known exception — `fuzzy_search_files` (non-multiline) is intentionally not
+capped.** That path streams `rg --files | fzf` through a direct OS pipe with no
+Python buffer in between, and it buffers only matched *paths* (tens to low
+hundreds of bytes each), not file contents — so its memory is O(matched paths)
+and bounded by the working tree / `.gitignore`, not by file sizes. Reaching a
+concerning size would take a literal million-file repo (~200 MB of path text),
+the same output `rg --files`/`fd` produce anyway. Adding a cap here would mean
+inserting a Python read between `rg` and `fzf` (losing the direct pipe), which
+isn't worth it for that case; the cap can be added later if million-file repos
+become a target.
+
+When a cap trips, the result is **not** silently shortened: the returned object
+gains two additive keys alongside the unchanged `matches` array, and a warning is
+logged:
+
+```json
+{
+  "matches": [ ... ],
+  "truncated": true,
+  "truncation_note": "Candidate set capped at MCP_FUZZY_MAX_LINES=100000 lines / MCP_FUZZY_MAX_BYTES=52428800 bytes; ripgrep produced more matches. Results are ranked over the first 100000 candidates only — narrow the search or raise the caps."
+}
+```
+
+The `truncated` / `truncation_note` keys are present **only** when truncation
+occurred, so existing consumers that read `result["matches"]` are unaffected.
+
 ## Development / tests
 
 The bundled test suite lives in `tests/` and exercises both the in-process MCP
@@ -134,9 +220,37 @@ following audit fixes were applied locally and are candidates for upstreaming:
    (`extract_pdf_pages`, `get_pdf_page_labels`, `get_pdf_page_count`,
    `get_pdf_outline`) and in the document-search page-label cache, so error and
    early-return paths no longer leak document handles.
+6. **Candidate-set caps** (`MCP_FUZZY_MAX_LINES` / `MCP_FUZZY_MAX_BYTES`) bound
+   the data fed to fzf on the `fuzzy_search_content` standard path and the
+   `fuzzy_search_documents` path, surfaced via additive `truncated` /
+   `truncation_note` result keys (no silent caps). The standard content path now
+   reads `rg --json` **incrementally** from the subprocess pipe instead of
+   buffering the whole output, and stops as soon as a cap is hit. The
+   `file:line:content` → `{file, line, content}` reconstruction mapping is kept
+   (so the `rg --json` correctness fixes above are not regressed) but is now
+   bounded by the line cap rather than the corpus.
+7. **`fuzzy_search_files` multiline parity:** the file-list `subprocess.check_output`
+   gained the same timeout as the rest of the file (it was the only subprocess
+   call without one), the `bytes += record` accumulation became `b"".join(...)`
+   (drops a quadratic-time rebuild), and it now skips binary files, applies a fzf
+   timeout, and captures fzf stderr — matching the already-hardened multiline
+   content path.
+8. **Per-file (`MCP_FUZZY_MAX_FILE_BYTES`) and total (`MCP_FUZZY_MAX_BYTES`)
+   read caps** on both multiline paths, so a single huge file (or many files)
+   can no longer be read into memory unboundedly.
+9. **Helpers** `_int_env` (shared integer-env reader, also adopted by
+   `SUBPROCESS_TIMEOUT`), `_read_file_capped` (per-file capped read + binary
+   skip), and `_with_truncation` (attaches the truncation keys + logs a warning).
+
+Constraints honored: the PEP 723 header and dependency set are unchanged (no new
+deps), the new config is env-var-only to mirror `MCP_FUZZY_SEARCH_TIMEOUT`, tool
+signatures and the `{"matches": [...]}` shape are unchanged, and the rest of the
+verbatim-ported file is not reformatted. Items 6–9 are candidates for
+upstreaming.
 
 The test module (`tests/test_fuzzy_search.py`) was correspondingly updated: the
 subprocess mocks for `fuzzy_search_content` now feed `rg --json` records, and an
 over-specific fzf-ranking-dependent assertion in `test_fuzzy_search_content` was
 loosened (its previous `xfail` in `tests/conftest.py` was removed — it now
-passes for real).
+passes for real). The standard-content mocks additionally expose the rg process
+`stdout` as an iterable, matching the incremental-read change in item 6.

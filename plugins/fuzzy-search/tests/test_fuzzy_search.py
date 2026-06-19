@@ -578,16 +578,19 @@ async def test_fuzzy_search_content_mocked(mock_popen):
         )
         + "\n"
     )
+    # The server reads rg's JSON stream incrementally from ``stdout`` (so it can
+    # stop at the candidate cap), then calls ``communicate()`` only to reap the
+    # process and collect stderr. Expose ``stdout`` as an iterable of lines.
     rg_proc = MagicMock()
-    rg_proc.communicate.return_value = (rg_json, "")
+    rg_proc.stdout.__iter__.return_value = iter(rg_json.splitlines(keepends=True))
+    rg_proc.communicate.return_value = ("", "")
     rg_proc.returncode = 0
 
     # Mock fzf process echoing back the formatted lines the server builds from
     # the JSON records (fzf returns matching lines unchanged).
     fzf_proc = MagicMock()
     fzf_proc.communicate.return_value = (
-        "src/app.py:10:    # TODO: implement feature\n"
-        "src/test.py:5:    # TODO: implement tests\n",
+        "src/app.py:10:    # TODO: implement feature\nsrc/test.py:5:    # TODO: implement tests\n",
         "",
     )
     fzf_proc.returncode = 0
@@ -634,7 +637,8 @@ async def test_fuzzy_search_content_mocked_content_only(mock_popen):
         + "\n"
     )
     rg_proc = MagicMock()
-    rg_proc.communicate.return_value = (rg_json, "")
+    rg_proc.stdout.__iter__.return_value = iter(rg_json.splitlines(keepends=True))
+    rg_proc.communicate.return_value = ("", "")
     rg_proc.returncode = 0
 
     # Mock fzf process echoing back the formatted line.
@@ -707,9 +711,14 @@ if "--read0" in sys.argv and "--print0" in sys.argv:
     with monkeypatch.context() as m:
         m.setenv("PATH", f"{tmp_path}:{os.environ.get('PATH', '')}")
 
-        # Reload module globals to pick up new executables
-        mcp_fuzzy_search.RG_EXECUTABLE = shutil.which("rg")
-        mcp_fuzzy_search.FZF_EXECUTABLE = shutil.which("fzf")
+        # Point the module globals at the mock executables for the duration of
+        # this test only. Use ``m.setattr`` (auto-reverted on context exit) rather
+        # than direct assignment: a bare ``mcp_fuzzy_search.RG_EXECUTABLE = ...``
+        # would leak the (PATH-relative, tmp_path-resolved) mock binary into later
+        # tests after this tmp_path is deleted, breaking real-binary tests that
+        # then run against a dangling executable.
+        m.setattr(mcp_fuzzy_search, "RG_EXECUTABLE", shutil.which("rg"))
+        m.setattr(mcp_fuzzy_search, "FZF_EXECUTABLE", shutil.which("fzf"))
 
         result = mcp_fuzzy_search.fuzzy_search_files(
             "function", str(tmp_path), multiline=True
@@ -1050,11 +1059,14 @@ def test_fuzzy_search_content_fzf_no_match():
                 # Mock rg process emitting one --json match record so fzf is
                 # actually invoked (an empty rg stream would short-circuit).
                 mock_rg_proc = MagicMock()
-                mock_rg_proc.communicate.return_value = (
+                rg_json = (
                     '{"type":"match","data":{"path":{"text":"file1.py"},'
-                    '"lines":{"text":"some content\\n"},"line_number":1}}\n',
-                    "",
+                    '"lines":{"text":"some content\\n"},"line_number":1}}\n'
                 )
+                mock_rg_proc.stdout.__iter__.return_value = iter(
+                    rg_json.splitlines(keepends=True)
+                )
+                mock_rg_proc.communicate.return_value = ("", "")
                 mock_rg_proc.returncode = 0
 
                 # Mock fzf process returning FZF_EXIT_NO_MATCH
@@ -1149,11 +1161,14 @@ def test_fuzzy_search_content_fzf_actual_error():
                 # Mock rg process emitting one --json match record so fzf is
                 # actually invoked.
                 mock_rg_proc = MagicMock()
-                mock_rg_proc.communicate.return_value = (
+                rg_json = (
                     '{"type":"match","data":{"path":{"text":"file1.py"},'
-                    '"lines":{"text":"some content\\n"},"line_number":1}}\n',
-                    "",
+                    '"lines":{"text":"some content\\n"},"line_number":1}}\n'
                 )
+                mock_rg_proc.stdout.__iter__.return_value = iter(
+                    rg_json.splitlines(keepends=True)
+                )
+                mock_rg_proc.communicate.return_value = ("", "")
                 mock_rg_proc.returncode = 0
 
                 # Mock fzf process returning FZF_EXIT_ERROR
@@ -1246,24 +1261,21 @@ def test_fuzzy_search_content_multiline_fzf_no_match():
 # ---------------------------------------------------------------------------
 
 
-async def test_fuzzy_search_documents_missing_binary():
+async def test_fuzzy_search_documents_missing_binary(monkeypatch):
     """Test fuzzy_search_documents handles missing rga binary gracefully."""
-    # Temporarily patch RGA_EXECUTABLE to None
-    original_rga = mcp_fuzzy_search.RGA_EXECUTABLE
-    try:
-        mcp_fuzzy_search.RGA_EXECUTABLE = None
+    # Patch RGA_EXECUTABLE to None via monkeypatch (auto-reverted even on failure)
+    # so the module global is never leaked into later tests.
+    monkeypatch.setattr(mcp_fuzzy_search, "RGA_EXECUTABLE", None)
 
-        async with client_session(mcp_fuzzy_search.mcp._mcp_server) as client:
-            result = await client.call_tool(
-                "fuzzy_search_documents", {"fuzzy_filter": "test", "path": "."}
-            )
+    async with client_session(mcp_fuzzy_search.mcp._mcp_server) as client:
+        result = await client.call_tool(
+            "fuzzy_search_documents", {"fuzzy_filter": "test", "path": "."}
+        )
 
-            data = json.loads(result.content[0].text)
-            assert "error" in data
-            assert "ripgrep-all" in data["error"]
-            assert "not installed" in data["error"]
-    finally:
-        mcp_fuzzy_search.RGA_EXECUTABLE = original_rga
+        data = json.loads(result.content[0].text)
+        assert "error" in data
+        assert "ripgrep-all" in data["error"]
+        assert "not installed" in data["error"]
 
 
 async def test_fuzzy_search_documents_basic(tmp_path: Path):
@@ -2007,10 +2019,7 @@ async def test_extract_pdf_pages_clean_html_false(tmp_path: Path):
     test_pdf.write_bytes(pdf_content)
 
     # HTML output with styling from pdf2txt
-    html_with_styling = (
-        '<p><span style="font-family: TimesLTPro-Roman; font-size:9px">'
-        "Text with styling</span></p>"
-    )
+    html_with_styling = '<p><span style="font-family: TimesLTPro-Roman; font-size:9px">Text with styling</span></p>'
 
     with patch("subprocess.run") as mock_run:
         # Mock pdf2txt process
@@ -3350,11 +3359,14 @@ async def test_fuzzy_search_content_root_path_with_confirm():
     # Mock subprocess to avoid actually searching from root
     with patch("subprocess.Popen") as mock_popen:
         mock_rg_proc = MagicMock()
-        mock_rg_proc.communicate.return_value = (
+        rg_json = (
             '{"type":"match","data":{"path":{"text":"/test.txt"},'
-            '"lines":{"text":"test content\\n"},"line_number":1}}\n',
-            "",
+            '"lines":{"text":"test content\\n"},"line_number":1}}\n'
         )
+        mock_rg_proc.stdout.__iter__.return_value = iter(
+            rg_json.splitlines(keepends=True)
+        )
+        mock_rg_proc.communicate.return_value = ("", "")
         mock_rg_proc.returncode = 0
 
         mock_fzf_proc = MagicMock()
@@ -3534,3 +3546,355 @@ def unique_function_name():
 
         # At least one content match should be the same (allowing for ordering differences)
         assert any(fc in dir_contents for fc in file_contents)
+
+
+# ---------------------------------------------------------------------------
+# Tests for bounded-memory behavior (candidate caps + truncation surfacing)
+#
+# The caps (MCP_FUZZY_MAX_LINES / MCP_FUZZY_MAX_BYTES / MCP_FUZZY_MAX_FILE_BYTES)
+# are read into module-level constants at import time, mirroring the existing
+# SUBPROCESS_TIMEOUT pattern. Tests therefore override them with
+# ``monkeypatch.setattr(mcp_fuzzy_search, "<CONST>", N)`` rather than setenv.
+# ---------------------------------------------------------------------------
+
+
+def _pin_real_binaries(monkeypatch):
+    """Pin RG_EXECUTABLE/FZF_EXECUTABLE back to the real binaries on PATH.
+
+    ``test_fuzzy_search_files_multiline`` assigns these module attributes to
+    PATH-relative mock scripts under its (later-deleted) tmp_path without
+    reverting them, which can leak a dangling executable into subsequently
+    ordered tests. Pinning via monkeypatch (auto-reverted) makes these
+    real-binary tests order-independent.
+    """
+    monkeypatch.setattr(mcp_fuzzy_search, "RG_EXECUTABLE", shutil.which("rg"))
+    monkeypatch.setattr(mcp_fuzzy_search, "FZF_EXECUTABLE", shutil.which("fzf"))
+
+
+def test_content_standard_candidate_cap_trips(tmp_path: Path, monkeypatch):
+    """Standard content search caps the candidate set fed to fzf and surfaces it.
+
+    Exercises the real rg --json streaming-cap loop: many matching lines exist,
+    but MCP_FUZZY_MAX_LINES bounds how many are read before fzf, so the result is
+    flagged truncated and the returned count never exceeds the (smaller) limit.
+    """
+    _skip_if_missing("rg")
+    _skip_if_missing("fzf")
+    _pin_real_binaries(monkeypatch)
+
+    # 200 matching lines, far more than the cap below.
+    (tmp_path / "tasks.py").write_text(
+        "\n".join(f"# TODO task number {i}" for i in range(200))
+    )
+
+    monkeypatch.setattr(mcp_fuzzy_search, "MCP_FUZZY_MAX_LINES", 5)
+
+    result = mcp_fuzzy_search.fuzzy_search_content("TODO task", str(tmp_path), limit=20)
+
+    assert "error" not in result
+    assert result.get("truncated") is True
+    assert "MCP_FUZZY_MAX_LINES" in result.get("truncation_note", "")
+    # Candidate set was capped at 5 lines, so at most 5 matches can come back even
+    # though limit (20) is higher — the cap, not the limit, bounds the result.
+    assert len(result["matches"]) <= 5
+
+
+def test_content_standard_byte_cap_trips(tmp_path: Path, monkeypatch):
+    """A tiny MCP_FUZZY_MAX_BYTES also trips truncation on the standard path."""
+    _skip_if_missing("rg")
+    _skip_if_missing("fzf")
+    _pin_real_binaries(monkeypatch)
+
+    (tmp_path / "tasks.py").write_text(
+        "\n".join(f"# TODO task number {i}" for i in range(200))
+    )
+
+    # Leave the line cap generous; force the byte cap to bite instead.
+    monkeypatch.setattr(mcp_fuzzy_search, "MCP_FUZZY_MAX_LINES", 0)
+    monkeypatch.setattr(mcp_fuzzy_search, "MCP_FUZZY_MAX_BYTES", 100)
+
+    result = mcp_fuzzy_search.fuzzy_search_content("TODO task", str(tmp_path), limit=20)
+
+    assert "error" not in result
+    assert result.get("truncated") is True
+    assert "MCP_FUZZY_MAX_BYTES" in result.get("truncation_note", "")
+
+
+def test_content_standard_no_truncation_under_cap(tmp_path: Path, monkeypatch):
+    """Backward-compat: a normal search under the caps adds no extra keys."""
+    _skip_if_missing("rg")
+    _skip_if_missing("fzf")
+    _pin_real_binaries(monkeypatch)
+
+    (tmp_path / "app.py").write_text("# TODO: implement feature\ndef main():\n    pass")
+
+    # Caps left at their generous defaults; this small search is well under them.
+    result = mcp_fuzzy_search.fuzzy_search_content(
+        "TODO implement", str(tmp_path), limit=20
+    )
+
+    assert "matches" in result
+    assert "truncated" not in result
+    assert "truncation_note" not in result
+
+
+def test_content_standard_caps_disabled(tmp_path: Path, monkeypatch):
+    """Caps <= 0 restore unbounded behavior: no candidate is dropped, no flag."""
+    _skip_if_missing("rg")
+    _skip_if_missing("fzf")
+    _pin_real_binaries(monkeypatch)
+
+    (tmp_path / "tasks.py").write_text(
+        "\n".join(f"# TODO task number {i}" for i in range(50))
+    )
+
+    # Disable every candidate cap.
+    monkeypatch.setattr(mcp_fuzzy_search, "MCP_FUZZY_MAX_LINES", 0)
+    monkeypatch.setattr(mcp_fuzzy_search, "MCP_FUZZY_MAX_BYTES", 0)
+
+    result = mcp_fuzzy_search.fuzzy_search_content(
+        "TODO task", str(tmp_path), limit=100
+    )
+
+    assert "error" not in result
+    assert "truncated" not in result
+    assert "truncation_note" not in result
+    # All 50 lines are candidates, so the limit (not a cap) is what bounds output.
+    assert len(result["matches"]) == 50
+
+
+def test_content_multiline_total_cap_skips_later_files(tmp_path: Path, monkeypatch):
+    """Multiline content search stops at the total-byte cap and reports skipped files.
+
+    Three real files are created; a small MCP_FUZZY_MAX_BYTES means only the first
+    fits, so the later files are skipped and ``truncated`` is set. fzf is mocked
+    so the test is deterministic regardless of the installed fzf version.
+    """
+    for i in range(3):
+        (tmp_path / f"f{i}.py").write_text(f"class C{i}:\n    value = {i}\n")
+
+    monkeypatch.setattr(mcp_fuzzy_search, "RG_EXECUTABLE", "/mock/rg")
+    monkeypatch.setattr(mcp_fuzzy_search, "FZF_EXECUTABLE", "/mock/fzf")
+    # Cap below two files' worth of bytes so the second file trips the total cap.
+    monkeypatch.setattr(mcp_fuzzy_search, "MCP_FUZZY_MAX_BYTES", 40)
+    monkeypatch.setattr(mcp_fuzzy_search, "MCP_FUZZY_MAX_FILE_BYTES", 0)
+
+    file_list = "".join(f"{tmp_path / f'f{i}.py'}\n" for i in range(3))
+
+    with (
+        patch("subprocess.check_output", return_value=file_list),
+        patch("subprocess.Popen") as mock_popen,
+    ):
+        # fzf returns nothing here; we only assert on the truncation bookkeeping,
+        # which is computed before fzf runs.
+        fzf_proc = MagicMock()
+        fzf_proc.communicate.return_value = (b"", b"")
+        fzf_proc.returncode = mcp_fuzzy_search.FZF_EXIT_NO_MATCH
+        mock_popen.return_value = fzf_proc
+
+        result = mcp_fuzzy_search.fuzzy_search_content(
+            "class", str(tmp_path), multiline=True
+        )
+
+    assert "error" not in result
+    assert result.get("truncated") is True
+    note = result.get("truncation_note", "")
+    assert "MCP_FUZZY_MAX_BYTES" in note
+    assert "files were not searched" in note
+
+
+def test_content_multiline_per_file_cap_partial_read(tmp_path: Path, monkeypatch):
+    """A single oversized file is partially read (per-file cap), not OOM, and is
+    NOT flagged truncated on its own (per design: per-file truncation is soft)."""
+    big = tmp_path / "big.py"
+    big.write_text("needle " * 5000)  # ~35 KB, far over the tiny per-file cap
+
+    monkeypatch.setattr(mcp_fuzzy_search, "RG_EXECUTABLE", "/mock/rg")
+    monkeypatch.setattr(mcp_fuzzy_search, "FZF_EXECUTABLE", "/mock/fzf")
+    monkeypatch.setattr(mcp_fuzzy_search, "MCP_FUZZY_MAX_FILE_BYTES", 100)
+    # Keep the total cap generous so only the per-file cap is in play.
+    monkeypatch.setattr(mcp_fuzzy_search, "MCP_FUZZY_MAX_BYTES", 0)
+
+    captured = {}
+
+    def fake_communicate(input=None, timeout=None):
+        # Capture the bytes fzf would receive to prove the file was truncated.
+        captured["input"] = input
+        return (b"", b"")
+
+    with (
+        patch("subprocess.check_output", return_value=f"{big}\n"),
+        patch("subprocess.Popen") as mock_popen,
+    ):
+        fzf_proc = MagicMock()
+        fzf_proc.communicate.side_effect = fake_communicate
+        fzf_proc.returncode = mcp_fuzzy_search.FZF_EXIT_NO_MATCH
+        mock_popen.return_value = fzf_proc
+
+        result = mcp_fuzzy_search.fuzzy_search_content(
+            "needle", str(tmp_path), multiline=True
+        )
+
+    assert "error" not in result
+    # Per-file truncation is a soft event: no top-level truncated flag.
+    assert "truncated" not in result
+    # The record fed to fzf is filename prefix + 100 capped bytes + NUL, so it is
+    # far smaller than the ~35 KB original file — proving the per-file cap applied.
+    assert captured["input"] is not None
+    assert len(captured["input"]) < 1000
+
+
+def test_files_multiline_total_cap_skips_later_files(tmp_path: Path, monkeypatch):
+    """fuzzy_search_files multiline honors the total-byte cap and flags truncation."""
+    for i in range(3):
+        (tmp_path / f"f{i}.txt").write_text(f"function fn{i}() {{}}\n")
+
+    monkeypatch.setattr(mcp_fuzzy_search, "RG_EXECUTABLE", "/mock/rg")
+    monkeypatch.setattr(mcp_fuzzy_search, "FZF_EXECUTABLE", "/mock/fzf")
+    monkeypatch.setattr(mcp_fuzzy_search, "MCP_FUZZY_MAX_BYTES", 40)
+    monkeypatch.setattr(mcp_fuzzy_search, "MCP_FUZZY_MAX_FILE_BYTES", 0)
+
+    file_list = "".join(f"{tmp_path / f'f{i}.txt'}\n" for i in range(3))
+
+    with (
+        patch("subprocess.check_output", return_value=file_list),
+        patch("subprocess.Popen") as mock_popen,
+    ):
+        fzf_proc = MagicMock()
+        fzf_proc.communicate.return_value = (b"", b"")
+        fzf_proc.returncode = mcp_fuzzy_search.FZF_EXIT_NO_MATCH
+        mock_popen.return_value = fzf_proc
+
+        result = mcp_fuzzy_search.fuzzy_search_files(
+            "function", str(tmp_path), multiline=True
+        )
+
+    assert "error" not in result
+    assert result.get("truncated") is True
+    assert "MCP_FUZZY_MAX_BYTES" in result.get("truncation_note", "")
+
+
+def test_files_multiline_check_output_timeout(tmp_path: Path, monkeypatch):
+    """A timeout while listing files (check_output) returns an error, not a hang.
+
+    This guards the previously-unbounded ``check_output`` call (it had no timeout),
+    which is now ``check_output(..., timeout=SUBPROCESS_TIMEOUT)``.
+    """
+    monkeypatch.setattr(mcp_fuzzy_search, "RG_EXECUTABLE", "/mock/rg")
+    monkeypatch.setattr(mcp_fuzzy_search, "FZF_EXECUTABLE", "/mock/fzf")
+
+    def raise_timeout(*args, **kwargs):
+        raise subprocess.TimeoutExpired(cmd="rg --files", timeout=1)
+
+    with patch("subprocess.check_output", side_effect=raise_timeout):
+        result = mcp_fuzzy_search.fuzzy_search_files(
+            "anything", str(tmp_path), multiline=True
+        )
+
+    assert "error" in result
+    assert "timed out" in result["error"]
+    assert "matches" not in result
+
+
+def test_documents_candidate_cap_trips(tmp_path: Path, monkeypatch):
+    """fuzzy_search_documents caps its candidate set and surfaces truncation."""
+    monkeypatch.setattr(mcp_fuzzy_search, "RGA_EXECUTABLE", "/mock/rga")
+    monkeypatch.setattr(mcp_fuzzy_search, "FZF_EXECUTABLE", "/mock/fzf")
+    monkeypatch.setattr(mcp_fuzzy_search, "MCP_FUZZY_MAX_LINES", 3)
+
+    # 50 rga --json match records, well above the 3-line cap.
+    rga_lines = "\n".join(
+        json.dumps(
+            {
+                "type": "match",
+                "data": {
+                    "path": {"text": f"doc{i}.pdf"},
+                    "lines": {"text": f"Page 1: needle hit {i}"},
+                    "line_number": None,
+                    "submatches": [
+                        {"match": {"text": "needle"}, "start": 8, "end": 14}
+                    ],
+                },
+            }
+        )
+        for i in range(50)
+    )
+
+    with patch("subprocess.Popen") as mock_popen:
+        rga_proc = MagicMock()
+        rga_proc.communicate.return_value = (rga_lines + "\n", "")
+        rga_proc.wait.return_value = None
+
+        fzf_proc = MagicMock()
+        # fzf echoes back whatever it is given; return the first capped candidate.
+        fzf_proc.communicate.return_value = ("doc0.pdf:0:Page 1: needle hit 0\n", "")
+        fzf_proc.returncode = 0
+
+        mock_popen.side_effect = [rga_proc, fzf_proc]
+
+        result = mcp_fuzzy_search.fuzzy_search_documents("needle", str(tmp_path))
+
+    assert "error" not in result
+    assert result.get("truncated") is True
+    assert "MCP_FUZZY_MAX_LINES" in result.get("truncation_note", "")
+
+
+def test_content_standard_peak_memory_bounded(tmp_path: Path, monkeypatch):
+    """Peak Python allocation stays bounded by the cap, NOT by corpus size.
+
+    This is the regression guard for the original unbounded-memory defect: the
+    standard content path used to buffer the whole ``rg --json`` output plus the
+    full candidate set, so peak allocation scaled linearly with the corpus
+    (measured ~150x corpus pre-fix: a 20 MB tree peaked at ~3 GB). With the
+    streaming candidate cap, peak is a function of the cap, so a 4x larger corpus
+    must NOT produce a proportionally larger peak.
+
+    Kept cheap: two small corpora, a tight cap so rg is terminated early, a
+    generous absolute ceiling, and a skip if the run is unexpectedly slow.
+    """
+    import time
+    import tracemalloc
+
+    _skip_if_missing("rg")
+    _skip_if_missing("fzf")
+    _pin_real_binaries(monkeypatch)
+
+    # Tight cap so the path stops early regardless of corpus size.
+    monkeypatch.setattr(mcp_fuzzy_search, "MCP_FUZZY_MAX_LINES", 500)
+    monkeypatch.setattr(mcp_fuzzy_search, "MCP_FUZZY_MAX_BYTES", 0)
+
+    def peak_for(n_lines: int) -> int:
+        corpus = tmp_path / f"c_{n_lines}"
+        corpus.mkdir()
+        # One reasonably wide line per record so the corpus has real byte heft.
+        (corpus / "data.py").write_text(
+            "\n".join(f"# needle row {i} " + "x" * 80 for i in range(n_lines))
+        )
+        tracemalloc.start()
+        tracemalloc.clear_traces()
+        t0 = time.time()
+        result = mcp_fuzzy_search.fuzzy_search_content(
+            "needle row", str(corpus), limit=20
+        )
+        elapsed = time.time() - t0
+        _, peak = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+        if elapsed > 20:
+            pytest.skip("rg/fzf too slow in this environment for a memory benchmark")
+        assert "error" not in result
+        assert result.get("truncated") is True  # both corpora exceed the 500-line cap
+        return peak
+
+    small = peak_for(2_000)  # ~0.2 MB corpus
+    large = peak_for(8_000)  # ~0.8 MB corpus, 4x the candidates
+
+    # Bounded behavior: a 4x larger corpus must not blow peak up proportionally.
+    # Pre-fix this ratio tracked corpus size (~4x); with the cap it should be
+    # near-flat. Allow generous slack for interpreter/GC noise on small numbers.
+    assert large <= small * 2, (
+        f"peak grew with corpus (small={small} large={large}); candidate cap is not bounding memory"
+    )
+    # Generous absolute ceiling: the 500-line cap's working set is a few MB; pre-fix
+    # an 0.8 MB corpus already peaked far above this, and a real corpus would be
+    # orders of magnitude larger. 64 MiB leaves ample headroom for noise.
+    assert large < 64 * 1024 * 1024, f"peak {large} exceeded the bounded ceiling"

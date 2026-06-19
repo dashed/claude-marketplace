@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.40.0"
+    "version": "0.41.0"
   },
   "plugins": [
     {
@@ -735,7 +735,7 @@
     },
     {
       "name": "fuzzy-search",
-      "version": "1.1.2",
+      "version": "1.2.0",
       "source": "./plugins/fuzzy-search",
       "description": "MCP server exposing fuzzy content/file/document search tools built on ripgrep + fzf (plus ripgrep-all and PyMuPDF for PDFs). Use when searching code, files, or documents with fuzzy filtering, or extracting/inspecting PDF pages and outlines.",
       "author": {
