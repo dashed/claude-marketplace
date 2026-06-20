@@ -168,6 +168,11 @@ MCP_FUZZY_MAX_BYTES = _int_env("MCP_FUZZY_MAX_BYTES", 50 * 1024 * 1024)  # 50 Mi
 MCP_FUZZY_MAX_FILE_BYTES = _int_env(
     "MCP_FUZZY_MAX_FILE_BYTES", 1 * 1024 * 1024
 )  # 1 MiB
+# Max number of pages extract_pdf_pages will extract in a single call. Guards
+# against a pathological range (e.g. pages="1-100000") buffering every page's
+# text/HTML. The default is generous enough that real "extract a chapter"
+# requests are unaffected; a value <= 0 disables the cap.
+MCP_FUZZY_MAX_PDF_PAGES = _int_env("MCP_FUZZY_MAX_PDF_PAGES", 500)
 
 # fzf exit codes (based on fzf source code constants)
 FZF_EXIT_OK = 0  # Success with matches
@@ -580,6 +585,9 @@ def _filter_pages_fuzzy(
         "  zero_based (bool, optional): Interpret page numbers as 0-based indices. Default: false.\n"
         "  one_based (bool, optional): Interpret page numbers as 1-based indices. Default: false.\n\n"
         "Note: zero_based and one_based cannot be used together.\n\n"
+        "Note: at most MCP_FUZZY_MAX_PDF_PAGES pages (default 500) are extracted "
+        "per call; if more are requested the result adds 'truncated': true and a "
+        "'truncation_note'. Set MCP_FUZZY_MAX_PDF_PAGES=0 to disable the cap.\n\n"
         "Page specifications (default - when both flags are false):\n"
         "  - Page labels: 'v', 'vii', 'ToC', 'Introduction' (as shown in PDF readers)\n"
         "  - Ranges: 'v-vii', '1-5'\n"
@@ -605,7 +613,8 @@ def _filter_pages_fuzzy(
         "  Extract pages 267-274: pages='267-274', one_based=true\n"
         "  Extract with 0-based indices: pages='0,1,2', zero_based=true (gets pages 1,2,3)\n"
         "  Extract pages 267-274: pages='266-273', zero_based=true\n\n"
-        "Returns: { content: string, pages_extracted: number[], page_labels: string[], format: string } or { error: string }"
+        "Returns: { content: string, pages_extracted: number[], page_labels: string[], format: string } or { error: string }\n"
+        "  (plus 'truncated': true and 'truncation_note': string when the page cap trips)"
     )
 )
 def extract_pdf_pages(
@@ -641,6 +650,12 @@ def extract_pdf_pages(
     try:
         # Open PDF with PyMuPDF
         doc = fitz.open(pdf_path)
+
+        # Resolve the document's page labels once. get_page_labels() rebuilds
+        # the whole-document label list on each call, so caching it here avoids
+        # the previous O(pages x labels) cost of calling it inside the
+        # range-mapping and per-page extraction loops below.
+        labels = doc.get_page_labels()  # type: ignore[attr-defined]
 
         # Parse page specifications
         page_indices = []
@@ -688,7 +703,6 @@ def extract_pdf_pages(
                             index_to_spec[idx] = str(idx + 1)
                         else:
                             # Get the actual label for this page
-                            labels = doc.get_page_labels()  # type: ignore[attr-defined]
                             if labels and idx < len(labels):
                                 index_to_spec[idx] = labels[idx]
                             else:
@@ -713,6 +727,23 @@ def extract_pdf_pages(
                 seen.add(idx)
                 unique_indices.append(idx)
 
+        # Bound the number of pages extracted so a pathological range can never
+        # buffer every page's text/HTML. Applied after dedup and before the
+        # extraction loop so it caps both page_data and the final content.
+        pages_truncated = False
+        pages_truncation_note = ""
+        if (
+            MCP_FUZZY_MAX_PDF_PAGES > 0
+            and len(unique_indices) > MCP_FUZZY_MAX_PDF_PAGES
+        ):
+            pages_truncated = True
+            pages_truncation_note = (
+                f"Requested {len(unique_indices)} pages; capped at "
+                f"{MCP_FUZZY_MAX_PDF_PAGES} (MCP_FUZZY_MAX_PDF_PAGES). "
+                "Set MCP_FUZZY_MAX_PDF_PAGES=0 to disable."
+            )
+            unique_indices = unique_indices[:MCP_FUZZY_MAX_PDF_PAGES]
+
         # Extract content based on format
         # Determine extraction format
         if format == "html" or (format == "markdown" and PANDOC_EXECUTABLE):
@@ -728,8 +759,7 @@ def extract_pdf_pages(
         for idx in unique_indices:
             page = doc[idx]
 
-            # Get page label for context
-            labels = doc.get_page_labels()  # type: ignore[attr-defined]
+            # Get page label for context (labels cached once after fitz.open)
             page_label = labels[idx] if labels and idx < len(labels) else str(idx + 1)
 
             # Extract content
@@ -849,7 +879,7 @@ def extract_pdf_pages(
             result["pages_before_filter"] = len(unique_indices)
             result["pages_after_filter"] = len(filtered_indices)
 
-        return result
+        return _with_truncation(result, pages_truncated, pages_truncation_note)
 
     except Exception as e:
         return {"error": f"Failed to extract pages: {str(e)}"}

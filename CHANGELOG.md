@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.42.0] - 2026-06-19
+
+### Added
+- fuzzy-search skill: `extract_pdf_pages` page cap, configurable via `MCP_FUZZY_MAX_PDF_PAGES` (default 500; `0` disables). Guards against a pathological range (e.g. `pages="1-100000"`) buffering every page's extracted text/HTML at once; applied after deduplicating the requested indices and before extraction (so duplicates don't consume the budget). When the cap trips the result is trimmed and gains additive `truncated`/`truncation_note` keys (the note names the original requested count) via the shared `_with_truncation` helper. Tool signature and existing result keys are unchanged; the default leaves typical extractions byte-identical.
+
+### Fixed
+- fuzzy-search skill: `extract_pdf_pages` called `doc.get_page_labels()` (which rebuilds the whole-document label list each call) inside both the per-page range-mapping loop and the per-page extraction loop — O(pages × labels). It is now fetched once and cached right after `fitz.open` (a single O(1) call; on a 10-page label range, measured 20 calls → 1), with byte-identical extracted content and labels.
+
 ## [0.41.0] - 2026-06-19
 
 ### Fixed
@@ -610,7 +618,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.41.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.42.0...HEAD
+[0.42.0]: https://github.com/dashed/claude-marketplace/compare/v0.41.0...v0.42.0
 [0.41.0]: https://github.com/dashed/claude-marketplace/compare/v0.40.0...v0.41.0
 [0.40.0]: https://github.com/dashed/claude-marketplace/compare/v0.39.0...v0.40.0
 [0.39.0]: https://github.com/dashed/claude-marketplace/compare/v0.38.0...v0.39.0

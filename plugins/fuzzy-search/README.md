@@ -100,9 +100,19 @@ results. The caps below are what actually bound memory; they are applied
 | `MCP_FUZZY_MAX_LINES` | `100000` | Max candidate **lines** fed to fzf in the standard `fuzzy_search_content` and `fuzzy_search_documents` paths. |
 | `MCP_FUZZY_MAX_BYTES` | `52428800` (50 MiB) | Max **total bytes** of candidate text (standard paths) or concatenated file contents (multiline paths) buffered before fzf. |
 | `MCP_FUZZY_MAX_FILE_BYTES` | `1048576` (1 MiB) | Max bytes read from any **single file** in multiline modes. |
+| `MCP_FUZZY_MAX_PDF_PAGES` | `500` | Max number of **pages** `extract_pdf_pages` will extract in a single call (bounds the per-page text/HTML it buffers). |
 
 Set any of these to `0` (or a negative value) to disable that individual cap and
 restore the historical unbounded behavior.
+
+`MCP_FUZZY_MAX_PDF_PAGES` guards `extract_pdf_pages` specifically: a pathological
+range like `pages="1-100000"` would otherwise expand to tens of thousands of page
+indices and buffer every page's extracted text/HTML at once. The cap is applied
+after deduplicating the requested indices and before extraction, so duplicate
+pages collapse first and never consume the budget. The default of `500` is well
+above any realistic "extract a chapter/section" request, so normal extractions are
+unaffected; when the cap trips the result is trimmed to the first `500` pages and
+gains the same additive `truncated` / `truncation_note` keys (described below).
 
 ### Choosing the caps
 
@@ -241,11 +251,21 @@ following audit fixes were applied locally and are candidates for upstreaming:
 9. **Helpers** `_int_env` (shared integer-env reader, also adopted by
    `SUBPROCESS_TIMEOUT`), `_read_file_capped` (per-file capped read + binary
    skip), and `_with_truncation` (attaches the truncation keys + logs a warning).
+10. **`extract_pdf_pages` page cap + label hoist.** A new
+    `MCP_FUZZY_MAX_PDF_PAGES` cap (default `500`, `0` disables) bounds the number
+    of pages extracted in a single call, applied after deduplication and before
+    extraction, surfaced via the shared `_with_truncation` (additive `truncated`
+    / `truncation_note`, original requested count named in the note). Separately,
+    `doc.get_page_labels()` — which rebuilds the whole-document label list on each
+    call — was hoisted out of the per-page range-mapping and extraction loops into
+    a single cached call right after `fitz.open`, turning the previous
+    O(pages × labels) label lookup into one O(1) fetch (extracted content and
+    labels are byte-identical to before).
 
 Constraints honored: the PEP 723 header and dependency set are unchanged (no new
 deps), the new config is env-var-only to mirror `MCP_FUZZY_SEARCH_TIMEOUT`, tool
 signatures and the `{"matches": [...]}` shape are unchanged, and the rest of the
-verbatim-ported file is not reformatted. Items 6–9 are candidates for
+verbatim-ported file is not reformatted. Items 6–10 are candidates for
 upstreaming.
 
 The test module (`tests/test_fuzzy_search.py`) was correspondingly updated: the

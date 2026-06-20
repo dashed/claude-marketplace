@@ -2669,6 +2669,204 @@ async def test_extract_pdf_pages_one_based(tmp_path: Path):
 
 
 # ---------------------------------------------------------------------------
+# extract_pdf_pages hardening: label hoist + page cap
+# ---------------------------------------------------------------------------
+
+# Minimal valid PDF that PyMuPDF can open (shared by the tests below).
+_MINIMAL_PDF = b"%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] >>\nendobj\nxref\n0 4\n0000000000 65535 f\n0000000009 00000 n\n0000000058 00000 n\n0000000115 00000 n\ntrailer\n<< /Size 4 /Root 1 0 R >>\nstartxref\n203\n%%EOF"
+
+
+def _mock_pdf_doc(page_count: int, labels=None):
+    """Build a MagicMock PyMuPDF document with ``page_count`` plain-text pages.
+
+    ``labels`` is the return value of ``get_page_labels()`` (``None`` means the
+    function falls back to physical page numbers).
+    """
+    mock_doc = MagicMock()
+    mock_doc.page_count = page_count
+    mock_doc.get_page_numbers.return_value = []
+    mock_doc.get_page_labels.return_value = labels
+
+    mock_pages = {}
+    for i in range(page_count):
+        mock_page = MagicMock()
+        mock_page.get_text.return_value = f"Content of page {i + 1}"
+        mock_page.get_label.return_value = str(i + 1)
+        mock_pages[i] = mock_page
+
+    mock_doc.__getitem__ = lambda self, idx: mock_pages.get(idx)
+    mock_doc.close = MagicMock()
+    return mock_doc
+
+
+async def test_extract_pdf_pages_label_hoist_single_call(tmp_path: Path):
+    """get_page_labels() must be called exactly once, not once per page.
+
+    Regression guard for the O(pages x labels) hoist: a multi-page label-mode
+    range previously called doc.get_page_labels() inside both the range-mapping
+    loop and the per-page extraction loop.
+    """
+    test_pdf = tmp_path / "test.pdf"
+    test_pdf.write_bytes(_MINIMAL_PDF)
+
+    with patch("mcp_fuzzy_search.fitz.open") as mock_fitz_open:
+        mock_doc = _mock_pdf_doc(10, labels=["iii", "iv", "v", "vi", "vii"])
+
+        # Resolve the label range "iii-v" to indices 0,1,2.
+        def mock_get_page_numbers(label):
+            return {"iii": [0], "iv": [1], "v": [2], "vi": [3], "vii": [4]}.get(
+                label, []
+            )
+
+        mock_doc.get_page_numbers = mock_get_page_numbers
+        mock_fitz_open.return_value = mock_doc
+
+        async with client_session(mcp_fuzzy_search.mcp._mcp_server) as client:
+            result = await client.call_tool(
+                "extract_pdf_pages",
+                {"file": str(test_pdf), "pages": "iii-v", "format": "plain"},
+            )
+
+        data = json.loads(result.content[0].text)
+        assert "error" not in data
+        assert data["pages_extracted"] == [0, 1, 2]
+        assert data["page_labels"] == ["iii", "iv", "v"]
+        # The whole point: one cached call regardless of how many pages.
+        assert mock_doc.get_page_labels.call_count == 1
+
+
+async def test_extract_pdf_pages_page_cap_trips(tmp_path: Path, monkeypatch):
+    """A request larger than the cap is trimmed and reported explicitly."""
+    test_pdf = tmp_path / "test.pdf"
+    test_pdf.write_bytes(_MINIMAL_PDF)
+
+    monkeypatch.setattr(mcp_fuzzy_search, "MCP_FUZZY_MAX_PDF_PAGES", 5)
+
+    with patch("mcp_fuzzy_search.fitz.open") as mock_fitz_open:
+        mock_fitz_open.return_value = _mock_pdf_doc(100)
+
+        async with client_session(mcp_fuzzy_search.mcp._mcp_server) as client:
+            result = await client.call_tool(
+                "extract_pdf_pages",
+                {
+                    "file": str(test_pdf),
+                    "pages": "1-100",
+                    "format": "plain",
+                    "one_based": True,
+                },
+            )
+
+        data = json.loads(result.content[0].text)
+        assert "error" not in data
+        assert data["pages_extracted"] == [0, 1, 2, 3, 4]
+        assert data["truncated"] is True
+        assert "MCP_FUZZY_MAX_PDF_PAGES" in data["truncation_note"]
+        # The note names the ORIGINAL requested count so the drop is visible.
+        assert "100" in data["truncation_note"]
+        # Only the surviving pages appear in the content.
+        assert "Content of page 5" in data["content"]
+        assert "Content of page 6" not in data["content"]
+
+
+async def test_extract_pdf_pages_page_cap_disabled(tmp_path: Path, monkeypatch):
+    """MCP_FUZZY_MAX_PDF_PAGES <= 0 restores the historical unbounded behavior."""
+    test_pdf = tmp_path / "test.pdf"
+    test_pdf.write_bytes(_MINIMAL_PDF)
+
+    monkeypatch.setattr(mcp_fuzzy_search, "MCP_FUZZY_MAX_PDF_PAGES", 0)
+
+    with patch("mcp_fuzzy_search.fitz.open") as mock_fitz_open:
+        mock_fitz_open.return_value = _mock_pdf_doc(100)
+
+        async with client_session(mcp_fuzzy_search.mcp._mcp_server) as client:
+            result = await client.call_tool(
+                "extract_pdf_pages",
+                {
+                    "file": str(test_pdf),
+                    "pages": "1-100",
+                    "format": "plain",
+                    "one_based": True,
+                },
+            )
+
+        data = json.loads(result.content[0].text)
+        assert "error" not in data
+        assert len(data["pages_extracted"]) == 100
+        assert "truncated" not in data
+        assert "truncation_note" not in data
+
+
+async def test_extract_pdf_pages_page_cap_default_no_trip(tmp_path: Path):
+    """A typical small request under the default cap is unflagged (byte-compat)."""
+    test_pdf = tmp_path / "test.pdf"
+    test_pdf.write_bytes(_MINIMAL_PDF)
+
+    with patch("mcp_fuzzy_search.fitz.open") as mock_fitz_open:
+        mock_fitz_open.return_value = _mock_pdf_doc(10)
+
+        async with client_session(mcp_fuzzy_search.mcp._mcp_server) as client:
+            result = await client.call_tool(
+                "extract_pdf_pages",
+                {
+                    "file": str(test_pdf),
+                    "pages": "1-3",
+                    "format": "plain",
+                    "one_based": True,
+                },
+            )
+
+        data = json.loads(result.content[0].text)
+        assert "error" not in data
+        assert data["pages_extracted"] == [0, 1, 2]
+        assert "truncated" not in data
+        assert "truncation_note" not in data
+
+
+async def test_extract_pdf_pages_page_cap_with_fuzzy_hint(tmp_path: Path, monkeypatch):
+    """When the cap trims before fuzzy filtering, the two stages stay coherent:
+
+    truncation_note names the original requested count, while
+    pages_before_filter reports the post-cap count (pages that entered fzf).
+    """
+    test_pdf = tmp_path / "test.pdf"
+    test_pdf.write_bytes(_MINIMAL_PDF)
+
+    monkeypatch.setattr(mcp_fuzzy_search, "MCP_FUZZY_MAX_PDF_PAGES", 5)
+
+    with patch("mcp_fuzzy_search.fitz.open") as mock_fitz_open:
+        mock_fitz_open.return_value = _mock_pdf_doc(100)
+
+        with patch("subprocess.run") as mock_run:
+            mock_fzf_result = MagicMock()
+            mock_fzf_result.returncode = 0
+            # fzf keeps two of the five capped pages (0-based 0 and 2).
+            mock_fzf_result.stdout = (
+                b"Page 1 (Label: 1)\nContent of page 1\x00"
+                b"Page 3 (Label: 3)\nContent of page 3\x00"
+            )
+            mock_run.return_value = mock_fzf_result
+
+            async with client_session(mcp_fuzzy_search.mcp._mcp_server) as client:
+                result = await client.call_tool(
+                    "extract_pdf_pages",
+                    {
+                        "file": str(test_pdf),
+                        "pages": "1-100",
+                        "format": "plain",
+                        "one_based": True,
+                        "fuzzy_hint": "content",
+                    },
+                )
+
+        data = json.loads(result.content[0].text)
+        assert "error" not in data
+        assert data["truncated"] is True
+        assert "100" in data["truncation_note"]  # original requested count
+        assert data["pages_before_filter"] == 5  # post-cap, pre-filter
+        assert data["pages_after_filter"] == 2
+
+
+# ---------------------------------------------------------------------------
 # PDF Info Tools Tests
 # ---------------------------------------------------------------------------
 

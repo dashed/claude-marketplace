@@ -7,6 +7,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-06-19
+
+### Added
+- `extract_pdf_pages` page cap, configurable via `MCP_FUZZY_MAX_PDF_PAGES`
+  (default 500; set to `0` to disable). A pathological range such as
+  `pages="1-100000"` previously expanded to tens of thousands of page indices
+  and buffered every page's extracted text/HTML at once; the cap is applied
+  after deduplicating the requested indices and before extraction, so duplicates
+  collapse first and never consume the budget. When the cap trips the result is
+  trimmed to the cap and gains additive `truncated: true` / `truncation_note`
+  keys (and logs a warning) via the shared `_with_truncation` helper; the note
+  names the original requested count. Tool signature and existing result keys
+  are unchanged, and the default leaves typical extractions byte-identical.
+
+### Fixed
+- `extract_pdf_pages` called `doc.get_page_labels()` — which rebuilds the
+  whole-document label list on each call — inside both the per-page
+  range-mapping loop and the per-page extraction loop, making label resolution
+  O(pages × labels). It is now fetched once and cached right after `fitz.open`
+  (a single O(1) call; on a 10-page label range, measured 20 calls → 1).
+  Extracted content, `pages_extracted`, and `page_labels` are byte-identical to
+  before.
+
 ## [1.2.0] - 2026-06-19
 
 ### Fixed
