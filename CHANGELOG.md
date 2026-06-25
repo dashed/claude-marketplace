@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.42.1] - 2026-06-25
+
 ### Changed
 - fuzzy-filter skill & fuzzy-search MCP: documented the escaped-space (`\ `) phrase idiom and the real code-navigation patterns it composes into. A bare space is fzf's AND separator, so a multi-word phrase (a function/class signature) must backslash-escape its spaces — `'def\ parse_config` matches the contiguous phrase, whereas `'def 'parse_config` matches two independent terms. Added an escaped-space row to both the fuzzy-filter `SKILL.md` and the fuzzy-search `README.md` syntax tables; added a "Code-navigation idioms" table to `SKILL.md` (jump-to-definition `'def\ name`, symbol-minus-tests `'Symbol !tests/`, symbol+area+skip-tests) distilling the shape "exact term(s) with `\ ` for phrases + `!path` exclusions"; and added two combined-operator examples to the `fuzzy_search_content` tool docstring (operators were previously shown only in isolation). Docs only — no behavior or tool-signature change; the backslash is a literal character passed straight to `fzf --filter`, so the idiom works identically on the CLI and through the MCP `fuzzy_filter` argument.
 - statusline skill: folded the "Responsive Width-Aware Wrapping" packer directly into the dual-VCS reference script (it was previously documented only as a separate, opt-in section). The script now ends with a greedy segment packer using a *parallel* `seps[]` array — so a wide terminal reproduces the original `model | dir [jj …] [git …] | ctx N%` layout byte-for-byte while a narrow one wraps at segment boundaries — and the reference script now also includes the context-window `ctx N%` segment. Output examples gained the `ctx` suffix and a narrow-terminal wrapped example; Design Notes and the wrapping section were reconciled to describe the now-embedded packer. Mirrors the deployed `~/.claude/statusline-command.sh`
@@ -622,7 +624,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.42.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.42.1...HEAD
+[0.42.1]: https://github.com/dashed/claude-marketplace/compare/v0.42.0...v0.42.1
 [0.42.0]: https://github.com/dashed/claude-marketplace/compare/v0.41.0...v0.42.0
 [0.41.0]: https://github.com/dashed/claude-marketplace/compare/v0.40.0...v0.41.0
 [0.40.0]: https://github.com/dashed/claude-marketplace/compare/v0.39.0...v0.40.0

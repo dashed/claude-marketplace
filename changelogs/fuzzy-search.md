@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.3.1] - 2026-06-25
+
 ### Changed
 - `fuzzy_search_content` tool docstring: added two examples to the "Finding Functions"
   block that show the workhorse *combination* of operators (previously each was

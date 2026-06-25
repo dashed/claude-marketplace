@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.42.0"
+    "version": "0.42.1"
   },
   "plugins": [
     {
@@ -614,7 +614,7 @@
     },
     {
       "name": "statusline",
-      "version": "1.3.0",
+      "version": "1.3.1",
       "source": "./plugins/statusline",
       "description": "Configure the Claude Code status line with VCS-aware scripts showing git branch, jj change ID, bookmarks, context usage, and costs. Use when setting up a statusline, customizing the status bar, or adding VCS info to the status line.",
       "author": {
@@ -735,7 +735,7 @@
     },
     {
       "name": "fuzzy-search",
-      "version": "1.3.0",
+      "version": "1.3.1",
       "source": "./plugins/fuzzy-search",
       "description": "MCP server exposing fuzzy content/file/document search tools built on ripgrep + fzf (plus ripgrep-all and PyMuPDF for PDFs). Use when searching code, files, or documents with fuzzy filtering, or extracting/inspecting PDF pages and outlines.",
       "author": {
@@ -826,7 +826,7 @@
     },
     {
       "name": "fuzzy-filter",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "source": "./plugins/fuzzy-filter",
       "description": "The non-interactive `rg`/`fd`/`rga` → `fzf --filter` pipeline — scan with a regex tool, then fuzzy-rank the lines without a TUI. Use when fuzzy-matching file paths, code lines, or document/PDF text from a script or one-shot command, reproducing the fuzzy-search MCP on the bare CLI, or piping fuzzy-ranked results into xargs/an editor. The CLI technique; for the INTERACTIVE picker use the fzf skill, for tool-call ergonomics use the fuzzy-search MCP.",
       "author": {
