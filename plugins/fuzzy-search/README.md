@@ -47,12 +47,21 @@ fuzzy (subsequence) match:
 | `!fire` | inverse-exact-match | Items that do not include `fire` |
 | `!^music` | inverse-prefix-exact-match | Items that do not start with `music` |
 | `!.mp3$` | inverse-suffix-exact-match | Items that do not end with `.mp3` |
+| `def\ get` | escaped-space | A literal space inside one term: matches the contiguous phrase `def get` |
 
 A single `|` term acts as an OR for the adjacent terms: `^core go$ | rb$ | py$`
 matches items that start with `core` and end with `go`, `rb`, or `py`. Queries
 are smart-case (all-lowercase → case-insensitive; any uppercase letter →
 case-sensitive). `.`, `*`, `(`, `[` are literal characters, not regex
 metacharacters.
+
+Because a space separates terms (AND), a multi-word phrase must **backslash-escape
+its spaces**: `'def\ parse_config` matches the contiguous string
+`def parse_config`, while `'def 'parse_config` matches those two substrings
+independently. The backslash is a literal character in the `fuzzy_filter` string
+(no shell is involved — the value is passed straight to `fzf --filter`). A common
+code-navigation idiom combines this with exclusions, e.g.
+`'UserSession !tests/` (exact symbol, skip test paths).
 
 ## Prerequisites
 

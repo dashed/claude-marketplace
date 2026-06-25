@@ -7,6 +7,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+- `fuzzy_search_content` tool docstring: added two examples to the "Finding Functions"
+  block that show the workhorse *combination* of operators (previously each was
+  documented only in isolation) — `'def\ parse_config` (exact-prefix + escaped
+  space → jump to a contiguous definition, not two ANDed terms) and
+  `'UserSession !tests/` (exact term + path exclusion → a symbol's non-test usages).
+- `README.md` search-syntax section: added an escaped-space row to the `fuzzy_filter`
+  token table and a note that a multi-word phrase must backslash-escape its spaces
+  (`'def\ parse_config` contiguous vs. `'def 'parse_config` two independent
+  terms), clarifying the backslash is a literal character passed straight to
+  `fzf --filter` (no shell involved).
+
 ## [1.3.0] - 2026-06-19
 
 ### Added

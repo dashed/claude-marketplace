@@ -86,6 +86,7 @@ sigils make terms exact. Space-separated terms are **AND**ed.
 | `sbtrkt` | Fuzzy (subsequence) | matches `SubstringTracking` |
 | `'wild` | Exact substring | contains `wild` literally |
 | `'wild'` | Exact at word boundaries `(fzf 0.55+)` | `wild` as a whole word |
+| `def\ get` | Literal space (one term) | the contiguous phrase `def get`, not two ANDed terms |
 | `^core` | Prefix | starts with `core` |
 | `.py$` | Suffix | ends with `.py` |
 | `!fire` | Inverse | does **not** contain `fire` |
@@ -97,6 +98,30 @@ So `def test_ seer credit` means: fuzzy-`def test_` **AND** fuzzy-`seer` **AND**
 fuzzy-`credit`, in any order. This is **not** a regex — `.`, `*`, `(`, `[` are
 literal characters here, not metacharacters. (Same language as the **fzf
 skill's "Search Syntax"** section — batch and interactive use the same matcher.)
+
+**Space is the AND separator — backslash-escape it to match a literal space.**
+Because a bare space splits terms, a multi-word phrase like a function signature
+must escape its spaces: `'def\ parse_config` matches the *contiguous* string
+`def parse_config`, whereas `'def 'parse_config` (two exact terms) matches
+those two substrings independently anywhere on the line. Use `\ ` when adjacency
+matters. The escape survives the shell inside double quotes
+(`fzf --filter "'def\ parse_config"`), and through the fuzzy-search MCP it is
+just a literal backslash in the `fuzzy_filter` string.
+
+### Code-navigation idioms
+
+These compose the operators above into the patterns you actually reach for when
+moving around a codebase (a bare-fuzzy query is rarely precise enough on its own):
+
+| Goal | Query | Reading |
+|---|---|---|
+| Jump to a definition | `'def\ parse_config` | exact, contiguous `def parse_config` |
+| A symbol, but not its tests | `'UserSession !tests/` | exact `UserSession`, exclude any `tests/` path |
+| Narrow by symbol + area + skip tests | `'HttpClient 'handlers/ !tests/` | three ANDed constraints |
+| A class definition | `'class\ User` | contiguous `class User` (or `^class\ User` to anchor) |
+
+The recurring shape is **exact term(s) (`'…`, with `\ ` for phrases) + `!path`
+exclusions** — anchor on what you know literally, then subtract the noise.
 
 > **Smart-case applies to the fuzzy query too:** an all-lowercase query is
 > case-insensitive; any uppercase letter makes it case-sensitive — the same rule

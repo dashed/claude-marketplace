@@ -4,6 +4,12 @@ All notable changes to the fuzzy-filter skill in this marketplace will be docume
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Added
+- "Code-navigation idioms" table to `SKILL.md` capturing the patterns that recur in real codebase navigation — jump to a definition (`'def\ parse_config`), a symbol minus its tests (`'UserSession !tests/`), symbol + area + skip-tests (`'HttpClient 'handlers/ !tests/`) — distilling the shape "exact term(s) with `\ ` for phrases + `!path` exclusions"
+- Escaped-space (`def\ get`) row to the "Fuzzy Filter Syntax" table, plus a note explaining that because a bare space is the AND separator, a multi-word phrase must backslash-escape its spaces (`'def\ parse_config` = contiguous phrase vs. `'def 'parse_config` = two independent terms), and that the escape survives the shell in double quotes and is a literal backslash through the fuzzy-search MCP `fuzzy_filter` string
+
 ## [1.0.1] - 2026-06-11
 
 ### Added
