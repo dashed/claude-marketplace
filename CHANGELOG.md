@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- statusline skill: folded the "Responsive Width-Aware Wrapping" packer directly into the dual-VCS reference script (it was previously documented only as a separate, opt-in section). The script now ends with a greedy segment packer using a *parallel* `seps[]` array — so a wide terminal reproduces the original `model | dir [jj …] [git …] | ctx N%` layout byte-for-byte while a narrow one wraps at segment boundaries — and the reference script now also includes the context-window `ctx N%` segment. Output examples gained the `ctx` suffix and a narrow-terminal wrapped example; Design Notes and the wrapping section were reconciled to describe the now-embedded packer. Mirrors the deployed `~/.claude/statusline-command.sh`
+
 ## [0.42.0] - 2026-06-19
 
 ### Added

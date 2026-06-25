@@ -4,6 +4,13 @@ All notable changes to the statusline skill in this marketplace will be document
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Changed
+- Folded the width-aware greedy segment packer (added as a standalone section in 1.3.0) directly into the dual-VCS reference script. The script accumulates each VCS block into a `vcs_segments` array and ends with the packer instead of a plain `echo`; a `segs[]`/`seps[]` parallel-array design preserves the original mixed separators (`" | "` around model/dir/`ctx`, a bare space before VCS blocks) so wide-terminal output is byte-for-byte unchanged, while narrow terminals wrap at segment boundaries
+- The reference script now also renders the context-window usage as a trailing `ctx N%` segment (its own breakable unit, so it wraps with the rest)
+- Updated Output Examples with the `ctx` suffix plus a narrow-terminal (`COLUMNS=40`) wrapped example; added a Design Notes bullet for the packer; reworked the "Responsive Width-Aware Wrapping" section to explain the now-embedded packer (parallel separators, oversized-segment tail-truncation) rather than presenting it as an opt-in add-on
+
 ## [1.3.0] - 2026-06-19
 
 ### Added
