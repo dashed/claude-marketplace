@@ -1233,6 +1233,30 @@
       "skills": [
         "./skills"
       ]
+    },
+    {
+      "name": "model-routing",
+      "version": "1.0.0",
+      "source": "./plugins/model-routing",
+      "description": "Install and maintain a \"model routing\" section in a project's CLAUDE.md that teaches Claude Code which model to use for which work, including delegating to GPT models via the Codex CLI. Use when adding model-picking guidance to CLAUDE.md, setting up Codex/GPT as a delegation target or fallback, or routing subagent and workflow tasks across models by cost, intelligence, and taste.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/model-routing",
+      "license": "MIT",
+      "keywords": [
+        "model-routing",
+        "codex",
+        "multi-model",
+        "subagents",
+        "workflows",
+        "orchestration",
+        "claude-md"
+      ],
+      "strict": false,
+      "skills": [
+        "./skills"
+      ]
     }
   ]
 }
