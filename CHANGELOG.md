@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.43.0] - 2026-07-01
+
 ### Added
 - model-routing skill: install and maintain a "model routing" section in a project's CLAUDE.md that teaches the orchestrating Claude which model to use for which work — a per-model cost/intelligence/taste rankings table with defaults-not-limits escalation rules, plus the mechanics for reaching each model (Agent/Workflow `model` parameter for Claude models; `codex exec` for GPT models, including the thin sonnet-wrapper pattern for using Codex inside workflows and subagents). Ships a customizable CLAUDE.md section template (`references/claude-md-template.md`) and a `codex exec` flag reference verified against the Codex CLI source (`references/codex-cli.md`). Adapted from Theo's multi-model CLAUDE.md workflow (idea.md)
 
@@ -627,7 +629,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.42.1...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.43.0...HEAD
+[0.43.0]: https://github.com/dashed/claude-marketplace/compare/v0.42.1...v0.43.0
 [0.42.1]: https://github.com/dashed/claude-marketplace/compare/v0.42.0...v0.42.1
 [0.42.0]: https://github.com/dashed/claude-marketplace/compare/v0.41.0...v0.42.0
 [0.41.0]: https://github.com/dashed/claude-marketplace/compare/v0.40.0...v0.41.0
