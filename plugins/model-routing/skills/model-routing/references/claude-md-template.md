@@ -1,5 +1,9 @@
 # Model-Routing Section Template
 
+Pattern source: Theo's multi-model CLAUDE.md workflow —
+[x.com/theo/status/2072481845363822914](https://x.com/theo/status/2072481845363822914),
+[x.com/theo/status/2072482460122964067](https://x.com/theo/status/2072482460122964067).
+
 Instantiate this template into the target project's CLAUDE.md (or the user's
 global `~/.claude/CLAUDE.md` if they want it everywhere). The section below is
 a working default for a setup with a Claude Code subscription plus the Codex

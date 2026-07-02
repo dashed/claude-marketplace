@@ -16,7 +16,10 @@ so the orchestrating Claude routes each piece of work to the cheapest model
 that clears the quality bar — including non-Claude models reached through the
 Codex CLI.
 
-The pattern (popularized by Theo's multi-model workflow): score each available
+The pattern (popularized by Theo's multi-model workflow:
+[x.com/theo/status/2072481845363822914](https://x.com/theo/status/2072481845363822914),
+[x.com/theo/status/2072482460122964067](https://x.com/theo/status/2072482460122964067)):
+score each available
 model on three axes, state routing rules as defaults-not-limits with standing
 permission to escalate, and document the exact mechanics (`codex exec`,
 Agent/Workflow `model` parameter) so routing actually happens instead of

@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.43.0] - 2026-07-01
 
 ### Added
-- model-routing skill: install and maintain a "model routing" section in a project's CLAUDE.md that teaches the orchestrating Claude which model to use for which work — a per-model cost/intelligence/taste rankings table with defaults-not-limits escalation rules, plus the mechanics for reaching each model (Agent/Workflow `model` parameter for Claude models; `codex exec` for GPT models, including the thin sonnet-wrapper pattern for using Codex inside workflows and subagents). Ships a customizable CLAUDE.md section template (`references/claude-md-template.md`) and a `codex exec` flag reference verified against the Codex CLI source (`references/codex-cli.md`). Adapted from Theo's multi-model CLAUDE.md workflow (idea.md)
+- model-routing skill: install and maintain a "model routing" section in a project's CLAUDE.md that teaches the orchestrating Claude which model to use for which work — a per-model cost/intelligence/taste rankings table with defaults-not-limits escalation rules, plus the mechanics for reaching each model (Agent/Workflow `model` parameter for Claude models; `codex exec` for GPT models, including the thin sonnet-wrapper pattern for using Codex inside workflows and subagents). Ships a customizable CLAUDE.md section template (`references/claude-md-template.md`) and a `codex exec` flag reference verified against the Codex CLI source (`references/codex-cli.md`). Adapted from Theo's multi-model CLAUDE.md workflow (https://x.com/theo/status/2072481845363822914, https://x.com/theo/status/2072482460122964067)
 
 ## [0.42.1] - 2026-06-25
 

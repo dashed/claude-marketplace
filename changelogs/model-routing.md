@@ -12,7 +12,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   CLAUDE.md — a per-model cost/intelligence/taste rankings table plus
   application rules and mechanics — so the orchestrating Claude routes
   subagent and workflow tasks to the cheapest model that clears the quality
-  bar (pattern adapted from Theo's multi-model CLAUDE.md workflow)
+  bar (pattern adapted from Theo's multi-model CLAUDE.md workflow:
+  https://x.com/theo/status/2072481845363822914 and
+  https://x.com/theo/status/2072482460122964067)
 - `references/claude-md-template.md`: the customizable CLAUDE.md section
   template (rankings table, defaults-not-limits escalation rules, Codex CLI
   mechanics, thin-wrapper pattern for using GPT models inside workflows and
