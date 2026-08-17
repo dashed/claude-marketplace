@@ -1,0 +1,33 @@
+{
+  "name": "ty",
+  "version": "1.0.0+codex.161e050cc317",
+  "description": "ty \u2014 Astral's extremely fast (Rust) Python type checker and language server, in 0.0.x beta. Use when running or configuring `ty check`, reading ty diagnostics, setting rule levels in `[tool.ty]`/`ty.toml`, writing `# ty: ignore[rule]` suppressions, debugging environment or module-resolution failures, wiring ty into CI (exit codes, `--output-format github`), or migrating from mypy/pyright. Pinned to ty 0.0.72. The type checker \u2014 NOT ruff (lint/format) or uv (packaging).",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "ty",
+    "python",
+    "type-checker",
+    "typing",
+    "mypy",
+    "astral",
+    "cli"
+  ],
+  "interface": {
+    "displayName": "Ty",
+    "shortDescription": "ty \u2014 Astral's extremely fast (Rust) Python type checker and language server, in 0.0.x beta. Use when running or configuring `ty check`, reading ty diagnostics, setting rule...",
+    "longDescription": "ty \u2014 Astral's extremely fast (Rust) Python type checker and language server, in 0.0.x beta. Use when running or configuring `ty check`, reading ty diagnostics, setting rule levels in `[tool.ty]`/`ty.toml`, writing `# ty: ignore[rule]` suppressions, debugging environment or module-resolution failures, wiring ty into CI (exit codes, `--output-format github`), or migrating from mypy/pyright. Pinned to ty 0.0.72. The type checker \u2014 NOT ruff (lint/format) or uv (packaging).",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $ty for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/ty",
+  "skills": "./skills/"
+}

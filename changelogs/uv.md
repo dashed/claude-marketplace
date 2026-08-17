@@ -4,6 +4,32 @@ All notable changes to the uv skill in this marketplace will be documented in th
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.1.0] - 2026-08-16
+
+Re-verified the skill against the **uv 0.12.x** line (`uv 0.12.5`, released 2026-08-14) — it was previously documented against 0.11.x with examples verified on `uv 0.11.2`. uv is `0.x`, so **0.12.0 shipped breaking changes in a minor bump**; this is a correctness pass over that delta, not a rewrite. Structure, voice, and the "four surfaces over one binary" mental model are unchanged.
+
+### Fixed
+- **`uv init` was documented with the pre-0.12 flat layout.** `uv 0.12.0` made projects **packaged by default** (`uv_build` `[build-system]` + `src/<name>/` + a `[project.scripts]` entry), so `SKILL.md`'s `uv init demo` file list, its `uv run main.py` example, and `projects.md`'s `--app` table row and init example were all wrong. Corrected and re-verified empirically, with `--no-package` documented as the way back to the old layout.
+- **`--prerelease` default was stale.** `pip-config.md` listed the modes without flagging that `0.12.0` changed the default from `if-necessary-or-explicit` to `if-necessary` (and demoted the old name to a deprecated alias) — a resolution-affecting change, since transitively-discovered pre-release requirements now resolve where they used to fail.
+- **`uv tool upgrade` was said to have no `--reinstall`.** Verified on 0.12.5: `--reinstall` and `--reinstall-package` are present. (`--upgrade-package` is still genuinely absent — that half of the claim stands.)
+- **`--torch-backend` CUDA/ROCm values were stale.** Newest CUDA is now `cu132` (was documented as `cu130`) and ROCm reaches `rocm7.2`; also corrected the command list to `uv tool run`/`uv tool install` rather than a loose "uvx / uv tool".
+- **`uv cache size` was documented as an ordinary command** — it is still a **preview** feature on 0.12.5.
+- **`uv format` was described as "still preview in 0.11.x"** — re-pinned to 0.12.x (it remains preview).
+- Removed a stale "not on a 0.11.2 box" caveat on per-index keys and re-pinned `uv lock`'s "no `--locked`/`--frozen`" note to 0.12.5.
+
+### Added
+- **`uv check`** *(preview, uv 0.11.18+)* — the ty-backed project type checker, previously absent from the skill. Documented in `SKILL.md`'s command list with `--fix`, `--package`/`--all-packages`, and `--script`, and explicitly distinguished from a lockfile check.
+- **A "upgrading to 0.12? four things bite" troubleshooting entry** covering the packaged-`init` default, the `--prerelease` default, `uv venv --clear` needing `--force` for non-virtualenv directories, and `--project` path validation becoming an error.
+- **12 new rows in `version-features.md`'s breaking table for the `0.12.0` batch** — packaged init, prerelease default, stricter `--project`, `uv venv --clear`, script-relative `uv run` discovery, PEP 625 archive-format rejection, hash-checking hardening (`--require-hashes` in requirements files; MD5 rejected), `--reinstall` no longer upgrading Python, `--upgrade-group` validation, `--directory`-relative indexes, and absolute-path preservation in `uv add`.
+- **21 new rows in the feature → minimum-version table** spanning `0.11.18`→`0.12.3`: `uv check` (+ `--fix`, `--package`/`--all-packages`), `uv tool audit`, `uv init --no-package`, `uv venv --force`, `uv pip --cert`, `--prerelease-package`, `uv tree --format json`, `uv pip compile --emit-build-options`, `TY`/`RUFF` binary-path env vars, `preview-features` in `uv.toml`/`pyproject.toml`, `uv audit` SARIF output, scoped dependency overrides/exclusions, `UV_RUN_RLIMIT_NOFILE`, `uv cache size --output-format`, Xonsh `activate.xsh`, and CUDA 13.2. The hidden `uv upgrade` command is now recorded as a row marked **hidden** rather than silently omitted.
+- **Per-feature preview opt-out** documented (`--preview-features format-command|check-command|audit-command|cache-size|workspace-metadata`), plus `uv workspace dir`/`list` in the command list.
+- New `pip-config.md` sections for **hash checking (changed in 0.12.0)** and `--directory`-relative index resolution.
+
+### Changed
+- **Disambiguation note now cross-references the real sibling skills.** `ruff` and `ty` are shipped as their own marketplace skills in this release, so the note points at them for rules/config/diagnostics and states that uv merely shells out — `uv format` wraps `ruff format`, `uv check` wraps `ty check` (both preview). No content is duplicated from those skills.
+- Version pin moved to the 0.12.x line throughout; provenance labels now distinguish what was originally verified on 0.11.2 from what was re-verified on 0.12.5.
+- **Flag audit:** every one of the ~203 flag strings the skill documented was mechanically cross-checked against `uv help <command>` captures for 54 subcommands on 0.12.5. **Zero flags failed verification** — no flag was renamed or removed. The errors found were behavioral (defaults, layouts, values), which is what a changelog-only review would have missed in the other direction.
+
 ## [1.0.0] - 2026-06-11
 
 ### Added

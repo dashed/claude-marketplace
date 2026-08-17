@@ -1,6 +1,6 @@
 ---
 name: uv
-description: uv — Astral's single, fast (Rust) binary that replaces pip, pip-tools, pipx, pyenv, poetry/pdm, and virtualenv for Python packaging and project management. Use when managing a Python project with `pyproject.toml` + a universal `uv.lock` (`uv init/add/remove/sync/lock/run`), running PEP 723 inline-metadata scripts (`uv run script.py`), running one-off tools with `uvx` or installing them with `uv tool install`, installing/pinning Python versions (`uv python install/pin/list`), using `uv pip` as a faster drop-in pip/pip-tools replacement, creating venvs (`uv venv`), or building/publishing packages (`uv build`/`uv publish`). Triggers on mentions of uv, the `uv` command, `uvx`, `uv.lock`, `tool.uv`, `uv add/sync/run`, PEP 723 `# /// script` blocks, or "fast Python package manager". This is the **uv CLI by Astral** — NOT ruff (linter/formatter) or ty (type checker), which are separate Astral tools, and NOT poetry/pip/pyenv themselves.
+description: uv — Astral's single, fast (Rust) binary that replaces pip, pip-tools, pipx, pyenv, poetry/pdm, and virtualenv for Python packaging and project management. Use when managing a Python project with `pyproject.toml` + a universal `uv.lock` (`uv init/add/remove/sync/lock/run`), running PEP 723 inline-metadata scripts (`uv run script.py`), running one-off tools with `uvx` or installing them with `uv tool install`, installing/pinning Python versions (`uv python install/pin/list`), using `uv pip` as a faster drop-in pip/pip-tools replacement, creating venvs (`uv venv`), or building/publishing packages (`uv build`/`uv publish`). Triggers on mentions of uv, the `uv` command, `uvx`, `uv.lock`, `tool.uv`, `uv add/sync/run`, PEP 723 `# /// script` blocks, or "fast Python package manager". This is the **uv CLI by Astral** — NOT ruff (linter/formatter) or ty (type checker), which are separate Astral tools with their own skills here, and NOT poetry/pip/pyenv themselves.
 ---
 
 # uv - Python Package & Project Manager
@@ -44,22 +44,24 @@ default**, and does **NOT** touch `pyproject.toml` or `uv.lock`. Reach for it wh
 existing pip workflow; reach for the project interface for new work.
 
 > **Disambiguation:** This skill is the **uv CLI itself**. **ruff** (linter/formatter) and **ty**
-> (type checker) are *separate* Astral tools with their own skills — `uv format` is a (preview) uv
-> command that *wraps* Ruff but belongs to uv. uv is a CLI, not an MCP/agent server.
+> (type checker) are *separate* Astral tools with their **own skills** — go there for rules,
+> config, and diagnostics. uv only *shells out* to them: `uv format` wraps `ruff format` and
+> `uv check` wraps `ty check` (both **preview**). uv is a CLI, not an MCP/agent server.
 
 ## Prerequisites
 
 **CRITICAL**: verify uv is installed and check the version:
 
 ```bash
-uv --version          # e.g. "uv 0.11.2 (02036a8ba 2026-03-26 ...)"
+uv --version          # e.g. "uv 0.12.5 (210d1f678 2026-08-14 ...)"
 uv self version       # same, since 0.7.0 (older uv printed this via `uv version`)
 ```
 
-**Version note:** This skill is documented against the uv **0.11.x** line (current latest 0.11.20;
-examples verified on **0.11.2**). uv is **0.x**, so **breaking changes can land in MINOR bumps** —
-features stable at or before **uv 0.4.0** are "bedrock" and shown **unannotated**; later additions
-are tagged inline as `(uv 0.X+)` only where sourced. See
+**Version note:** This skill is documented against the uv **0.12.x** line (examples verified on
+**0.12.5**). uv is **0.x**, so **breaking changes land in MINOR bumps** — and **0.12.0 was one**:
+`uv init` now packages by default, `--prerelease` defaults changed, and `--project` /
+`uv venv --clear` got stricter. Features stable at or before **uv 0.4.0** are "bedrock" and shown
+**unannotated**; later additions are tagged inline as `(uv 0.X+)` only where sourced. See
 [references/version-features.md](references/version-features.md) for the full feature → version map
 with CHANGELOG citations. Always confirm on the running build with `uv --version`.
 
@@ -83,22 +85,30 @@ The standalone installer puts uv in `~/.local/bin` (since uv 0.5.0; it was `~/.c
 
 ## Core Workflows
 
-All examples below were verified on uv 0.11.2.
+All examples below were verified on uv 0.12.5.
 
 ### 1. New project + add a dependency + run
 
 ```bash
-uv init demo --python 3.13   # pyproject.toml, main.py, README.md, .python-version, .git
+uv init demo --python 3.13   # pyproject.toml + src/demo/__init__.py + README + .python-version + .git
 cd demo
 uv add requests              # adds requests>=X to [project.dependencies], updates uv.lock, syncs .venv
 uv run python -c "import requests; print(requests.__version__)"
-uv run main.py
+uv run demo                  # the [project.scripts] entry point uv init generated
 ```
 
 `uv add` writes a lower-bound (e.g. `requests>=2.34.2`), re-resolves `uv.lock`, and installs into
-`.venv` automatically — no manual activation. `uv remove PKG` reverses it. Variants of `uv init`:
-`--app` (default, flat), `--package`/`--lib` (packaged, gets a `[build-system]`), `--script`
-(a standalone PEP 723 script), `--bare` (just `pyproject.toml`).
+`.venv` automatically — no manual activation. `uv remove PKG` reverses it.
+
+> **Changed in uv 0.12.0:** `uv init` now **packages projects by default** — it writes a
+> `[build-system]` using `uv_build`, puts code under `src/<name>/`, and adds a `[project.scripts]`
+> entry, so the project is importable from tests and installable as a dependency. The old flat
+> `main.py` layout with no build system is now **`uv init --no-package`**. Existing projects are
+> unaffected; if you pin `uv_build`, widen it to `uv_build>=0.11.32,<0.13`.
+
+Variants of `uv init`: `--app` (default kind — packaged since 0.12.0), `--package`/`--lib`
+(packaged; `--lib` adds `py.typed`), `--script` (a standalone PEP 723 script), `--bare` (just
+`pyproject.toml`), `--no-package` (the pre-0.12 flat `main.py` layout).
 
 ### 2. PEP 723 inline-metadata script
 
@@ -143,7 +153,9 @@ uv run python --version       # uses the pinned/managed Python, downloading on d
 ```
 
 uv downloads CPython from Astral's `python-build-standalone` — no system Python or pyenv required.
-`uv python upgrade 3.13` does **patch** upgrades only (uv 0.10.0+).
+`uv python upgrade 3.13` does **patch** upgrades only (uv 0.10.0+). Since **uv 0.12.0**,
+`uv python install 3.13 --reinstall` reinstalls the patch releases you already have rather than
+implicitly fetching the newest — use `--upgrade` to actually move forward.
 
 ### 5. Migrate from pip (the `uv pip` interface)
 
@@ -185,15 +197,20 @@ runs. Note that on `uv lock` itself the flags are `--check` / `--check-exists`; 
 - **`uv version`** *(uv 0.7.0+)* — read/set the **project** version (`uv version --bump patch`,
   `--dry-run`). Before 0.7.0 this printed uv's own version (now `uv self version`).
 - **`uv auth`** *(uv 0.8.15+)* — manage private-index credentials (`login`/`logout`/`token`).
-- **`uv format`** *(preview, uv 0.8.13+)* — experimental Python formatter wrapping Ruff; still a
-  preview feature in 0.11.x — don't rely on it as a stable everyday command.
-- **`uv audit`** *(preview, uv ~0.10.10+)* — OSV vulnerability scan; preview, surface verifying.
+- **`uv format`** *(preview, uv 0.8.13+)* — runs `ruff format` over the project; still preview in
+  0.12.x — don't rely on it as a stable everyday command.
+- **`uv check`** *(preview, uv 0.11.18+)* — runs `ty check` over the project (`--fix`, `--package`/
+  `--all-packages`, `--script`); preview, and it type-checks — it is not a lockfile check.
+- **`uv audit`** *(preview, uv ~0.10.10+)* — OSV vulnerability scan; also `uv tool audit NAME`
+  *(preview, uv 0.12.2+)* for installed tools.
+- **`uv workspace dir` / `list`** *(uv 0.10.0+)* — script-friendly workspace introspection
+  (`uv workspace metadata` is still preview).
 
 ## Quick Reference
 
 | Task | Command |
 |------|---------|
-| New project | `uv init [--app\|--lib\|--package\|--script]` |
+| New project | `uv init [--app\|--lib\|--package\|--no-package\|--script]` |
 | Add / remove dep | `uv add PKG` / `uv remove PKG` |
 | Dev / group dep | `uv add --dev PKG` / `uv add --group test PKG` |
 | Install env from lock | `uv sync` (exact) |
@@ -225,8 +242,14 @@ runs. Note that on `uv lock` itself the flags are `--check` / `--check-exists`; 
   force reinstall.
 - **`uv version` prints/sets the wrong thing** — since uv 0.7.0 `uv version` is the **project**
   version; use `uv self version` for uv's own version.
-- **`uv format` / `uv audit` "not stable"** — both are **preview** features; behavior and flags
-  can change. Don't bake them into stable pipelines.
+- **`uv format` / `uv check` / `uv audit` "not stable"** — all **preview**; behavior and flags can
+  change. Don't bake them into stable pipelines. Silence the warning per feature with
+  `--preview-features format-command` / `check-command` / `audit-command`.
+- **Upgrading to 0.12? four things bite** — (1) `uv init` now packages by default (`--no-package`
+  restores the flat layout); (2) `--prerelease` defaults to `if-necessary`, so a transitive
+  pre-release requirement can now resolve where it used to fail — pin with `--prerelease disallow`;
+  (3) `uv venv --clear` refuses a non-virtualenv directory without `--force`; (4) a missing or
+  invalid `--project` path is now an error instead of a warning.
 - **Private index auth** — set `UV_INDEX_<NAME>_USERNAME` / `_PASSWORD`, use `~/.netrc`, or
   `--keyring-provider subprocess`; or manage credentials with `uv auth` (uv 0.8.15+).
 - **Building before publish** — `uv build --no-sources` builds as a *consumer* would (ignoring
@@ -247,8 +270,8 @@ For exhaustive detail, see the bundled reference files:
   from pip, caching, configuration discovery & precedence, the `UV_*` environment-variable table,
   indexes / authentication / resolution, `--torch-backend`, and platform/Python pinning.
 - [references/version-features.md](references/version-features.md) — feature → minimum-version map
-  with CHANGELOG citations (what's bedrock ≤0.4 vs. added in 0.5–0.11), plus notable breaking
-  changes by minor release.
+  with CHANGELOG citations (what's bedrock ≤0.4 vs. added in 0.5–0.12), plus notable breaking
+  changes by minor release — including the 0.12.0 batch.
 
 ## Resources
 

@@ -7,8 +7,8 @@ project interface (`uv add`/`sync`/`lock`), scripts, and tools, see
 [SKILL.md](../SKILL.md) and the other references.
 
 > **Verification & version annotations.** Every flag, subcommand, and enum value
-> below was confirmed against the installed **`uv 0.11.2`**
-> (`uv 0.11.2 (02036a8ba 2026-03-26 aarch64-apple-darwin)`) via `uv <cmd> --help`
+> below was originally confirmed against **`uv 0.11.2`** and re-verified against
+> **`uv 0.12.5`** (`210d1f678 2026-08-14`) via `uv <cmd> --help`
 > / `uv help <cmd>`. Confirm your own build with `uv --version`. Most of `uv pip`,
 > the cache, and the config system is **bedrock** (stable at/before uv 0.4.0) and
 > left unannotated; only items with a real changelog source carry a `(uv 0.X+)`
@@ -74,7 +74,8 @@ uv targets pip's *interface*, not byte-for-byte behavior. Key differences to kno
 - **`uv pip sync` removes extraneous packages**; `uv pip install` does not.
 - **`uv pip compile` writes nothing without `-o`/`--output-file`**, defaults to
   `--strip-extras`, and does **not** emit index URLs unless you pass
-  `--emit-index-url`.
+  `--emit-index-url`. pip-tools' `--emit-options` is **not** supported — uv's spelling is
+  `--emit-build-options` (uv suggests it for you since `0.11.31`).
 
 ### `uv pip install` — key flags
 
@@ -96,17 +97,18 @@ uv pip install -r pyproject.toml --group dev   # PEP 735 group
 | `-b, --build-constraints` (`UV_BUILD_CONSTRAINT`) | constrain **build**-time deps |
 | `--extra E` / `--all-extras` / `--group G` | enable extras / groups |
 | `--no-deps` | install listed packages only |
-| `--require-hashes` / `--no-verify-hashes` | hash-checking mode |
+| `--require-hashes` / `--no-verify-hashes` | hash-checking mode — see the 0.12.0 note below |
 | `--system` (`UV_SYSTEM_PYTHON`) / `--break-system-packages` | non-venv target |
 | `-t, --target DIR` / `--prefix DIR` | install to a directory / prefix |
 | `--no-build` / `--no-binary` / `--only-binary` | source vs wheel policy |
+| `--cert <PATH>` `(uv 0.12.0+)` | pip-compatible PEM bundle; **replaces** all other cert sources (system store, `SSL_CERT_FILE`/`SSL_CERT_DIR`) for that invocation. `uv pip` only |
 | `--exact` / `--strict` / `--dry-run` | exact env match / strict consistency check / preview |
 | `-U, --upgrade` / `-P, --upgrade-package PKG` | upgrade all / one |
 | `--reinstall` / `--reinstall-package PKG` | force reinstall |
 | `--no-build-isolation[-package PKG]` | disable PEP 517 isolation |
 | `-C, --config-setting KEY=VAL` | pass a build-backend setting |
 | `--link-mode` (`UV_LINK_MODE`) | how files land in the env (clone/hardlink/copy/symlink) |
-| `--torch-backend` | PyTorch index inference — see [below](#torch-backend) |
+| `--torch-backend` | PyTorch index inference — see [below](#--torch-backend) |
 
 Resolver/index flags (`--resolution`, `--prerelease`, `--exclude-newer`,
 `--index`, `--index-strategy`, …) are shared — see [Indexes & resolution](#indexes--resolution).
@@ -174,7 +176,7 @@ download and build.
 
 ```bash
 uv cache dir                  # print the cache directory (e.g. ~/.cache/uv)
-uv cache size -H              # show cache size, -H = human-readable
+uv cache size -H              # show cache size, -H = human-readable  (PREVIEW)
 uv cache clean                # remove ALL cache entries
 uv cache clean requests       # remove entries for one package
 uv cache prune                # remove unreachable/unused objects
@@ -184,7 +186,7 @@ uv cache prune --ci           # CI mode: drop pre-built wheels, KEEP source buil
 | Command | Purpose |
 |---------|---------|
 | `uv cache dir` | print the cache directory |
-| `uv cache size [-H/--human]` | report cache size |
+| `uv cache size [-H/--human]` | report cache size. **Preview** on 0.12.5 (`--preview-features cache-size` silences the warning); `--output-format <auto\|human\|machine>` added in `0.12.3` |
 | `uv cache clean [PKG…]` | clear everything, or just the named packages; `--force` ignores in-use checks |
 | `uv cache prune [--ci]` | remove unreachable objects; `--ci` keeps source builds but drops cached wheels; `--force` ignores in-use checks |
 
@@ -255,7 +257,7 @@ for array settings the values are **concatenated** (higher-priority entries firs
 
 ## UV_* environment variables
 
-Reconstructed from the binary's `[env: …]` annotations on uv 0.11.2. The
+Reconstructed from the binary's `[env: …]` annotations (0.11.2, spot-checked on 0.12.5). The
 canonical exhaustive list is the generated `reference/environment.md` on
 docs.astral.sh.
 
@@ -306,8 +308,15 @@ url = "https://download.pytorch.org/whl/cpu"
 # format   = "flat"  # a "find-links"-style flat listing (else PEP 503 Simple)
 ```
 
-Per-index keys added `(uv 0.11.20+)` — likely **not** on a 0.11.2 box: `authenticate`,
-`ignore-error-codes`, `cache-control`, `exclude-newer`.
+Per-index keys added `(uv 0.11.20+)`: `authenticate`, `ignore-error-codes`, `cache-control`,
+`exclude-newer`. `--index` / `--default-index` can select a *configured* index **by name** under
+the `index-by-name` preview feature `(uv 0.12.5+)`.
+
+> **Changed in 0.12.0:** relative `--index`, `--default-index`, `--index-url`,
+> `--extra-index-url`, and `--find-links` paths given on the command line now resolve against
+> `--directory`, not the original cwd — so `uv add --directory project --index ./packages example`
+> uses `project/packages`. Absolute paths and indexes from config files are unaffected. Relatedly
+> `(uv 0.12.1+)`, `--find-links` inside a *requirements file* resolves relative to that file.
 
 On the CLI / via env (using `name=url` syntax for named indexes):
 
@@ -360,8 +369,8 @@ Credential precedence: **URL-embedded creds → `.netrc` (`NETRC` env or `~/.net
 `UV_INDEX_<NAME>_PASSWORD`, where `<NAME>` is the index name uppercased with
 non-alphanumerics replaced by `_`.
 
-**`uv auth` `(uv 0.8.15+)`** — manage stored credentials. On 0.11.2 the
-subcommands are:
+**`uv auth` `(uv 0.8.15+)`** — manage stored credentials. Verified on 0.12.5, the
+subcommands are still exactly:
 
 ```bash
 uv auth login <SERVICE> --token <TOKEN>      # or -u/--username + --password
@@ -375,12 +384,30 @@ Credentials are stored under uv's credentials directory
 pairs per host are supported `(uv 0.10.0+)`. Set
 `UV_PREVIEW_FEATURES=native-auth` to back the store with the OS keychain.
 
+### Hash checking (changed in 0.12.0)
+
+Two hardening changes landed in `uv 0.12.0`, neither of which can be opted out of:
+
+- A **`--require-hashes` directive inside a `requirements.txt`** now actually enables
+  hash-checking mode. Previously uv warned about it and installed anyway. Every requirement must
+  then be pinned with `==` **and** carry a hash.
+- **MD5-only digests are rejected** in hash-checking mode — every requirement needs at least one
+  secure digest (e.g. SHA-256), supplied on the requirement itself or in a matching constraints
+  file. Ordinary hash verification *without* `--require-hashes` still accepts MD5.
+
 ### Resolution strategy & pre-releases
 
 - `--resolution` (`UV_RESOLUTION`): **`highest`** (default) / `lowest` /
   `lowest-direct` (lowest for direct deps, highest for transitive).
-- `--prerelease` (`UV_PRERELEASE`): `disallow` / `allow` / `if-necessary` /
-  `explicit` / `if-necessary-or-explicit`.
+- `--prerelease` (`UV_PRERELEASE`): `disallow` / `allow` / **`if-necessary` (default since
+  uv 0.12.0)** / `explicit`. `if-necessary-or-explicit` is a **deprecated alias** for
+  `if-necessary` and will be removed.
+  > **Breaking in 0.12.0:** the default moved from `if-necessary-or-explicit` to `if-necessary`.
+  > uv now tries stable candidates first and falls back to pre-releases only when no stable
+  > candidate satisfies the constraints — so a pre-release requirement discovered **transitively**
+  > (e.g. a dependency asking for `example>=2.0.0b1`) now resolves instead of failing. This can
+  > select different versions than pre-0.12 uv. Use `--prerelease disallow` to forbid them
+  > outright, or `--prerelease-package PKG=MODE` `(uv 0.12.1+)` for a per-package policy.
 - `--fork-strategy` (`UV_FORK_STRATEGY`): `requires-python` / `fewest`.
 
 ### Overrides, constraints, build-constraints
@@ -398,7 +425,7 @@ pairs per host are supported `(uv 0.10.0+)`. Set
 ### `--exclude-newer`
 
 `--exclude-newer DATE` (`UV_EXCLUDE_NEWER`) limits candidates to those uploaded
-before a cutoff — for reproducible resolutions. On 0.11.2 it accepts:
+before a cutoff — for reproducible resolutions. Verified unchanged on 0.12.5, it accepts:
 
 - An RFC 3339 timestamp — `2006-12-02T02:07:43Z`.
 - A local date — `2006-12-02` (resolved in the system time zone).
@@ -413,8 +440,8 @@ Durations are a fixed number of seconds (a day = 24h, DST ignored); calendar uni
 
 `--torch-backend` (`UV_TORCH_BACKEND`) tells uv which PyTorch ecosystem index to
 fetch from. It is **experimental-introduced `(uv 0.6.9+)`, preview label removed
-`(uv 0.7.14+)`**, and on 0.11.2 lives on **`uv pip install` / `uv pip compile` /
-`uv pip sync`** (and on `uvx` / `uv tool`) — **NOT on `uv add`**.
+`(uv 0.7.14+)`**, and on 0.12.5 lives on **`uv pip install` / `uv pip compile` /
+`uv pip sync`** (and on `uv tool run`/`uvx` / `uv tool install`) — **NOT on `uv add`**.
 
 ```bash
 uv pip install torch --torch-backend auto    # infer CPU/CUDA/ROCm from the machine
@@ -422,8 +449,10 @@ uv pip install torch --torch-backend cpu
 uv pip install torch --torch-backend cu128
 ```
 
-Confirmed values on 0.11.2: `auto`, `cpu`, CUDA `cu130 … cu80` (newest is `cu130`;
-note there is no `cu127`), ROCm `rocm7.1 … rocm4.0.1`, and `xpu`.
+Confirmed values on **0.12.5**: `auto`, `cpu`, CUDA `cu132 … cu80` (newest is **`cu132`**;
+note there is still no `cu127` — the list jumps `cu126` → `cu128`), ROCm `rocm7.2 … rocm4.0.1`,
+and `xpu`. This list grows every few releases (CUDA 13.2 landed in `uv 0.11.29`) — check
+`uv pip install --help` on your build rather than trusting a copy.
 
 ---
 

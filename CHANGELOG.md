@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- ruff skill: Astral's Rust-based Python linter **and** formatter in one binary, verified against **ruff 0.16.3**. Teaches the two-tools-one-binary split (`ruff check` vs `ruff format`), the `select` **replaces** / `extend-select` **adds** footgun, the fix-safety model (safe/unsafe/display, `--fix`/`--unsafe-fixes`/`--fix-only`/`--diff`), config discovery precedence, and the formatter↔linter conflicting-rules set (ruff v1.0.0)
+- ruff skill: documents the **ruff 0.16.0 default rule set expansion (59 → 413 rules)** and the 18 opinionated `E`/`F` rules dropped from the default set, so the skill does not repeat the now-obsolete pre-0.16 `["E4","E7","E9","F"]` assumption that most ruff documentation still carries (ruff v1.0.0)
+- ruff skill: keeps **two annotation axes separate** — version tags `(ruff 0.X+)` and explicit **preview gating** (139 of 969 rules at 0.16.3 need `preview = true`) — because "new in 0.16" and "requires preview" are different claims and conflating them misleads. Full suppression surface incl. `# ruff: ignore[...]` (0.16+) and `# ruff: disable[...]`/`enable[...]` (0.15+) (ruff v1.0.0)
+- ruff skill: rule-prefix → upstream-tool table (59 prefixes) generated from `ruff linter`, plus a lookup-first workflow (`ruff rule`, `ruff rule --all --output-format json`, `ruff check --statistics`) instead of inlining the ~800-rule catalog. Five references cover rule selection, configuration, the formatter, the CLI, and version/preview history (ruff v1.0.0)
+- ty skill: Astral's Rust Python type checker and language server, pinned to **ty 0.0.72** (beta). Covers the inference-first mental model (gradual guarantee, redeclarations, three-level rule severities, no `--strict`), rule levels and `[[tool.ty.overrides]]`, `# ty: ignore[rule]` suppression, diagnostic anatomy, an empirically verified exit-code matrix, and environment/module resolution — where type checkers actually fail (ty v1.0.0)
+- ty skill: rule lookup via **`ty explain rule`** rather than an inlined catalog, `--add-ignore` baselining for existing codebases, and a `references/mypy-pyright-migration.md` covering the strictness inversion and which checks belong to Ruff rather than ty. Uses a single pinned-version statement plus a "Recently changed" stale-knowledge table instead of per-feature version tags, since ty's whole surface is 0.0.x (ty v1.0.0)
+
+### Changed
+- uv skill: re-verified against the **uv 0.12.x** line (0.12.5) — it was documented against 0.11.x with examples verified on 0.11.2. uv is `0.x`, so **0.12.0 shipped breaking changes in a minor bump**; this is a correctness pass over that delta, with structure, voice, and the "four surfaces over one binary" model unchanged (uv v1.1.0)
+- uv skill: added **`uv check`** (preview, 0.11.18+), the ty-backed project type checker that was absent from the skill, plus `uv workspace dir`/`list`, per-feature preview opt-out (`--preview-features ...`), a "upgrading to 0.12? four things bite" troubleshooting entry, 12 new breaking-change rows and 21 new feature→minimum-version rows in `references/version-features.md` (uv v1.1.0)
+
+### Fixed
+- uv skill: **`uv init` was documented with the pre-0.12 flat layout.** uv 0.12.0 made projects **packaged by default** (`uv_build` `[build-system]` + `src/<name>/` + a `[project.scripts]` entry), so the `uv init demo` file list, the `uv run main.py` example, and `projects.md`'s `--app` row were all wrong; corrected and re-verified empirically, with `--no-package` documented as the way back (uv v1.1.0)
+- uv skill: **`uv tool upgrade` was said to have no `--reinstall`** — verified present on 0.12.5 (`--reinstall`, `--reinstall-package`); the `--upgrade-package` half of the claim stands. Also corrected a stale `--prerelease` default (0.12.0 changed it from `if-necessary-or-explicit` to `if-necessary`, a resolution-affecting change), stale `--torch-backend` values (CUDA `cu130` → `cu132`, ROCm to `rocm7.2`), and `uv cache size`, which is still **preview** on 0.12.5 (uv v1.1.0)
+
 ## [0.50.0] - 2026-08-12
 
 ### Added

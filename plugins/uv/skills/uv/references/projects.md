@@ -10,7 +10,8 @@ and Python version management see [scripts-tools-python.md](scripts-tools-python
 > **Version annotations.** uv is a `0.x` tool, so **breaking changes land in MINOR bumps**.
 > Features at or before **uv 0.4.0** are treated as long-standing and left unannotated; later
 > additions carry a `(uv 0.X+)` tag. Everything here was **verified against the installed
-> `uv 0.11.2` binary** (`uv <cmd> --help` plus `/tmp` sandboxes) on 2026-06-11 unless a note
+> `uv 0.11.2` binary** (`uv <cmd> --help` plus `/tmp` sandboxes) on 2026-06-11, with every flag
+> and the `uv init` layout **re-verified on `uv 0.12.5`** (2026-08-16), unless a note
 > says otherwise. Flag sets change between releases — confirm with `uv --version` and
 > `uv <cmd> --help`, and never assume a flag exists.
 
@@ -51,28 +52,40 @@ auto-managed `.venv`. The mutating project commands — `uv add`, `uv remove`, `
 
 ## `uv init`
 
-Creates a new project. The **default is an application** (`--app`): a flat layout with **no
-`[build-system]`**, so the project itself is not installed — only its dependencies are. A
-default `uv init demo` creates `pyproject.toml`, `main.py`, `README.md`, `.python-version`,
-plus `.git`/`.gitignore`.
+Creates a new project. The **default is an application** (`--app`) and, **since uv 0.12.0, it is
+packaged**: uv writes a `uv_build` `[build-system]`, puts the code under `src/<name>/`, and adds a
+`[project.scripts]` entry, so the project is importable from tests and installable as a dependency.
+A default `uv init demo` creates `pyproject.toml`, `src/demo/__init__.py`, `README.md`,
+`.python-version`, plus `.git`/`.gitignore`. Pass **`--no-package`** for the pre-0.12 flat layout
+(a root `main.py`, no `[build-system]`), where the project itself is not installed — only its
+dependencies are.
 
 | Variant | Effect |
 |---|---|
-| `--app` (default) | Flat application, no build-system, `main.py` entry script |
+| `--app` (default) | Application (web servers, scripts, CLIs). **Packaged since uv 0.12.0** — same `src/` + `[build-system]` + `[project.scripts]` layout as `--package` |
 | `--package` | Packaged app: `src/<mod>/__init__.py`, a `[build-system]` (uv_build), a `[project.scripts]` entry point |
 | `--lib` | Library (implies `--package`); adds `py.typed` and a `hello()` API function |
 | `--script` | A standalone PEP 723 script — **not** a project (see [scripts-tools-python.md](scripts-tools-python.md)) |
 | `--bare` | Only `pyproject.toml` — no `README`, `.python-version`, VCS, or `src/` |
+| `--no-package` | **Un**packaged: the pre-0.12 flat layout — `main.py`, no `[build-system]` |
 
 ```bash
-uv init demo --python 3.13     # app: pyproject + main.py + README + .python-version + .git
+uv init demo --python 3.13     # packaged app (the 0.12 default): src/demo/ + uv_build
 uv init mylib --lib            # src-layout library, packaged, py.typed
 uv init mytool --package       # packaged app with a console-script entry point
+uv init flat --no-package      # pre-0.12 flat layout: main.py, no [build-system]
 uv init --bare                 # just a pyproject.toml in the current dir
 ```
 
-> **Verified on 0.11.2:** `uv init demo --python 3.13` produces the five files above; `uv init
-> --bare app1` produces a directory containing only `pyproject.toml`.
+> **Verified on 0.12.5:** `uv init demo --python 3.13` writes `pyproject.toml` (with a `uv_build`
+> `[build-system]` and a `[project.scripts] demo = "demo:main"`), `src/demo/__init__.py`,
+> `README.md`, `.python-version`, `.gitignore`, and `.git/` — and `uv run demo` prints
+> `Hello from demo!`. `uv init demo2 --no-package` instead writes a root `main.py` and **no**
+> `[build-system]`. `uv init --bare app1` produces a directory containing only `pyproject.toml`.
+
+> **Breaking in 0.12.0:** packaging became the default (it stabilized the `packaged-init` preview).
+> Pre-0.12, `--app` was flat and unpackaged. Also new in 0.12.0: `uv init --project X` is now an
+> **error** — use `uv init X`, or `uv init --directory X` to change directory first.
 
 **Other flags:** `--name <NAME>`, `-p`/`--python <VER>`, `--vcs <git|none>` (note: it is
 `--vcs none`, there is **no** `--no-vcs`), `--build-backend <uv|hatch|flit|pdm|poetry|setuptools|maturin|scikit>`
@@ -82,8 +95,9 @@ The `maturin` and `scikit` backends scaffold **extension-module** projects (impl
 add Cargo/C scaffolding and `tool.uv.cache-keys`).
 
 **Skew to expect:** the generated `uv_build` build-system pin tracks the running uv version
-(`uv_build>=0.11.2,<0.12.0` on this box), and the generated `requires-python` reflects the
-Python uv resolved for the project.
+(`uv_build>=0.12.5,<0.13.0` on 0.12.5), and the generated `requires-python` reflects the
+Python uv resolved for the project. If you maintain an upper bound on `uv_build` in an existing
+project, widen it to `uv_build>=0.11.32,<0.13` to accept 0.12.
 
 ## `uv add` / `uv remove`
 
@@ -131,7 +145,7 @@ uv-only override.
 |---|---|---|
 | **Git** | `uv add git+https://github.com/encode/httpx` | add `--rev`/`--tag`/`--branch`; `--lfs` (env `UV_GIT_LFS`); `#subdirectory=...` for monorepos |
 | **URL** | `uv add "https://files.example.com/pkg-0.27.0.tar.gz"` | direct sdist/wheel URL |
-| **Path** | `uv add ./pkg-1.0-py3-none-any.whl` or `uv add ../bar/` | not editable by default; `--editable`/`--no-editable`. A source with `package = false` installs only its dependencies (a "virtual" dependency) |
+| **Path** | `uv add ./pkg-1.0-py3-none-any.whl` or `uv add ../bar/` | not editable by default; `--editable`/`--no-editable`. A source with `package = false` installs only its dependencies (a "virtual" dependency). **Since 0.12.0 the *form* of the request is preserved** — `uv add /abs/path` records an absolute path (it used to be rewritten project-relative), so pass a relative path to keep the project portable |
 | **Index** | `uv add torch --index pytorch=https://download.pytorch.org/whl/cpu` | writes `[[tool.uv.index]]` + `torch = { index = "pytorch" }`; `explicit = true` confines an index to packages that name it |
 | **Workspace** | `uv add --workspace ../sibling` | inter-member dependency, **always editable** |
 
@@ -164,7 +178,7 @@ uv sync --only-group docs     # just the docs group; excludes project + default 
 - **Groups:** `--group <N>`, `--all-groups`, `--no-group <N>`, `--only-group <N>` (that group
   only — excludes the project and default groups), `--no-default-groups`, `--no-dev`,
   `--only-dev`. **Exclusion wins over inclusion.** (There is no `--dev` flag on `uv sync` in
-  0.11.2; the `dev` group is on by default — opt out with `--no-dev`.)
+  0.11.2 and 0.12.5; the `dev` group is on by default — opt out with `--no-dev`.)
 - **Extras:** `--extra <E>`, `--all-extras`, `--no-extra <E>`.
 - **Extraneous handling:** the default is exact; pass `--inexact` to keep packages that aren't
   in the lock. (There is no explicit `--exact` flag — exact is the default.)
@@ -191,13 +205,19 @@ uv lock --dry-run             # show what would change without writing
 ```
 
 > **Flag correction:** on `uv lock` itself the assertion flags are **`--check`** and
-> **`--check-exists`** — there is **no** `--locked` or `--frozen` on `uv lock` in 0.11.2.
+> **`--check-exists`** — there is **no** `--locked` or `--frozen` on `uv lock` (still true on 0.12.5).
 > `--check` is the equivalent of `--locked` on the consuming commands (`sync`/`run`/`add`).
 > `--check-exists` reuses env `UV_FROZEN`.
 
-**Other flags:** `-U`/`--upgrade`, `-P`/`--upgrade-package <PKG[==VER]>`, `--script <SCRIPT>`,
-and the resolver knobs `--resolution`, `--prerelease`, `--fork-strategy`, `--exclude-newer`,
-`--no-sources` (see [pip-config.md](pip-config.md)).
+**Other flags:** `-U`/`--upgrade`, `-P`/`--upgrade-package <PKG[==VER]>`,
+`--upgrade-group <GROUP>`, `--script <SCRIPT>`, and the resolver knobs `--resolution`,
+`--prerelease`, `--fork-strategy`, `--exclude-newer`, `--no-sources`
+(see [pip-config.md](pip-config.md)).
+
+> **Changed in 0.12.0:** `--upgrade-group` now **validates** the group name against the project,
+> its workspace members, and workspace-level groups. `uv lock --upgrade-group docs` used to
+> succeed silently when no `docs` group existed; it is now an error. (Legacy
+> `tool.uv.dev-dependencies` still satisfies `--upgrade-group dev`.)
 
 **Resolution model:** the lock **prefers previously-locked versions** and only changes when a
 constraint changes or you pass `--upgrade`. A new upstream release does **not** make the lock
@@ -225,11 +245,14 @@ uv run --frozen pytest               # CI: run without re-resolving
 - **Groups/extras:** same family as `uv sync` (`--group`/`--no-group`/`--only-group`/
   `--all-groups`/`--no-default-groups`/`--no-dev`/`--only-dev`/`--extra`/`--all-extras`/
   `--no-extra`). As with sync, there is no `--dev` flag — the `dev` group is on by default.
+- **Project discovery** `(changed in uv 0.12.0)`: when the argument is a **path to a script**,
+  discovery starts from the *script's* directory rather than the cwd. Also, a missing or invalid
+  `--project` path is now a hard **error** instead of a warning.
 - **Other:** `-m`/`--module`, `-s`/`--script` and `--gui-script` (force PEP 723 interpretation),
   `--all-packages`/`--package <PKG>`, `--env-file <FILE>`/`--no-env-file` (dotenv loading),
   `--no-editable`, `--active`.
 
-> **Verified on 0.11.2:** `uv run --with <pkg>` resolves and injects the extra dependency for
+> **Verified on 0.12.5:** `uv run --with <pkg>` resolves and injects the extra dependency for
 > the single invocation without touching `pyproject.toml`/`uv.lock`.
 
 ## `uv tree`
@@ -245,7 +268,8 @@ uv tree --outdated            # annotate packages with newer available versions
 
 **Flags:** `-d`/`--depth <N>` (default 255), `--prune <PKG>`, `--package <PKG>`, `--invert`
 (reverse dependencies), `--outdated`, `--no-dedupe`, `--show-sizes`, `--universal` (show the
-full multi-platform tree), `--script <SCRIPT>`, plus `--group`/`--no-group`/`--only-group`/
+full multi-platform tree), `--format <text|json>` `(uv 0.11.29+)` for machine-readable output,
+`--script <SCRIPT>`, plus `--group`/`--no-group`/`--only-group`/
 `--all-groups`/`--no-default-groups`/`--no-dev`/`--only-dev`.
 
 ## `uv export`
@@ -337,7 +361,7 @@ uv version --bump minor --dry-run   # show the change, don't write
   `-U`/`--upgrade`, `-P`/`--upgrade-package`.
 - There is no dynamic-version flag — `uv version` reads/writes the **static** `version` field.
 
-> **Verified on 0.11.2:** `uv version --bump minor --dry-run` reports `0.1.0 => 0.2.0` and
+> **Verified on 0.12.5:** `uv version --bump minor --dry-run` reports `0.1.0 => 0.2.0` and
 > leaves `pyproject.toml` untouched; running `uv version` outside a project errors with the
 > `uv self version` hint.
 
@@ -387,6 +411,9 @@ uv publish --trusted-publishing automatic    # from CI, no stored credentials
   `--publish-url <URL>` (env `UV_PUBLISH_URL`), `--check-url <URL>` (env `UV_PUBLISH_CHECK_URL`
   — skip already-uploaded files / make retries safe), `--dry-run`, `--no-attestations` (env
   `UV_PUBLISH_NO_ATTESTATIONS`).
+- **Normalized filenames required** `(uv 0.12.0+)` — distributions whose filenames do not use the
+  normalized package name and version (e.g. `example-1.01.0-...whl` instead of
+  `example-1.1.0-...whl`) are now **skipped** rather than uploaded with a warning. Rebuild them.
 - **Guard against accidental upload** of a private package with
   `classifiers = ["Private :: Do Not Upload"]` in `pyproject.toml`.
 

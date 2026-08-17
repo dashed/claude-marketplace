@@ -7,11 +7,11 @@ management** (`uv python` — downloading and pinning CPython/PyPy/GraalPy). It 
 low-level **`uv venv`** for ad-hoc virtual environments.
 
 > **Verification & version annotations.** Every command, flag, and behavior below was confirmed
-> against the installed **`uv 0.11.2`** (`uv <cmd> --help` plus live `/tmp` sandbox runs on
-> 2026-06-11). Features at or before **uv 0.4.0** are **bedrock** and left unannotated; only
-> additions in 0.5.0→0.11.x carry a `(uv 0.X+)` tag, sourced from the uv `CHANGELOG`. uv is a
-> `0.x` project, so breaking changes land in **minor** bumps — confirm your build with
-> `uv --version` (or `uv self version`, itself `0.7.0+`).
+> against **`uv 0.11.2`** (`uv <cmd> --help` plus live `/tmp` sandbox runs on 2026-06-11), with
+> every flag **re-verified on `uv 0.12.5`** (2026-08-16). Features at or before **uv 0.4.0** are
+> **bedrock** and left unannotated; only additions in 0.5.0→0.12.x carry a `(uv 0.X+)` tag,
+> sourced from the uv `CHANGELOG`. uv is a `0.x` project, so breaking changes land in **minor**
+> bumps — confirm your build with `uv --version` (or `uv self version`, itself `0.7.0+`).
 
 ## Table of Contents
 
@@ -66,6 +66,11 @@ EOF
 `-s`/`--script` is the explicit form when the filename alone wouldn't be treated as a script;
 `--gui-script` is its GUI counterpart. (`uv run --script` flag: `uv 0.4.19+`.)
 
+> **Changed in 0.12.0:** `uv run some/dir/script.py` now discovers the project **from the
+> script's directory**, not the current one. `uv run other-project/script.py` therefore uses
+> `other-project`'s environment — which fixes scripts that used to fail for missing deps, but can
+> select a different environment than pre-0.12 uv. Pin it with `uv run --project . <script>`.
+
 ### Managing the inline metadata
 
 Let uv edit the block for you rather than hand-writing TOML:
@@ -115,7 +120,7 @@ chmod +x script.py
 ```
 
 The `env -S` splits the single argument so `uv run --script` is passed correctly. (Verified
-end-to-end on 0.11.2.)
+end-to-end on 0.11.2 and again on 0.12.5.)
 
 ### Script lockfiles, export & tree `(uv 0.5.17+)`
 
@@ -207,8 +212,9 @@ uv tool uninstall --all       # remove all tools
 - **Upgrade semantics:** `uv tool upgrade` respects the version constraints and settings the tool
   was installed with — it upgrades *within* them. To **change** the constraints, re-run
   `uv tool install`. `uv tool upgrade` accepts `--python` (re-pin the interpreter) and resolver
-  knobs (`--index`, `--exclude-newer`), but on 0.11.2 it has **no** `--upgrade-package` or
-  `--reinstall` flags.
+  knobs (`--index`, `--exclude-newer`). Verified on **0.12.5** it *does* accept `--reinstall` /
+  `--reinstall-package` (and the per-package `--prerelease-package`, `--exclude-newer-package`),
+  but still has **no** `--upgrade-package`.
 - `uv tool list` display flags: `--show-paths`, `--show-version-specifiers`, `--show-with`,
   `--show-extras`, `--show-python`, `--outdated`.
 
@@ -220,7 +226,7 @@ uv tool dir --bin    # → ~/.local/bin              (where entry points are lin
 uv tool update-shell # ensure the tool bin dir is on PATH (edits your shell profile)
 ```
 
-(Verified on 0.11.2: `uv tool dir` → `~/.local/share/uv/tools`, `--bin` → `~/.local/bin`.) Override
+(Verified on 0.12.5: `uv tool dir` → `~/.local/share/uv/tools`, `--bin` → `~/.local/bin`.) Override
 with `UV_TOOL_DIR` / `UV_TOOL_BIN_DIR`. If freshly-installed tools aren't found, run
 `uv tool update-shell` and restart the shell.
 
@@ -256,6 +262,15 @@ Install flags: `--default` (experimental — installs unversioned `python`/`pyth
 `-r/--reinstall`, `-f/--force`, `-U/--upgrade` (upgrade to the latest patch), `-i/--install-dir`,
 `--mirror` / `--pypy-mirror`, `--compile-bytecode`. The exact patch versions offered are **frozen
 per uv release**.
+
+> **Changed in 0.12.0:** `--reinstall` no longer doubles as an upgrade. `uv python install 3.12
+> --reinstall` now reinstalls the 3.12 patch releases you already have (both 3.12.6 and 3.12.7,
+> if both are installed) instead of fetching the newest 3.12. Use `--upgrade` to move forward, or
+> `--upgrade --reinstall` to reinstall only the latest patch.
+>
+> Also in 0.12.0: older **PyPy** patch releases distributed only as `.tar.bz2` are no longer
+> installable (uv dropped bzip2 support). The latest PyPy release per minor version ships as gzip
+> and still works.
 
 ### List
 
@@ -362,11 +377,14 @@ uv venv myenv                 # create at a custom path
 uv venv --python 3.12         # -p/--python: use (and download on demand) a specific version
 uv venv --seed                # also install pip/setuptools/wheel into the env  (env: UV_VENV_SEED)
 uv venv --clear               # -c/--clear: overwrite an existing env at the path
+uv venv --clear --force ./dir # --force (uv 0.12.0+): also clear a dir that is NOT a virtualenv
 ```
 
 Other flags: `--system-site-packages`, `--relocatable` (`UV_VENV_RELOCATABLE`), `--prompt PREFIX`,
-`--allow-existing`, `--no-project`, plus index / `--exclude-newer` / `--link-mode` resolver options.
-`--seed` installs `pip`, `setuptools`, and `wheel` for environments that need a real `pip`.
+`--allow-existing`, `--force` `(uv 0.12.0+)`, `--no-project`, plus index / `--exclude-newer` /
+`--link-mode` resolver options. `--seed` installs `pip`, `setuptools`, and `wheel` for
+environments that need a real `pip`. Activation scripts are written for bash/zsh/fish/csh/nu/pwsh
+and, since `uv 0.12.1`, **xonsh** (`activate.xsh`).
 
 ### Activation vs. `uv run` (and `VIRTUAL_ENV` discovery)
 
@@ -399,7 +417,7 @@ projects, prefer the managed workflow (`uv init`/`add`/`sync`/`run`), where uv c
   tool's *executable* name and its *distribution* name can differ.
 - **`uv tool upgrade` respects original constraints.** It upgrades within the version range you
   installed with; to widen/narrow that range, re-run `uv tool install`. There is no
-  `--upgrade-package`/`--reinstall` on `upgrade` in 0.11.2.
+  `--upgrade-package` on `upgrade` (verified on 0.12.5) — but `--reinstall` *is* available.
 - **Tool envs ignore project Python.** A `.python-version` or a project's `requires-python` does not
   affect the interpreter a tool runs on; use `uv tool install --python X.Y` to pin it.
 - **Installed tools not on PATH?** Run `uv tool update-shell` and restart your shell (entry points
@@ -409,4 +427,6 @@ projects, prefer the managed workflow (`uv init`/`add`/`sync`/`run`), where uv c
 - **Free-threaded 3.13 needs `3.13t`;** plain `3.13` gives the GIL build. From 3.14 the free-threaded
   variant is available without the explicit `t`.
 - **`uv venv` won't clobber silently.** As of `uv 0.10.0` it requires `--clear` (or
-  `--allow-existing`) to reuse/overwrite an existing path.
+  `--allow-existing`) to reuse/overwrite an existing path. Since `uv 0.12.0` it additionally
+  **refuses to clear a directory that is not a virtual environment** — add `--force` if you really
+  mean to delete it.

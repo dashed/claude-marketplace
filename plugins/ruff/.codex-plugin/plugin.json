@@ -1,0 +1,33 @@
+{
+  "name": "ruff",
+  "version": "1.0.0+codex.fbe8111fb96d",
+  "description": "ruff \u2014 Astral's one fast (Rust) binary that is both a Python linter (`ruff check`) and a Black-compatible formatter (`ruff format`). Use when linting or formatting Python, configuring `[tool.ruff]`/`ruff.toml`, choosing rules with `select`/`extend-select`/`ignore`, looking up codes like F401/E501/B008, applying fixes (`--fix`, `--unsafe-fixes`), suppressing (`# noqa`, `# ruff: ignore[...]`), or enabling preview rules. Includes `(ruff 0.X+)` + preview annotations. Not uv or ty.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "ruff",
+    "python",
+    "linter",
+    "formatter",
+    "lint",
+    "astral",
+    "cli"
+  ],
+  "interface": {
+    "displayName": "Ruff",
+    "shortDescription": "ruff \u2014 Astral's one fast (Rust) binary that is both a Python linter (`ruff check`) and a Black-compatible formatter (`ruff format`). Use when linting or formatting Python...",
+    "longDescription": "ruff \u2014 Astral's one fast (Rust) binary that is both a Python linter (`ruff check`) and a Black-compatible formatter (`ruff format`). Use when linting or formatting Python, configuring `[tool.ruff]`/`ruff.toml`, choosing rules with `select`/`extend-select`/`ignore`, looking up codes like F401/E501/B008, applying fixes (`--fix`, `--unsafe-fixes`), suppressing (`# noqa`, `# ruff: ignore[...]`), or enabling preview rules. Includes `(ruff 0.X+)` + preview annotations. Not uv or ty.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $ruff for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/ruff",
+  "skills": "./skills/"
+}
