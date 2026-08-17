@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.51.0] - 2026-08-17
+
 ### Added
 - ruff skill: Astral's Rust-based Python linter **and** formatter in one binary, verified against **ruff 0.16.3**. Teaches the two-tools-one-binary split (`ruff check` vs `ruff format`), the `select` **replaces** / `extend-select` **adds** footgun, the fix-safety model (safe/unsafe/display, `--fix`/`--unsafe-fixes`/`--fix-only`/`--diff`), config discovery precedence, and the formatter↔linter conflicting-rules set (ruff v1.0.0)
 - ruff skill: documents the **ruff 0.16.0 default rule set expansion (59 → 413 rules)** and the 18 opinionated `E`/`F` rules dropped from the default set, so the skill does not repeat the now-obsolete pre-0.16 `["E4","E7","E9","F"]` assumption that most ruff documentation still carries (ruff v1.0.0)
@@ -719,7 +721,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.50.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.51.0...HEAD
+[0.51.0]: https://github.com/dashed/claude-marketplace/compare/v0.50.0...v0.51.0
 [0.50.0]: https://github.com/dashed/claude-marketplace/compare/v0.49.0...v0.50.0
 [0.49.0]: https://github.com/dashed/claude-marketplace/compare/v0.48.0...v0.49.0
 [0.48.0]: https://github.com/dashed/claude-marketplace/compare/v0.47.0...v0.48.0
