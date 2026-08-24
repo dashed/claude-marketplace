@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.52.0] - 2026-08-24
+
 ### Added
 - oxlint skill: the Rust JavaScript/TypeScript linter from the **oxc** project, verified against **oxlint 1.79.0**. Mental model is **plugins × categories × rules** — a rule fires only when its plugin *and* its category are enabled — with the resolved default quantified as 111 rules (the `correctness` rules of the default-on `eslint`/`typescript`/`unicorn`/`oxc`) out of 870 rules across 15 plugins and 7 categories (oxlint v1.0.0)
 - oxlint skill: the `plugins` **overwrite** footgun as the headline, with captured 1.79.0 output. Writing a `plugins` array replaces the default set (`UNICORN | TYPESCRIPT | OXC`), and a rule from a dropped plugin is then **silently discarded even when named explicitly in `rules`** — no warning, no diagnostic, exit 0, so CI goes green while the rule never ran. Core `eslint` rules keep firing throughout (they are always on and cannot be removed even by `"plugins": []`), which is exactly why it slips past review (oxlint v1.0.0)
@@ -729,7 +731,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.51.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.52.0...HEAD
+[0.52.0]: https://github.com/dashed/claude-marketplace/compare/v0.51.0...v0.52.0
 [0.51.0]: https://github.com/dashed/claude-marketplace/compare/v0.50.0...v0.51.0
 [0.50.0]: https://github.com/dashed/claude-marketplace/compare/v0.49.0...v0.50.0
 [0.49.0]: https://github.com/dashed/claude-marketplace/compare/v0.48.0...v0.49.0
