@@ -1,0 +1,33 @@
+{
+  "name": "oxfmt",
+  "version": "1.0.0+codex.4cd2129888e1",
+  "description": "oxfmt \u2014 the fast Rust formatter from the oxc project, a Prettier-compatible alternative formatting JS/TS/JSX plus JSON, CSS, YAML, TOML, GraphQL, Markdown and Vue. Use when formatting or checking with oxfmt, configuring `.oxfmtrc.json`, migrating off Prettier/Biome (`--migrate`), or enabling built-in `sortImports`/`sortPackageJson`/`sortTailwindcss`. Note: bare `oxfmt` REWRITES FILES IN PLACE. The formatter \u2014 not oxlint, Prettier/Biome, or ruff format.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "oxfmt",
+    "javascript",
+    "typescript",
+    "formatter",
+    "prettier",
+    "oxc",
+    "cli"
+  ],
+  "interface": {
+    "displayName": "Oxfmt",
+    "shortDescription": "oxfmt \u2014 the fast Rust formatter from the oxc project, a Prettier-compatible alternative formatting JS/TS/JSX plus JSON, CSS, YAML, TOML, GraphQL, Markdown and Vue. Use when...",
+    "longDescription": "oxfmt \u2014 the fast Rust formatter from the oxc project, a Prettier-compatible alternative formatting JS/TS/JSX plus JSON, CSS, YAML, TOML, GraphQL, Markdown and Vue. Use when formatting or checking with oxfmt, configuring `.oxfmtrc.json`, migrating off Prettier/Biome (`--migrate`), or enabling built-in `sortImports`/`sortPackageJson`/`sortTailwindcss`. Note: bare `oxfmt` REWRITES FILES IN PLACE. The formatter \u2014 not oxlint, Prettier/Biome, or ruff format.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $oxfmt for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/oxfmt",
+  "skills": "./skills/"
+}

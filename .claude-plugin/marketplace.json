@@ -1379,6 +1379,54 @@
       "skills": [
         "./skills"
       ]
+    },
+    {
+      "name": "oxlint",
+      "version": "1.0.0",
+      "source": "./plugins/oxlint",
+      "description": "oxlint — the extremely fast (Rust) JavaScript/TypeScript linter from the oxc project, an ESLint alternative that needs no config to start. Use when linting JS/TS/JSX/Vue, writing `.oxlintrc.json`, selecting rules via `plugins` + `categories` (correctness, suspicious, pedantic, perf, style, restriction, nursery), running `--fix`/`--fix-suggestions`/`--fix-dangerously`, suppressing with `// oxlint-disable`, or migrating from ESLint. The linter — not oxfmt, ESLint/Biome, or ruff.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/oxlint",
+      "license": "MIT",
+      "keywords": [
+        "oxlint",
+        "javascript",
+        "typescript",
+        "linter",
+        "eslint",
+        "oxc",
+        "cli"
+      ],
+      "strict": false,
+      "skills": [
+        "./skills"
+      ]
+    },
+    {
+      "name": "oxfmt",
+      "version": "1.0.0",
+      "source": "./plugins/oxfmt",
+      "description": "oxfmt — the fast Rust formatter from the oxc project, a Prettier-compatible alternative formatting JS/TS/JSX plus JSON, CSS, YAML, TOML, GraphQL, Markdown and Vue. Use when formatting or checking with oxfmt, configuring `.oxfmtrc.json`, migrating off Prettier/Biome (`--migrate`), or enabling built-in `sortImports`/`sortPackageJson`/`sortTailwindcss`. Note: bare `oxfmt` REWRITES FILES IN PLACE. The formatter — not oxlint, Prettier/Biome, or ruff format.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/oxfmt",
+      "license": "MIT",
+      "keywords": [
+        "oxfmt",
+        "javascript",
+        "typescript",
+        "formatter",
+        "prettier",
+        "oxc",
+        "cli"
+      ],
+      "strict": false,
+      "skills": [
+        "./skills"
+      ]
     }
   ]
 }

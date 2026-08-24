@@ -1,0 +1,33 @@
+{
+  "name": "oxlint",
+  "version": "1.0.0+codex.ff3baedbf4c9",
+  "description": "oxlint \u2014 the extremely fast (Rust) JavaScript/TypeScript linter from the oxc project, an ESLint alternative that needs no config to start. Use when linting JS/TS/JSX/Vue, writing `.oxlintrc.json`, selecting rules via `plugins` + `categories` (correctness, suspicious, pedantic, perf, style, restriction, nursery), running `--fix`/`--fix-suggestions`/`--fix-dangerously`, suppressing with `// oxlint-disable`, or migrating from ESLint. The linter \u2014 not oxfmt, ESLint/Biome, or ruff.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "oxlint",
+    "javascript",
+    "typescript",
+    "linter",
+    "eslint",
+    "oxc",
+    "cli"
+  ],
+  "interface": {
+    "displayName": "Oxlint",
+    "shortDescription": "oxlint \u2014 the extremely fast (Rust) JavaScript/TypeScript linter from the oxc project, an ESLint alternative that needs no config to start. Use when linting JS/TS/JSX/Vue, writing...",
+    "longDescription": "oxlint \u2014 the extremely fast (Rust) JavaScript/TypeScript linter from the oxc project, an ESLint alternative that needs no config to start. Use when linting JS/TS/JSX/Vue, writing `.oxlintrc.json`, selecting rules via `plugins` + `categories` (correctness, suspicious, pedantic, perf, style, restriction, nursery), running `--fix`/`--fix-suggestions`/`--fix-dangerously`, suppressing with `// oxlint-disable`, or migrating from ESLint. The linter \u2014 not oxfmt, ESLint/Biome, or ruff.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $oxlint for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/oxlint",
+  "skills": "./skills/"
+}

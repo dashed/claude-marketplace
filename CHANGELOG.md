@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- oxlint skill: the Rust JavaScript/TypeScript linter from the **oxc** project, verified against **oxlint 1.79.0**. Mental model is **plugins × categories × rules** — a rule fires only when its plugin *and* its category are enabled — with the resolved default quantified as 111 rules (the `correctness` rules of the default-on `eslint`/`typescript`/`unicorn`/`oxc`) out of 870 rules across 15 plugins and 7 categories (oxlint v1.0.0)
+- oxlint skill: the `plugins` **overwrite** footgun as the headline, with captured 1.79.0 output. Writing a `plugins` array replaces the default set (`UNICORN | TYPESCRIPT | OXC`), and a rule from a dropped plugin is then **silently discarded even when named explicitly in `rules`** — no warning, no diagnostic, exit 0, so CI goes green while the rule never ran. Core `eslint` rules keep firing throughout (they are always on and cannot be removed even by `"plugins": []`), which is exactly why it slips past review (oxlint v1.0.0)
+- oxlint skill: the three-tier fix-safety model (`--fix` safe fixes / `--fix-suggestions` may change behavior, e.g. deletes `debugger;` / `--fix-dangerously` may break code) as an additive bitmask, with the explicit warning that there is **no dry run** — no `--diff`, `--check`, `--stdin` or `--dry-run` — so version control is the only preview. Four references cover configuration, rules and categories, ESLint migration, and the CLI (oxlint v1.0.0)
+- oxfmt skill: the Rust formatter from the **oxc** project, pinned to **oxfmt 0.64.0**, covering JS/TS/JSX plus JSON, CSS/SCSS/Less, YAML, TOML, GraphQL, Markdown, HTML and Vue, split into native-Rust and Prettier-delegated tiers (oxfmt v1.0.0)
+- oxfmt skill: prominent up-front warning that **bare `oxfmt` rewrites files in place** — inverted from `prettier`, which prints to stdout — with the three verified non-destructive modes (`--check`, `--list-different`, `--stdin-filepath`). There is no `--diff`; `--stdin-filepath` is the only way to see the actual formatted content, and it pipes cleanly into `diff` for a true dry run (oxfmt v1.0.0)
+- oxfmt skill: the Prettier differences that silently change output (`printWidth` defaults to 100, not 80; `sortPackageJson` defaults to `true`), the built-in `sortImports`/`sortPackageJson`/`sortTailwindcss`/`jsdoc` features that Prettier needs plugins for, `--migrate=prettier|biome`, a verified exit-code table, and the two-tier ignore model where `.gitignore` scopes discovery but `.prettierignore` excludes outright (oxfmt v1.0.0)
+
 ## [0.51.0] - 2026-08-17
 
 ### Added
