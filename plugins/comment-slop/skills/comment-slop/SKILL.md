@@ -1,6 +1,6 @@
 ---
 name: comment-slop
-description: "Find and remove AI-slop comments — ones that restate the code, describe another layer's behavior, or narrate planning that never shipped — while protecting the comments that carry real reasoning. Use when a reviewer calls a comment useless, unclear, or AI-written — including one a previous cleanup pass already rewrote; when auditing or cleaning up comments and docstrings on a branch, diff, or PR; when comments should be reduced, simplified, or restyled to ASD-STE100 / simplified technical English; when deciding whether new code needs a comment and what it should say; or before sending a change for review."
+description: "Find and remove AI-slop comments — ones that restate the code, describe another layer's behavior, or narrate planning that never shipped — while protecting the comments that carry real reasoning. Use when a reviewer calls a comment useless, unclear, or AI-written — including one a previous cleanup pass already rewrote; when auditing or cleaning up comments and docstrings on a branch, diff, or PR; when comments should be reduced, simplified, or restyled to ASD-STE100 / simplified technical English; when writing or reviewing docstrings for completeness — tuple-return meanings, boolean polarity, silent defaults and fallbacks; when deciding whether new code needs a comment and what it should say; or before sending a change for review."
 license: MIT
 ---
 
@@ -48,6 +48,10 @@ User parameters go in, a proto comes out. No package crosses this boundary. "Use
 
 **Fix**: say what an empty result means *at this layer* ("the contract stores no override") and stop. Whoever consumes the empty proto decides what to do about it.
 
+**Fix, when the wrong-layer sentence justified a gate**: replace the collaborator's behavior with the precondition itself. "An organization-level override sets the days for every category" (the setting happens two functions away) becomes "The contract must have no organization-level override." The reason moves out; the condition the body checks stays.
+
+**The boundary**: describing how the function's **own return is derived** stays in scope even when a private helper does the arithmetic — that is still this function's input-to-output contract. Out of scope is what happens *elsewhere in the system*.
+
 **Heuristic**: name every noun in the comment. If a noun never appears in the parameters, the return type, the body, or the things the body calls, the comment is describing somewhere else.
 
 **Second heuristic — the sibling paste-test**: would the comment be just as true pasted onto the neighboring declarations in the same file? A comment equally true on every sibling documents the architecture, not this code. If the fact is worth writing down, its home is the module docstring or the convention doc — not one method among the many it applies to.
@@ -92,11 +96,13 @@ The name says validate. The parameter says retention overrides. `-> None` says i
 
 **Fix**: a docstring on a function this well-named earns its place only by saying what the validation *rejects*, what it raises, or that it is the sole enforcement point for an invariant. If none of that is true, delete it.
 
-### 5. Forward references and planning artifacts
+### 5. Forward references, history, and planning artifacts
 
 Comments about work that does not exist yet ("this arrives when a sibling service needs to write retention"), phase and step labels (P1, M1, "Step 1b"), ticket IDs, links to internal planning documents.
 
 The reader cannot verify any of it from the repository, and it goes stale the moment plans change. Commit messages and the ticket are the durable homes for intent; in code it reads as the author narrating their own roadmap.
+
+Historical claims are the backward mirror: "that tier never dropped" is about past config, and nothing in the code can confirm it. State the condition the body checks instead (`downsampled_days == THIRTEEN_MONTHS`).
 
 **Fix**: delete. If the code genuinely depends on future work, that dependency belongs in a TODO that names the concrete thing to do here.
 
@@ -149,6 +155,15 @@ Both state a fact that is invisible in the code and true at this layer. Neither 
 
 **The default is delete.** The burden of proof sits on the comment: a keep must show its pass — name the row of this table it satisfies and the fact the code cannot state. "It might help someone" is not a pass; every slop comment might help someone. Doubt protects exactly one shape of comment: one that asserts a why — a rationale, an ordering constraint, a trade-off — that you cannot cheaply verify from the code in front of you. Deleting a real rationale costs the next person the bug it was preventing, which is worse than any bland comment; a comment of that shape survives being torn over. A restatement of the visible never does.
 
+## What a docstring must state
+
+The audit decides what a docstring may *not* say. For the ones that stay — and any you write — four gaps recur once the slop is gone, each a fact the signature genuinely cannot carry (these are mode 4's pass conditions, stated generatively):
+
+- **Tuple returns**: which position is which, and what each value means. A bare `tuple[bool, bool]` explains nothing; "The first value is for the standard tier. The second value is for the downsampled tier. A value is true when the grandfathering includes that tier."
+- **Boolean polarity**, especially when the body computes by negation (`not _tier_overridden(...)`) — the reader sees the negation and cannot tell which polarity means what.
+- **Silent defaults and fallbacks**: an `else 0`, a `fallback=` argument, an early return of an empty set. Each undocumented branch gets its own sentence.
+- **One word for one concept across siblings**: a trio of related functions all say *includes*; a pair of tuple-returners both say *first value / second value*. A synonym forces the reader to check whether it names the same thing (mode 3's cost, in reverse).
+
 ## The what belongs in the code
 
 When you are writing or changing code — not just auditing its comments — the order is: make the code state the *what* (descriptive names, extracted variables, named constants), then comment only the *why* that survives. A name cannot drift from the code the way a comment can, and nobody has to decide later whether it earned its place.
@@ -162,6 +177,8 @@ MAX_RETRY_ATTEMPTS = 3
 ```
 
 In an audit the same rule runs backward. A *what*-comment that resists deletion — removing it really would leave the reader lost — is not a keep; it is evidence the code under it is unclear. A vague name, a magic value, an expression doing more than its parts admit. Fix the code — rename, extract, name the constant — then delete the comment.
+
+A docstring paraphrase of a constant is the same failure one level up: "the categories whose default dropped to thirty days" describes the value instead of naming it. Name `NEW_30_DAY_RETENTION_CATEGORIES`, the thing the body filters on — a named constant is checkable in place; a paraphrase is trusted.
 
 Two boundaries:
 
@@ -221,7 +238,9 @@ Style is the second pass, never the first. Content selection (keep / rewrite / d
 For the comments you rewrite — and for any comment text you write yourself — apply the ASD-STE100 habits that survive contact with code:
 
 - **Short sentences, one idea each.** A comment holding two facts is two sentences.
+- **Complete sentences — no verbless noun-phrase summaries.** "Whether the grandfathering applies…" drops the verb to shorten the line; lead with one instead: "Tell whether…", "Give the days…".
 - **Active voice, named actor.** "The resolver applies the defaults", not "defaults are applied" — the actor is often the load-bearing information (which layer does it: mode 1's question).
+- **No double negation.** "Neither consults nor pays for" → one positive sentence per fact: "does no legacy work and gets no legacy error."
 - **Present tense for what the code does; conditional for what a guard prevents** (mode 6).
 - **One term, one meaning.** Reuse the exact identifier, or the term the module docstring defines; a synonym forces the reader to check whether it names the same thing (mode 3).
 - **No filler openers or intensifiers.** "Note that", "simply", "it is important to" — delete the phrase, keep the sentence.
@@ -229,6 +248,8 @@ For the comments you rewrite — and for any comment text you write yourself —
 Kept comments stay untouched by default — restyling every keep is churn. Restyle a keep only when its wording breaks these rules badly enough to slow the reader (a buried actor, a 40-word sentence), and then without touching content.
 
 The override rule: **a style edit may not delete a fact.** If a rule and a fact collide — the sentence runs long because the why-clause is long — the fact wins and the rule loses. ASD-STE100 constrains wording; the three-clause test alone decides content.
+
+For the full docstring-rewrite convention — the deeper STE-100 subset (approved senses, no coined compounds, no inverted word order, sentence and paragraph caps) and the per-sentence body-scope test with its boundary cases — see [references/docstring-conventions.md](references/docstring-conventions.md).
 
 ## Workflow
 
@@ -257,6 +278,8 @@ Every verdict needs the function's parameters, return type, and body on screen. 
 ### 3. Verify what the comment claims
 
 A comment asserting a fact may simply be stale: the code moved and the sentence did not. Check the claim against the code before preserving it. "It explains why" does not make it true, and a wrong comment is worse than an empty one. A false claim is a rewrite or a delete, never a keep.
+
+The same bar applies to claims you write: a sentence like "the override changes both values" is written only after reading (or running) the test that pins it — not from memory of the code.
 
 ### 4. Give one verdict per comment
 

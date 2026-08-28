@@ -4,6 +4,20 @@ All notable changes to the comment-slop skill in this marketplace will be docume
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.4.0] - 2026-08-28
+
+### Added
+- First `references/` file (progressive disclosure): `references/docstring-conventions.md` carries the full docstring-rewrite convention developed under production review — the deeper ASD-STE100 subset (complete-sentence rule with approved-verb leads, ~25-word/6-sentence caps, approved senses that reject metaphors like *consult*/*answer*/*apply*, no `-ing` forms, no double negation, no coined prefix compounds, no inverted word order), the per-sentence body-scope test (every docstring sentence must be verifiable from that function's body alone) with the five rejected claim shapes and its boundary case, plus process notes (rewrite per function on request, verify claims against the pinning test before writing, one rewrite per commit)
+- "What a docstring must state" section: the four gaps that recur once slop is gone, each a fact the signature cannot carry — tuple-return positional meanings, boolean polarity (especially when the body computes by negation), silent defaults and fallbacks (each undocumented branch gets its own sentence), and one word for one concept across sibling functions. Mode 4's pass conditions stated generatively
+- Mode 1 gains the precondition fix pattern (a wrong-layer sentence justifying a gate is replaced with the precondition the body checks, not reworded) and the scope boundary: describing how the function's own return is derived stays in scope even when a private helper does the arithmetic; claims about elsewhere in the system do not
+- Mode 5 extended to historical claims — the backward mirror of forward references: "that tier never dropped" is about past config nothing in the code can confirm; state the condition the body checks instead
+- "The what belongs in the code" gains the paraphrase-of-constant case: a docstring describing a constant's value instead of naming it ("the categories whose default dropped to thirty days") is the same failure one level up — a named constant is checkable in place, a paraphrase is trusted
+- Style section gains the complete-sentence rule (no verbless noun-phrase summaries — "Whether X applies…" leads with a verb instead) and the no-double-negation rule, with a closing pointer to the full convention in references/
+- Workflow step 3 extends the verify-before-preserving bar to claims you write: a factual docstring sentence is written only after reading (or running) the test that pins it, not from memory of the code
+
+### Changed
+- Frontmatter description adds the docstring-completeness trigger (writing or reviewing docstrings for tuple-return meanings, boolean polarity, silent defaults and fallbacks)
+
 ## [1.3.0] - 2026-08-11
 
 ### Added

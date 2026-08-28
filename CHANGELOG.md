@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- comment-slop skill: implemented the progressive-disclosure pattern with its first `references/` file — `references/docstring-conventions.md` holds the full docstring-rewrite convention (the deeper ASD-STE100 subset and the per-sentence body-scope test with its boundary cases), keeping SKILL.md lean (comment-slop v1.4.0)
+- comment-slop skill: adds the generative direction the audit lacked — a "What a docstring must state" section (tuple-return meanings, boolean polarity, silent defaults and fallbacks, one word per concept across siblings), the precondition fix pattern and scope boundary in mode 1, historical claims in mode 5, the paraphrase-of-constant case, and the write-side verification bar (factual claims written only after reading or running the test that pins them) (comment-slop v1.4.0)
+
 ## [0.52.0] - 2026-08-24
 
 ### Added

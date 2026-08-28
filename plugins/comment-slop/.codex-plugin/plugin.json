@@ -1,6 +1,6 @@
 {
   "name": "comment-slop",
-  "version": "1.3.0+codex.ac484b8162d7",
+  "version": "1.4.0+codex.084882ae8193",
   "description": "Find and remove AI-slop comments \u2014 ones that restate the code, describe another layer's behavior, or narrate planning that never shipped \u2014 while keeping the comments that carry real reasoning. Comment the why, not the what or how: names carry the what, and delete is the default verdict. Use when a reviewer calls a comment useless or AI-written, when auditing comments and docstrings on a branch or PR, when deciding whether new code needs a comment, or before sending a change for review.",
   "author": {
     "name": "Alberto Leal"
