@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- python-complexity skill: per-function cyclomatic (`ruff check --select C901`) and cognitive (`complexipy`) complexity measurement as refactor triage, with nothing installed into the project. Verified against ruff 0.12.7/0.16.3/0.16.5 and complexipy 7.0.1. Teaches the two metrics as a pair on a measured triple — identical logic written flat, nested, and as ternaries scores cyclomatic 6/6/1 against cognitive 5/15/15, so cyclomatic cannot separate them and rates the worst version lowest (python-complexity v1.0.0)
+- python-complexity skill: the corrected census command — `max-complexity=0`, not `1`, because C901 fires on `>` and a threshold of 1 silently omits every complexity-1 function, which is exactly where the worst blind spots live (a 203-line straight-line function scores 1). Plus `--isolated` against silent zeroing by a project's `per-file-ignores`, `--ignore-noqa` because `--isolated` does not override suppression comments, and complexipy's `--plain` against its box-drawn default output (python-complexity v1.0.0)
+- python-complexity skill: the two non-overlapping silent failures that make a clean run a lie, which is the practical argument for running both tools — ruff exits `0` with `All checks passed!` on a mistyped path (guarded by `--show-files`, verified in both directions), and complexipy never reports methods inside a nested class, where such a method yields zero output and exit 0 while the identical de-nested body scores 21 and exits 1 (python-complexity v1.0.0)
+- python-complexity skill: a measured blind-spot catalogue (203-line straight-line function, 15-parameter mutator, a `validate_user` that sets `is_admin = True`, and a five-level closure pyramid scoring cognitive **0**), a documented and independently re-reproduced complexipy 7.0.1 ternary-in-arithmetic scoring defect shipped with its control fixture, and sourced-only thresholds — with the correction that Campbell's white paper recommends no numeric threshold and 15 is complexipy's tool default, not a research finding (python-complexity v1.0.0)
+
 ## [0.53.0] - 2026-08-28
 
 ### Changed

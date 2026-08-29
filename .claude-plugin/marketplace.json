@@ -1427,6 +1427,31 @@
       "skills": [
         "./skills"
       ]
+    },
+    {
+      "name": "python-complexity",
+      "version": "1.0.0",
+      "source": "./plugins/python-complexity",
+      "description": "Measure per-function cyclomatic (ruff C901) and cognitive (complexipy) complexity in Python to find refactor targets, with no project install. Use when asking which functions to refactor first, whether a function is too complex, where the worst code in a module is, when triaging a legacy codebase, or when verifying a refactor actually reduced complexity. Teaches reading the two metrics as a pair and the silent-failure modes that make a clean run a lie.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/python-complexity",
+      "license": "MIT",
+      "keywords": [
+        "python",
+        "complexity",
+        "cyclomatic",
+        "cognitive-complexity",
+        "refactoring",
+        "ruff",
+        "complexipy",
+        "code-quality"
+      ],
+      "strict": false,
+      "skills": [
+        "./skills"
+      ]
     }
   ]
 }
