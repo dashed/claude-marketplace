@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.54.0] - 2026-08-29
+
 ### Added
 - python-complexity skill: per-function cyclomatic (`ruff check --select C901`) and cognitive (`complexipy`) complexity measurement as refactor triage, with nothing installed into the project. Verified against ruff 0.12.7/0.16.3/0.16.5 and complexipy 7.0.1. Teaches the two metrics as a pair on a measured triple — identical logic written flat, nested, and as ternaries scores cyclomatic 6/6/1 against cognitive 5/15/15, so cyclomatic cannot separate them and rates the worst version lowest (python-complexity v1.0.0)
 - python-complexity skill: the corrected census command — `max-complexity=0`, not `1`, because C901 fires on `>` and a threshold of 1 silently omits every complexity-1 function, which is exactly where the worst blind spots live (a 203-line straight-line function scores 1). Plus `--isolated` against silent zeroing by a project's `per-file-ignores`, `--ignore-noqa` because `--isolated` does not override suppression comments, and complexipy's `--plain` against its box-drawn default output (python-complexity v1.0.0)
@@ -743,7 +745,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.53.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.54.0...HEAD
+[0.54.0]: https://github.com/dashed/claude-marketplace/compare/v0.53.0...v0.54.0
 [0.53.0]: https://github.com/dashed/claude-marketplace/compare/v0.52.0...v0.53.0
 [0.52.0]: https://github.com/dashed/claude-marketplace/compare/v0.51.0...v0.52.0
 [0.51.0]: https://github.com/dashed/claude-marketplace/compare/v0.50.0...v0.51.0
