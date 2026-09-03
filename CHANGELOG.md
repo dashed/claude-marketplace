@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Static validation check `scripts/validators/validate_mcp_tool_names.py` (wired into `make validate-strict` and runnable standalone via `make validate-mcp` / `make validate-mcp-strict`): computes every namespaced MCP tool id (`mcp__plugin_<plugin>_<server>__<tool>`) from each plugin's `.mcp.json` server keys plus the `@mcp.tool` definitions AST-parsed from the server scripts, and fails when one exceeds the 64-character tool-name limit. Catches the class of bug fixed in v0.54.1 at commit time instead of after install
+
 ## [0.54.1] - 2026-09-03
 
 ### Fixed

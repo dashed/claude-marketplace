@@ -96,6 +96,11 @@ def main() -> int:
             "description": "YAML Frontmatter Validation",
             "args": strict_flag,
         },
+        {
+            "script": str(validators_dir / "validate_mcp_tool_names.py"),
+            "description": "MCP Tool-Name Length Validation",
+            "args": strict_flag,
+        },
     ]
 
     # Note: yamllint validation disabled because SKILL.md files are Markdown

@@ -437,6 +437,7 @@ This checks:
 - File structure (plugin directories, required files)
 - JSON manifest validity (marketplace.json schema compliance)
 - YAML frontmatter (SKILL.md frontmatter schema compliance)
+- MCP tool-name lengths (every `mcp__plugin_<plugin>_<server>__<tool>` id fits the 64-character limit; `make validate-mcp` to run just this check)
 
 All checks must pass before the skill can be released.
 

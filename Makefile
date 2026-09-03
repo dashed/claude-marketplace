@@ -1,4 +1,4 @@
-.PHONY: help sync sync-codex-plugins check-codex-plugins validate validate-strict validate-yaml validate-json validate-structure clean test test-codex-skills test-codex-installer lint-codex-skills lint-codex-installer typecheck-codex-skills typecheck-codex-installer format-codex-skills format-codex-installer format-codex-skills-check format-codex-installer-check manage-codex-skills test-tmux-build test-tmux test-tmux-local test-tmux-shell test-session-registry test-session-registry-local test-registry test-create-session test-list-sessions test-cleanup-sessions test-session-integration test-playwright-build test-playwright test-playwright-local test-playwright-shell lint lint-python lint-python-fix lint-shellcheck lint-shellcheck-strict lint-fix type-check format format-check format-playwright format-playwright-check lint-playwright setup-linear lint-typescript typecheck-typescript format-typescript format-check-typescript test-linear test-chrome-cdp lint-chrome-cdp format-chrome-cdp format-chrome-cdp-check typecheck-chrome-cdp build-react-bp validate-react-bp test-react-bp lint-react-bp format-react-bp format-react-bp-check typecheck-react-bp test-sequential-thinking test-file-search test-fuzzy-search test-sqlite
+.PHONY: help sync sync-codex-plugins check-codex-plugins validate validate-strict validate-yaml validate-json validate-structure validate-mcp validate-mcp-strict clean test test-codex-skills test-codex-installer lint-codex-skills lint-codex-installer typecheck-codex-skills typecheck-codex-installer format-codex-skills format-codex-installer format-codex-skills-check format-codex-installer-check manage-codex-skills test-tmux-build test-tmux test-tmux-local test-tmux-shell test-session-registry test-session-registry-local test-registry test-create-session test-list-sessions test-cleanup-sessions test-session-integration test-playwright-build test-playwright test-playwright-local test-playwright-shell lint lint-python lint-python-fix lint-shellcheck lint-shellcheck-strict lint-fix type-check format format-check format-playwright format-playwright-check lint-playwright setup-linear lint-typescript typecheck-typescript format-typescript format-check-typescript test-linear test-chrome-cdp lint-chrome-cdp format-chrome-cdp format-chrome-cdp-check typecheck-chrome-cdp build-react-bp validate-react-bp test-react-bp lint-react-bp format-react-bp format-react-bp-check typecheck-react-bp test-sequential-thinking test-file-search test-fuzzy-search test-sqlite
 
 # Default target
 .DEFAULT_GOAL := help
@@ -72,6 +72,14 @@ validate-structure: ## Validate file structure and naming conventions
 validate-structure-strict: ## Validate file structure (strict mode)
 	@echo "$(CYAN)Validating file structure (strict mode)...$(NC)"
 	@$(UV_RUN) scripts/validators/validate_structure.py --strict
+
+validate-mcp: ## Validate MCP namespaced tool ids fit the 64-char limit
+	@echo "$(CYAN)Validating MCP tool-name lengths...$(NC)"
+	@$(UV_RUN) scripts/validators/validate_mcp_tool_names.py
+
+validate-mcp-strict: ## Validate MCP tool-name lengths (strict mode)
+	@echo "$(CYAN)Validating MCP tool-name lengths (strict mode)...$(NC)"
+	@$(UV_RUN) scripts/validators/validate_mcp_tool_names.py --strict
 
 test: ## Run all tests (pytest + vitest)
 	@echo "$(CYAN)Running tests...$(NC)"
