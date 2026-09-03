@@ -1,6 +1,6 @@
 {
   "name": "ultrathink",
-  "version": "1.1.2+codex.6e4fdf6d3704",
+  "version": "1.1.3+codex.b7afe1d8e4f4",
   "description": "Invoke deep sequential thinking for complex problem-solving. Use when the user says 'use ultrathink', 'ultrathink', or when tackling problems that require careful step-by-step reasoning, planning, hypothesis generation, or multi-step analysis.",
   "author": {
     "name": "Alberto Leal"

@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.0.4] - 2026-09-03
+
+### Fixed
+- `.mcp.json`: renamed the server key from `sequential-thinking` to `think`. The plugin loader namespaces the tool as `mcp__plugin_<plugin>_<server>__<tool>`, and the old key produced the 71-character `mcp__plugin_sequential-thinking_sequential-thinking__sequentialthinking` — over the 64-character tool-name limit. The new id `mcp__plugin_sequential-thinking_think__sequentialthinking` is 57 characters. The `sequentialthinking` tool name itself is unchanged (still verbatim with upstream), as are the launch args and `FastMCP("sequential-thinking-server")` internal name
+- README: advertised tool id, direct-config bare form (`mcp__think__sequentialthinking`), and `.mcp.json` wiring snippet updated to the new key, with a note explaining why the key stays short
+
 ## [1.0.3] - 2026-06-10
 
 ### Fixed

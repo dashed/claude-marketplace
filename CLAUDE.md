@@ -540,10 +540,12 @@ The server **key** in `.mcp.json` determines the tool id, but **the tool is name
 mcp__plugin_<plugin-name>_<server-key>__<tool-name>
 ```
 
-Example: the `sequential-thinking` plugin (server key `sequential-thinking`, tool `sequentialthinking`) registers as
-`mcp__plugin_sequential-thinking_sequential-thinking__sequentialthinking`.
+Example: the `sequential-thinking` plugin (server key `think`, tool `sequentialthinking`) registers as
+`mcp__plugin_sequential-thinking_think__sequentialthinking`.
 
 A directly-configured (non-plugin) MCP server instead uses the bare `mcp__<server-key>__<tool-name>`. **Any skill or doc that references a plugin MCP tool by name must use the `mcp__plugin_...` form** — and you should verify the real id by inspecting the available tools after installing the plugin, not by assuming. (This exact mismatch caused the v0.15.1 ultrathink fix.)
+
+**Keep the namespaced id within Claude Code's 64-character tool-name limit.** The id is 12 (`mcp__plugin_`) + `len(plugin)` + 1 + `len(server-key)` + 2 + `len(tool)`, so keep `len(plugin) + len(server-key) + len(tool)` at 49 or fewer. Prefer a short server key over a redundant one — the `sequential-thinking` key produced the 71-character `mcp__plugin_sequential-thinking_sequential-thinking__sequentialthinking`, fixed in v0.54.1 by shortening the key to `think` (57 characters). Never lengthen a server key or tool name without re-checking the total.
 
 ### marketplace.json Entry for an MCP Plugin
 

@@ -6,7 +6,7 @@ license: MIT
 
 # Ultrathink
 
-Ultrathink activates the Sequential Thinking MCP tool (`mcp__plugin_sequential-thinking_sequential-thinking__sequentialthinking`) to enable deep, structured reasoning through complex problems.
+Ultrathink activates the Sequential Thinking MCP tool (`mcp__plugin_sequential-thinking_think__sequentialthinking`) to enable deep, structured reasoning through complex problems.
 
 > **Note:** Claude Code also treats the bare word "ultrathink" in a prompt as a native extended-thinking keyword that raises the model's internal thinking budget. This skill is complementary, not a replacement: it externalizes reasoning as a visible, revisable chain of `sequentialthinking` tool calls in the transcript, where internal thinking is not shown. Saying "ultrathink" can trigger both at once — that is expected.
 
@@ -16,8 +16,8 @@ This skill drives the Sequential Thinking MCP tool, provided by the companion `s
 
 The exact tool id depends on how the server is installed:
 
-- **Installed via this marketplace plugin** (the normal case): Claude Code namespaces it as `mcp__plugin_sequential-thinking_sequential-thinking__sequentialthinking` (pattern: `mcp__plugin_<plugin>_<server>__<tool>`).
-- **Configured directly as a user/project MCP server**: it appears as `mcp__sequential-thinking__sequentialthinking`.
+- **Installed via this marketplace plugin** (the normal case): Claude Code namespaces it as `mcp__plugin_sequential-thinking_think__sequentialthinking` (pattern: `mcp__plugin_<plugin>_<server>__<tool>`).
+- **Configured directly as a user/project MCP server**: it appears as `mcp__think__sequentialthinking`.
 
 If unsure, use whichever `…sequentialthinking` tool is listed in your available tools.
 
@@ -40,7 +40,7 @@ Invoke ultrathink when:
 Call the sequential thinking tool with structured thoughts:
 
 ```
-mcp__plugin_sequential-thinking_sequential-thinking__sequentialthinking:
+mcp__plugin_sequential-thinking_think__sequentialthinking:
   thought: "Your current thinking step"
   nextThoughtNeeded: true/false
   thoughtNumber: 1

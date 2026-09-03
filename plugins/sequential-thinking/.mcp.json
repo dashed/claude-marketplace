@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "sequential-thinking": {
+    "think": {
       "command": "uv",
       "args": ["run", "--no-config", "--script", "${CLAUDE_PLUGIN_ROOT}/scripts/mcp_sequential_thinking.py"]
     }

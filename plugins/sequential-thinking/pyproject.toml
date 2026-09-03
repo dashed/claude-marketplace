@@ -1,6 +1,6 @@
 [project]
 name = "sequential-thinking"
-version = "1.0.3"
+version = "1.0.4"
 description = "Test/dev tooling for the sequential-thinking MCP server plugin"
 requires-python = ">=3.10"
 # No declared runtime deps here — the server is a self-contained PEP 723

@@ -18,10 +18,13 @@ The server registers one tool with the model:
   the fly. History is kept in memory for the lifetime of the process.
 
 Once the plugin is enabled, Claude Code namespaces the tool as
-`mcp__plugin_sequential-thinking_sequential-thinking__sequentialthinking`
-(pattern: `mcp__plugin_<plugin>_<server>__<tool>`). Only a directly-configured
-(non-plugin) MCP server registers the bare
-`mcp__sequential-thinking__sequentialthinking` form.
+`mcp__plugin_sequential-thinking_think__sequentialthinking`
+(pattern: `mcp__plugin_<plugin>_<server>__<tool>`). The server key is
+deliberately short (`think`, not `sequential-thinking`): the namespaced id
+must stay within Claude Code's 64-character tool-name limit — the
+`sequential-thinking` key produced a 71-character id. Only a
+directly-configured (non-plugin) MCP server registers the bare
+`mcp__think__sequentialthinking` form.
 
 ### Tool parameters
 
@@ -68,7 +71,7 @@ The plugin declares the server in `.mcp.json`:
 ```json
 {
   "mcpServers": {
-    "sequential-thinking": {
+    "think": {
       "command": "uv",
       "args": ["run", "--no-config", "--script", "${CLAUDE_PLUGIN_ROOT}/scripts/mcp_sequential_thinking.py"]
     }

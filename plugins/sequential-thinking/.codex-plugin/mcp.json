@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "sequential-thinking": {
+    "think": {
       "command": "uv",
       "args": [
         "run",

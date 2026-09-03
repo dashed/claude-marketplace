@@ -18,7 +18,7 @@ Extract reusable writing style guides from any source text. Produces four standa
 
 **MCP tools required:**
 - `mcp__fuzzy-search` — PDF page counting, outline extraction, and page-level reading
-- `mcp__sequential-thinking__sequentialthinking` — Structured analysis across dimensions
+- `mcp__plugin_sequential-thinking_think__sequentialthinking` — Structured analysis across dimensions
 
 **Output location:** `writing-styles/<style-name>/` in the project root. See `writing-styles/README.md` for the collection structure and `writing-styles/_template/` for deliverable templates.
 
@@ -51,7 +51,7 @@ Identify the source text and assess its structure before reading.
 
 ### Phase 2: Dimension Extraction
 
-Analyze **17 style dimensions** across all sampled passages. Use `mcp__sequential-thinking__sequentialthinking` to organize observations systematically.
+Analyze **17 style dimensions** across all sampled passages. Use `mcp__plugin_sequential-thinking_think__sequentialthinking` to organize observations systematically.
 
 | # | Dimension | What to look for |
 |---|-----------|-----------------|

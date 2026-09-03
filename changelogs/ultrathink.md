@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.1.3] - 2026-09-03
+
+### Fixed
+- Updated all three Sequential Thinking tool references to the new `mcp__plugin_sequential-thinking_think__sequentialthinking` id (server key shortened from `sequential-thinking` to `think` to stay within the 64-character tool-name limit), including the direct-config form `mcp__think__sequentialthinking`
+
 ## [1.1.2] - 2026-06-10
 
 ### Added

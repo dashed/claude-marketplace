@@ -16,6 +16,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - SKILL.md now distinguishes surface style (17 dimensions) from narrative construction (10 dimensions)
 - References section updated to include narrative-dimensions.md
 
+## [1.0.1] - 2026-09-03
+
+### Fixed
+- Replaced the two stale bare-form `mcp__sequential-thinking__sequentialthinking` references with the plugin-namespaced `mcp__plugin_sequential-thinking_think__sequentialthinking` id (server key shortened from `sequential-thinking` to `think` to stay within the 64-character tool-name limit), per the rule that skills must reference the `mcp__plugin_...` form
+
 ## [1.0.0] - 2026-05-13
 
 ### Added

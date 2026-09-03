@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.54.1] - 2026-09-03
+
+### Fixed
+- sequential-thinking plugin: shortened the `.mcp.json` server key from `sequential-thinking` to `think`. The namespaced tool id is 12 + len(plugin) + 1 + len(server-key) + 2 + len(tool) characters, and the old key produced `mcp__plugin_sequential-thinking_sequential-thinking__sequentialthinking` at 71 characters — over Claude Code's 64-character tool-name limit. The new id `mcp__plugin_sequential-thinking_think__sequentialthinking` is 57 characters (sequential-thinking v1.0.4)
+- ultrathink skill: updated all three Sequential Thinking tool references to the new `mcp__plugin_sequential-thinking_think__sequentialthinking` id, including the direct-config form (`mcp__think__sequentialthinking`) (ultrathink v1.1.3)
+- style-extractor skill: replaced the two stale bare-form `mcp__sequential-thinking__sequentialthinking` references with the plugin-namespaced `mcp__plugin_sequential-thinking_think__sequentialthinking` id, per the rule that skills must reference the `mcp__plugin_...` form (style-extractor v1.0.1)
+
+### Changed
+- CLAUDE.md "MCP Tool Naming" section: documented the 64-character tool-name limit with the length formula (`len(plugin) + len(server-key) + len(tool)` must stay at 49 or fewer) so future MCP plugins pick a short server key up front
+
 ## [0.54.0] - 2026-08-29
 
 ### Added
@@ -745,7 +755,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.54.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.54.1...HEAD
+[0.54.1]: https://github.com/dashed/claude-marketplace/compare/v0.54.0...v0.54.1
 [0.54.0]: https://github.com/dashed/claude-marketplace/compare/v0.53.0...v0.54.0
 [0.53.0]: https://github.com/dashed/claude-marketplace/compare/v0.52.0...v0.53.0
 [0.52.0]: https://github.com/dashed/claude-marketplace/compare/v0.51.0...v0.52.0
