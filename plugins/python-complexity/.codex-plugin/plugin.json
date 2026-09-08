@@ -1,7 +1,7 @@
 {
   "name": "python-complexity",
-  "version": "1.0.0+codex.4966395b742d",
-  "description": "Measure per-function cyclomatic (ruff C901) and cognitive (complexipy) complexity in Python to find refactor targets, with no project install. Use when asking which functions to refactor first, whether a function is too complex, where the worst code in a module is, when triaging a legacy codebase, or when verifying a refactor actually reduced complexity. Teaches reading the two metrics as a pair and the silent-failure modes that make a clean run a lie.",
+  "version": "1.1.0+codex.1c060609697f",
+  "description": "Measure per-function cyclomatic (ruff C901) and cognitive (complexipy) complexity in Python with no project install, then count what they miss between functions: hops, pass-through layers, selector parameters. Use when asking which functions to refactor first, whether a function or call path is too complex or over-layered, when every function scores low but the code is hard to follow, when triaging a legacy codebase, or when verifying a refactor reduced rather than relocated complexity.",
   "author": {
     "name": "Alberto Leal"
   },
@@ -18,8 +18,8 @@
   ],
   "interface": {
     "displayName": "Python Complexity",
-    "shortDescription": "Measure per-function cyclomatic (ruff C901) and cognitive (complexipy) complexity in Python to find refactor targets, with no project install. Use when asking which functions to...",
-    "longDescription": "Measure per-function cyclomatic (ruff C901) and cognitive (complexipy) complexity in Python to find refactor targets, with no project install. Use when asking which functions to refactor first, whether a function is too complex, where the worst code in a module is, when triaging a legacy codebase, or when verifying a refactor actually reduced complexity. Teaches reading the two metrics as a pair and the silent-failure modes that make a clean run a lie.",
+    "shortDescription": "Measure per-function cyclomatic (ruff C901) and cognitive (complexipy) complexity in Python with no project install, then count what they miss between functions: hops...",
+    "longDescription": "Measure per-function cyclomatic (ruff C901) and cognitive (complexipy) complexity in Python with no project install, then count what they miss between functions: hops, pass-through layers, selector parameters. Use when asking which functions to refactor first, whether a function or call path is too complex or over-layered, when every function scores low but the code is hard to follow, when triaging a legacy codebase, or when verifying a refactor reduced rather than relocated complexity.",
     "developerName": "Alberto Leal",
     "category": "Productivity",
     "capabilities": [

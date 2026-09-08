@@ -4,8 +4,9 @@
 exceeds 10". Inverted, it is a **read-only measurement tool** — set the threshold below every real
 score and ruff prints one line per function with its exact McCabe number.
 
-Every behavior on this page was executed against **ruff 0.12.7, 0.16.3, and 0.16.5**. Differences
-are called out inline; where nothing is said, all three behave identically.
+Every behavior on this page was executed against **ruff 0.12.7, 0.16.3, and 0.16.5**; the PLR
+section was measured on **0.12.7 and 0.16.6**. Differences are called out inline; where nothing is
+said, all versions behave identically.
 
 ## Table of contents
 
@@ -15,6 +16,7 @@ are called out inline; where nothing is said, all three behave identically.
 - [Ranked scans](#ranked-scans)
 - [Config interference and `--isolated`](#config-interference-and---isolated)
 - [Suppression that `--isolated` does not fix](#suppression-that---isolated-does-not-fix)
+- [The other counts ruff ships: the PLR rules](#the-other-counts-ruff-ships-the-plr-rules)
 - [What ruff's McCabe actually counts](#what-ruffs-mccabe-actually-counts)
 - [Scope and granularity](#scope-and-granularity)
 - [Caching and `--no-cache`](#caching-and---no-cache)
@@ -321,6 +323,73 @@ fixtures/noqa.py:13:5: C901 `visible` is too complex (2 > 0)          # all 3
 The file-level `# ruff: noqa: C901` case is the worst: it takes the file to `All checks passed!`,
 exit 0, with no warning. `--ignore-noqa` recovers it.
 
+## The other counts ruff ships: the PLR rules
+
+C901 counts branches. The same binary ships seven `pylint`-family rules that count what C901 and
+complexipy both ignore — parameters, statements, returns, branches, boolean operators, nesting
+depth — and every one of them inverts the same way. Measured on 0.12.7 and 0.16.6 with boundary
+fixtures (one function at the default, one just over):
+
+| Rule | Counts | Default | Config key | 0.12.7 | 0.16.6 |
+|---|---|---:|---|---|---|
+| `PLR0913` | arguments | 5 | `lint.pylint.max-args` | stable | stable |
+| `PLR0917` | positional arguments | 5 | `lint.pylint.max-positional-args` | preview | stable |
+| `PLR0915` | statements | 50 | `lint.pylint.max-statements` | stable | stable |
+| `PLR0911` | `return` statements | 6 | `lint.pylint.max-returns` | stable | stable |
+| `PLR0912` | branches | 12 | `lint.pylint.max-branches` | stable | stable |
+| `PLR0916` | boolean operators in an `if` | 5 | `lint.pylint.max-bool-expr` | preview | preview |
+| `PLR1702` | nested blocks | 5 | `lint.pylint.max-nested-blocks` | preview | preview |
+
+All seven fire on `>` and accept `0`; `-1` is rejected loudly (`invalid value … expected usize`,
+exit 2), so **a function whose count is 0 can never be listed**. The extended census:
+
+```bash
+ruff check --isolated --ignore-noqa --no-cache --preview --output-format json \
+  --select C901,PLR0911,PLR0912,PLR0913,PLR0915,PLR0916,PLR0917,PLR1702 \
+  --config "lint.mccabe.max-complexity=0" \
+  --config "lint.pylint.max-args=0"        --config "lint.pylint.max-positional-args=0" \
+  --config "lint.pylint.max-statements=0"  --config "lint.pylint.max-returns=0" \
+  --config "lint.pylint.max-branches=0"    --config "lint.pylint.max-bool-expr=0" \
+  --config "lint.pylint.max-nested-blocks=0" path/
+```
+
+**The one that matters most: `PLR1702` sees two nestings cognitive complexity scores at zero.**
+
+| Fixture | complexipy 7.0.1 | `PLR1702` depth |
+|---|---:|---:|
+| 5 nested `with` | **0** | **5** |
+| 5 nested `try/finally` | **0** | **5** |
+| 5 nested `for` | 15 | 5 |
+| 6 nested `if` | 21 | 6 |
+| 5 nested `def` (closure pyramid) | 0 | *not reported* |
+
+`with` and `try/finally` nesting are two of the blind spots interpreting-scores.md lists as
+invisible to both metrics; one preview rule in the run you already make closes both. Nothing
+closes the closure pyramid except `radon cc -j --show-closures` (`col_offset` is the depth).
+
+Five measured quirks, each of which would misread as a clean result:
+
+- **`PLR0915` counts `return` and `for` as 0 statements.** `def f(x): return g(x)` reports nothing
+  at `max-statements=0`; so does `return 1` three times. `x = 1` is 1, `pass` is 1, `with … pass`
+  is 2, `if 1: pass` is 2, `try/except` with two `pass` is 4. A one-line forwarder — the archetypal
+  glue hop — cannot be enumerated by ruff at any threshold.
+- **`PLR0916` inspects `if` statements only.** The same eight-operator expression in a `while`, an
+  assignment, or a ternary is invisible even at 0.
+- **`PLR1702` rows are nesting sites, not functions.** The row's line is the block, not the `def`;
+  a function with two deep blocks gets two rows; a function with no nesting never appears. And no
+  PLR message carries the function name — only C901's does — so joining a PLR census to a function
+  list needs a line → function map.
+- **A preview rule selected without `--preview` passes silently.** `warning: Selection `PLR1702`
+  has no effect because preview is not enabled.` goes to **stderr**; stdout prints
+  `All checks passed!`; exit 0. Under `2>/dev/null` this is a clean file.
+- **On 0.16.x, `--preview` changes the `concise` text.** Rows print the rule *name*
+  (`too-many-arguments: …`) instead of the code, so `grep PLR0913` finds nothing. `--output-format
+  json` keeps `.code == "PLR0913"` on both versions — use it for anything scripted. `PLR0917`'s
+  message also changed from `(12/5)` to `(12 > 5)`.
+
+Keyword-only arguments count for `PLR0913` but not `PLR0917` (`f(a, b, c, d, e, *, g)` fires the
+first, not the second).
+
 ## What ruff's McCabe actually counts
 
 Measured, not recited: one fixture per construct, complexity read off at `max-complexity=0`. A
@@ -420,7 +489,23 @@ with 56 `def`s produced 56 JSON entries.
   defs collide at column 9, and `async def` shifts the name right by 6 (a top-level `async def`
   reports at column 11, a method at 15). The JSON payload carries no parent or scope field — only
   `cell`, `code`, `end_location`, `filename`, `fix`, `location`, `message`, `noqa_row`, `url`.
-  Deduplicating requires parsing the source yourself (`ast`). Rank the rows; do not aggregate them.
+  Deduplicating requires parsing the source yourself (`ast`). Rank the raw rows; do not aggregate
+  them as they come.
+
+  **What does sum, once deduplicated.** Keep only top-level rows (a parent already contains its
+  nested defs), collapse `@overload` stubs onto their implementation by name (both tools list each
+  stub as a row), and then
+
+  ```text
+  decisions = Σ cyclo(top-level defs) − defs − nested defs
+  ```
+
+  is the number of predicates in the set — McCabe's own result (1976, p. 314: complexity sums over
+  connected components, and *v = π + 1*), and the one number here that extraction cannot move:
+  cutting a function into helpers adds exactly the +1 each new def costs. `scripts/path_census.py`
+  does the deduplication and prints the column. Complexipy's rows sum without any of this
+  ([cognitive-complexipy.md](cognitive-complexipy.md#what-gets-reported)). Why a path-level sum is
+  worth having at all: [between-function-complexity.md](between-function-complexity.md).
 
 ## Caching and `--no-cache`
 
@@ -579,4 +664,7 @@ Treat the ranking as a **triage queue, not a verdict**: it reliably finds functi
 branching statements, which correlates with the number of tests needed to cover them. It says nothing
 about nesting, length, coupling, naming, or how many concepts a reader must hold at once. Read the
 top ~20 and decide for yourself; several will not deserve the position, and some genuinely awful
-code will score 1.
+code will score 1. Nesting depth, length and parameter count are one `--select` away
+([the PLR rules](#the-other-counts-ruff-ships-the-plr-rules)); coupling — how many callables one
+public call enters, how many signatures carry the same name — needs a different census
+([between-function-complexity.md](between-function-complexity.md)).

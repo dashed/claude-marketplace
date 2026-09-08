@@ -31,6 +31,9 @@ notes/
 ### [git-absorb](./git-absorb/)
 Automatically fold uncommitted changes into appropriate commits on a feature branch.
 
+### [python-complexity](./python-complexity/)
+Per-function cyclomatic and cognitive complexity, and the path-level census for complexity that moved between functions.
+
 ### [skill-creator](./skill-creator/)
 Tool for creating and managing Agent Skills.
 

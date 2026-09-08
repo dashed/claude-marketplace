@@ -214,6 +214,20 @@ be joined by function name to another tool's.** Against ruff's `C901` on one fix
 
 So a name join silently drops ruff's nested-function rows and fails to match every method.
 
+The same property that breaks the join makes complexipy's rows **sum** where ruff's do not: each
+top-level def appears exactly once with its nested cost folded in, so Σ over a file or a call path
+is well-defined — and it is the aggregate Campbell's paper endorses (v1.7 p. 10: "because Cognitive
+Complexity does not increment for the method structure, aggregate numbers become useful"). Two
+things to know before summing: **no output format prints a total** — not `--plain`, not the rich
+report, and the JSON rows carry only `complexity, file_name, function_name, path, refactor_plans`
+(verified 7.0.1); compute it (`jq 'map(.complexity) | add'`, or
+`scripts/path_census.py`). And **`@overload` stubs are separate rows** scoring 0, so a row count
+over-states the def count (25 rows for 23 defs on one measured module) while Σ is unaffected.
+
+**radon shares the nested-class blind spot.** Identical bodies, one at top level and one under a
+nested class: ruff 6 / lizard CCN 6 / complexipy absent / `radon cc` absent (6.0.1, which does not
+list the inner class either). Only ruff and lizard are safe cross-checks for this trap.
+
 **And there is no key to join on instead.** No census output carries a line number: `--plain` is
 `<path> <fn> <score>`, the JSON keys are `complexity, file_name, function_name, path,
 refactor_plans`, and the CSV header is `Path,File Name,Function Name,Cognitive Complexity`. Only

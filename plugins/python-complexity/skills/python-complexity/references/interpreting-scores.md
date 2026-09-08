@@ -7,8 +7,9 @@ Tool mechanics live in the sibling files — [cyclomatic-ruff.md](cyclomatic-ruf
 [cognitive-complexipy.md](cognitive-complexipy.md). This file is the judgment layer.
 
 **Provenance.** Every number below was measured on ruff 0.12.7 (`C901`) and complexipy 7.0.1,
-macOS, against fixtures written for this file. Nothing is quoted from a blog post. Where a claim
-is inference rather than measurement it is labelled **(inferred)**.
+macOS, against fixtures written for this file; the layering triple in [Metric golfing](#metric-golfing)
+was additionally run on Python 3.10.15 and 3.14.7 with identical results. Nothing is quoted from a
+blog post. Where a claim is inference rather than measurement it is labelled **(inferred)**.
 
 ## Table of contents
 
@@ -102,7 +103,7 @@ at all** (6, 6, 1 — and the 1 is *lowest* for the worst one), while cognitive 
 
 |  | **Low cognitive** | **High cognitive** |
 |---|---|---|
-| **Low cyclomatic** | Fine — or an invisible monster. Check length, closure depth, ternary density before believing it. | Rare. Nested ternaries or a comprehension doing too much. Read it. |
+| **Low cyclomatic** | Fine — or an invisible monster (check length, closure depth, ternary density before believing it) — or a distributed one: see [The third golf](#the-third-golf-layering). | Rare. Nested ternaries or a comprehension doing too much. Read it. |
 | **High cyclomatic** | `match`, dispatch table, `except` ladder, or nested `def`s. Usually leave alone. | Real target. Nesting on top of genuine branching — refactor here first. |
 
 Priority order for a survey: **sort by cognitive descending, then break ties by the gap
@@ -153,17 +154,23 @@ cascade is the one refactor where the cognitive drop reliably tracks a real read
 
 Thresholds are conventions, not laws. Only these are sourced:
 
-- **Cyclomatic 10** — McCabe's own figure from the 1976 paper, described there as
-  "a reasonable, but not magical, upper limit," later adopted by NIST. It is **ruff's default**
-  (`max-complexity = 10`; measured — ruff's own message reads `is too complex (14 > 10)` with no
-  config).
+- **Cyclomatic 10** — McCabe's own figure, §III p. 314 of the 1976 paper: "The particular upper
+  bound that has been used for cyclomatic complexity is 10 which seems like a reasonable, but not
+  magical, upper limit." The next sentence prescribes the response: "When the complexity exceeded
+  10 they had to either recognize and modularize subfunctions or redo the software" — and §IV of
+  the same paper proves that modularizing leaves the total unchanged ("the complexity of a
+  collection C of control graphs with k connected components is equal to the summation of their
+  complexities"). The one exemption the paper grants is a large `case` statement. It is **ruff's
+  default** (`max-complexity = 10`; measured — ruff's own message reads `is too complex (14 > 10)`
+  with no config).
 - **Cognitive 15** — **complexipy 7.0.1's default**, established here by bisection: a function
   scoring 15 passes, 16 fails.
 
-**The Campbell white paper recommends no numeric threshold at all.** Read pages 1–13 (introduction
-through conclusion and references) of v1.7, 29 Aug 2023: it specifies the *metric*, not a limit. Do
-not cite "SonarSource says 15" as a research finding — 15 is a tool default. **(inferred)** Treat
-both defaults as screening lines that decide *what to read*, never as pass/fail gates.
+**The Campbell white paper recommends no numeric threshold at all.** Read pages 1–17 of v1.7,
+29 Aug 2023 — introduction through conclusion, references, and the Appendix B specification: it
+specifies the *metric*, not a limit. Do not cite "SonarSource says 15" as a research finding — 15
+is a tool default. **(inferred)** Treat both defaults as screening lines that decide *what to
+read*, never as pass/fail gates.
 
 ## Blind spots
 
@@ -183,6 +190,13 @@ Neither metric sees: length, parameter count, attribute-chain depth, shared-stat
 naming, `try`/`finally` nesting, or `with` nesting. **Cognitive complexity scored a five-level
 callback pyramid at 0** — the deepest visual nesting in the corpus, invisible because closures
 carry no structural increment and there is no branch inside to collect the nesting penalty.
+
+Three of those *are* visible to ruff rules the C901 census does not select, in the same run:
+`PLR0913` fires on `sync` (`12 > 0` at `max-args=0`), `PLR0915` on `build_report` (but it counts
+`return` and `for` as 0 statements, so a one-line forwarder never appears at any threshold), and
+`PLR1702 --preview` scores a five-deep `with` pyramid and a five-deep `try/finally` pyramid at
+depth **5** where complexipy scores both **0**. None of them sees the closure pyramid; only
+`radon cc --show-closures` names it. Commands and quirks: [cyclomatic-ruff.md](cyclomatic-ruff.md).
 
 ### Testing the two stock caveats
 
@@ -252,6 +266,10 @@ sound within its domain; every successful blind spot I found was some *other* ax
 is the honest scope: cognitive complexity measures branching structure well and measures nothing
 else at all.
 
+The construction does exist one `def` boundary up. Spread the same control flow over many
+functions and every one of them scores low while the path stays as hard to follow — see
+[The third golf](#the-third-golf-layering) below. The domain boundary — one `def` — is the exit.
+
 ## Metric golfing
 
 Both numbers fail Goodhart's law hard. A worked pair — identical behaviour, verified by a
@@ -297,6 +315,37 @@ Both techniques used here — comprehension-ification and ternary chains — are
 [blind spots](#blind-spots) section shows are undercounted. **Metric-driven refactoring
 preferentially selects for the constructs the metric cannot see.**
 
+### The third golf: layering
+
+One behaviour, three shapes, proven identical by a differential test (2 seeds × 20,000 random
+inputs × 15 reads = 600,000 comparisons, 0 mismatches; ruff 0.12.7, complexipy 7.0.1, Python
+3.10.15 and 3.14.7):
+
+| Shape | Defs | max cyclo / cog | Σcyclo − defs | Σcog | Callables entered (static / dynamic) | Max argument threading | Selector sites / compares / functions |
+|---|---:|---:|---:|---:|---:|---:|---|
+| `mono` — one function | 1 | **20 / 47** | 19 | 47 | 1 / 1 | 1 | 6 / 5 / 1 |
+| `layered` — pass-through layers; a `method` selector threaded through 10 signatures; a NamedTuple carrying a bool only to pick a tag; two value-identical fallbacks; a full-table rebuild to read one entry | 26 | **3 / 3** | 20 | 38 | **24 / 19** | **10** | **29 / 8 / 6** |
+| `seamed` — split by meaning; three typed entry points; one resolve-and-lift pass | 9 | 4 / 7 | 9 | 20 | 5 / 5 | 2 | 0 / 0 / 0 |
+
+Sorted by cognitive and tie-broken by the gap — the workflow above — `layered` is the **best** of
+the three. Every one of its 26 functions passes every threshold in this file. `layered` was split
+one round further than first written, until every function scored ≤ 3; that is the move a
+layer-golfer makes, and it is the shape of the real code that motivated this section (23 functions,
+none above cognitive 8, replacing 7).
+
+Two sums say what the maxima hide. **Σcyclo − defs** is the predicate count — cyclomatic is
+additive over components and *v = π + 1* (McCabe 1976, p. 314), so subtracting one per function
+leaves a number extraction cannot move: 19 → 20 → 9. Splitting into 26 removed no decision and
+added one (the re-dispatch on `method`); splitting by meaning removed ten. **Σcog** is the aggregate
+Campbell's paper endorses (p. 10: "aggregate numbers become useful"); it drifts down under
+extraction because nesting penalties vanish — but 47 → 38 is not 47 → 3.
+
+Golfing the path numbers pushes code back toward `mono`, which this file's census catches at
+20 / 47. Golfing this file's numbers pushes it toward `layered`, which the path numbers catch. Each
+census catches the other's golf — the argument for running cyclomatic and cognitive together,
+one level up. Commands, scripts, and each tool's silent failures:
+[between-function-complexity.md](between-function-complexity.md).
+
 ## The workflow
 
 1. **Census, not screening.** Run cyclomatic at threshold `0`; complexipy already lists every
@@ -310,11 +359,15 @@ preferentially selects for the constructs the metric cannot see.**
    is safe without this step.
 5. **Split by meaning, not to move the number.** Name the extracted piece after the concept it
    owns. If you cannot name it without "part2", "helper", or "_impl", the split point is wrong —
-   put it back and find a real seam.
-6. **Re-measure, then re-read.** The number must drop *and* the code must read better. If only the
-   number moved, you golfed. Revert.
+   put it back and find a real seam. Then count what the split added — callables entered, names
+   threaded through three or more signatures, types introduced. If the decisions count
+   (Σcyclo − defs − nested defs) did not fall, the split removed nothing.
+6. **Re-measure, then re-read — the path, not the function.** The number must drop *and* the code
+   must read better. If only the number moved, you golfed. Revert. If every function reads fine
+   alone and the path does not, you layer-golfed — same verdict.
 7. **Never gate CI on the number alone.** Use it to rank a backlog. As a merge gate it selects for
-   comprehensions and ternaries — see [Metric golfing](#metric-golfing).
+   comprehensions, ternaries, and splitting — see [Metric golfing](#metric-golfing) and
+   [The third golf](#the-third-golf-layering).
 
 The metrics are a **locator, not a verdict**. They answer "which 20 of these 800 functions should a
 human read first?" — well. They do not answer "is this function good?", and `sync`, `enter`,
