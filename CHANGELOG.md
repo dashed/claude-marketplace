@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.55.0] - 2026-09-08
+
 ### Added
 - Static validation check `scripts/validators/validate_mcp_tool_names.py` (wired into `make validate-strict` and runnable standalone via `make validate-mcp` / `make validate-mcp-strict`): computes every namespaced MCP tool id (`mcp__plugin_<plugin>_<server>__<tool>`) from each plugin's `.mcp.json` server keys plus the `@mcp.tool` definitions AST-parsed from the server scripts, and fails when one exceeds the 64-character tool-name limit. Catches the class of bug fixed in v0.54.1 at commit time instead of after install
 - python-complexity skill: the path-level census — the per-function census read one level up. Establishes a pattern: a skill that teaches a measurement and then the level above it, backed by a measured fixture triple (one function 20 / 47 → 26 pass-through layers max 3 / 3 → 9 by-meaning functions 4 / 7; 600,000 differential comparisons, 0 mismatches) showing that the per-function reading ranks the pathological shape *best*. Adds Σ cognitive and decisions (Σcyclo − defs, McCabe's sum over components), callables entered static and dynamic, argument threading, and selector sites; four stdlib scripts; two references, `between-function-complexity.md` (measurement) and `layering-review.md` (judgment); verified on a real read path — 23 defs / Σcog 61 / 34 decisions against the 7 / 24 / 9 it replaced, every hand count reproduced by a script (python-complexity v1.1.0)
@@ -763,7 +765,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.54.1...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.55.0...HEAD
+[0.55.0]: https://github.com/dashed/claude-marketplace/compare/v0.54.1...v0.55.0
 [0.54.1]: https://github.com/dashed/claude-marketplace/compare/v0.54.0...v0.54.1
 [0.54.0]: https://github.com/dashed/claude-marketplace/compare/v0.53.0...v0.54.0
 [0.53.0]: https://github.com/dashed/claude-marketplace/compare/v0.52.0...v0.53.0
