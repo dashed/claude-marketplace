@@ -723,6 +723,18 @@
         "authentication": "ON_INSTALL"
       },
       "category": "Productivity"
+    },
+    {
+      "name": "test-sloc-cut",
+      "source": {
+        "source": "local",
+        "path": "./plugins/test-sloc-cut"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
     }
   ]
 }
