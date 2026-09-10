@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.56.0] - 2026-09-10
+
 ### Added
 - test-sloc-cut skill: the fact-matrix method for shrinking a test suite without losing an asserted fact or a covered branch — one rule (a test may go only if every fact it asserts survives on the same production path and measured branch coverage is unchanged) and two oracles that are blind to different things (a fact matrix read from the code; per-test branch coverage run from the code), with the delete licensed only by their intersection. Developed on a real cut: 61 → 46 tests, 757 → 608 code lines, per-module branch coverage identical (test-sloc-cut v1.0.0)
 - test-sloc-cut skill: the four-angle parallel investigation with one test runner, the synthesis table with its two overriding rules (a relocated fact is proven by a mutant; boundary pairs stay as two named tests), parametrization arithmetic (`N + 7`, break-even at seven, refuse line-neutral), stacked-branch execution, and two scripts verified end to end on a fixture — `count_code_lines.py` (tokenizer counts) and `coverage_map.py` (per-test unique lines and arcs with exception arcs tagged, plus a greedy covering set the reference shows how to verify) — with the six traps that produce a wrong coverage map (test-sloc-cut v1.0.0)
@@ -774,7 +776,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.55.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.56.0...HEAD
+[0.56.0]: https://github.com/dashed/claude-marketplace/compare/v0.55.0...v0.56.0
 [0.55.0]: https://github.com/dashed/claude-marketplace/compare/v0.54.1...v0.55.0
 [0.54.1]: https://github.com/dashed/claude-marketplace/compare/v0.54.0...v0.54.1
 [0.54.0]: https://github.com/dashed/claude-marketplace/compare/v0.53.0...v0.54.0
