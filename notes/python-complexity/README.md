@@ -52,6 +52,16 @@ ternary-golf, and the skill's "never gate CI" argument one level up.
   representation and test-breakage counters are short enough to live as recipes in the reference.
   `threading.py` was the first name for the threading script; it shadowed the stdlib module and
   broke `subprocess` once `scripts/` was on `sys.path`.
+- **The two censuses co-lead (v1.2.0).** Five fresh-agent probes with layering-worded prompts
+  ("every function is tiny now, is this better?", "the reviewer says it's over-layered", "verify
+  the refactor reduced complexity") all invoked the skill and reached the path census — so the
+  method worked when found. What was weak was prominence: the first layering concept sat at
+  character 188 of the description, the path section at 55 % of SKILL.md with no runnable
+  command, and the Codex short description truncated at "hops...". The fix was surface-level:
+  a "two censuses" opening table, a co-lead description, a quick start, and the first use of the
+  `when_to_use` frontmatter field for the overflow triggers. A companion skill was considered and
+  rejected again: the probes showed triggering already works, and a companion would split one
+  workflow.
 - **Every new tool carries its silent-failure list**, per the skill's genre: `trace --trackcalls`
   ignores its ignore flags; `code2flow` dies silently at `@overload` stubs and merges duplicate
   basenames; `lizard -ENS` is a running total; `radon mi` grades a 6/15 nested function 100; radon

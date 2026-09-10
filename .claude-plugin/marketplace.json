@@ -1430,9 +1430,9 @@
     },
     {
       "name": "python-complexity",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "source": "./plugins/python-complexity",
-      "description": "Measure per-function cyclomatic (ruff C901) and cognitive (complexipy) complexity in Python with no project install, then count what they miss between functions: hops, pass-through layers, selector parameters. Use when asking which functions to refactor first, whether a function or call path is too complex or over-layered, when every function scores low but the code is hard to follow, when triaging a legacy codebase, or when verifying a refactor reduced rather than relocated complexity.",
+      "description": "Two censuses of Python complexity, no project install: per function (ruff C901 cyclomatic + complexipy cognitive, read as a pair) and per call path (hops, pass-through layers, selector parameters) for code where every function scores low but the path is hard to follow. Use when asking which functions to refactor first, whether a function or call path is too complex or over-layered, when triaging a legacy codebase, or when verifying a refactor reduced rather than relocated complexity.",
       "author": {
         "name": "Alberto Leal"
       },
@@ -1446,7 +1446,11 @@
         "refactoring",
         "ruff",
         "complexipy",
-        "code-quality"
+        "code-quality",
+        "layering",
+        "call-path",
+        "indirection",
+        "over-abstraction"
       ],
       "strict": false,
       "skills": [

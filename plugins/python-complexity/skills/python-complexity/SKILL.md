@@ -1,12 +1,24 @@
 ---
 name: python-complexity
-description: "Measure per-function cyclomatic and cognitive complexity in Python to find refactor targets, using ruff's C901 and complexipy with no project install — then count what neither metric sees between functions: hops per public call, pass-through layers, a selector parameter compared in many places, intermediate types. Use when asking which functions to refactor or clean up first, whether a function or call path is too complex, over-layered, or too indirect, where the worst code in a module or package is, when every function scores low but the code is still hard to follow, when triaging a legacy codebase, when comparing an implementation against the path it replaces, when verifying a refactor reduced complexity rather than relocating it, or when reading C901 / mccabe / complexipy / cognitive-complexity scores. Teaches reading the two metrics as a pair — the gap between them is the signal — the silent-failure modes that make a clean run a lie, and the path-level census a per-function threshold never flags."
+description: "Two censuses of Python complexity, no project install: per function (ruff's C901 cyclomatic and complexipy cognitive, read as a pair) and per call path — hops entered per public call, pass-through layers, a selector parameter compared in many places, intermediate types — for code where every function scores low and the path is still hard to follow. Use when asking which functions to refactor first, whether a function or a call path is too complex, over-layered, or too indirect, where the worst code in a package is, when every function is small but the code is hard to follow, when triaging a legacy codebase, when comparing an implementation against the path it replaces, when verifying a refactor reduced complexity rather than relocating it, or when reading C901 / mccabe / complexipy / cognitive-complexity scores. Teaches the two metrics as a pair — the gap between them is the signal — the silent-failure modes that make a clean run a lie, and layer-golf, the third golf a per-function threshold never flags."
+when_to_use: "Also fires on: 'is this over-layered', 'too many layers / hops / helpers / indirection', 'every function is tiny but I can't follow it', 'did splitting this up actually help', 'complexity went down after the refactor — did it?', 'a string or enum parameter gets passed through everything', 'which of these layers can go', 'the reviewer says it's over-abstracted'; and on the plain per-function asks — 'which function is worst', 'is this function too complex', 'C901 says 14'."
 license: MIT
 ---
 
-# Python complexity measurement
+# Python complexity: two censuses
 
-Two numbers, two different questions. Run both — neither is trustworthy alone.
+| | **Per function** | **Per call path** |
+|---|---|---|
+| Question | which function is hard to read? | which path is hard to follow, although every function on it scores low? |
+| Runs | `ruff check --select C901` + `complexipy`, read as a pair | the same two runs, summed, plus `scripts/hops.py` and `scripts/arg_threading.py` |
+| Signal | the gap between cyclomatic and cognitive | Σ cognitive, decisions, callables entered, argument threading — as a ratio to a baseline |
+| Golf it catches | comprehensions, ternary chains | splitting into pass-through layers |
+
+Each census catches the other's golf. Run the first on any module. Run the second whenever the first comes back green and the code is still hard to follow — and before believing any "complexity went down" that came from a split.
+
+## Per function: two numbers, two questions
+
+Run both — neither is trustworthy alone.
 
 | | Cyclomatic (McCabe) | Cognitive (Campbell) |
 |---|---|---|
@@ -27,11 +39,18 @@ Cyclomatic cannot tell them apart — and scores the *worst* one lowest. Cogniti
 
 ## When to Use
 
+One function is hard:
+
 - "Which functions should I refactor first?" / "where is the worst code here?"
 - Triaging a legacy module or an unfamiliar package before working in it
-- Checking whether a refactor actually simplified anything — or only moved the numbers
-- "Every function here is small, so why is it hard to follow?" / "is this over-layered or too indirect?" / comparing a new implementation against the path it replaces
 - Reading a `C901` diagnostic or a complexipy score someone put in front of you
+
+Every function is fine and the code still is not:
+
+- "Every function here is small, so why is it hard to follow?" / "is this over-layered, too indirect, too many hops?"
+- A split, extraction, or "clean-up" refactor claims complexity went down — verify it reduced rather than relocated
+- Comparing a new implementation against the path it replaces, or against a sibling that solves the same problem
+- A reviewer says a value is "passed through everything" — a selector or pass-through variable
 
 ## The two census commands
 
@@ -116,11 +135,38 @@ Three counts no census gives — `scripts/` has each, and each prints what it co
 - **argument threading** (`scripts/arg_threading.py`) — for each parameter name, how many signatures on the path carry it. Three or more is a pass-through variable.
 - **selector sites** (same script, `--name`) — a parameter compared in several functions to re-discover which public call was made.
 
+The path census, runnable (entry is `<module>:<qualname>`, module relative to the package dir with `/` → `.`, methods as `Class.method`):
+
+```bash
+# 1. sums, new path against the path it replaced (or a sibling); `:fn1,fn2` picks functions out of a big module
+python3 scripts/path_census.py new=pkg/routing.py,pkg/serve.py,pkg/resolve.py old=pkg/legacy.py:read_one,read_all
+# 2. callables one public call enters — static, every arm (read `unresolved` before the count) …
+python3 scripts/hops.py pkg routing:get_standard --own 'routing|serve|resolve'
+#    … and dynamic, one input, when the package imports and the call is cheap
+python3 scripts/hops_dyn.py pkg --setup "import routing as R" --call "R.get_standard(contract, 'error', lifts)"
+# 3. names carried through ≥ 3 signatures, then every site of the one that looks like a selector
+python3 scripts/arg_threading.py pkg --entry routing:get_standard --name method
+```
+
+On the fixture above these print, in order: `decisions 20 / cog_sum 38` against `19 / 47`; `callables entered: 24` (dynamic 19); `method 10` and `29 sites … compares 8 … functions that compare on it: 6`. Prune arms the scenario cannot take with `--exclude f1,f2`; stop at service wrappers with `--leaf-decorator name`. On object-heavy code the static count is a **floor** — `hops.py` prints `heuristic` and `unresolved` buckets, and a count with 169 unresolved sites is "≥ N", not N. Say which.
+
 There are no thresholds between functions. Compare against the path the code replaced, or a sibling that solves the same problem: 23 defs / Σcog 61 / 34 decisions against 7 / 24 / 9 is the finding; 61 alone is not.
 
 Golfing these numbers pushes code back toward one function, which the per-function census catches. Golfing the per-function census pushes it toward pass-through layers, which these catch. Same argument as running cyclomatic and cognitive together — one level up.
 
-Commands, scripts and each tool's silent failures: [references/between-function-complexity.md](references/between-function-complexity.md). Deciding which layers protect an invariant and which are glue: [references/layering-review.md](references/layering-review.md).
+### Which layers stay
+
+A layer earns its place by naming an invariant it protects: *without this, X happens* — a wrong answer served, an exception reaching a caller that cannot contain it, a forbidden import, a stale value. If X is "the code would be arranged differently", the layer is **structure**, and structure is what the path census counts. Five structural costs recur; each has a count and a usual fix:
+
+| Shape | Symptom | Count | Usual fix |
+|---|---|---|---|
+| a selector threaded through signatures and compared late, in several functions | the reader holds "which call am I in?" for the whole descent | `arg_threading.py --name` | one typed entry point per shape sharing a private router (*Remove Flag Argument*) |
+| a fact decided in one layer, applied in another, threaded back to pick a telemetry tag | fields whose only consumer is a metric call | field → consumer trace; `hops.py` for the distance | apply the rule where it is decided; emit the metric there |
+| N fallback helpers with N semantics, some value-identical on every reachable input | "the default" has three homes | list every site producing the same constant; execute the empty/missing cases | one named source of the default; keep the distinct metric tags |
+| representation churn — K intermediate types, a conversion run twice, a map rebuilt to read one entry | `hops_dyn.py` invocations exceed the number of keys | `hops.py` "types constructed"; invocation counts | the producer returns the wire shape with the read methods on it |
+| a module split forced by an import lint, not by design | "why does this file exist?" → "because X may not import Y" | `hops.py` by-module | switch to the gate form legal on the inner side and fold, or keep and say so |
+
+Before moving a rule between layers, add a fixture whose value is distinct from every default it could be confused with — three constants that all equal 90 let a rule applied twice pass the whole suite. The invariant → verdict table, the sibling comparison, what the tests pin, and the alternatives/before-after tables: [references/layering-review.md](references/layering-review.md). Commands, scripts, and each tool's silent failures: [references/between-function-complexity.md](references/between-function-complexity.md).
 
 ## What the numbers cannot see
 
@@ -152,7 +198,7 @@ Treat both as screening lines that decide *what to read*, never as pass/fail gat
 ## Workflow
 
 1. **Census, not screening.** Threshold `0` for ruff; complexipy lists everything by default (`-i` changes only the exit code, not which rows print).
-2. **Sort by cognitive, tie-break by the gap.**
+2. **Sort by cognitive, tie-break by the gap.** If the top of the list is all ≤ 8 and the code is still hard to follow, stop sorting and sum: run the path census against a baseline before reading any single function.
 3. **Read the top candidates.** The number says *where to look*, never what is wrong. Confirm the shape — nesting, boolean density, or neither — before touching anything.
 4. **Pin behavior first.** Get the function under test with branch coverage *before* editing. A falling score is not evidence of behavior preservation; the two are unrelated.
 5. **Split by meaning, not to move the number.** If you cannot name the extracted piece without `_part2` or `_helper`, the seam is wrong — put it back. Then count what the split added — callables entered, names threaded through three or more signatures, types introduced. If the decisions count (Σcyclo − defs) did not fall, the split removed nothing.

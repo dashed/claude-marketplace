@@ -4,6 +4,24 @@ All notable changes to the python-complexity skill in this marketplace will be d
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.2.0] - 2026-09-10
+
+### Added
+- SKILL.md opens with a "two censuses" table — per function vs per call path: the question each answers, what runs, the signal, and the golf it catches — and the rule for when to run the second ("whenever the first comes back green and the code is still hard to follow, and before believing any 'complexity went down' that came from a split")
+- A runnable path-census quick start in SKILL.md: the three script commands with entry syntax and the fixture's expected numbers, so the between-function count no longer needs a reference opened first (the per-function census had two inline commands; the path census had none)
+- "Which layers stay" promoted from `layering-review.md` into SKILL.md: the structure-or-safety test (*without this, X happens*), the five recurring structural costs as a shape → symptom → count → fix table, and the coincident-constants rule
+- `when_to_use` frontmatter — the first use in this marketplace — carrying the layering trigger phrases ("is this over-layered", "every function is tiny but I can't follow it", "did splitting this up actually help", "a string parameter gets passed through everything") that the 1,024-character description had no room for; combined text stays under the 1,536-character listing cap
+- Third-codebase run recorded in `between-function-complexity.md`: on the `coverage` package source `hops.py` reports 144 callables with 63 heuristic and 169 unresolved sites — the rule that on object-heavy code a static count is a floor and must be reported with its buckets; `arg_threading.py` and `path_census.py` ran unchanged
+- Glue-hops subtraction now shows its two commands; marketplace keywords gain `layering`, `call-path`, `indirection`, `over-abstraction`
+
+### Changed
+- Description co-leads the two censuses ("Two censuses of Python complexity … per function … and per call path"); the first layering concept moves from character 188 to 138, and the Codex listing's truncated short description now shows the call-path capability instead of cutting at "hops..."
+- "When to Use" split into the two questions ("One function is hard" / "Every function is fine and the code still is not"); workflow step 2 says when to stop sorting and sum
+- SKILL.md 173 → ~215 lines; the H1 is "Python complexity: two censuses"
+
+### Fixed
+- `scripts/hops_dyn.py` put the package directory first on `sys.path`, so any package containing a module named like a stdlib one (`html.py`, `types.py`, `parser.py`) shadowed the stdlib and the traced import crashed — flat fixture directories never exposed it. A package (with `__init__.py`) is now imported through its parent; verified on the `coverage` package (79 callables traced) and unchanged on the fixture (19)
+
 ## [1.1.0] - 2026-09-08
 
 ### Added

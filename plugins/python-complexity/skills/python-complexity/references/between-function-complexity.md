@@ -243,6 +243,15 @@ lambda or comprehension are charged to the enclosing def (an over-approximation,
 **An unresolved count of 0 is the only clean run.** Anything else is a hole in the number, and the
 script prints every hole with its reason rather than hiding it.
 
+On object-heavy code the holes are large and the count is a **floor**. Measured on the `coverage`
+package (7.16.0 source, 5,445 lines): from `Coverage.start`, 144 callables entered with **63
+heuristic and 169 unresolved** sites — `self.debug.should` ×32, `.write` ×27, `.read` ×11 land
+in "ambiguous" because the script does no attribute-type inference. Report such a run as
+"≥ 144, 169 unresolved", scope the entry to the path under review, use `--leaf-decorator` for
+service boundaries, and prefer the dynamic count when the package can be imported (`start()`
+plus `stop()` traced 67 callables, 17 branch-owned). A static count quoted without its buckets
+is the between-function version of a clean run that measured nothing.
+
 ### Dynamic: `scripts/hops_dyn.py`
 
 ```
@@ -294,8 +303,16 @@ used; the two are one flag apart.
 
 ### Glue hops, by subtraction
 
-Run from the entry with `--own`, then from the first callable that computes (the resolver) with
-the same `--own`; subtract. Real case, by the script: 19 − 10 = **9** glue hops between the public
+Run from the entry with `--own`, then from the first callable that computes (the resolver, the
+service call — the first def whose body produces the answer rather than routing towards it) with
+the same `--own`; subtract:
+
+```bash
+python3 scripts/hops.py pkg routing:get_standard --own 'routing|serve|resolve' | grep branch-owned
+python3 scripts/hops.py pkg resolve:resolve     --own 'routing|serve|resolve' | grep branch-owned
+```
+
+Real case, by the script: 19 − 10 = **9** glue hops between the public
 entry and the resolver. Counting the two generated constructors as the hand count did (and as the
 before/after table in [layering-review.md](layering-review.md) does): 21 − 11 = **10** — the number
 the layering argument rests on, and the one that fell to 4 in the proposed shape. Say which
@@ -521,7 +538,7 @@ price of the numbers above.
 | Tool | What it does silently | How to detect |
 |---|---|---|
 | `scripts/hops.py` | enters **every** reachable arm (24 where one input runs 19); cannot follow `getattr`, dict-of-lambdas dispatch, callbacks, star imports — prints each as `unresolved` with a reason, and `<expr>.method` guesses as `heuristic` | read `unresolved call sites:` — **0 is the only clean run**; prune with `--exclude` / `--leaf-decorator` and say so |
-| `scripts/hops_dyn.py` | sees only what the input reaches and says nothing about the rest — the same entry point measured 1 callable on a cache hit and 4 on a miss; dataclass/NamedTuple constructors never appear (no frame) | pair with the static count; choose inputs that take each arm |
+| `scripts/hops_dyn.py` | sees only what the input reaches and says nothing about the rest — the same entry point measured 1 callable on a cache hit and 4 on a miss; dataclass/NamedTuple constructors never appear (no frame). Until 1.2.0 it put the package dir first on `sys.path`, so a package containing `html.py`, `types.py` or `parser.py` shadowed the stdlib and the import crashed — flat fixture dirs never showed it; a package is now imported through its parent | pair with the static count; choose inputs that take each arm |
 | `scripts/path_census.py` | none found — refuses to run if `ruff --show-files` misses a file; but `cog_missing > 0` means complexipy skipped defs (nested-class methods, `# complexipy: ignore`) | read `cog_missing` |
 | `scripts/arg_threading.py` | with `--entry`, overload stubs are shadowed and only on-path producers count; without `--entry`, test files count as producers | run both scopes; point package scope at a directory without tests |
 | `python -m trace --trackcalls` | `--ignore-dir` and `--ignore-module` have **no effect** under `--trackcalls` — `globaltrace_trackcallers` never consults `self.ignore` (3.14.7 source); output floods with `typing`, `annotationlib`, importlib frames, `<module>`, `<genexpr>`; propagates the traced program's exit status | do not use it as a number; `hops_dyn.py` is 80 lines and clean |

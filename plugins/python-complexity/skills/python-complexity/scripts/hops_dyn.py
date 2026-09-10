@@ -36,8 +36,13 @@ def main(argv):
     setup = rest[rest.index("--setup") + 1]
     call = rest[rest.index("--call") + 1]
     own_rx = re.compile(opts["own"]) if opts["own"] else None
-    sys.path.insert(0, package_dir)
-    sys.path.insert(0, os.path.dirname(package_dir))
+    # A package (has __init__.py) is imported through its parent; putting the
+    # package dir itself first would shadow stdlib modules with the same basename
+    # (html.py, types.py, parser.py ...). Flat fixture dirs need the dir itself.
+    if os.path.exists(os.path.join(package_dir, "__init__.py")):
+        sys.path.insert(0, os.path.dirname(package_dir))
+    else:
+        sys.path.insert(0, package_dir)
     index = hops.build_index(package_dir)
     line_map = {os.path.abspath(m.path): m for m in index.values()}
     ns = {}
