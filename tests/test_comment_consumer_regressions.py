@@ -112,7 +112,7 @@ def banner_doctest(source: str) -> tuple[doctest.TestResults, str]:
     assert example.want == "'Python ...'\n"
     assert set(example.options) <= {doctest.ELLIPSIS}
     output: list[str] = []
-    result = doctest.DocTestRunner().run(example_test, out=output.append)
+    result = doctest.DocTestRunner(verbose=False).run(example_test, out=output.append)
     return result, "".join(output)
 
 
