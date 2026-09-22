@@ -1,0 +1,594 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "name": "increment_narration",
+      "state": {
+        "scope": "increment_narration: review the selected comment or docstring and any proposed replacement",
+        "language": "python",
+        "sources": [
+          {
+            "path": "sample.py",
+            "content": "def _advance(retries: int) -> int:\n    # Increment retries by one.\n    retries += 1\n    return retries\n"
+          }
+        ],
+        "candidate": {
+          "path": "sample.py",
+          "start_line": 2,
+          "end_line": 2,
+          "text": "    # Increment retries by one."
+        },
+        "context": {
+          "api_surface": "private implementation",
+          "documentation_consumers": [],
+          "runtime_docstring_consumers": []
+        }
+      },
+      "expectations": [
+        {
+          "signal": "disposition",
+          "equals": "delete"
+        },
+        {
+          "signal": "information_loss",
+          "maximum": 0.3
+        }
+      ]
+    },
+    {
+      "name": "signature_duplicate",
+      "state": {
+        "scope": "signature_duplicate: review the selected comment or docstring and any proposed replacement",
+        "language": "python",
+        "sources": [
+          {
+            "path": "sample.py",
+            "content": "def _is_empty(items: list[object]) -> bool:\n    \"\"\"Return whether items is empty.\"\"\"\n    return not items\n"
+          }
+        ],
+        "candidate": {
+          "path": "sample.py",
+          "start_line": 2,
+          "end_line": 2,
+          "text": "    \"\"\"Return whether items is empty.\"\"\""
+        },
+        "context": {
+          "api_surface": "private implementation",
+          "documentation_consumers": [],
+          "runtime_docstring_consumers": []
+        }
+      },
+      "expectations": [
+        {
+          "signal": "disposition",
+          "equals": "delete"
+        },
+        {
+          "signal": "information_loss",
+          "maximum": 0.3
+        }
+      ]
+    },
+    {
+      "name": "retry_business_rationale",
+      "state": {
+        "scope": "retry_business_rationale: review the selected comment or docstring and any proposed replacement",
+        "language": "python",
+        "sources": [
+          {
+            "path": "sample.py",
+            "content": "RETRY_LIMIT = 3\n\ndef _attempt(send, payload):\n    # The carrier settles duplicate tracking IDs within three attempts;\n    # more attempts create a new shipment under its billing contract.\n    for _ in range(RETRY_LIMIT):\n        if send(payload):\n            return True\n    return False\n"
+          }
+        ],
+        "candidate": {
+          "path": "sample.py",
+          "start_line": 4,
+          "end_line": 5,
+          "text": "    # The carrier settles duplicate tracking IDs within three attempts;\n    # more attempts create a new shipment under its billing contract."
+        },
+        "context": {
+          "api_surface": "private implementation",
+          "constraints": [
+            "The carrier contract has the attempt behavior stated in the comment."
+          ]
+        }
+      },
+      "expectations": [
+        {
+          "signal": "disposition",
+          "equals": "keep"
+        },
+        {
+          "signal": "information_loss",
+          "minimum": 0.7
+        }
+      ]
+    },
+    {
+      "name": "race_ordering_rationale",
+      "state": {
+        "scope": "race_ordering_rationale: review the selected comment or docstring and any proposed replacement",
+        "language": "python",
+        "sources": [
+          {
+            "path": "sample.py",
+            "content": "def _publish_then_notify(store, notifier, item):\n    # A notified worker may read immediately, so commit before notifying.\n    store.commit(item)\n    notifier.send(item.id)\n"
+          }
+        ],
+        "candidate": {
+          "path": "sample.py",
+          "start_line": 2,
+          "end_line": 2,
+          "text": "    # A notified worker may read immediately, so commit before notifying."
+        },
+        "context": {
+          "api_surface": "private implementation",
+          "observed_collaborator_behavior": [
+            "notifier.send can synchronously trigger a worker that reads the committed item."
+          ]
+        }
+      },
+      "expectations": [
+        {
+          "signal": "disposition",
+          "equals": "keep"
+        },
+        {
+          "signal": "information_loss",
+          "minimum": 0.7
+        }
+      ]
+    },
+    {
+      "name": "cross_record_business_invariant",
+      "state": {
+        "scope": "cross_record_business_invariant: review the selected comment or docstring and any proposed replacement",
+        "language": "python",
+        "sources": [
+          {
+            "path": "sample.py",
+            "content": "def _transfer_credit(source, destination, amount):\n    # The ledger forbids creating credit: these two updates must commit together.\n    with source.ledger.transaction():\n        source.balance -= amount\n        destination.balance += amount\n"
+          }
+        ],
+        "candidate": {
+          "path": "sample.py",
+          "start_line": 2,
+          "end_line": 2,
+          "text": "    # The ledger forbids creating credit: these two updates must commit together."
+        },
+        "context": {
+          "api_surface": "private implementation",
+          "constraints": [
+            "Transfers must conserve the sum of source and destination credit."
+          ]
+        }
+      },
+      "expectations": [
+        {
+          "signal": "disposition",
+          "equals": "keep"
+        },
+        {
+          "signal": "information_loss",
+          "minimum": 0.7
+        }
+      ]
+    },
+    {
+      "name": "mixed_docstring_reduce",
+      "state": {
+        "scope": "mixed_docstring_reduce: review the selected comment or docstring and any proposed replacement",
+        "language": "python",
+        "sources": [
+          {
+            "path": "sample.py",
+            "content": "def _next_page(page: dict) -> str | None:\n    \"\"\"Return the next page.\n\n    This function gets the next page value from the page dictionary.\n    None means the scan is complete; an empty token requests the first page again.\n    \"\"\"\n    return page.get(\"next\")\n"
+          }
+        ],
+        "candidate": {
+          "path": "sample.py",
+          "start_line": 2,
+          "end_line": 6,
+          "text": "    \"\"\"Return the next page.\n\n    This function gets the next page value from the page dictionary.\n    None means the scan is complete; an empty token requests the first page again.\n    \"\"\""
+        },
+        "context": {
+          "api_surface": "private implementation",
+          "observed_protocol_contract": [
+            "A missing next token ends the scan; the empty string restarts pagination."
+          ]
+        },
+        "proposal": {
+          "replacement": "    \"\"\"None ends the scan; an empty token requests the first page again.\"\"\""
+        }
+      },
+      "expectations": [
+        {
+          "signal": "disposition",
+          "equals": "reduce"
+        },
+        {
+          "signal": "information_loss",
+          "minimum": 0.7
+        },
+        {
+          "signal": "proposal_preserves_information",
+          "minimum": 0.7
+        }
+      ]
+    },
+    {
+      "name": "published_api_docstring",
+      "state": {
+        "scope": "published_api_docstring: review the selected comment or docstring and any proposed replacement",
+        "language": "python",
+        "sources": [
+          {
+            "path": "sample.py",
+            "content": "def distance_metres(points: list[tuple[float, float]]) -> float:\n    \"\"\"Return the path length in metres.\n\n    Each pair is (latitude, longitude) in degrees. Empty input returns zero.\n    \"\"\"\n    return _sum_segments(points)\n"
+          },
+          {
+            "path": "docs/api.rst",
+            "content": "Geography API\n=============\n\n.. autofunction:: sample.distance_metres\n"
+          }
+        ],
+        "candidate": {
+          "path": "sample.py",
+          "start_line": 2,
+          "end_line": 5,
+          "text": "    \"\"\"Return the path length in metres.\n\n    Each pair is (latitude, longitude) in degrees. Empty input returns zero.\n    \"\"\""
+        },
+        "context": {
+          "api_surface": "published package API",
+          "documentation_consumers": [
+            "docs/api.rst renders this function with Sphinx autofunction."
+          ],
+          "constraints": [
+            "Coordinate order and angular units are part of the published API."
+          ]
+        }
+      },
+      "expectations": [
+        {
+          "signal": "disposition",
+          "equals": "keep"
+        },
+        {
+          "signal": "information_loss",
+          "minimum": 0.7
+        }
+      ]
+    },
+    {
+      "name": "runtime_docstring_consumer",
+      "state": {
+        "scope": "runtime_docstring_consumer: review the selected comment or docstring and any proposed replacement",
+        "language": "python",
+        "sources": [
+          {
+            "path": "sample.py",
+            "content": "def show_status():\n    \"\"\"Show the current status.\"\"\"\n    return \"ready\"\n\n\nHELP_TEXT = show_status.__doc__\n"
+          }
+        ],
+        "candidate": {
+          "path": "sample.py",
+          "start_line": 2,
+          "end_line": 2,
+          "text": "    \"\"\"Show the current status.\"\"\""
+        },
+        "context": {
+          "api_surface": "CLI command",
+          "runtime_docstring_consumers": [
+            "HELP_TEXT reads show_status.__doc__ in the supplied source."
+          ],
+          "constraints": [
+            "Keep the command help text unchanged."
+          ]
+        }
+      },
+      "expectations": [
+        {
+          "signal": "disposition",
+          "equals": "keep"
+        }
+      ]
+    },
+    {
+      "name": "doctest_execution",
+      "state": {
+        "scope": "doctest_execution: review the selected comment or docstring and any proposed replacement",
+        "language": "python",
+        "sources": [
+          {
+            "path": "sample.py",
+            "content": "def double(value: int) -> int:\n    \"\"\">>> double(-3)\n    -6\n    \"\"\"\n    return value * 2\n"
+          }
+        ],
+        "candidate": {
+          "path": "sample.py",
+          "start_line": 2,
+          "end_line": 4,
+          "text": "    \"\"\">>> double(-3)\n    -6\n    \"\"\""
+        },
+        "context": {
+          "api_surface": "private implementation",
+          "test_commands": [
+            "python -m doctest sample.py"
+          ],
+          "constraints": [
+            "The doctest is part of the required test suite."
+          ]
+        }
+      },
+      "expectations": [
+        {
+          "signal": "disposition",
+          "equals": "keep"
+        }
+      ]
+    },
+    {
+      "name": "tool_pragma",
+      "state": {
+        "scope": "tool_pragma: review the selected comment or docstring and any proposed replacement",
+        "language": "python",
+        "sources": [
+          {
+            "path": "sample.py",
+            "content": "# ruff: noqa: D100\n\ndef _check_type(value):\n    return value\n"
+          }
+        ],
+        "candidate": {
+          "path": "sample.py",
+          "start_line": 1,
+          "end_line": 1,
+          "text": "# ruff: noqa: D100"
+        },
+        "context": {
+          "api_surface": "private implementation",
+          "tooling": [
+            "Ruff's D100 module-docstring rule is enabled for this module."
+          ]
+        }
+      },
+      "expectations": [
+        {
+          "signal": "disposition",
+          "equals": "keep"
+        }
+      ]
+    },
+    {
+      "name": "missing_collaborator_evidence",
+      "state": {
+        "scope": "missing_collaborator_evidence: review the selected comment or docstring and any proposed replacement",
+        "language": "python",
+        "sources": [
+          {
+            "path": "sample.py",
+            "content": "from delivery import deliver\n\ndef _resend(event):\n    # Retries are safe because deliver deduplicates event IDs.\n    return deliver(event)\n"
+          }
+        ],
+        "candidate": {
+          "path": "sample.py",
+          "start_line": 4,
+          "end_line": 4,
+          "text": "    # Retries are safe because deliver deduplicates event IDs."
+        },
+        "context": {
+          "api_surface": "private implementation",
+          "missing_evidence": [
+            "delivery.deliver implementation and deduplication contract were not supplied."
+          ],
+          "constraints": [
+            "The caller can resend an event after a timeout."
+          ]
+        }
+      },
+      "expectations": [
+        {
+          "signal": "disposition",
+          "equals": "needs_context"
+        }
+      ]
+    },
+    {
+      "name": "stale_return_contract",
+      "state": {
+        "scope": "stale_return_contract: review the selected comment or docstring and any proposed replacement",
+        "language": "python",
+        "sources": [
+          {
+            "path": "sample.py",
+            "content": "def _timeout_seconds(settings: dict) -> int:\n    \"\"\"Return the timeout in milliseconds; a missing value disables timeouts.\"\"\"\n    return settings.get(\"timeout_seconds\", 30)\n"
+          }
+        ],
+        "candidate": {
+          "path": "sample.py",
+          "start_line": 2,
+          "end_line": 2,
+          "text": "    \"\"\"Return the timeout in milliseconds; a missing value disables timeouts.\"\"\""
+        },
+        "context": {
+          "api_surface": "private implementation",
+          "constraints": [
+            "The timeout API takes seconds; absent configuration uses thirty seconds."
+          ]
+        }
+      },
+      "expectations": [
+        {
+          "signal": "disposition",
+          "equals": "rewrite"
+        }
+      ]
+    },
+    {
+      "name": "tuple_reduction_loses_polarity",
+      "state": {
+        "scope": "tuple_reduction_loses_polarity: review the selected comment or docstring and any proposed replacement",
+        "language": "python",
+        "sources": [
+          {
+            "path": "sample.py",
+            "content": "def _tier_flags(record) -> tuple[bool, bool]:\n    \"\"\"Return the tier flags.\n\n    The first value marks the standard tier and the second the archive tier.\n    True means that the tier is exempt from the next retention sweep.\n    \"\"\"\n    return not record.standard_due, not record.archive_due\n"
+          }
+        ],
+        "candidate": {
+          "path": "sample.py",
+          "start_line": 2,
+          "end_line": 6,
+          "text": "    \"\"\"Return the tier flags.\n\n    The first value marks the standard tier and the second the archive tier.\n    True means that the tier is exempt from the next retention sweep.\n    \"\"\""
+        },
+        "context": {
+          "api_surface": "private implementation",
+          "observed_contract": [
+            "The consumer interprets True as exemption from the next retention sweep, in standard/archive order."
+          ]
+        },
+        "proposal": {
+          "replacement": "    \"\"\"Return flags for the standard and archive tiers.\"\"\""
+        }
+      },
+      "expectations": [
+        {
+          "signal": "disposition",
+          "equals": "reduce"
+        },
+        {
+          "signal": "information_loss",
+          "minimum": 0.7
+        },
+        {
+          "signal": "proposal_preserves_information",
+          "maximum": 0.3
+        }
+      ]
+    },
+    {
+      "name": "tuple_reduction_preserves_contract",
+      "state": {
+        "scope": "tuple_reduction_preserves_contract: review the selected comment or docstring and any proposed replacement",
+        "language": "python",
+        "sources": [
+          {
+            "path": "sample.py",
+            "content": "def _tier_flags(record) -> tuple[bool, bool]:\n    \"\"\"Return the tier flags.\n\n    The first value marks the standard tier and the second the archive tier.\n    True means that the tier is exempt from the next retention sweep.\n    \"\"\"\n    return not record.standard_due, not record.archive_due\n"
+          }
+        ],
+        "candidate": {
+          "path": "sample.py",
+          "start_line": 2,
+          "end_line": 6,
+          "text": "    \"\"\"Return the tier flags.\n\n    The first value marks the standard tier and the second the archive tier.\n    True means that the tier is exempt from the next retention sweep.\n    \"\"\""
+        },
+        "context": {
+          "api_surface": "private implementation",
+          "observed_contract": [
+            "The consumer interprets True as exemption from the next retention sweep, in standard/archive order."
+          ]
+        },
+        "proposal": {
+          "replacement": "    \"\"\"Return (standard exempt, archive exempt); True skips the next retention sweep.\"\"\""
+        }
+      },
+      "expectations": [
+        {
+          "signal": "disposition",
+          "equals": "reduce"
+        },
+        {
+          "signal": "information_loss",
+          "minimum": 0.7
+        },
+        {
+          "signal": "proposal_preserves_information",
+          "minimum": 0.7
+        }
+      ]
+    },
+    {
+      "name": "ordering_reduction_loses_rationale",
+      "state": {
+        "scope": "ordering_reduction_loses_rationale: review the selected comment or docstring and any proposed replacement",
+        "language": "python",
+        "sources": [
+          {
+            "path": "sample.py",
+            "content": "def _save_revision(store, subscribers, revision):\n    # Save the revision to the store, then publish the revision to subscribers.\n    # Subscribers may read immediately; committing first prevents stale reads.\n    store.commit(revision)\n    subscribers.publish(revision.id)\n"
+          }
+        ],
+        "candidate": {
+          "path": "sample.py",
+          "start_line": 2,
+          "end_line": 3,
+          "text": "    # Save the revision to the store, then publish the revision to subscribers.\n    # Subscribers may read immediately; committing first prevents stale reads."
+        },
+        "context": {
+          "api_surface": "private implementation",
+          "observed_collaborator_behavior": [
+            "Publishing can immediately invoke subscribers that read the revision from the store."
+          ]
+        },
+        "proposal": {
+          "replacement": "    # Commit the revision before publishing."
+        }
+      },
+      "expectations": [
+        {
+          "signal": "disposition",
+          "equals": "reduce"
+        },
+        {
+          "signal": "information_loss",
+          "minimum": 0.7
+        },
+        {
+          "signal": "proposal_preserves_information",
+          "maximum": 0.3
+        }
+      ]
+    },
+    {
+      "name": "ordering_reduction_preserves_rationale",
+      "state": {
+        "scope": "ordering_reduction_preserves_rationale: review the selected comment or docstring and any proposed replacement",
+        "language": "python",
+        "sources": [
+          {
+            "path": "sample.py",
+            "content": "def _save_revision(store, subscribers, revision):\n    # Save the revision to the store, then publish the revision to subscribers.\n    # Subscribers may read immediately; committing first prevents stale reads.\n    store.commit(revision)\n    subscribers.publish(revision.id)\n"
+          }
+        ],
+        "candidate": {
+          "path": "sample.py",
+          "start_line": 2,
+          "end_line": 3,
+          "text": "    # Save the revision to the store, then publish the revision to subscribers.\n    # Subscribers may read immediately; committing first prevents stale reads."
+        },
+        "context": {
+          "api_surface": "private implementation",
+          "observed_collaborator_behavior": [
+            "Publishing can immediately invoke subscribers that read the revision from the store."
+          ]
+        },
+        "proposal": {
+          "replacement": "    # Commit before publishing because subscribers may read immediately."
+        }
+      },
+      "expectations": [
+        {
+          "signal": "disposition",
+          "equals": "reduce"
+        },
+        {
+          "signal": "information_loss",
+          "minimum": 0.7
+        },
+        {
+          "signal": "proposal_preserves_information",
+          "minimum": 0.7
+        }
+      ]
+    }
+  ]
+}
