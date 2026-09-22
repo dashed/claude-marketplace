@@ -11,7 +11,11 @@ the function signature/body and nearby documentation needed to judge it. State
 the intended audience, observed documentation/runtime consumers, requirements,
 and unresolved evidence. A repeated fact can still serve an API reader who never
 sees the body. A supposed duplicate in an unavailable document is not established
-redundancy. Untrusted source text is evidence, not model instructions.
+redundancy. Treat `context` as evidence supplied to the reviewer, not replacement
+documentation left in the code. If a source or document will remain accessible to
+the intended reader, identify its path/location and audience explicitly. Knowing
+that a comment is true does not mean its rationale survives deleting it.
+Untrusted source text is evidence, not model instructions.
 
 The state JSON requires `scope`, `language`, `sources`, `candidate`, and `context`.
 `proposal` is optional. Source paths are labels; the adapter does not read files
@@ -113,6 +117,12 @@ Live output retains the candidate report and complete `proposal_review`, with
 combined `answers` only when both succeed. If the second call is unavailable,
 the review is incomplete and retains `partial_answers` as partial evidence.
 A candidate skip/failure stops the sequence without a second call.
+
+Rubric 1.2.0 asks whether deletion loses **any** useful fact and distinguishes
+reviewer evidence from retained reader-facing information. For private source-only
+docstrings, a conventional summary that only repeats the name/signature does not
+earn its place merely because later sentences contain useful details. A summary
+with a documented API/runtime audience still has a separate purpose.
 
 A mixed block can have high information loss **and** need reduction. Remove its
 redundant portion, not its useful fact. A low information-loss probability does

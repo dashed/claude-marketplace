@@ -4,6 +4,13 @@ All notable changes to the comment-slop skill in this marketplace will be docume
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.5.1] - 2026-09-22
+
+### Fixed
+- Rubric 1.2.0 separates reviewer evidence that a claim is true from documentation that remains available after deletion. Any useful lost fact counts, including the reason for a visible transaction/ordering mechanism.
+- Private source-only docstring summaries that merely repeat names/signatures no longer inherit necessity from useful later clauses. Verified published/runtime consumers retain their protection.
+- All 32 original semantic expectations pass with unchanged thresholds, up from 25/32. Two unavailable HTTP 503 calls received one manual retry each; initial failures and completed evidence are retained.
+
 ## [1.5.0] - 2026-09-22
 
 ### Added

@@ -1,5 +1,8 @@
 # Optional Jev comment review, 2026-09-22
 
+For the subsequent fix to the seven remaining weaknesses and fresh validation,
+see [rubric 1.2.0 results](jev-weakness-fix-2026-09-22.md).
+
 The `comment-slop` skill now asks Jev about redundancy and concrete reductions
 while preserving its source-based cleanup workflow. The general `jev` skill owns
 provider configuration and credentials. The comment adapter supplies its rubric

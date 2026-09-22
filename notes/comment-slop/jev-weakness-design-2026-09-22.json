@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "advisory": true,
+  "provider": "vercel",
+  "protocol": "gateway",
+  "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+  "api_key_env": "AI_GATEWAY_API_KEY",
+  "questions_sha256": "7d1a0ae62128a24f108d22a9d3b93eb2ebe609c7b474d0ef66c6348bc77eabbb",
+  "state_sha256": "a5807043f74cf7939d5e7a71e5f8f0b82c74dbc8f28c72ace696d21221a7dc31",
+  "request": {
+    "model": "typesafe-ai/jev",
+    "state": {
+      "task": "Improve weak comment information-loss and mixed-docstring judgments without changing frozen expected labels.",
+      "observations": "Five deletion information-loss probabilities are .55-.66 despite comments carrying non-obvious rationale or caller meanings. Review context repeats each fact as observed evidence. Two private docstrings with a repeated function-name summary plus useful polarity details are kept instead of reduced. Concrete proposal preservation checks already pass five of five.",
+      "hypotheses": {
+        "evidence_visibility": "The model may count review-only evidence as retained documentation, so it underestimates the loss from deleting the only local rationale.",
+        "summary_convention": "The model may keep a conventional one-line summary even though the explicitly requested source-only cleanup treats a name/signature paraphrase as redundant."
+      },
+      "planned_fix": "Clarify intended reader only retains actual source/doc artifacts. Reviewer context establishes truth but is not a replacement unless explicitly identified as retained accessible docs. Require clause-level treatment for private docstrings, while respecting known published/runtime consumers. Keep all current thresholds and preserve first-run results. Freeze fresh cases and blind agent baseline before testing."
+    },
+    "questions": {
+      "best_experiment": {
+        "type": "choice",
+        "instructions": "Which experiment most directly distinguishes the reviewer-evidence visibility hypothesis from merely asking for higher scores?",
+        "criteria": {
+          "counterfactual_context": "Same code/comment but explicitly identify supporting context once as review-only evidence and once as retained documentation accessible to readers.",
+          "lower_cutoff": "Lower the passing probability threshold.",
+          "resample": "Repeat calls until information-loss probabilities rise.",
+          "unknown": "The proposed experiment cannot be chosen from available evidence."
+        }
+      },
+      "separate_truth_from_availability": {
+        "type": "boolean",
+        "instructions": "For measuring loss after deleting a comment, is it relevant to distinguish evidence that its statement is true from whether the intended reader can still access the statement afterwards?"
+      }
+    }
+  },
+  "response": {
+    "model": "typesafe-ai/jev",
+    "answers": {
+      "best_experiment": {
+        "type": "choice",
+        "choice": "counterfactual_context",
+        "probabilities": {
+          "unknown": 0,
+          "lower_cutoff": 0,
+          "counterfactual_context": 1,
+          "resample": 0
+        },
+        "confidence": 1
+      },
+      "separate_truth_from_availability": {
+        "type": "boolean",
+        "probability": 0.9
+      }
+    },
+    "usage": {
+      "inputTokens": 691,
+      "outputTokens": 87
+    },
+    "providerMetadata": {
+      "typesafe": {
+        "confidence": {
+          "best_experiment": 1
+        }
+      },
+      "gateway": {
+        "routing": {
+          "originalModelId": "typesafe-ai/jev",
+          "resolvedProvider": "typesafe-ai",
+          "fallbacksAvailable": [],
+          "planningReasoning": "System credentials planned for: typesafe-ai. Total execution order: typesafe-ai(system)",
+          "canonicalSlug": "typesafe-ai/jev",
+          "finalProvider": "typesafe-ai",
+          "modelAttemptCount": 1,
+          "modelAttempts": [
+            {
+              "canonicalSlug": "typesafe-ai/jev",
+              "success": true,
+              "providerAttemptCount": 1,
+              "providerAttempts": [
+                {
+                  "provider": "typesafe-ai",
+                  "credentialType": "system",
+                  "success": true,
+                  "startTime": 1790082908675,
+                  "endTime": 1790082908850,
+                  "statusCode": 200
+                }
+              ]
+            }
+          ],
+          "totalProviderAttemptCount": 1
+        },
+        "cost": "0",
+        "marketCost": "0.000029022",
+        "surchargeCost": "0",
+        "gatewayCost": "0",
+        "generationId": "gen_01M34M303R3C7GKXAVS7RCBJ4V"
+      }
+    }
+  },
+  "answers": {
+    "best_experiment": {
+      "type": "choice",
+      "choice": "counterfactual_context",
+      "probabilities": {
+        "unknown": 0,
+        "lower_cutoff": 0,
+        "counterfactual_context": 1,
+        "resample": 0
+      },
+      "confidence": 1
+    },
+    "separate_truth_from_availability": {
+      "type": "boolean",
+      "probability": 0.9
+    }
+  },
+  "elapsed_seconds": 0.702,
+  "evaluated_at": "2026-09-22T13:15:08.832747+00:00",
+  "status": "evaluated"
+}

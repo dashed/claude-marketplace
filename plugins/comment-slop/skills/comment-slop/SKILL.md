@@ -288,6 +288,8 @@ The same bar applies to claims you write: a sentence like "the override changes 
 For uncertain redundancy, a mixed comment/docstring, or a proposed reduction, use
 [references/jev-review.md](references/jev-review.md). Supply the exact text and
 source location, surrounding implementation, known consumers, and missing evidence.
+Distinguish facts supplied only to verify the claim from documentation the intended
+reader can still access after deletion; identify any retained document explicitly.
 Jev can suggest **keep / delete / reduce / rewrite / needs_context** and judge
 whether a concrete replacement preserves the useful information. The agent
 identifies the redundant clauses, writes the edit, and verifies it; Jev does not
