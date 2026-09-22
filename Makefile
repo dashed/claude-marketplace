@@ -106,12 +106,12 @@ PYTHON_COMPLEXITY_JEV_FILES := plugins/python-complexity/skills/python-complexit
 
 JEV_FILES := plugins/jev/skills/jev/scripts/jev.py tests/test_jev.py
 
-DOC_QUALITY_FILES := plugins/doc-quality/skills/doc-quality/scripts/doc_metrics.py plugins/doc-quality/skills/doc-quality/scripts/doc_quality.py scripts/eval_doc_quality.py tests/test_doc_metrics.py tests/test_doc_quality.py tests/test_doc_quality_evals.py
+DOC_QUALITY_FILES := plugins/doc-quality/skills/doc-quality/scripts/doc_links.py scripts/eval_doc_profiles.py tests/test_doc_links.py tests/test_doc_profile_evals.py plugins/doc-quality/skills/doc-quality/scripts/doc_metrics.py plugins/doc-quality/skills/doc-quality/scripts/doc_quality.py scripts/eval_doc_quality.py tests/test_doc_metrics.py tests/test_doc_quality.py tests/test_doc_quality_evals.py
 
 .PHONY: test-doc-quality lint-doc-quality typecheck-doc-quality format-doc-quality format-doc-quality-check eval-doc-quality
 
 test-doc-quality: lint-doc-quality typecheck-doc-quality format-doc-quality-check ## Verify Markdown review and preservation checks offline
-	@$(UV_RUN) pytest tests/test_doc_metrics.py tests/test_doc_quality.py tests/test_doc_quality_evals.py --no-cov
+	@$(UV_RUN) pytest tests/test_doc_metrics.py tests/test_doc_quality.py tests/test_doc_quality_evals.py tests/test_doc_links.py tests/test_doc_profile_evals.py --no-cov
 
 lint-doc-quality: ## Run Ruff on Markdown review and evals
 	@$(UV_RUN) ruff check $(DOC_QUALITY_FILES)
@@ -124,6 +124,11 @@ format-doc-quality: ## Format Markdown review Python
 
 format-doc-quality-check: ## Check Markdown review formatting
 	@$(UV_RUN) ruff format --check $(DOC_QUALITY_FILES)
+
+.PHONY: eval-doc-profiles
+
+eval-doc-profiles: ## Evaluate frozen document profile judgments (EVAL_ARGS=--offline skips Jev)
+	@$(UV_RUN) scripts/eval_doc_profiles.py $(EVAL_ARGS)
 
 eval-doc-quality: ## Evaluate frozen document revisions (EVAL_ARGS=--offline skips Jev)
 	@$(UV_RUN) scripts/eval_doc_quality.py $(EVAL_ARGS)

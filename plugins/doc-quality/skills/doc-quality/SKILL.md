@@ -31,12 +31,12 @@ reason to add a guarantee or remove a caveat.
 ## Inspect the document
 
 Resolve `DOC_SKILL_DIR` to the absolute directory containing this `SKILL.md`.
-The helper uses Python script dependency metadata with `markdown-it-py==4.0.0`;
-`uv` manages that dependency without changing the target project's environment.
+The helper pins its Markdown parser and heading slugger in Python script metadata;
+`uv` manages those dependencies without changing the target project's environment.
 
 ```bash
 uv run --no-config --no-project "$DOC_SKILL_DIR/scripts/doc_quality.py" \
-  analyze docs/design.md --kind design > /tmp/doc-before.json
+  analyze docs/design.md --kind design --check-links --link-root . > /tmp/doc-before.json
 ```
 
 Use `--kind design|analysis|plan|adr`. The static report exposes section IDs,
@@ -44,6 +44,11 @@ structural observations, preservation inventories, and prose metrics. Code is
 excluded from prose readability calculations. Readability formulas are rough
 English-language heuristics; counts do not establish clarity, completeness,
 correctness, or semantic equivalence.
+
+`--check-links` checks local files and anchors within `--link-root` (default: the
+document's directory). Remote URLs, unsupported syntax, and targets outside that
+root remain explicitly unchecked. Read the renderer profile and coverage in
+`link_validation`; this bounded check does not replace the site's build checks.
 
 For a semantic second opinion, resolve the separately installed general Jev
 skill's directory as `JEV_SKILL_DIR` and pass its helper explicitly:
@@ -79,6 +84,7 @@ document longer. Prefer precise claims over confident language.
 ```bash
 uv run --no-config --no-project "$DOC_SKILL_DIR/scripts/doc_quality.py" \
   compare /tmp/design-original.md docs/design.md --kind design \
+  --check-links --link-root . --document-path docs/design.md \
   --context /tmp/doc-context.json \
   --jev-helper "$JEV_SKILL_DIR/scripts/jev.py" > /tmp/doc-comparison.json
 ```
@@ -89,6 +95,9 @@ It compares both complete files; use coherent matching excerpts for a focused
 comparison. Use `--paired-only` to omit separate before/after assessments.
 Inspect both candidates and the underlying evidence. Inventory
 matches cannot prove meaning is preserved; differences can be justified edits.
+Both snapshots use the same logical `--document-path` (default: revised file),
+so self-links are checked against each snapshot's own headings. Link failures in
+the revised file return exit 1; historical failures remain visible separately.
 Use the same question version, audience, requirements, evidence, and scope for
 before/after analysis and paired comparison. Preserve exact requests and hashes
 when evaluating whether the workflow helps.
@@ -98,6 +107,11 @@ judgments are not passes. A probability is neither severity nor an issue count;
 0.95 and 0.98 are not universal acceptance thresholds. Do not resample until a
 preferred candidate wins. Set a small attempt budget; revise again only for a
 specific defect and verify that defect directly.
+
+For faithful revisions, compare reading effort explicitly: removing redundant
+framing or grouping a decision with its reason can help even when facts stay the
+same. Shortness alone is not a gain. Keep `equivalent` for changes with no clear
+audience benefit and `needs_context` for unresolved evidence needed to choose.
 
 Finish by checking the actual Markdown diff, source claims, links and anchors,
 code or command examples, and the repository's relevant documentation checks.

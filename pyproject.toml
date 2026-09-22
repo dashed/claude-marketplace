@@ -12,6 +12,7 @@ dependencies = [
     "pytest-cov>=4.1.0",
     "pytest-xdist>=3.5.0",
     "markdown-it-py==4.0.0",
+    "github-slugger==0.0.3",
 ]
 
 [build-system]

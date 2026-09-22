@@ -167,17 +167,19 @@ Successful input processing yields these report parts:
 | `preservation` for compare | Changed artifacts and lexical review signals; `meaning_preservation: not_established` explicitly withholds proof |
 | `semantic` | Evaluation `status`, per-request `reports` when prepared, and `not_reviewed` after a stopped sequence or budget failure |
 | `acceptance` for compare | Always `requires_evidence_review`; no automatic acceptance |
-| `link_validation` | `not_run`; an actual link or anchor check is external |
+| `link_validation` | Opt-in local file/anchor checks; compare includes `before` and `after` at one logical document path |
 
 The top-level `status` follows semantic status, so `skipped` can accompany useful
 static analysis. `preview` means no helper or provider call occurred. `skipped`,
 missing answers, failed calls, and incomplete coverage supply no favorable
 evidence. An evaluated response establishes that the consultation ran, not that
-the candidate passed. Exit 0 includes skipped and preview reports; exit 2 means
-incomplete. Invalid inputs can return only error metadata. A skipped or failed
+the candidate passed. Exit 0 includes skipped and preview reports; exit 1 means
+the selected document (revised for compare) has broken local links; exit 2 means
+incomplete semantic review or invalid inputs and takes precedence over link failure.
+Invalid inputs can return only error metadata. A skipped or failed
 request stops the remaining calls without retries; inspect `not_reviewed`.
 
-Preview reports retain the exact request and `question_sha256`; successful Jev
+Preview reports retain the exact request and `questions_sha256`; successful Jev
 reports also carry the general helper's raw response and reproducibility fields.
 Field names belong to their respective report formats: do not assume preview
 metadata includes a provider response or every successful-call hash.
@@ -196,11 +198,32 @@ prefers the desired answer.
 
 ## Verify and report the result
 
+Use `--check-links --link-root .` to check local files and fragments inside the
+repository. Without `--link-root`, access is limited to the logical document's
+directory. `--document-path docs/design.md` locates a saved snapshot logically;
+for comparisons both versions default to the revised path. Self-links use each
+snapshot's supplied text, even if that logical file does not exist on disk.
+The helper never fetches external URLs or reads targets outside the resolved root,
+including symlink escapes. Root-relative URLs start at the selected link root.
+
+Link reports expose `checked`, `failed`, `partial`, or `not_applicable` status,
+per-link findings, and coverage counts. `checked` counts fully evaluated links,
+including the `broken` subset. External URLs and unsupported targets are
+`not_checked`, so a mix of successful local links and external links is partial.
+Limits bound input, linked-file bytes, target count and link count. Exceeding a
+limit is incomplete coverage, never a successful check of omitted material.
+
+The declared renderer profile uses CommonMark plus tables/strikethrough,
+`github-slugger==0.0.3` heading IDs, and literal HTML `id`/`name` anchors. This is
+not a guarantee of a site's routes, generated pages, plugins, or host-specific
+HTML sanitization. Use the actual site's build/link checker for those rules.
+
 Inspect the final Markdown diff against the ledger. Confirm source claims,
 requirement force, units, exception paths, and remaining unknowns. Check actual
 link targets and renderer-specific heading anchors where applicable. Parsed link
 destinations are inventoried, and changed headings flag possible anchor changes;
-neither proves links work. No remote broken-link checker is bundled: report that
+neither proves links work. Enable the bounded local checker above. No remote
+broken-link checker is bundled: report that
 check as not run unless the repository's link checker or another actual check
 ran. Run relevant existing documentation builds or lint checks, and verify
 altered executable examples with the
@@ -216,7 +239,9 @@ effect of a document edit.
 When evaluating this workflow itself, freeze representative cases and expected
 outcomes before tuning questions; keep held-out cases blind. Compare the agent's
 decision before and after consultation against source evidence or independent
-labels. Count useful corrections, harmful changes, unchanged decisions, missing
+labels. Include an unassisted second-pass control to distinguish consultation
+from rereading. Record review time when available without treating elapsed tool
+time as a matched cost experiment. Count useful corrections, harmful changes, unchanged decisions, missing
 answers, and failures. Report bounded attempts and coverage. An earlier
 code-comment pilot showed no incremental gain; that does not establish either
 benefit or failure for Markdown. Demonstrate value on document tasks before
@@ -236,3 +261,6 @@ Question design follows TypeSafe's [Score](https://docs.typesafe.ai/primitives/s
 [Noul](https://docs.typesafe.ai/primitives/noul), and
 [confidence](https://docs.typesafe.ai/confidence) guidance. Parsing uses
 [markdown-it-py](https://markdown-it-py.readthedocs.io/en/latest/using.html).
+Heading IDs use the pinned [github-slugger](https://pypi.org/project/github-slugger/)
+port; the report names this profile rather than claiming every Markdown renderer
+uses it.

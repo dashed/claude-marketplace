@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- doc-quality 1.1.0: bounded local link/anchor validation, clearer editorial-gain criteria, frozen repository-excerpt challenges and all-profile evals, and a rereading control for agent comparisons; optional provider-configurable Jev remains advisory.
 - doc-quality 1.0.0: section-aware engineering Markdown review with deterministic Markdown inventories and readability metrics, four document-specific Jev profiles, separate before/after and preservation requests, optional shared provider configuration, frozen semantic evals, and offline uv/Ruff/ty tests.
 - comment-slop 1.5.2: prioritize verified documentation/tooling consumers, add deterministic consumer regressions and a frozen blind agent comparison; retain all semantic failures and document no observed incremental agent accuracy gain.
 - comment-slop 1.5.1: distinguish review-only evidence from retained documentation and clarify mixed private docstrings; original semantic regression improves from 25/32 to 32/32 with unchanged expectations.

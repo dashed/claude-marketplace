@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["markdown-it-py==4.0.0"]
+# dependencies = ["markdown-it-py==4.0.0", "github-slugger==0.0.3"]
 # ///
 """Analyze engineering Markdown or compare revisions; never edit or autoaccept.
 
@@ -21,6 +21,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+from doc_links import check_links
 from doc_metrics import analyze_document, compare_documents
 
 RUBRICS = Path(__file__).resolve().parents[1] / "references/rubrics.json"
@@ -28,6 +29,14 @@ KINDS = ("design", "analysis", "plan", "adr")
 OPTIONS = ("config", "provider", "endpoint", "model", "protocol", "api_key_env", "env_file")
 MAX_FILE_BYTES = 1_000_000
 MAX_REQUEST_BYTES = 100_000
+
+
+def link_review(text: str, path: Path, args: argparse.Namespace) -> dict[str, Any]:
+    if not args.check_links:
+        return {"status": "not_run", "reason": "Enable --check-links for local files and anchors."}
+    logical_path = args.document_path or path
+    root = args.link_root or logical_path.absolute().parent
+    return check_links(text, logical_path, root)
 
 
 class ReviewError(Exception):
@@ -328,6 +337,9 @@ def main(argv: list[str] | None = None) -> int:
             command.add_argument("original", type=Path)
             command.add_argument("revised", type=Path)
             command.add_argument("--paired-only", action="store_true")
+        command.add_argument("--check-links", action="store_true")
+        command.add_argument("--link-root", type=Path)
+        command.add_argument("--document-path", type=Path)
         command.add_argument("--kind", choices=KINDS, required=True)
         command.add_argument("--context", type=Path)
         command.add_argument("--jev-helper", type=Path)
@@ -340,18 +352,31 @@ def main(argv: list[str] | None = None) -> int:
         rubric = json.loads(read_text(RUBRICS))
         metadata.update(rubric_version=rubric["version"], rubric_sha256=digest(rubric))
         context = load_context(args.context)
+        if not args.check_links and (args.link_root is not None or args.document_path is not None):
+            raise ReviewError("--link-root and --document-path require --check-links.")
         if args.command == "analyze":
             if not 1 <= args.max_sections <= 100:
                 raise ReviewError("--max-sections must be between 1 and 100.")
-            report = analyze(read_text(args.path), args.kind, context, rubric, args)
+            text = read_text(args.path)
+            links = link_review(text, args.path, args)
+            report = analyze(text, args.kind, context, rubric, args)
+            report["link_validation"] = links
         else:
-            report = compare(
-                read_text(args.original), read_text(args.revised), args.kind, context, rubric, args
-            )
+            original, revised = read_text(args.original), read_text(args.revised)
+            before_links = link_review(original, args.revised, args)
+            after_links = link_review(revised, args.revised, args)
+            report = compare(original, revised, args.kind, context, rubric, args)
+            # Historical failures remain visible; only revised failures affect the exit code.
+            links = after_links
+            report["link_validation"] = {
+                "status": after_links["status"],
+                "before": before_links,
+                "after": after_links,
+            }
         status = report["semantic"]["status"]
         report = {**metadata, "status": status, **report}
         print(json.dumps(report, indent=2, ensure_ascii=False, allow_nan=False))
-        return 2 if status == "incomplete" else 0
+        return 2 if status == "incomplete" else 1 if links["status"] == "failed" else 0
     except (ReviewError, OSError, ValueError, KeyError) as error:
         message = (
             str(error) if isinstance(error, ReviewError) else "Could not prepare document review."

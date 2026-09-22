@@ -16,6 +16,7 @@ name = "claude-marketplace"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "github-slugger" },
     { name = "jsonschema" },
     { name = "markdown-it-py" },
     { name = "pytest" },
@@ -33,6 +34,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "github-slugger", specifier = "==0.0.3" },
     { name = "jsonschema", specifier = ">=4.20.0" },
     { name = "markdown-it-py", specifier = "==4.0.0" },
     { name = "pytest", specifier = ">=7.4.3" },
@@ -180,6 +182,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/bf/89/780e11f9588d9e7128a3f87788354c7946a9cbb1401ad38a48c4db9a4f07/execnet-2.1.2.tar.gz", hash = "sha256:63d83bfdd9a23e35b9c6a3261412324f964c2ec8dcd8d3c6916ee9373e0befcd", size = 166622, upload-time = "2025-11-12T09:56:37.75Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ab/84/02fc1827e8cdded4aa65baef11296a9bbe595c474f0d6d758af082d849fd/execnet-2.1.2-py3-none-any.whl", hash = "sha256:67fba928dd5a544b783f6056f449e5e3931a5c378b128bc18501f7ea79e296ec", size = 40708, upload-time = "2025-11-12T09:56:36.333Z" },
+]
+
+[[package]]
+name = "github-slugger"
+version = "0.0.3"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/fe/e9/c3fcf0d020dd1911c02f7c6b75e9ff809252c423dd4c3bcf8f1b0b86bf31/github-slugger-0.0.3.tar.gz", hash = "sha256:e607450e8568c0c1b9a41f5748f422e5a22c1d9799d52bc6dd6575397c1ccb22", size = 7720, upload-time = "2022-12-12T09:15:24.989Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/31/41/0cfe9970e00c3e9470a5ab559d27a5320695f553b7c240b3933ddf7e9825/github_slugger-0.0.3-py3-none-any.whl", hash = "sha256:2d531ff0e439762900bf0ec3be10771b1d3635a6d4486113f1352fa19c091a91", size = 8491, upload-time = "2022-12-12T09:15:21.845Z" },
 ]
 
 [[package]]

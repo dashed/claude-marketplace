@@ -1514,7 +1514,7 @@
     },
     {
       "name": "doc-quality",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "source": "./plugins/doc-quality",
       "description": "Review and improve engineering Markdown designs, analyses, implementation plans, and ADRs. Measure sections and protected content with a Markdown parser; optionally use Jev for typed quality and meaning-preservation judgments. Preserve requirements, uncertainty, code, and links while the agent makes targeted edits. Jev is optional and provider configurable.",
       "author": {

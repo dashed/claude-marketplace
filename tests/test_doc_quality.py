@@ -324,3 +324,92 @@ def test_comparison_preflights_pair_budget_before_quality_calls(monkeypatch: Any
     assert result["semantic"]["reports"] == {}
     assert result["semantic"]["oversized_requests"] == ["preservation"]
     assert result["before"]["metrics"]["word_count"] == 28_000
+
+
+def test_local_link_failure_is_visible_without_jev(tmp_path: Path, capsys: Any) -> None:
+    document = tmp_path / "doc.md"
+    document.write_text("# Plan\n[missing](missing.md)\n")
+    assert review.main(["analyze", str(document), "--kind", "plan", "--check-links"]) == 1
+    report = json.loads(capsys.readouterr().out)
+    assert report["semantic"]["status"] == "skipped"
+    assert report["link_validation"]["status"] == "failed"
+    assert report["link_validation"]["counts"]["broken"] == 1
+
+
+def test_comparison_checks_each_snapshot_at_same_logical_path(tmp_path: Path, capsys: Any) -> None:
+    snapshots = tmp_path / "snapshots"
+    snapshots.mkdir()
+    original, revised = snapshots / "before.md", snapshots / "after.md"
+    original.write_text("# Old name\n[section](#old-name)\n[guide](guide.md#intro)\n")
+    revised.write_text("# New name\n[section](#old-name)\n[guide](guide.md#intro)\n")
+    docs = tmp_path / "docs"
+    docs.mkdir()
+    (docs / "guide.md").write_text("# Intro\nA guide.\n")
+    # This path need not exist: self-links must use the supplied version's content.
+    logical = docs / "design.md"
+    assert (
+        review.main(
+            [
+                "compare",
+                str(original),
+                str(revised),
+                "--kind",
+                "design",
+                "--check-links",
+                "--document-path",
+                str(logical),
+                "--link-root",
+                str(docs),
+            ]
+        )
+        == 1
+    )
+    report = json.loads(capsys.readouterr().out)
+    links = report["link_validation"]
+    assert links["before"]["status"] == "checked"
+    assert links["after"]["counts"]["broken"] == 1
+    assert links["after"]["status"] == "failed"
+    assert report["acceptance"] == "requires_evidence_review"
+
+
+def test_repaired_links_do_not_fail_due_to_historical_baseline(tmp_path: Path, capsys: Any) -> None:
+    original, revised = tmp_path / "before.md", tmp_path / "after.md"
+    original.write_text("# Plan\n[section](#missing)\n")
+    revised.write_text("# Plan\n[section](#plan)\n")
+    assert (
+        review.main(
+            [
+                "compare",
+                str(original),
+                str(revised),
+                "--kind",
+                "plan",
+                "--check-links",
+            ]
+        )
+        == 0
+    )
+    links = json.loads(capsys.readouterr().out)["link_validation"]
+    assert links["before"]["status"] == "failed"
+    assert links["after"]["status"] == "checked"
+
+
+def test_link_configuration_requires_explicit_check(tmp_path: Path, capsys: Any) -> None:
+    document = tmp_path / "doc.md"
+    document.write_text("# Design\nText.\n")
+    assert (
+        review.main(
+            [
+                "analyze",
+                str(document),
+                "--kind",
+                "design",
+                "--link-root",
+                str(tmp_path),
+            ]
+        )
+        == 2
+    )
+    report = json.loads(capsys.readouterr().out)
+    assert report["status"] == "incomplete"
+    assert "require --check-links" in report["error"]

@@ -1,5 +1,15 @@
 # Changelog - doc-quality
 
+## [1.1.0] - 2026-09-22
+
+### Added
+- Opt-in bounded local link and anchor checks, including snapshot comparisons at a common logical document path. External URLs and unsupported renderer behavior remain explicitly unchecked.
+- Independently frozen repository-excerpt rewrite challenges, coverage for all four quality profiles, and an unassisted second-pass control alongside assisted agent review.
+
+### Changed
+- Rubric 1.1.0 explicitly considers reductions in unnecessary reading effort when facts are preserved; retains equivalent and missing-context outcomes and prioritizes technical fidelity.
+- Retain original evaluation evidence and all follow-up failures. No automatic acceptance or universal probability thresholds.
+
 ## [1.0.0] - 2026-09-22
 
 ### Added
