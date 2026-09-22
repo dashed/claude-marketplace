@@ -4,6 +4,19 @@ All notable changes to the python-complexity skill in this marketplace will be d
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.3.0] - 2026-09-22
+
+### Added
+- Optional Jev semantic review with Vercel AI Gateway and direct TypeSafe presets alongside the existing per-function and call-path censuses: readability, responsibility cohesion, simplicity (KISS), abstraction quality, justified complexity, extraction benefit, dominant cost, and context sufficiency.
+- `scripts/jev_review.py`: stdlib helper run through uv, explicit source/context JSON, environment or private key-file loading without shell execution, offline request preview, bounded single-request evaluation, typed response validation, and retained request/rubric hashes and Gateway usage metadata. Absent or empty credentials skip semantic review successfully so the static workflow continues. Configured-key API failures remain incomplete; neither status is a quality pass.
+- Provider selection through CLI flags or user JSON config: endpoint, model, evaluation protocol, and credential variable/file. Compatible custom endpoints need no code edit; native TypeSafe Noul answers are normalized while the raw response is retained. Provider changes never reuse another provider's key or silently fall back.
+- `references/jev-review.md` and versioned `jev-rubric.json`: anchored judgments, credential convention, complete-scope comparisons, limitations, and primary-source links. No MCP service or community plugin dependency.
+- Offline contract and failure tests with `make test-python-complexity`, using uv, Ruff, and ty.
+
+### Changed
+- Refactor acceptance requires verified behavior and an explainable maintainability improvement. It no longer requires every complexity number to drop; clear explicit branches can raise a metric, and an unchanged decision count does not rule out improved cohesion.
+- Semantic scores guide inspection and prioritization without becoming numeric merge gates or an overall quality grade. Existing repository checks and user-defined limits remain in force.
+
 ## [1.2.0] - 2026-09-10
 
 ### Added

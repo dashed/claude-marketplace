@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- python-complexity skill: optional Jev semantic review through configurable providers (Vercel by default; skipped without the selected key), with a versioned rubric, a stdlib helper, and comparisons over the complete behavioral scope. Static measurements remain deterministic; semantic signals remain advisory.
+- `make test-python-complexity`: offline Gateway contract tests plus Ruff lint/format and ty checks, all run through uv.
+
 ## [0.56.0] - 2026-09-10
 
 ### Added

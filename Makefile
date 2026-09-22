@@ -102,6 +102,25 @@ test-cov: ## Run tests with coverage report
 
 CODEX_SKILLS_FILES := scripts/install_codex_skills.py scripts/manage_codex_skills.py scripts/sync_codex_plugins.py tests/test_install_codex_skills.py tests/test_manage_codex_skills.py tests/test_sync_codex_plugins.py
 
+PYTHON_COMPLEXITY_JEV_FILES := plugins/python-complexity/skills/python-complexity/scripts/jev_review.py tests/test_python_complexity_jev.py
+
+.PHONY: test-python-complexity lint-python-complexity typecheck-python-complexity format-python-complexity format-python-complexity-check
+
+test-python-complexity: lint-python-complexity typecheck-python-complexity format-python-complexity-check ## Check the Jev helper and run offline contract tests
+	@$(UV_RUN) pytest tests/test_python_complexity_jev.py --no-cov
+
+lint-python-complexity: ## Run Ruff on the Jev helper and its tests
+	@$(UV_RUN) ruff check $(PYTHON_COMPLEXITY_JEV_FILES)
+
+typecheck-python-complexity: ## Run ty on the Jev helper and its tests
+	@$(UV_RUN) ty check $(PYTHON_COMPLEXITY_JEV_FILES)
+
+format-python-complexity: ## Format the Jev helper and its tests with Ruff
+	@$(UV_RUN) ruff format $(PYTHON_COMPLEXITY_JEV_FILES)
+
+format-python-complexity-check: ## Check Jev helper and test formatting with Ruff
+	@$(UV_RUN) ruff format --check $(PYTHON_COMPLEXITY_JEV_FILES)
+
 test-codex-skills: lint-codex-skills typecheck-codex-skills format-codex-skills-check check-codex-plugins ## Run Codex skill/plugin checks and unit tests
 	@echo "$(CYAN)Running Codex skills tests...$(NC)"
 	@$(UV_RUN) pytest tests/test_install_codex_skills.py tests/test_manage_codex_skills.py tests/test_sync_codex_plugins.py -v
