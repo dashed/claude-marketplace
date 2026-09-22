@@ -1,0 +1,349 @@
+{
+  "status": "failed",
+  "evaluated_at": "2026-09-22T17:24:10.298615+00:00",
+  "fixture_version": "1.0.0",
+  "fixture_sha256": "12ff4b7cc682139a0e04fa0c56d1c9902b6db481ab965457bf00c519f2c0e22a",
+  "case_count": 8,
+  "expectation_count": 13,
+  "semantic_counts": {
+    "passed": 12,
+    "failed": 1,
+    "skipped": 0
+  },
+  "semantic_checks": [
+    {
+      "case": "profile-01",
+      "expectation": {
+        "signal": "decision_clarity",
+        "equals": "satisfied"
+      },
+      "status": "passed",
+      "observed": "satisfied"
+    },
+    {
+      "case": "profile-01",
+      "expectation": {
+        "signal": "rationale",
+        "equals": "satisfied"
+      },
+      "status": "passed",
+      "observed": "satisfied"
+    },
+    {
+      "case": "profile-02",
+      "expectation": {
+        "signal": "decision_clarity",
+        "equals": "gap"
+      },
+      "status": "passed",
+      "observed": "gap"
+    },
+    {
+      "case": "profile-02",
+      "expectation": {
+        "signal": "tradeoffs",
+        "equals": "gap"
+      },
+      "status": "passed",
+      "observed": "gap"
+    },
+    {
+      "case": "profile-03",
+      "expectation": {
+        "signal": "conclusion_support",
+        "equals": "satisfied"
+      },
+      "status": "passed",
+      "observed": "satisfied"
+    },
+    {
+      "case": "profile-04",
+      "expectation": {
+        "signal": "claim_evidence",
+        "equals": "needs_context"
+      },
+      "status": "failed",
+      "observed": "gap"
+    },
+    {
+      "case": "profile-05",
+      "expectation": {
+        "signal": "actionability",
+        "equals": "satisfied"
+      },
+      "status": "passed",
+      "observed": "satisfied"
+    },
+    {
+      "case": "profile-05",
+      "expectation": {
+        "signal": "dependencies",
+        "equals": "satisfied"
+      },
+      "status": "passed",
+      "observed": "satisfied"
+    },
+    {
+      "case": "profile-06",
+      "expectation": {
+        "signal": "dependencies",
+        "equals": "not_applicable"
+      },
+      "status": "passed",
+      "observed": "not_applicable"
+    },
+    {
+      "case": "profile-07",
+      "expectation": {
+        "signal": "rationale",
+        "equals": "satisfied"
+      },
+      "status": "passed",
+      "observed": "satisfied"
+    },
+    {
+      "case": "profile-07",
+      "expectation": {
+        "signal": "consequences",
+        "equals": "satisfied"
+      },
+      "status": "passed",
+      "observed": "satisfied"
+    },
+    {
+      "case": "profile-08",
+      "expectation": {
+        "signal": "decision_clarity",
+        "equals": "gap"
+      },
+      "status": "passed",
+      "observed": "gap"
+    },
+    {
+      "case": "profile-08",
+      "expectation": {
+        "signal": "consequences",
+        "equals": "gap"
+      },
+      "status": "passed",
+      "observed": "gap"
+    }
+  ],
+  "cases": {
+    "profile-01": {
+      "kind": "design",
+      "status": "evaluated",
+      "directory": "profile-01",
+      "sha256": {
+        "document.md": "47c43e52cb22eecc275d4327db8e39d2cf61445abc0aa2cb9407f6cbe0163d4b",
+        "context.json": "ab53c92924ec123708f478861c1587998cd11611c7820a52f594daf021ba25d1",
+        "input.json": "72439e7baca3cada80d9429c2947b4cf6e4635bb9f0c55acfba0ea712703e8f7",
+        "report.json": "e4f4337f891c7a7a1290d0fc86c47ab2d6501a0eae6e199b3b628e62d7763bfb"
+      },
+      "rubric_version": "1.1.0",
+      "rubric_sha256": "7e1b942441f113e1137ec2e5bca5ab63cd82b8012ec61fe1cd80ed41cdb3c0ac",
+      "request_sha256": "aeece11148d6db33644bd8062a0005058035cdbe0a08548b6ef12303ca7bb30a",
+      "provenance": {
+        "provider": "vercel",
+        "protocol": "gateway",
+        "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+        "state_sha256": "8769b04ec1a88bafa14c382aadf7556441c674f0d5c600a89a1e409a16e0cc64",
+        "questions_sha256": "61b8b7f49de40ffc9aa3b84652a8490467ae56618a37b69afc4cd76bb26720b2",
+        "evaluated_at": "2026-09-22T17:23:56.282305+00:00",
+        "requested_model": "typesafe-ai/jev",
+        "response_model": "typesafe-ai/jev"
+      }
+    },
+    "profile-02": {
+      "kind": "design",
+      "status": "evaluated",
+      "directory": "profile-02",
+      "sha256": {
+        "document.md": "bb0fa91715ac34514732975dc74b3f2edc44b2d5e7a1812893b86efe129bbeff",
+        "context.json": "a2277ce384886719ae70ea5046ccf7cf9e641e4456703186dabf98b6f3b5f6b0",
+        "input.json": "fcfb9684b3bf5f2958efa09db265e2a905c0f42fd3e478838cad0977597f8eea",
+        "report.json": "a9cd7a8329fbfad8dbf44257be4a5b88e43c8b991b0e1313232a2b8230f0a6b3"
+      },
+      "rubric_version": "1.1.0",
+      "rubric_sha256": "7e1b942441f113e1137ec2e5bca5ab63cd82b8012ec61fe1cd80ed41cdb3c0ac",
+      "request_sha256": "6939d1e4b77d485584d5d7b58f10b53cd745459719c109c553c63bcdf9f6e698",
+      "provenance": {
+        "provider": "vercel",
+        "protocol": "gateway",
+        "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+        "state_sha256": "76578b6339e9f0c7800e4bad8d935050d4de928ab139533d497ff48b210de5af",
+        "questions_sha256": "61b8b7f49de40ffc9aa3b84652a8490467ae56618a37b69afc4cd76bb26720b2",
+        "evaluated_at": "2026-09-22T17:23:58.211874+00:00",
+        "requested_model": "typesafe-ai/jev",
+        "response_model": "typesafe-ai/jev"
+      }
+    },
+    "profile-03": {
+      "kind": "analysis",
+      "status": "evaluated",
+      "directory": "profile-03",
+      "sha256": {
+        "document.md": "e6c6752b4119c2a38a64ee8ec404ac8cc91c3a5d6faa6ff8ba28c0b4c76e9085",
+        "context.json": "804ce273ff3a59827ada8690b249461ddd88f32073043cdbab33388cd1008750",
+        "input.json": "308388c01d8ea3276fac7072da2d76acad954b5b95cb9a5dd2ccc3d70b7497b3",
+        "report.json": "d02b5a6f85c099770437b635daf1c1c0b2ad98eb24c087e99373195acbafb6fb"
+      },
+      "rubric_version": "1.1.0",
+      "rubric_sha256": "7e1b942441f113e1137ec2e5bca5ab63cd82b8012ec61fe1cd80ed41cdb3c0ac",
+      "request_sha256": "444a8607f9ed66ae95eb6d16df8896b0562cceeeca08bfdb025803f784c8a74e",
+      "provenance": {
+        "provider": "vercel",
+        "protocol": "gateway",
+        "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+        "state_sha256": "c4c0a62788baaee256a7834863a6f9f70d3d27845589a55bc099d115d78a4b69",
+        "questions_sha256": "9283f13f7fc663e86f6ac8f09363c9248af4f3e1b620f9ec073902cebb484021",
+        "evaluated_at": "2026-09-22T17:24:00.207168+00:00",
+        "requested_model": "typesafe-ai/jev",
+        "response_model": "typesafe-ai/jev"
+      }
+    },
+    "profile-04": {
+      "kind": "analysis",
+      "status": "evaluated",
+      "directory": "profile-04",
+      "sha256": {
+        "document.md": "2c49076e0ee973e2c0029b28264b79f2bcf541aef77018a96c061c92e6d7994f",
+        "context.json": "4a8d092a24963a1dec4d076b26268ea075dd6ca58ec738c8d09ba72b50cb2bbb",
+        "input.json": "9ce1f431853cd2e0e8bbdd1edb02c3466c935218d7664aeb41e5bc74ebc3ec63",
+        "report.json": "7def16736b1ef9a21d2c6127cf309a711fc0f18d30e8057a7901e06556f8da0d"
+      },
+      "rubric_version": "1.1.0",
+      "rubric_sha256": "7e1b942441f113e1137ec2e5bca5ab63cd82b8012ec61fe1cd80ed41cdb3c0ac",
+      "request_sha256": "bee1597bd8210db1962cfeb9f2036a7bf95dc5784aa44648d33f70d8725464c5",
+      "provenance": {
+        "provider": "vercel",
+        "protocol": "gateway",
+        "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+        "state_sha256": "fd04bfd454a41c447fc53492dfdff2b0aec6ec44f51738460ab3a6904a9bec06",
+        "questions_sha256": "9283f13f7fc663e86f6ac8f09363c9248af4f3e1b620f9ec073902cebb484021",
+        "evaluated_at": "2026-09-22T17:24:02.228325+00:00",
+        "requested_model": "typesafe-ai/jev",
+        "response_model": "typesafe-ai/jev"
+      }
+    },
+    "profile-05": {
+      "kind": "plan",
+      "status": "evaluated",
+      "directory": "profile-05",
+      "sha256": {
+        "document.md": "f1073bf19d4e5dc113bd813a49487376968cbc2151621830f4d9f78e2719b749",
+        "context.json": "acccb5571ae458398f4078be38e81d7df239824b3031d44cf8af0bb65c2cdf6b",
+        "input.json": "553776ec7bb135fa342b25c914ef3248179112feef80404aa9c3bfa05b4c9db6",
+        "report.json": "089eef4a2a0fa0a5e7771e42fd8cecdb0fb6da53bdbf9ef22aee3f104ea466f1"
+      },
+      "rubric_version": "1.1.0",
+      "rubric_sha256": "7e1b942441f113e1137ec2e5bca5ab63cd82b8012ec61fe1cd80ed41cdb3c0ac",
+      "request_sha256": "a4295767605d4a2bda41fbcde7e935617165bf48a85fef5b3865bce6c2fbe60b",
+      "provenance": {
+        "provider": "vercel",
+        "protocol": "gateway",
+        "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+        "state_sha256": "6a70033d106e8b9f28ff2c46987adb029f15a3ed694a4dcb76bbe889e6b0a095",
+        "questions_sha256": "bbc80f6df367308cb13ee245aad6d6ee9968cb88a39450575cb503297789ec40",
+        "evaluated_at": "2026-09-22T17:24:04.199590+00:00",
+        "requested_model": "typesafe-ai/jev",
+        "response_model": "typesafe-ai/jev"
+      }
+    },
+    "profile-06": {
+      "kind": "plan",
+      "status": "evaluated",
+      "directory": "profile-06",
+      "sha256": {
+        "document.md": "f465b784e0d2612e74c3a6be034d9d6e0588016fa506caf61fbdb53d18530cbb",
+        "context.json": "098a5c639e11d29be35e8626cc2d3fdb5de77e8d0b378a94cca02cdb3d4be4b0",
+        "input.json": "0620512cf9cedf52a2b8ea4749443675f4216d02c911807bfe80af309d28d2fd",
+        "report.json": "696bdeda12cb06b0953fa67403b1c0a6f18e3e681546edb1bf740803c3c71f55"
+      },
+      "rubric_version": "1.1.0",
+      "rubric_sha256": "7e1b942441f113e1137ec2e5bca5ab63cd82b8012ec61fe1cd80ed41cdb3c0ac",
+      "request_sha256": "4d7d20c09684ba0fb50d8206bdc3e1ea89451deb873c07045f05a46e661f39bf",
+      "provenance": {
+        "provider": "vercel",
+        "protocol": "gateway",
+        "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+        "state_sha256": "b69b45b4f7648d21d2fbd0e2df9202c56ae3bce9a45e1f8b3627d247a6bbc6f9",
+        "questions_sha256": "bbc80f6df367308cb13ee245aad6d6ee9968cb88a39450575cb503297789ec40",
+        "evaluated_at": "2026-09-22T17:24:06.257326+00:00",
+        "requested_model": "typesafe-ai/jev",
+        "response_model": "typesafe-ai/jev"
+      }
+    },
+    "profile-07": {
+      "kind": "adr",
+      "status": "evaluated",
+      "directory": "profile-07",
+      "sha256": {
+        "document.md": "2b73e758d0a4bfb2137274fac609c4d68920449a96914c167be3bd51a35c75a5",
+        "context.json": "9b2487ace185aee53d947d60a081bba54c5a0f0564a4b08c5c508f7c503680ec",
+        "input.json": "b442562f5b7a6b383a46731332dc6c204afdd9924d998583e02066eda4a14373",
+        "report.json": "6185241ce16cad2bbe3a74e7134146bccf454f25b1cbd113b1aed8c3ddaf1298"
+      },
+      "rubric_version": "1.1.0",
+      "rubric_sha256": "7e1b942441f113e1137ec2e5bca5ab63cd82b8012ec61fe1cd80ed41cdb3c0ac",
+      "request_sha256": "6a8d71de5ee66b59e3e3c41318773b5efaca22fcb76a44ec8b7805cb4b0c3afe",
+      "provenance": {
+        "provider": "vercel",
+        "protocol": "gateway",
+        "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+        "state_sha256": "5e40b3cb2faa1085cebb19244d86d2908e734b29cedb8402613ae45177f2051e",
+        "questions_sha256": "a73881b1570c89804ee4ee2ecf4001239b5ba5309edbe5cb115f4bef8d006fac",
+        "evaluated_at": "2026-09-22T17:24:08.222673+00:00",
+        "requested_model": "typesafe-ai/jev",
+        "response_model": "typesafe-ai/jev"
+      }
+    },
+    "profile-08": {
+      "kind": "adr",
+      "status": "evaluated",
+      "directory": "profile-08",
+      "sha256": {
+        "document.md": "bb0fa91715ac34514732975dc74b3f2edc44b2d5e7a1812893b86efe129bbeff",
+        "context.json": "521a7909f98e44d82ae7a706d3611c803465ae4259fb678c2c19d8b17ca1aadc",
+        "input.json": "0b5ea69feddf539a8fb16a5b7e99d2e1538916a880ea1138b17b5d93d1a28995",
+        "report.json": "a71aa2cca59b2781cf395edb9e45ace2271558e36bfc70d07b4ca3c679980ded"
+      },
+      "rubric_version": "1.1.0",
+      "rubric_sha256": "7e1b942441f113e1137ec2e5bca5ab63cd82b8012ec61fe1cd80ed41cdb3c0ac",
+      "request_sha256": "87ef8e34e0b119e71b5fda9571062cb8d2552eb095190e0a450184b10224ef02",
+      "provenance": {
+        "provider": "vercel",
+        "protocol": "gateway",
+        "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+        "state_sha256": "5d4cee5eac01e259571a828b122d9b7f0d8c0468d3dd7dc19d8ea2bf9da53a62",
+        "questions_sha256": "a73881b1570c89804ee4ee2ecf4001239b5ba5309edbe5cb115f4bef8d006fac",
+        "evaluated_at": "2026-09-22T17:24:10.281868+00:00",
+        "requested_model": "typesafe-ai/jev",
+        "response_model": "typesafe-ai/jev"
+      }
+    }
+  },
+  "profile": {
+    "mode": "live",
+    "evaluation": "single_section_document_profile",
+    "kinds": {
+      "design": 2,
+      "analysis": 2,
+      "plan": 2,
+      "adr": 2
+    },
+    "analysis_processes": 8,
+    "maximum_semantic_calls": 8,
+    "sequential": true,
+    "retries": 0,
+    "halted_by": null
+  },
+  "limitation": "Small independently labeled profile suite, not calibrated production accuracy. Each case uses one complete bounded section and supplied context; missing judgments never pass. Labels concern the named document purpose, not a universal completeness checklist. Passing these checks does not establish factual correctness or authorize a rewrite.",
+  "selection": {
+    "full_fixture_cases": 8,
+    "excluded_already_evaluated": [],
+    "prior_directory": null,
+    "minimum_call_interval_seconds": 2,
+    "manual_retry_budget_per_unavailable_case": 0
+  }
+}

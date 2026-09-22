@@ -4,6 +4,12 @@ The `doc-quality` skill combines section-aware static analysis with optional Jev
 judgments. The agent edits requested sections and verifies technical meaning;
 the helper never writes documents or automatically accepts an edit.
 
+The [1.1.0 follow-up](followup/README.md) adds bounded local link checks, fixes both
+known editorial misses (30/30 on the original regression), and tests repository
+excerpts plus all four profiles. Fresh results are 28/30 and 12/13 respectively.
+A rereading control still shows no scored incremental agent accuracy from Jev.
+The original 1.0.0 evidence below remains historical evidence.
+
 The first frozen Markdown evaluation passed **28/30 expectations**: all 20
 preservation checks and 8/10 editorial preferences. All five deliberately harmful
 rewrites were rejected. Two safe improvements were judged equivalent to their
@@ -34,10 +40,11 @@ pilot demonstrates **no incremental accuracy benefit** over that agent.
   whole-batch size preflight bound calls. Typed answers, provenance, and hashes
   are checked before accepting helper evidence as evaluated.
 
-No remote link checker, grammar checker, or automatic rewrite command is bundled.
+In the original 1.0.0 implementation, no link checker, grammar checker, or automatic rewrite command was bundled.
 The skill directs the editing agent to run the repository's actual link, renderer,
 example, or documentation checks as applicable. Static output labels link checking
-as not run. Comparisons always require evidence review, even with positive Jev
+as not run. Version 1.1.0 adds opt-in local checks; see the follow-up for coverage.
+Comparisons always require evidence review, even with positive Jev
 answers and unchanged protected content.
 
 ## Frozen first evaluation
@@ -128,8 +135,8 @@ profile received this live absolute-quality exercise.
 
 ## Verification and use
 
-`make test-doc-quality` passes **106 tests** plus Ruff lint/format and ty, all
-through uv. Strict repository and skill validation pass. Tests cover parser edge
+The original 1.0.0 validation recorded **106 tests** plus Ruff lint/format and ty,
+all through uv, with strict repository and skill validation passing. Tests cover parser edge
 cases, code/link preservation, numeric rebinding limitations, optional credentials,
 provider forwarding, request isolation, early-stop behavior, invalid evidence,
 budget preflight, and eval failure retention. The standalone PEP 723 command was

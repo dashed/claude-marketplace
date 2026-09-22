@@ -1,0 +1,303 @@
+{
+  "status": "passed",
+  "fixture_sha256": "0960ac7daf72f57db99b3ca070ccb80db8e373597d6ab26d421c77d472900ec2",
+  "semantic_counts": {
+    "passed": 30
+  },
+  "semantic_checks": [
+    {
+      "case": "case-01",
+      "expectation": {
+        "signal": "uncertainty_preserved",
+        "minimum": 0.7
+      },
+      "status": "passed",
+      "observed": 0.96
+    },
+    {
+      "case": "case-01",
+      "expectation": {
+        "signal": "evidence_supported",
+        "minimum": 0.7
+      },
+      "status": "passed",
+      "observed": 0.95
+    },
+    {
+      "case": "case-01",
+      "expectation": {
+        "signal": "preferred",
+        "equals": "revised"
+      },
+      "status": "passed",
+      "observed": "revised"
+    },
+    {
+      "case": "case-02",
+      "expectation": {
+        "signal": "requirements_preserved",
+        "maximum": 0.3
+      },
+      "status": "passed",
+      "observed": 0.02
+    },
+    {
+      "case": "case-02",
+      "expectation": {
+        "signal": "behavior_preserved",
+        "maximum": 0.3
+      },
+      "status": "passed",
+      "observed": 0.05
+    },
+    {
+      "case": "case-02",
+      "expectation": {
+        "signal": "preferred",
+        "equals": "original"
+      },
+      "status": "passed",
+      "observed": "original"
+    },
+    {
+      "case": "case-03",
+      "expectation": {
+        "signal": "requirements_preserved",
+        "minimum": 0.7
+      },
+      "status": "passed",
+      "observed": 0.95
+    },
+    {
+      "case": "case-03",
+      "expectation": {
+        "signal": "behavior_preserved",
+        "minimum": 0.7
+      },
+      "status": "passed",
+      "observed": 0.96
+    },
+    {
+      "case": "case-03",
+      "expectation": {
+        "signal": "preferred",
+        "equals": "revised"
+      },
+      "status": "passed",
+      "observed": "revised"
+    },
+    {
+      "case": "case-04",
+      "expectation": {
+        "signal": "uncertainty_preserved",
+        "maximum": 0.3
+      },
+      "status": "passed",
+      "observed": 0.03
+    },
+    {
+      "case": "case-04",
+      "expectation": {
+        "signal": "evidence_supported",
+        "maximum": 0.3
+      },
+      "status": "passed",
+      "observed": 0.03
+    },
+    {
+      "case": "case-04",
+      "expectation": {
+        "signal": "preferred",
+        "equals": "original"
+      },
+      "status": "passed",
+      "observed": "original"
+    },
+    {
+      "case": "case-05",
+      "expectation": {
+        "signal": "requirements_preserved",
+        "minimum": 0.7
+      },
+      "status": "passed",
+      "observed": 0.85
+    },
+    {
+      "case": "case-05",
+      "expectation": {
+        "signal": "evidence_supported",
+        "minimum": 0.7
+      },
+      "status": "passed",
+      "observed": 0.89
+    },
+    {
+      "case": "case-05",
+      "expectation": {
+        "signal": "preferred",
+        "equals": "revised"
+      },
+      "status": "passed",
+      "observed": "revised"
+    },
+    {
+      "case": "case-06",
+      "expectation": {
+        "signal": "requirements_preserved",
+        "maximum": 0.3
+      },
+      "status": "passed",
+      "observed": 0.01
+    },
+    {
+      "case": "case-06",
+      "expectation": {
+        "signal": "behavior_preserved",
+        "maximum": 0.3
+      },
+      "status": "passed",
+      "observed": 0.02
+    },
+    {
+      "case": "case-06",
+      "expectation": {
+        "signal": "preferred",
+        "equals": "original"
+      },
+      "status": "passed",
+      "observed": "original"
+    },
+    {
+      "case": "case-07",
+      "expectation": {
+        "signal": "requirements_preserved",
+        "minimum": 0.7
+      },
+      "status": "passed",
+      "observed": 0.94
+    },
+    {
+      "case": "case-07",
+      "expectation": {
+        "signal": "behavior_preserved",
+        "minimum": 0.7
+      },
+      "status": "passed",
+      "observed": 0.96
+    },
+    {
+      "case": "case-07",
+      "expectation": {
+        "signal": "preferred",
+        "equals": "revised"
+      },
+      "status": "passed",
+      "observed": "revised"
+    },
+    {
+      "case": "case-08",
+      "expectation": {
+        "signal": "requirements_preserved",
+        "maximum": 0.3
+      },
+      "status": "passed",
+      "observed": 0.02
+    },
+    {
+      "case": "case-08",
+      "expectation": {
+        "signal": "behavior_preserved",
+        "maximum": 0.3
+      },
+      "status": "passed",
+      "observed": 0.04
+    },
+    {
+      "case": "case-08",
+      "expectation": {
+        "signal": "preferred",
+        "equals": "original"
+      },
+      "status": "passed",
+      "observed": "original"
+    },
+    {
+      "case": "case-09",
+      "expectation": {
+        "signal": "uncertainty_preserved",
+        "minimum": 0.7
+      },
+      "status": "passed",
+      "observed": 0.95
+    },
+    {
+      "case": "case-09",
+      "expectation": {
+        "signal": "evidence_supported",
+        "minimum": 0.7
+      },
+      "status": "passed",
+      "observed": 0.95
+    },
+    {
+      "case": "case-09",
+      "expectation": {
+        "signal": "preferred",
+        "equals": "revised"
+      },
+      "status": "passed",
+      "observed": "revised"
+    },
+    {
+      "case": "case-10",
+      "expectation": {
+        "signal": "evidence_supported",
+        "maximum": 0.3
+      },
+      "status": "passed",
+      "observed": 0.01
+    },
+    {
+      "case": "case-10",
+      "expectation": {
+        "signal": "uncertainty_preserved",
+        "maximum": 0.3
+      },
+      "status": "passed",
+      "observed": 0.01
+    },
+    {
+      "case": "case-10",
+      "expectation": {
+        "signal": "preferred",
+        "equals": "original"
+      },
+      "status": "passed",
+      "observed": "original"
+    }
+  ],
+  "selected_runs": {
+    "case-01": "doc-v11-regression",
+    "case-02": "doc-v11-regression-continuation",
+    "case-03": "doc-v11-regression-continuation",
+    "case-04": "doc-v11-regression-continuation",
+    "case-05": "doc-v11-regression-continuation",
+    "case-06": "doc-v11-regression-remaining",
+    "case-07": "doc-v11-regression-remaining",
+    "case-08": "doc-v11-regression-remaining",
+    "case-09": "doc-v11-regression-remaining",
+    "case-10": "doc-v11-regression-final"
+  },
+  "transport": {
+    "attempts": 13,
+    "successful": 10,
+    "http_503": 3,
+    "manually_retried_once": [
+      "case-02",
+      "case-06",
+      "case-10"
+    ],
+    "successful_requests_repeated": 0,
+    "note": "Each invocation stopped on unavailable input; manual continuations selected only unanswered cases. Later calls spaced at least 2 seconds; no rubric or label changes between attempts."
+  }
+}

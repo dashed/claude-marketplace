@@ -1,0 +1,119 @@
+{
+  "phase": "unassisted_second_pass",
+  "input_sha256": "fe6685f0e088d3d77ba0155d41fad82996a3e13399eaf410c3d60b95eebbce9f",
+  "baseline_sha256": "365dfe897e87d0c1b9c2540e48bd42702eb45b7fdecea28ce07d9012dc3061bb",
+  "started_at": "2026-09-22T17:21:58.599504+00:00",
+  "finished_at": "2026-09-22T17:22:37.297027+00:00",
+  "cases": [
+    {
+      "name": "challenge-01",
+      "answers": {
+        "requirements_preserved": false,
+        "behavior_preserved": false,
+        "uncertainty_preserved": true,
+        "evidence_supported": false,
+        "preferred": "original"
+      },
+      "reason": "The revision changes the external 900-second whole-process deadline into independent stream budgets and permits the invocation to exceed it. Context explicitly contradicts that behavior; the recovery steps and existing qualifications otherwise remain."
+    },
+    {
+      "name": "challenge-02",
+      "answers": {
+        "requirements_preserved": true,
+        "behavior_preserved": true,
+        "uncertainty_preserved": true,
+        "evidence_supported": true,
+        "preferred": "revised"
+      },
+      "reason": "The table retains the phases, dependencies, tool work, conditional implementations, documentation obligations, and release increments while making the sequence easier to scan. Its proposed status remains clear."
+    },
+    {
+      "name": "challenge-03",
+      "answers": {
+        "requirements_preserved": true,
+        "behavior_preserved": true,
+        "uncertainty_preserved": true,
+        "evidence_supported": true,
+        "preferred": "equivalent"
+      },
+      "reason": "Only Markdown table separator spacing changes. Rendered content, targets, qualifications, and reading effort are equivalent under the supplied renderer context."
+    },
+    {
+      "name": "challenge-04",
+      "answers": {
+        "requirements_preserved": false,
+        "behavior_preserved": false,
+        "uncertainty_preserved": true,
+        "evidence_supported": false,
+        "preferred": "original"
+      },
+      "reason": "Removing socket files after processing selected sessions drops the requirement that no sessions remain. Excluded or unselected sessions may still share those sockets, so the revised cleanup contract is unsafe and unsupported."
+    },
+    {
+      "name": "challenge-05",
+      "answers": {
+        "requirements_preserved": true,
+        "behavior_preserved": true,
+        "uncertainty_preserved": true,
+        "evidence_supported": true,
+        "preferred": "revised"
+      },
+      "reason": "Both rejected alternatives retain their benefits, costs, reasons, and proposed status. The summary and comparison table reduce repeated labels without dropping the literal-newline compatibility concern or shared-code duplication."
+    },
+    {
+      "name": "challenge-06",
+      "answers": {
+        "requirements_preserved": false,
+        "behavior_preserved": false,
+        "uncertainty_preserved": false,
+        "evidence_supported": false,
+        "preferred": "needs_context"
+      },
+      "reason": "Changing the discovery threshold changes which results satisfy the plan. Both numbers occur in conflicting drafts, but neither has approval or precedence; presenting either as the chosen release target leaves the unresolved authority issue unacknowledged. The accepted target or governing rule is needed."
+    },
+    {
+      "name": "challenge-07",
+      "answers": {
+        "requirements_preserved": true,
+        "behavior_preserved": true,
+        "uncertainty_preserved": true,
+        "evidence_supported": true,
+        "preferred": "revised"
+      },
+      "reason": "The rewrite retains opt-in behavior, buffer operation order, Python termination, retries, prompt waiting, backward compatibility, supported flag combinations, and rejection of literal mode. Per-REPL configuration remains future work; the grouped contract is easier to review."
+    },
+    {
+      "name": "challenge-08",
+      "answers": {
+        "requirements_preserved": false,
+        "behavior_preserved": true,
+        "uncertainty_preserved": true,
+        "evidence_supported": false,
+        "preferred": "original"
+      },
+      "reason": "The revision falsely changes the reviewer from the repository analysis author to upstream maintainers, violating the required attribution and inventing endorsement. The numerical results, coverage estimate, methodology, and absence of operational behavior changes otherwise remain."
+    },
+    {
+      "name": "challenge-09",
+      "answers": {
+        "requirements_preserved": true,
+        "behavior_preserved": true,
+        "uncertainty_preserved": true,
+        "evidence_supported": true,
+        "preferred": "revised"
+      },
+      "reason": "All timer values, units, retry counts, configuration scopes, source references, snapshot limits, and incident observations are retained. Separating the layers and explicitly leaving the exact blocked path unresolved clarifies the evidence and inference."
+    },
+    {
+      "name": "challenge-10",
+      "answers": {
+        "requirements_preserved": false,
+        "behavior_preserved": false,
+        "uncertainty_preserved": true,
+        "evidence_supported": false,
+        "preferred": "original"
+      },
+      "reason": "Thirty tests per skill becomes thirty across the entire suite, weakening both the obligation and the testing work it requires. Keeping the scenario percentages and example does not preserve that coverage scope; context supports the per-skill requirement."
+    }
+  ]
+}

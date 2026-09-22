@@ -1,0 +1,136 @@
+{
+  "skill": {
+    "semantic_status": "skipped",
+    "link_validation": {
+      "status": "checked",
+      "counts": {
+        "total": 1,
+        "checked": 1,
+        "broken": 0,
+        "not_checked": 0
+      },
+      "links": [
+        {
+          "kind": "link",
+          "destination": "references/workflow.md",
+          "source_line": 22,
+          "origin": "plugins/doc-quality/skills/doc-quality/SKILL.md",
+          "target": "/Users/me/aaa/github/claude-marketplace/plugins/doc-quality/skills/doc-quality/references/workflow.md",
+          "fragment": "",
+          "status": "checked",
+          "reason": "local_target_exists"
+        }
+      ],
+      "issues": [],
+      "renderer": {
+        "profile": "commonmark-github-slugger-with-literal-html-anchors",
+        "markdown_it_py": "4.0.0",
+        "github_slugger": "0.0.3",
+        "anchor_checks_enabled": true
+      },
+      "limits": {
+        "source_bytes": 1048576,
+        "target_bytes": 1048576,
+        "total_target_bytes": 8388608,
+        "target_files": 64,
+        "links": 10000
+      },
+      "limitations": [
+        "Only parsed CommonMark links/images, used reference links, angle-bracket autolinks, and literal HTML a[href]/img[src] are inventoried; bare URLs and undefined or unused reference definitions are not rendered links in this profile.",
+        "The anchor profile is CommonMark plus tables/strikethrough, github-slugger generated Markdown heading IDs, and literal HTML id/a[name] values. It does not reproduce all GitHub sanitization, extensions, emoji expansion, site routing, or other renderers.",
+        "A closed YAML/TOML block at the document start is treated as frontmatter, not content.",
+        "Relative links resolve from the logical document directory; leading slash links resolve from the explicit root. Query strings do not affect filesystem existence.",
+        "External URLs and unsupported schemes are never fetched. Directory routes, includes, target document links, redirects, and non-Markdown/non-HTML fragments are not checked.",
+        "Supplied text is authoritative for links back to the logical document, including unsaved or comparison snapshots. Other targets are the current files on disk.",
+        "Checks use bounded local reads and are not an atomic snapshot of the filesystem."
+      ]
+    }
+  },
+  "workflow": {
+    "semantic_status": "skipped",
+    "link_validation": {
+      "status": "partial",
+      "counts": {
+        "total": 5,
+        "checked": 0,
+        "broken": 0,
+        "not_checked": 5
+      },
+      "links": [
+        {
+          "kind": "link",
+          "destination": "https://docs.typesafe.ai/primitives/score",
+          "source_line": 260,
+          "origin": "plugins/doc-quality/skills/doc-quality/references/workflow.md",
+          "target": null,
+          "fragment": null,
+          "status": "not_checked",
+          "reason": "external_url"
+        },
+        {
+          "kind": "link",
+          "destination": "https://docs.typesafe.ai/primitives/noul",
+          "source_line": 261,
+          "origin": "plugins/doc-quality/skills/doc-quality/references/workflow.md",
+          "target": null,
+          "fragment": null,
+          "status": "not_checked",
+          "reason": "external_url"
+        },
+        {
+          "kind": "link",
+          "destination": "https://docs.typesafe.ai/confidence",
+          "source_line": 262,
+          "origin": "plugins/doc-quality/skills/doc-quality/references/workflow.md",
+          "target": null,
+          "fragment": null,
+          "status": "not_checked",
+          "reason": "external_url"
+        },
+        {
+          "kind": "link",
+          "destination": "https://markdown-it-py.readthedocs.io/en/latest/using.html",
+          "source_line": 263,
+          "origin": "plugins/doc-quality/skills/doc-quality/references/workflow.md",
+          "target": null,
+          "fragment": null,
+          "status": "not_checked",
+          "reason": "external_url"
+        },
+        {
+          "kind": "link",
+          "destination": "https://pypi.org/project/github-slugger/",
+          "source_line": 264,
+          "origin": "plugins/doc-quality/skills/doc-quality/references/workflow.md",
+          "target": null,
+          "fragment": null,
+          "status": "not_checked",
+          "reason": "external_url"
+        }
+      ],
+      "issues": [],
+      "renderer": {
+        "profile": "commonmark-github-slugger-with-literal-html-anchors",
+        "markdown_it_py": "4.0.0",
+        "github_slugger": "0.0.3",
+        "anchor_checks_enabled": true
+      },
+      "limits": {
+        "source_bytes": 1048576,
+        "target_bytes": 1048576,
+        "total_target_bytes": 8388608,
+        "target_files": 64,
+        "links": 10000
+      },
+      "limitations": [
+        "Only parsed CommonMark links/images, used reference links, angle-bracket autolinks, and literal HTML a[href]/img[src] are inventoried; bare URLs and undefined or unused reference definitions are not rendered links in this profile.",
+        "The anchor profile is CommonMark plus tables/strikethrough, github-slugger generated Markdown heading IDs, and literal HTML id/a[name] values. It does not reproduce all GitHub sanitization, extensions, emoji expansion, site routing, or other renderers.",
+        "A closed YAML/TOML block at the document start is treated as frontmatter, not content.",
+        "Relative links resolve from the logical document directory; leading slash links resolve from the explicit root. Query strings do not affect filesystem existence.",
+        "External URLs and unsupported schemes are never fetched. Directory routes, includes, target document links, redirects, and non-Markdown/non-HTML fragments are not checked.",
+        "Supplied text is authoritative for links back to the logical document, including unsaved or comparison snapshots. Other targets are the current files on disk.",
+        "Checks use bounded local reads and are not an atomic snapshot of the filesystem."
+      ]
+    }
+  }
+}

@@ -190,6 +190,14 @@ universal validity. Preserve explicit uncertain or insufficient-evidence outcome
 and investigate them when they affect the user's decision. One uncertain score
 does not justify deleting correct but complex content.
 
+Inspect dimensions separately. A finding about unsupported authority or changed
+behavior may influence several answers; it does not establish that every
+dimension failed independently. For a `gap` versus `needs_context` disagreement,
+check the section purpose and missing evidence before editing. Retrieve the
+needed evidence or preserve the explicit unknown; do not fill it with plausible
+prose. A supported statement in one draft can still lack authority to replace a
+conflicting requirement in another.
+
 Set a small bounded attempt budget, normally one analysis per selected candidate
 and one paired comparison. Fix a specific supported defect before another
 attempt. Report transient failures as failures; do not repeatedly sample an
@@ -257,6 +265,15 @@ regression evidence, not proof of added accuracy over the agent or broad
 document quality. The source checkout records raw results and limitations in
 `notes/doc-quality/`. Provider aliases and probabilities may change.
 
+The 1.1.0 follow-up improved the unchanged original regression to 30/30. An
+independent repository-excerpt challenge scored 28/30 (all ten version
+preferences matched), and eight profile cases scored 12/13. A blind reviewer
+scored 28/30 before consultation, on an unassisted second pass, and after Jev;
+no scored incremental accuracy was observed. Two additional changed dimensions
+were not pre-labeled and remain exploratory. Three HTTP 503 attempts were retained
+and manually retried once each; successful responses were never resampled.
+These bounded results support advisory use and do not justify automatic acceptance.
+
 Question design follows TypeSafe's [Score](https://docs.typesafe.ai/primitives/score),
 [Noul](https://docs.typesafe.ai/primitives/noul), and
 [confidence](https://docs.typesafe.ai/confidence) guidance. Parsing uses
@@ -264,3 +281,6 @@ Question design follows TypeSafe's [Score](https://docs.typesafe.ai/primitives/s
 Heading IDs use the pinned [github-slugger](https://pypi.org/project/github-slugger/)
 port; the report names this profile rather than claiming every Markdown renderer
 uses it.
+The `#top` fallback follows the HTML standard's
+[fragment navigation](https://html.spec.whatwg.org/multipage/browsing-the-web.html#the-indicated-part-of-the-document)
+rule after explicit anchor lookup.

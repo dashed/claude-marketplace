@@ -1,0 +1,1303 @@
+{
+  "schema_version": 1,
+  "audited_at": "2026-09-22T17:32:00.456691+00:00",
+  "auditor": "independent doc_profile_runner agent",
+  "status": "verified_with_label_limitations",
+  "scope": "Independent local recomputation from frozen fixtures, retained raw reports, summaries, reviewer artifacts and Git source blobs. No model calls; no evidence or labels changed.",
+  "artifact_sha256": {
+    "agent-comparison.json": "a1a4d34a2e484e344ed2b9072e4bbcd10eff741fbdad8fcd6b2f571d7a0016bb",
+    "assisted-input.json": "587c6fae0f561ba5769f20d0b480962eec31244ae1e7c9d540be7abc4a0d4b5e",
+    "assisted.json": "334dfdcaa03ac16fbcc602f3be5ac472141f0c2581b6d2b0a439ffad33a59ce0",
+    "baseline.json": "365dfe897e87d0c1b9c2540e48bd42702eb45b7fdecea28ce07d9012dc3061bb",
+    "challenge-reports.json": "d03cb5642a631739a0cb618a77f2ac66603b3e85878fa25b50fdef31d2e86190",
+    "challenge-summary.json": "95f4ec666db93b14c7a5501040e3b75c997bf5f827ef47d3dc2402090b1909e2",
+    "control.json": "7af465f1349f5d4681afd6edc36baecbcb8d390b854e5822257bf253a23a919a",
+    "design-consultation.json": "3741b5f534f332f0085800791feeb8c1c97e56c0549f36b4468c84dd983df731",
+    "freeze.json": "a95b75353708c6585bb0ba9b1894588e295955586a25b54f134393425d4fb351",
+    "local-link-checks.json": "af4168c30f2905cdb92388042baa39c1c394d4d7148a11d3c513448a9ca57583",
+    "profiles-reports.json": "419bacc40a16152e5f12a747e6d00d4bdf0b150a41643e9176d2acb156042643",
+    "profiles-summary.json": "f8a5833405ddee2a08c7d481086baf983b25611202767dead016d3e5cc476244",
+    "regression-attempts.json": "77d0b87a0025246d4c53252888a4640aae637f08faa44312570720919cf99003",
+    "regression-summary.json": "eda18e63ab13ee6289fa44b3c0f42d4c24e5f925ef5b0ad0df8ab05dd975a101",
+    "unlabeled.json": "fe6685f0e088d3d77ba0155d41fad82996a3e13399eaf410c3d60b95eebbce9f"
+  },
+  "fixture_sha256": {
+    "regression": "0960ac7daf72f57db99b3ca070ccb80db8e373597d6ab26d421c77d472900ec2",
+    "challenge": "2de85dffeb61ea431ddc3ee111e656f2cf60ddc502e4ba3fd9ae8e34d9a25e9a",
+    "profiles": "12ff4b7cc682139a0e04fa0c56d1c9902b6db481ab965457bf00c519f2c0e22a"
+  },
+  "rubric_raw_sha256": "bcce57c34fda6d8a96e22d6dce954da2a7acd8548f5b6ad0949b9bde426490e6",
+  "rubric_canonical_sha256": "7e1b942441f113e1137ec2e5bca5ab63cd82b8012ec61fe1cd80ed41cdb3c0ac",
+  "verified_counts": {
+    "regression": {
+      "passed": 30,
+      "failed": 0,
+      "skipped": 0
+    },
+    "challenge": {
+      "passed": 28,
+      "failed": 2,
+      "skipped": 0
+    },
+    "profiles": {
+      "passed": 12,
+      "failed": 1,
+      "skipped": 0
+    }
+  },
+  "regression_transport": {
+    "attempts": 13,
+    "successful": 10,
+    "http_503": 3,
+    "successful_requests_repeated": 0,
+    "attempts_by_case": {
+      "case-01": 1,
+      "case-02": 2,
+      "case-03": 1,
+      "case-04": 1,
+      "case-05": 1,
+      "case-06": 2,
+      "case-07": 1,
+      "case-08": 1,
+      "case-09": 1,
+      "case-10": 2
+    },
+    "failures": [
+      {
+        "run": "doc-v11-regression",
+        "case": "case-02",
+        "error": "Provider returned HTTP 503; evaluation incomplete. No automatic retry."
+      },
+      {
+        "run": "doc-v11-regression-continuation",
+        "case": "case-06",
+        "error": "Provider returned HTTP 503; evaluation incomplete. No automatic retry."
+      },
+      {
+        "run": "doc-v11-regression-remaining",
+        "case": "case-10",
+        "error": "Provider returned HTTP 503; evaluation incomplete. No automatic retry."
+      }
+    ],
+    "selected_runs": {
+      "case-01": "doc-v11-regression",
+      "case-02": "doc-v11-regression-continuation",
+      "case-03": "doc-v11-regression-continuation",
+      "case-04": "doc-v11-regression-continuation",
+      "case-05": "doc-v11-regression-continuation",
+      "case-06": "doc-v11-regression-remaining",
+      "case-07": "doc-v11-regression-remaining",
+      "case-08": "doc-v11-regression-remaining",
+      "case-09": "doc-v11-regression-remaining",
+      "case-10": "doc-v11-regression-final"
+    }
+  },
+  "reviewer": {
+    "original_frozen_expectations_only": true,
+    "scores": {
+      "baseline": {
+        "passed": 28,
+        "total": 30
+      },
+      "control": {
+        "passed": 28,
+        "total": 30
+      },
+      "assisted": {
+        "passed": 28,
+        "total": 30
+      }
+    },
+    "baseline_to_control_changes": 0,
+    "control_to_assisted_changes": [
+      {
+        "case": "challenge-08",
+        "signal": "behavior_preserved",
+        "control": true,
+        "assisted": false,
+        "pre_registered_label": false
+      },
+      {
+        "case": "challenge-08",
+        "signal": "uncertainty_preserved",
+        "control": true,
+        "assisted": false,
+        "pre_registered_label": false
+      }
+    ],
+    "scored_changes_after_assistance": 0,
+    "wall_clock_seconds": {
+      "baseline": 65.821323,
+      "control": 38.697523,
+      "assisted": 98.212472
+    },
+    "timing_is_not_matched_cost_or_speed_evidence": true
+  },
+  "retained_failures": [
+    {
+      "suite": "challenge",
+      "case": "challenge-06",
+      "expectation": {
+        "signal": "evidence_supported",
+        "minimum": 0.7
+      },
+      "status": "failed",
+      "observed": 0.31
+    },
+    {
+      "suite": "challenge",
+      "case": "challenge-08",
+      "expectation": {
+        "signal": "requirements_preserved",
+        "minimum": 0.7
+      },
+      "status": "failed",
+      "observed": 0.03
+    },
+    {
+      "suite": "profiles",
+      "case": "profile-04",
+      "expectation": {
+        "signal": "claim_evidence",
+        "equals": "needs_context"
+      },
+      "status": "failed",
+      "observed": "gap"
+    }
+  ],
+  "label_review": [
+    {
+      "case": "challenge-06",
+      "signal": "evidence_supported",
+      "assessment": "dimension_confounded",
+      "detail": "The revised 95%+ target occurs in another supplied draft section, but neither draft is authoritative. The frozen positive label tests presence in some evidence; the actual question also asks whether assertions are supported at their stated strength. Presenting one conflicting target as the success criterion without disclosing the unresolved authority supports a negative judgment. needs_context preference is a clearer test here. Preserve the failed positive label in all reported counts."
+    },
+    {
+      "case": "challenge-08",
+      "signal": "requirements_preserved",
+      "assessment": "dimension_confounded",
+      "detail": "The original is an audit summary without normative implementation requirements, which can justify vacuous preservation under a narrow reading. The supplied scope nevertheless explicitly requires retaining author and evidence basis, and the revision invents upstream-maintainer validation. A broad preservation reading therefore reasonably fails this signal. Unsupported attribution and original preference are unambiguous; the positive requirements label is not a clean isolated test. Preserve it as failed."
+    },
+    {
+      "case": "profile-04",
+      "signal": "claim_evidence",
+      "assessment": "purpose_and_dimension_ambiguous",
+      "detail": "Gold needs_context reflects absent snapshots needed to validate the zero-inaccuracies conclusion. The profile question instead asks whether observed evidence can be distinguished from interpretation; a gap judgment can identify missing explicit claim support in the supplied section without resolving factual truth. Both missing-context and consequential-gap readings fit the supplied scope and broad criteria. Retain the mismatch as a failure rather than relabeling."
+    }
+  ],
+  "source_checks": [
+    {
+      "case": "challenge-01",
+      "git_blob": "8671e791c9827af902c988d8fb486ce325e8070b",
+      "path": "notes/codex-exec-hang-hard-timeouts.md",
+      "line_start": 62,
+      "line_end": 78,
+      "passed": true
+    },
+    {
+      "case": "challenge-02",
+      "git_blob": "91d06fdceaf2549f8945fd1d6de3779c8accb3c0",
+      "path": "notes/tmux/tool-recommendations.md",
+      "line_start": 781,
+      "line_end": 836,
+      "passed": true
+    },
+    {
+      "case": "challenge-03",
+      "git_blob": "e9cbc80f4efec3b651425921cb2de243c860ef19",
+      "path": "docs/TESTING_STRATEGY.md",
+      "line_start": 46,
+      "line_end": 76,
+      "passed": true
+    },
+    {
+      "case": "challenge-04",
+      "git_blob": "91d06fdceaf2549f8945fd1d6de3779c8accb3c0",
+      "path": "notes/tmux/tool-recommendations.md",
+      "line_start": 321,
+      "line_end": 386,
+      "passed": true
+    },
+    {
+      "case": "challenge-05",
+      "git_blob": "5e83aa0619a0d9de46845e72bd09320fdfc895ec",
+      "path": "notes/tmux/multiline-support-analysis.md",
+      "line_start": 443,
+      "line_end": 476,
+      "passed": true
+    },
+    {
+      "case": "challenge-06",
+      "git_blob": "e9cbc80f4efec3b651425921cb2de243c860ef19",
+      "path": "docs/TESTING_STRATEGY.md",
+      "line_start": 46,
+      "line_end": 76,
+      "passed": true
+    },
+    {
+      "case": "challenge-07",
+      "git_blob": "5e83aa0619a0d9de46845e72bd09320fdfc895ec",
+      "path": "notes/tmux/multiline-support-analysis.md",
+      "line_start": 185,
+      "line_end": 222,
+      "passed": true
+    },
+    {
+      "case": "challenge-08",
+      "git_blob": "98502daad42d59f3cb7562f648852324e3dbfa96",
+      "path": "notes/git-absorb/analysis.md",
+      "line_start": 7,
+      "line_end": 35,
+      "passed": true
+    },
+    {
+      "case": "challenge-09",
+      "git_blob": "8671e791c9827af902c988d8fb486ce325e8070b",
+      "path": "notes/codex-exec-hang-hard-timeouts.md",
+      "line_start": 116,
+      "line_end": 135,
+      "passed": true
+    },
+    {
+      "case": "challenge-10",
+      "git_blob": "e9cbc80f4efec3b651425921cb2de243c860ef19",
+      "path": "docs/TESTING_STRATEGY.md",
+      "line_start": 166,
+      "line_end": 208,
+      "passed": true
+    },
+    {
+      "case": "profile-01",
+      "git_blob": "5e83aa0619a0d9de46845e72bd09320fdfc895ec",
+      "path": "notes/tmux/multiline-support-analysis.md",
+      "line_start": 185,
+      "line_end": 222,
+      "passed": true
+    },
+    {
+      "case": "profile-02",
+      "git_blob": "5e83aa0619a0d9de46845e72bd09320fdfc895ec",
+      "path": "notes/tmux/multiline-support-analysis.md",
+      "line_start": 647,
+      "line_end": 653,
+      "passed": true
+    },
+    {
+      "case": "profile-03",
+      "git_blob": "8671e791c9827af902c988d8fb486ce325e8070b",
+      "path": "notes/codex-exec-hang-hard-timeouts.md",
+      "line_start": 116,
+      "line_end": 135,
+      "passed": true
+    },
+    {
+      "case": "profile-04",
+      "git_blob": "98502daad42d59f3cb7562f648852324e3dbfa96",
+      "path": "notes/git-absorb/analysis.md",
+      "line_start": 7,
+      "line_end": 35,
+      "passed": true
+    },
+    {
+      "case": "profile-05",
+      "git_blob": "91d06fdceaf2549f8945fd1d6de3779c8accb3c0",
+      "path": "notes/tmux/tool-recommendations.md",
+      "line_start": 781,
+      "line_end": 836,
+      "passed": true
+    },
+    {
+      "case": "profile-06",
+      "git_blob": "e9cbc80f4efec3b651425921cb2de243c860ef19",
+      "path": "docs/TESTING_STRATEGY.md",
+      "line_start": 46,
+      "line_end": 76,
+      "passed": true
+    },
+    {
+      "case": "profile-07",
+      "git_blob": "5e83aa0619a0d9de46845e72bd09320fdfc895ec",
+      "path": "notes/tmux/multiline-support-analysis.md",
+      "line_start": 443,
+      "line_end": 476,
+      "passed": true
+    },
+    {
+      "case": "profile-08",
+      "git_blob": "5e83aa0619a0d9de46845e72bd09320fdfc895ec",
+      "path": "notes/tmux/multiline-support-analysis.md",
+      "line_start": 647,
+      "line_end": 653,
+      "passed": true
+    }
+  ],
+  "checks": [
+    {
+      "check": "frozen_rubric_raw_hash",
+      "passed": true
+    },
+    {
+      "check": "original_regression_fixture_remains_unchanged",
+      "passed": true
+    },
+    {
+      "check": "frozen_challenge_fixture_hash",
+      "passed": true
+    },
+    {
+      "check": "frozen_profiles_fixture_hash",
+      "passed": true
+    },
+    {
+      "check": "unlabeled_input_has_exact_inputs_without_labels",
+      "passed": true
+    },
+    {
+      "check": "unlabeled_raw_hash",
+      "passed": true
+    },
+    {
+      "check": "all_frozen_source_blobs_ranges_and_input_hashes",
+      "passed": true
+    },
+    {
+      "check": "doc-v11-regression:fixture_hash",
+      "passed": true
+    },
+    {
+      "check": "regression:case-01:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-01:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "regression:case-01:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-01:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "regression:case-01:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "doc-v11-regression:no_call_after_unavailable:case-01",
+      "passed": true
+    },
+    {
+      "check": "regression:case-02:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-02:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "doc-v11-regression:no_call_after_unavailable:case-02",
+      "passed": true
+    },
+    {
+      "check": "regression:case-03:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-04:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-05:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-06:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-07:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-08:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-09:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-10:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "doc-v11-regression:reported_process_count",
+      "passed": true
+    },
+    {
+      "check": "doc-v11-regression:summary_counts_and_checks",
+      "passed": true
+    },
+    {
+      "check": "doc-v11-regression-continuation:fixture_hash",
+      "passed": true
+    },
+    {
+      "check": "regression:case-02:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-02:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "regression:case-02:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-02:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "regression:case-02:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "doc-v11-regression-continuation:no_call_after_unavailable:case-02",
+      "passed": true
+    },
+    {
+      "check": "regression:case-03:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-03:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "regression:case-03:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-03:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "regression:case-03:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "doc-v11-regression-continuation:no_call_after_unavailable:case-03",
+      "passed": true
+    },
+    {
+      "check": "regression:case-04:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-04:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "regression:case-04:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-04:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "regression:case-04:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "doc-v11-regression-continuation:no_call_after_unavailable:case-04",
+      "passed": true
+    },
+    {
+      "check": "regression:case-05:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-05:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "regression:case-05:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-05:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "regression:case-05:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "doc-v11-regression-continuation:no_call_after_unavailable:case-05",
+      "passed": true
+    },
+    {
+      "check": "regression:case-06:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-06:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "doc-v11-regression-continuation:no_call_after_unavailable:case-06",
+      "passed": true
+    },
+    {
+      "check": "regression:case-07:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-08:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-09:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-10:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "doc-v11-regression-continuation:reported_process_count",
+      "passed": true
+    },
+    {
+      "check": "doc-v11-regression-continuation:summary_counts_and_checks",
+      "passed": true
+    },
+    {
+      "check": "doc-v11-regression-remaining:fixture_hash",
+      "passed": true
+    },
+    {
+      "check": "regression:case-06:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-06:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "regression:case-06:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-06:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "regression:case-06:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "doc-v11-regression-remaining:no_call_after_unavailable:case-06",
+      "passed": true
+    },
+    {
+      "check": "regression:case-07:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-07:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "regression:case-07:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-07:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "regression:case-07:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "doc-v11-regression-remaining:no_call_after_unavailable:case-07",
+      "passed": true
+    },
+    {
+      "check": "regression:case-08:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-08:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "regression:case-08:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-08:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "regression:case-08:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "doc-v11-regression-remaining:no_call_after_unavailable:case-08",
+      "passed": true
+    },
+    {
+      "check": "regression:case-09:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-09:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "regression:case-09:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-09:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "regression:case-09:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "doc-v11-regression-remaining:no_call_after_unavailable:case-09",
+      "passed": true
+    },
+    {
+      "check": "regression:case-10:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-10:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "doc-v11-regression-remaining:no_call_after_unavailable:case-10",
+      "passed": true
+    },
+    {
+      "check": "doc-v11-regression-remaining:reported_process_count",
+      "passed": true
+    },
+    {
+      "check": "doc-v11-regression-remaining:summary_counts_and_checks",
+      "passed": true
+    },
+    {
+      "check": "doc-v11-regression-final:fixture_hash",
+      "passed": true
+    },
+    {
+      "check": "regression:case-10:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-10:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "regression:case-10:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "regression:case-10:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "regression:case-10:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "doc-v11-regression-final:no_call_after_unavailable:case-10",
+      "passed": true
+    },
+    {
+      "check": "doc-v11-regression-final:reported_process_count",
+      "passed": true
+    },
+    {
+      "check": "doc-v11-regression-final:summary_counts_and_checks",
+      "passed": true
+    },
+    {
+      "check": "regression_success_selection_no_success_repeated",
+      "passed": true
+    },
+    {
+      "check": "regression_manual_retries_only_unavailable_cases_once",
+      "passed": true
+    },
+    {
+      "check": "regression_combined_summary",
+      "passed": true
+    },
+    {
+      "check": "regression_transport_summary",
+      "passed": true
+    },
+    {
+      "check": "challenge:fixture_hash",
+      "passed": true
+    },
+    {
+      "check": "challenge:case_names_complete",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-01:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-01:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-01:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-01:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-01:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-02:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-02:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-02:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-02:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-02:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-03:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-03:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-03:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-03:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-03:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-04:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-04:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-04:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-04:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-04:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-05:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-05:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-05:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-05:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-05:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-06:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-06:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-06:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-06:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-06:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-07:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-07:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-07:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-07:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-07:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-08:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-08:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-08:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-08:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-08:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-09:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-09:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-09:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-09:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-09:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-10:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-10:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-10:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-10:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "challenge:challenge-10:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "challenge:summary_checks_and_counts",
+      "passed": true
+    },
+    {
+      "check": "profiles:fixture_hash",
+      "passed": true
+    },
+    {
+      "check": "profiles:case_names_complete",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-01:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-01:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-01:one_complete_section",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-01:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-01:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-01:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-02:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-02:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-02:one_complete_section",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-02:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-02:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-02:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-03:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-03:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-03:one_complete_section",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-03:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-03:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-03:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-04:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-04:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-04:one_complete_section",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-04:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-04:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-04:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-05:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-05:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-05:one_complete_section",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-05:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-05:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-05:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-06:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-06:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-06:one_complete_section",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-06:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-06:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-06:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-07:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-07:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-07:one_complete_section",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-07:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-07:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-07:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-08:artifact_hashes",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-08:rubric_hash",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-08:one_complete_section",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-08:request_exact_inputs_questions_and_hashes",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-08:raw_answers_and_model_provenance",
+      "passed": true
+    },
+    {
+      "check": "profiles:profile-08:summary_provenance",
+      "passed": true
+    },
+    {
+      "check": "profiles:summary_checks_and_counts",
+      "passed": true
+    },
+    {
+      "check": "assisted_input_is_exact_successful_jev_reports",
+      "passed": true
+    },
+    {
+      "check": "baseline:input_hash",
+      "passed": true
+    },
+    {
+      "check": "baseline:original_30_labels_only",
+      "passed": true
+    },
+    {
+      "check": "baseline:phase_hash_and_duration",
+      "passed": true
+    },
+    {
+      "check": "control:input_hash",
+      "passed": true
+    },
+    {
+      "check": "control:original_30_labels_only",
+      "passed": true
+    },
+    {
+      "check": "control:phase_hash_and_duration",
+      "passed": true
+    },
+    {
+      "check": "assisted:input_hash",
+      "passed": true
+    },
+    {
+      "check": "assisted:original_30_labels_only",
+      "passed": true
+    },
+    {
+      "check": "assisted:phase_hash_and_duration",
+      "passed": true
+    },
+    {
+      "check": "reviewer_hash_chain",
+      "passed": true
+    },
+    {
+      "check": "comparison_input_hashes",
+      "passed": true
+    },
+    {
+      "check": "assisted_changes_are_exact_and_unregistered",
+      "passed": true
+    },
+    {
+      "check": "unassisted_second_pass_unchanged",
+      "passed": true
+    },
+    {
+      "check": "reviewer_phase_order",
+      "passed": true
+    },
+    {
+      "check": "rubric_hash_only_applies_to_invoked_reports",
+      "passed": true,
+      "details": "Twelve blocked subsequent cases were never invoked and correctly have no rubric metadata; evaluated and failed transport invocations carry the frozen rubric hash."
+    }
+  ],
+  "discrepancies": [],
+  "limitations": [
+    "Artifact consistency verifies the retained calls, not the impossibility of unrecorded API calls or unseen reviewer inputs. Independence statements are process records rather than independently instrumented observations.",
+    "One reviewer, sequential unassisted and assisted passes, and exposed Jev question wording do not isolate a causal model benefit. The same two registered disagreements remain in all three phases.",
+    "Two assisted changes affect unregistered dimensions and cannot improve the original 30-label score. They are exploratory judgments, not newly added ground truth.",
+    "Source range verification joins recorded Git lines without a terminal newline, matching the frozen excerpt convention; it does not validate historical claims against current software.",
+    "Small selected suites and uncertain dimension labels do not establish general accuracy, probability calibration, or time/cost savings."
+  ],
+  "not_invoked_regression_records": [
+    {
+      "run": "doc-v11-regression",
+      "case": "case-03",
+      "reason": "prior_case_unavailable:case-02"
+    },
+    {
+      "run": "doc-v11-regression",
+      "case": "case-04",
+      "reason": "prior_case_unavailable:case-02"
+    },
+    {
+      "run": "doc-v11-regression",
+      "case": "case-05",
+      "reason": "prior_case_unavailable:case-02"
+    },
+    {
+      "run": "doc-v11-regression",
+      "case": "case-06",
+      "reason": "prior_case_unavailable:case-02"
+    },
+    {
+      "run": "doc-v11-regression",
+      "case": "case-07",
+      "reason": "prior_case_unavailable:case-02"
+    },
+    {
+      "run": "doc-v11-regression",
+      "case": "case-08",
+      "reason": "prior_case_unavailable:case-02"
+    },
+    {
+      "run": "doc-v11-regression",
+      "case": "case-09",
+      "reason": "prior_case_unavailable:case-02"
+    },
+    {
+      "run": "doc-v11-regression",
+      "case": "case-10",
+      "reason": "prior_case_unavailable:case-02"
+    },
+    {
+      "run": "doc-v11-regression-continuation",
+      "case": "case-07",
+      "reason": "prior_case_unavailable:case-06"
+    },
+    {
+      "run": "doc-v11-regression-continuation",
+      "case": "case-08",
+      "reason": "prior_case_unavailable:case-06"
+    },
+    {
+      "run": "doc-v11-regression-continuation",
+      "case": "case-09",
+      "reason": "prior_case_unavailable:case-06"
+    },
+    {
+      "run": "doc-v11-regression-continuation",
+      "case": "case-10",
+      "reason": "prior_case_unavailable:case-06"
+    }
+  ]
+}

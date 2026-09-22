@@ -1,0 +1,353 @@
+{
+  "skill": {
+    "semantic_status": "skipped",
+    "link_validation": {
+      "status": "checked",
+      "counts": {
+        "total": 1,
+        "checked": 1,
+        "broken": 0,
+        "not_checked": 0
+      },
+      "links": [
+        {
+          "kind": "link",
+          "destination": "references/workflow.md",
+          "source_line": 22,
+          "origin": "plugins/doc-quality/skills/doc-quality/SKILL.md",
+          "target": "/Users/me/aaa/github/claude-marketplace/plugins/doc-quality/skills/doc-quality/references/workflow.md",
+          "fragment": "",
+          "status": "checked",
+          "reason": "local_target_exists"
+        }
+      ],
+      "issues": [],
+      "renderer": {
+        "profile": "commonmark-github-slugger-with-literal-html-anchors",
+        "markdown_it_py": "4.0.0",
+        "github_slugger": "0.0.3",
+        "anchor_checks_enabled": true
+      },
+      "limits": {
+        "source_bytes": 1048576,
+        "target_bytes": 1048576,
+        "total_target_bytes": 8388608,
+        "target_files": 64,
+        "links": 10000
+      },
+      "limitations": [
+        "Only parsed CommonMark links/images, used reference links, angle-bracket autolinks, and literal HTML a[href]/img[src] are inventoried; bare URLs and undefined or unused reference definitions are not rendered links in this profile.",
+        "The anchor profile is CommonMark plus tables/strikethrough, github-slugger generated Markdown heading IDs, and literal HTML id/a[name] values. It does not reproduce all GitHub sanitization, extensions, emoji expansion, site routing, or other renderers.",
+        "A closed YAML/TOML block at the document start is treated as frontmatter, not content.",
+        "Relative links resolve from the logical document directory; leading slash links resolve from the explicit root. Query strings do not affect filesystem existence.",
+        "External URLs and unsupported schemes are never fetched. Directory routes, includes, target document links, redirects, and non-Markdown/non-HTML fragments are not checked.",
+        "Supplied text is authoritative for links back to the logical document, including unsaved or comparison snapshots. Other targets are the current files on disk.",
+        "Checks use bounded local reads and are not an atomic snapshot of the filesystem."
+      ]
+    }
+  },
+  "workflow": {
+    "semantic_status": "skipped",
+    "link_validation": {
+      "status": "partial",
+      "counts": {
+        "total": 6,
+        "checked": 0,
+        "broken": 0,
+        "not_checked": 6
+      },
+      "links": [
+        {
+          "kind": "link",
+          "destination": "https://docs.typesafe.ai/primitives/score",
+          "source_line": 277,
+          "origin": "plugins/doc-quality/skills/doc-quality/references/workflow.md",
+          "target": null,
+          "fragment": null,
+          "status": "not_checked",
+          "reason": "external_url"
+        },
+        {
+          "kind": "link",
+          "destination": "https://docs.typesafe.ai/primitives/noul",
+          "source_line": 278,
+          "origin": "plugins/doc-quality/skills/doc-quality/references/workflow.md",
+          "target": null,
+          "fragment": null,
+          "status": "not_checked",
+          "reason": "external_url"
+        },
+        {
+          "kind": "link",
+          "destination": "https://docs.typesafe.ai/confidence",
+          "source_line": 279,
+          "origin": "plugins/doc-quality/skills/doc-quality/references/workflow.md",
+          "target": null,
+          "fragment": null,
+          "status": "not_checked",
+          "reason": "external_url"
+        },
+        {
+          "kind": "link",
+          "destination": "https://markdown-it-py.readthedocs.io/en/latest/using.html",
+          "source_line": 280,
+          "origin": "plugins/doc-quality/skills/doc-quality/references/workflow.md",
+          "target": null,
+          "fragment": null,
+          "status": "not_checked",
+          "reason": "external_url"
+        },
+        {
+          "kind": "link",
+          "destination": "https://pypi.org/project/github-slugger/",
+          "source_line": 281,
+          "origin": "plugins/doc-quality/skills/doc-quality/references/workflow.md",
+          "target": null,
+          "fragment": null,
+          "status": "not_checked",
+          "reason": "external_url"
+        },
+        {
+          "kind": "link",
+          "destination": "https://html.spec.whatwg.org/multipage/browsing-the-web.html#the-indicated-part-of-the-document",
+          "source_line": 285,
+          "origin": "plugins/doc-quality/skills/doc-quality/references/workflow.md",
+          "target": null,
+          "fragment": null,
+          "status": "not_checked",
+          "reason": "external_url"
+        }
+      ],
+      "issues": [],
+      "renderer": {
+        "profile": "commonmark-github-slugger-with-literal-html-anchors",
+        "markdown_it_py": "4.0.0",
+        "github_slugger": "0.0.3",
+        "anchor_checks_enabled": true
+      },
+      "limits": {
+        "source_bytes": 1048576,
+        "target_bytes": 1048576,
+        "total_target_bytes": 8388608,
+        "target_files": 64,
+        "links": 10000
+      },
+      "limitations": [
+        "Only parsed CommonMark links/images, used reference links, angle-bracket autolinks, and literal HTML a[href]/img[src] are inventoried; bare URLs and undefined or unused reference definitions are not rendered links in this profile.",
+        "The anchor profile is CommonMark plus tables/strikethrough, github-slugger generated Markdown heading IDs, and literal HTML id/a[name] values. It does not reproduce all GitHub sanitization, extensions, emoji expansion, site routing, or other renderers.",
+        "A closed YAML/TOML block at the document start is treated as frontmatter, not content.",
+        "Relative links resolve from the logical document directory; leading slash links resolve from the explicit root. Query strings do not affect filesystem existence.",
+        "External URLs and unsupported schemes are never fetched. Directory routes, includes, target document links, redirects, and non-Markdown/non-HTML fragments are not checked.",
+        "Supplied text is authoritative for links back to the logical document, including unsaved or comparison snapshots. Other targets are the current files on disk.",
+        "Checks use bounded local reads and are not an atomic snapshot of the filesystem."
+      ]
+    }
+  },
+  "evidence_readme": {
+    "semantic_status": "skipped",
+    "link_validation": {
+      "status": "checked",
+      "counts": {
+        "total": 17,
+        "checked": 17,
+        "broken": 0,
+        "not_checked": 0
+      },
+      "links": [
+        {
+          "kind": "link",
+          "destination": "verification.json",
+          "source_line": 29,
+          "origin": "notes/doc-quality/followup/README.md",
+          "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/verification.json",
+          "fragment": "",
+          "status": "checked",
+          "reason": "local_target_exists"
+        },
+        {
+          "kind": "link",
+          "destination": "local-link-checks.json",
+          "source_line": 32,
+          "origin": "notes/doc-quality/followup/README.md",
+          "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/local-link-checks.json",
+          "fragment": "",
+          "status": "checked",
+          "reason": "local_target_exists"
+        },
+        {
+          "kind": "link",
+          "destination": "freeze.json",
+          "source_line": 46,
+          "origin": "notes/doc-quality/followup/README.md",
+          "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/freeze.json",
+          "fragment": "",
+          "status": "checked",
+          "reason": "local_target_exists"
+        },
+        {
+          "kind": "link",
+          "destination": "design-consultation.json",
+          "source_line": 53,
+          "origin": "notes/doc-quality/followup/README.md",
+          "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/design-consultation.json",
+          "fragment": "",
+          "status": "checked",
+          "reason": "local_target_exists"
+        },
+        {
+          "kind": "link",
+          "destination": "regression-summary.json",
+          "source_line": 72,
+          "origin": "notes/doc-quality/followup/README.md",
+          "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/regression-summary.json",
+          "fragment": "",
+          "status": "checked",
+          "reason": "local_target_exists"
+        },
+        {
+          "kind": "link",
+          "destination": "regression-attempts.json",
+          "source_line": 72,
+          "origin": "notes/doc-quality/followup/README.md",
+          "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/regression-attempts.json",
+          "fragment": "",
+          "status": "checked",
+          "reason": "local_target_exists"
+        },
+        {
+          "kind": "link",
+          "destination": "challenge-summary.json",
+          "source_line": 73,
+          "origin": "notes/doc-quality/followup/README.md",
+          "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/challenge-summary.json",
+          "fragment": "",
+          "status": "checked",
+          "reason": "local_target_exists"
+        },
+        {
+          "kind": "link",
+          "destination": "challenge-reports.json",
+          "source_line": 73,
+          "origin": "notes/doc-quality/followup/README.md",
+          "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/challenge-reports.json",
+          "fragment": "",
+          "status": "checked",
+          "reason": "local_target_exists"
+        },
+        {
+          "kind": "link",
+          "destination": "profiles-summary.json",
+          "source_line": 74,
+          "origin": "notes/doc-quality/followup/README.md",
+          "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/profiles-summary.json",
+          "fragment": "",
+          "status": "checked",
+          "reason": "local_target_exists"
+        },
+        {
+          "kind": "link",
+          "destination": "profiles-reports.json",
+          "source_line": 74,
+          "origin": "notes/doc-quality/followup/README.md",
+          "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/profiles-reports.json",
+          "fragment": "",
+          "status": "checked",
+          "reason": "local_target_exists"
+        },
+        {
+          "kind": "link",
+          "destination": "audit.json",
+          "source_line": 104,
+          "origin": "notes/doc-quality/followup/README.md",
+          "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/audit.json",
+          "fragment": "",
+          "status": "checked",
+          "reason": "local_target_exists"
+        },
+        {
+          "kind": "link",
+          "destination": "unlabeled.json",
+          "source_line": 111,
+          "origin": "notes/doc-quality/followup/README.md",
+          "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/unlabeled.json",
+          "fragment": "",
+          "status": "checked",
+          "reason": "local_target_exists"
+        },
+        {
+          "kind": "link",
+          "destination": "baseline.json",
+          "source_line": 112,
+          "origin": "notes/doc-quality/followup/README.md",
+          "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/baseline.json",
+          "fragment": "",
+          "status": "checked",
+          "reason": "local_target_exists"
+        },
+        {
+          "kind": "link",
+          "destination": "control.json",
+          "source_line": 113,
+          "origin": "notes/doc-quality/followup/README.md",
+          "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/control.json",
+          "fragment": "",
+          "status": "checked",
+          "reason": "local_target_exists"
+        },
+        {
+          "kind": "link",
+          "destination": "assisted-input.json",
+          "source_line": 114,
+          "origin": "notes/doc-quality/followup/README.md",
+          "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/assisted-input.json",
+          "fragment": "",
+          "status": "checked",
+          "reason": "local_target_exists"
+        },
+        {
+          "kind": "link",
+          "destination": "assisted.json",
+          "source_line": 114,
+          "origin": "notes/doc-quality/followup/README.md",
+          "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/assisted.json",
+          "fragment": "",
+          "status": "checked",
+          "reason": "local_target_exists"
+        },
+        {
+          "kind": "link",
+          "destination": "agent-comparison.json",
+          "source_line": 131,
+          "origin": "notes/doc-quality/followup/README.md",
+          "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/agent-comparison.json",
+          "fragment": "",
+          "status": "checked",
+          "reason": "local_target_exists"
+        }
+      ],
+      "issues": [],
+      "renderer": {
+        "profile": "commonmark-github-slugger-with-literal-html-anchors",
+        "markdown_it_py": "4.0.0",
+        "github_slugger": "0.0.3",
+        "anchor_checks_enabled": true
+      },
+      "limits": {
+        "source_bytes": 1048576,
+        "target_bytes": 1048576,
+        "total_target_bytes": 8388608,
+        "target_files": 64,
+        "links": 10000
+      },
+      "limitations": [
+        "Only parsed CommonMark links/images, used reference links, angle-bracket autolinks, and literal HTML a[href]/img[src] are inventoried; bare URLs and undefined or unused reference definitions are not rendered links in this profile.",
+        "The anchor profile is CommonMark plus tables/strikethrough, github-slugger generated Markdown heading IDs, and literal HTML id/a[name] values. It does not reproduce all GitHub sanitization, extensions, emoji expansion, site routing, or other renderers.",
+        "A closed YAML/TOML block at the document start is treated as frontmatter, not content.",
+        "Relative links resolve from the logical document directory; leading slash links resolve from the explicit root. Query strings do not affect filesystem existence.",
+        "External URLs and unsupported schemes are never fetched. Directory routes, includes, target document links, redirects, and non-Markdown/non-HTML fragments are not checked.",
+        "Supplied text is authoritative for links back to the logical document, including unsaved or comparison snapshots. Other targets are the current files on disk.",
+        "Checks use bounded local reads and are not an atomic snapshot of the filesystem."
+      ]
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "tests": {
+    "command": "make test-doc-quality",
+    "passed": 200,
+    "ruff_check": "passed",
+    "ruff_format": "passed",
+    "ty": "passed",
+    "uv": "--no-config --locked"
+  },
+  "repository_validation": {
+    "command": "make validate-strict",
+    "status": "passed"
+  },
+  "skill_validation": {
+    "command": "uv run --no-config --locked python /Users/me/.codex/skills/.system/skill-creator/scripts/quick_validate.py plugins/doc-quality/skills/doc-quality",
+    "status": "passed"
+  },
+  "standalone_uv": {
+    "mode": "--no-config --no-project",
+    "status": "passed",
+    "semantic": "skipped_no_helper"
+  },
+  "skill_review": {
+    "progressive_disclosure": "Core workflow remains in SKILL.md; renderer semantics, report fields, and evaluations are in references and repository notes.",
+    "scope": "Engineering Markdown editing and review; helper reports observations, never writes documents or autoaccepts.",
+    "failure_handling": "Missing Jev credentials skip; errors and partial link coverage remain visible. Revised broken links return 1.",
+    "verification": "Runnable static, optional semantic, paired snapshot, and offline evaluation commands are documented.",
+    "known_limits": "POSIX link reads, declared renderer only, no remote fetching; uncalibrated semantic judgments, ambiguous labels, no observed scored agent accuracy gain.",
+    "critical_issues": []
+  },
+  "scope": "Only doc-quality manifest regenerated; unrelated existing plugin hash drift not changed."
+}

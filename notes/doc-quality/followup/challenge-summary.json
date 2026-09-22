@@ -1,0 +1,2297 @@
+{
+  "status": "failed",
+  "evaluated_at": "2026-09-22T17:23:16.049149+00:00",
+  "fixture_version": "1.0.0",
+  "fixture_sha256": "2de85dffeb61ea431ddc3ee111e656f2cf60ddc502e4ba3fd9ae8e34d9a25e9a",
+  "case_count": 10,
+  "expectation_count": 30,
+  "semantic_counts": {
+    "passed": 28,
+    "failed": 2,
+    "skipped": 0
+  },
+  "semantic_checks": [
+    {
+      "case": "challenge-01",
+      "expectation": {
+        "signal": "behavior_preserved",
+        "maximum": 0.3
+      },
+      "status": "passed",
+      "observed": 0.05
+    },
+    {
+      "case": "challenge-01",
+      "expectation": {
+        "signal": "evidence_supported",
+        "maximum": 0.3
+      },
+      "status": "passed",
+      "observed": 0.06
+    },
+    {
+      "case": "challenge-01",
+      "expectation": {
+        "signal": "preferred",
+        "equals": "original"
+      },
+      "status": "passed",
+      "observed": "original"
+    },
+    {
+      "case": "challenge-02",
+      "expectation": {
+        "signal": "requirements_preserved",
+        "minimum": 0.7
+      },
+      "status": "passed",
+      "observed": 0.73
+    },
+    {
+      "case": "challenge-02",
+      "expectation": {
+        "signal": "uncertainty_preserved",
+        "minimum": 0.7
+      },
+      "status": "passed",
+      "observed": 0.88
+    },
+    {
+      "case": "challenge-02",
+      "expectation": {
+        "signal": "preferred",
+        "equals": "revised"
+      },
+      "status": "passed",
+      "observed": "revised"
+    },
+    {
+      "case": "challenge-03",
+      "expectation": {
+        "signal": "requirements_preserved",
+        "minimum": 0.7
+      },
+      "status": "passed",
+      "observed": 0.89
+    },
+    {
+      "case": "challenge-03",
+      "expectation": {
+        "signal": "evidence_supported",
+        "minimum": 0.7
+      },
+      "status": "passed",
+      "observed": 0.83
+    },
+    {
+      "case": "challenge-03",
+      "expectation": {
+        "signal": "preferred",
+        "equals": "equivalent"
+      },
+      "status": "passed",
+      "observed": "equivalent"
+    },
+    {
+      "case": "challenge-04",
+      "expectation": {
+        "signal": "requirements_preserved",
+        "maximum": 0.3
+      },
+      "status": "passed",
+      "observed": 0.18
+    },
+    {
+      "case": "challenge-04",
+      "expectation": {
+        "signal": "behavior_preserved",
+        "maximum": 0.3
+      },
+      "status": "passed",
+      "observed": 0.1
+    },
+    {
+      "case": "challenge-04",
+      "expectation": {
+        "signal": "preferred",
+        "equals": "original"
+      },
+      "status": "passed",
+      "observed": "original"
+    },
+    {
+      "case": "challenge-05",
+      "expectation": {
+        "signal": "requirements_preserved",
+        "minimum": 0.7
+      },
+      "status": "passed",
+      "observed": 0.76
+    },
+    {
+      "case": "challenge-05",
+      "expectation": {
+        "signal": "evidence_supported",
+        "minimum": 0.7
+      },
+      "status": "passed",
+      "observed": 0.91
+    },
+    {
+      "case": "challenge-05",
+      "expectation": {
+        "signal": "preferred",
+        "equals": "revised"
+      },
+      "status": "passed",
+      "observed": "revised"
+    },
+    {
+      "case": "challenge-06",
+      "expectation": {
+        "signal": "requirements_preserved",
+        "maximum": 0.3
+      },
+      "status": "passed",
+      "observed": 0.05
+    },
+    {
+      "case": "challenge-06",
+      "expectation": {
+        "signal": "evidence_supported",
+        "minimum": 0.7
+      },
+      "status": "failed",
+      "observed": 0.31
+    },
+    {
+      "case": "challenge-06",
+      "expectation": {
+        "signal": "preferred",
+        "equals": "needs_context"
+      },
+      "status": "passed",
+      "observed": "needs_context"
+    },
+    {
+      "case": "challenge-07",
+      "expectation": {
+        "signal": "requirements_preserved",
+        "minimum": 0.7
+      },
+      "status": "passed",
+      "observed": 0.75
+    },
+    {
+      "case": "challenge-07",
+      "expectation": {
+        "signal": "behavior_preserved",
+        "minimum": 0.7
+      },
+      "status": "passed",
+      "observed": 0.85
+    },
+    {
+      "case": "challenge-07",
+      "expectation": {
+        "signal": "preferred",
+        "equals": "revised"
+      },
+      "status": "passed",
+      "observed": "revised"
+    },
+    {
+      "case": "challenge-08",
+      "expectation": {
+        "signal": "evidence_supported",
+        "maximum": 0.3
+      },
+      "status": "passed",
+      "observed": 0.03
+    },
+    {
+      "case": "challenge-08",
+      "expectation": {
+        "signal": "requirements_preserved",
+        "minimum": 0.7
+      },
+      "status": "failed",
+      "observed": 0.03
+    },
+    {
+      "case": "challenge-08",
+      "expectation": {
+        "signal": "preferred",
+        "equals": "original"
+      },
+      "status": "passed",
+      "observed": "original"
+    },
+    {
+      "case": "challenge-09",
+      "expectation": {
+        "signal": "behavior_preserved",
+        "minimum": 0.7
+      },
+      "status": "passed",
+      "observed": 0.84
+    },
+    {
+      "case": "challenge-09",
+      "expectation": {
+        "signal": "uncertainty_preserved",
+        "minimum": 0.7
+      },
+      "status": "passed",
+      "observed": 0.9
+    },
+    {
+      "case": "challenge-09",
+      "expectation": {
+        "signal": "preferred",
+        "equals": "revised"
+      },
+      "status": "passed",
+      "observed": "revised"
+    },
+    {
+      "case": "challenge-10",
+      "expectation": {
+        "signal": "requirements_preserved",
+        "maximum": 0.3
+      },
+      "status": "passed",
+      "observed": 0.05
+    },
+    {
+      "case": "challenge-10",
+      "expectation": {
+        "signal": "evidence_supported",
+        "maximum": 0.3
+      },
+      "status": "passed",
+      "observed": 0.16
+    },
+    {
+      "case": "challenge-10",
+      "expectation": {
+        "signal": "preferred",
+        "equals": "original"
+      },
+      "status": "passed",
+      "observed": "original"
+    }
+  ],
+  "cases": {
+    "challenge-01": {
+      "kind": "analysis",
+      "status": "evaluated",
+      "directory": "challenge-01",
+      "sha256": {
+        "original.md": "2da6afe06951e0a36637cf8601b7716fd1826a51aae2f7f3032ca4906337fbc8",
+        "revised.md": "c430594860215a6132743638e2d834baad4aa8bc4224cd4e971aadfaeababa4e",
+        "context.json": "d557f09d05660d2bb990ff9d7852ee30156fc2e8767304aeed51238961037724",
+        "input.json": "7449fe188829d9acf514fb395fbd0406f43d0a351152710bb2b4283d8a6b512d",
+        "report.json": "b408d72cbd7675831f13a5b90b2dcc372060d3cb8cfb28433415053af0cce58e"
+      },
+      "rubric_version": "1.1.0",
+      "rubric_sha256": "7e1b942441f113e1137ec2e5bca5ab63cd82b8012ec61fe1cd80ed41cdb3c0ac",
+      "request_sha256": "0f0d34b8785f81c6fe518fea2cb6ef5e0413915f0e969919d6e96ef8dd31701c",
+      "provenance": {
+        "provider": "vercel",
+        "protocol": "gateway",
+        "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+        "state_sha256": "061ffa3e9cbf40bc43a2c744728e20398af651d718740ef79cceaa61ea43ff33",
+        "questions_sha256": "c278475d2962688630360be117d24740834fa51614bccde73845d3711288e7cd",
+        "evaluated_at": "2026-09-22T17:22:58.449033+00:00",
+        "requested_model": "typesafe-ai/jev",
+        "response_model": "typesafe-ai/jev"
+      },
+      "static_preservation": {
+        "schema_version": 1,
+        "status": "needs_review",
+        "text_changed": true,
+        "meaning_preservation": "not_established",
+        "hard_preservation": {
+          "status": "unchanged",
+          "checks": {
+            "code_blocks": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "inline_code": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "link_destinations": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "reference_definitions": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "frontmatter": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "raw_html": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            }
+          }
+        },
+        "semantic_review": {
+          "required": true,
+          "checks": {
+            "quantities": {
+              "status": "changed",
+              "added_count": 2,
+              "removed_count": 1,
+              "added": [
+                {
+                  "value": "300 seconds",
+                  "count": 1
+                },
+                {
+                  "value": "900 seconds",
+                  "count": 1
+                }
+              ],
+              "removed": [
+                {
+                  "value": "300",
+                  "count": 1
+                }
+              ],
+              "sequence_changed": true
+            },
+            "requirement_modals": {
+              "status": "changed",
+              "added_count": 2,
+              "removed_count": 2,
+              "added": [
+                {
+                  "value": "may",
+                  "count": 1
+                },
+                {
+                  "value": "should",
+                  "count": 1
+                }
+              ],
+              "removed": [
+                {
+                  "value": "must",
+                  "count": 2
+                }
+              ],
+              "sequence_changed": true
+            },
+            "negations": {
+              "status": "changed",
+              "added_count": 0,
+              "removed_count": 1,
+              "added": [],
+              "removed": [
+                {
+                  "value": "never",
+                  "count": 1
+                }
+              ],
+              "sequence_changed": true
+            },
+            "headings": {
+              "status": "changed",
+              "added_count": 1,
+              "removed_count": 1,
+              "added": [
+                {
+                  "value": {
+                    "depth": 2,
+                    "title": "Mandatory timeout at the relay boundary"
+                  },
+                  "count": 1
+                }
+              ],
+              "removed": [
+                {
+                  "value": {
+                    "depth": 2,
+                    "title": "The fix: mandatory hard timeouts"
+                  },
+                  "count": 1
+                }
+              ],
+              "sequence_changed": true
+            }
+          }
+        },
+        "limitations": [
+          "CommonMark plus tables is parsed; other GFM extensions, MDX, directives, and embedded languages are not fully understood.",
+          "Sections use document-level ATX and setext headings; headings inside quotes or lists do not open sections. Line ranges are one-based and inclusive.",
+          "Readability counts visible inline prose, including headings, table cells, and image alt text; code, raw HTML blocks, reference definitions, and recognized frontmatter are excluded.",
+          "Sentence boundaries, English word and syllable counts, and Flesch scores are approximate; abbreviations, non-English prose, names, and technical terms can distort them.",
+          "Link destinations are parser-normalized values. Inline code source follows the parser's newline and container normalization; block code and reference source preserve input lines.",
+          "Frontmatter recognition is a local convention for a closed YAML or TOML block at the start, not CommonMark syntax; an initial thematic-break region can be classified as metadata.",
+          "Heading changes flag potential anchor regressions; CommonMark does not specify generated anchors, so renderer-specific link checks are required to establish whether links break.",
+          "Quantity, modal, and negation inventories are lexical warnings. Equal inventories can hide changed relationships, scope, order, or negation; they never prove preserved meaning.",
+          "No grammar, factual validity, URL reachability, or automatic acceptance is established."
+        ]
+      }
+    },
+    "challenge-02": {
+      "kind": "plan",
+      "status": "evaluated",
+      "directory": "challenge-02",
+      "sha256": {
+        "original.md": "d7638eb87161ab5c9b5899a9470d38563ef1fe64e2cb209d908bdf0e55293c3f",
+        "revised.md": "1b2ccf21b7d9d6b7e8042986a0fdf861a8a0093f3820da875251b9621e141fb4",
+        "context.json": "61a24b0efeee782246d19c3a83015a9b66961ca0d22c347ec4f13247cf57e373",
+        "input.json": "59e8bf05535da412c7535ce839923834de558e49812a01858ce0add23da48aba",
+        "report.json": "271c61634708f921f9b7268eb0143af8d9a2aa2e3d2d54b7021579c83f283ead"
+      },
+      "rubric_version": "1.1.0",
+      "rubric_sha256": "7e1b942441f113e1137ec2e5bca5ab63cd82b8012ec61fe1cd80ed41cdb3c0ac",
+      "request_sha256": "c005ebe089ada0238c56aa1f7c36b5ddea700dc085e209f5a5ec62d4265c76a8",
+      "provenance": {
+        "provider": "vercel",
+        "protocol": "gateway",
+        "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+        "state_sha256": "d28cbb84fdac0ab31ca0eb40e55648f33f3342e67e482cb1838dd1fd40a2b7c0",
+        "questions_sha256": "c278475d2962688630360be117d24740834fa51614bccde73845d3711288e7cd",
+        "evaluated_at": "2026-09-22T17:22:59.931715+00:00",
+        "requested_model": "typesafe-ai/jev",
+        "response_model": "typesafe-ai/jev"
+      },
+      "static_preservation": {
+        "schema_version": 1,
+        "status": "needs_review",
+        "text_changed": true,
+        "meaning_preservation": "not_established",
+        "hard_preservation": {
+          "status": "changed",
+          "checks": {
+            "code_blocks": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "inline_code": {
+              "status": "changed",
+              "added_count": 13,
+              "removed_count": 0,
+              "added": [
+                {
+                  "value": {
+                    "source": "`SKILL.md`",
+                    "text": "SKILL.md"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "source": "`capture-clean.sh`",
+                    "text": "capture-clean.sh"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "source": "`cleanup-sessions.sh`",
+                    "text": "cleanup-sessions.sh"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "source": "`create-session.sh`",
+                    "text": "create-session.sh"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "source": "`monitor-pane.sh`",
+                    "text": "monitor-pane.sh"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "source": "`notes/tmux/README.md`",
+                    "text": "notes/tmux/README.md"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "source": "`notes/tmux/implementation-notes.md`",
+                    "text": "notes/tmux/implementation-notes.md"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "source": "`pane-health.sh`",
+                    "text": "pane-health.sh"
+                  },
+                  "count": 2
+                },
+                {
+                  "value": {
+                    "source": "`safe-send.sh`",
+                    "text": "safe-send.sh"
+                  },
+                  "count": 2
+                },
+                {
+                  "value": {
+                    "source": "`send-and-wait.sh`",
+                    "text": "send-and-wait.sh"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "source": "`wait-for-text.sh`",
+                    "text": "wait-for-text.sh"
+                  },
+                  "count": 1
+                }
+              ],
+              "removed": [],
+              "sequence_changed": true
+            },
+            "link_destinations": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "reference_definitions": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "frontmatter": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "raw_html": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            }
+          }
+        },
+        "semantic_review": {
+          "required": true,
+          "checks": {
+            "quantities": {
+              "status": "changed",
+              "added_count": 3,
+              "removed_count": 3,
+              "added": [
+                {
+                  "value": "1",
+                  "count": 1
+                },
+                {
+                  "value": "2",
+                  "count": 1
+                },
+                {
+                  "value": "4",
+                  "count": 1
+                }
+              ],
+              "removed": [
+                {
+                  "value": "5",
+                  "count": 1
+                },
+                {
+                  "value": "6",
+                  "count": 1
+                },
+                {
+                  "value": "7",
+                  "count": 1
+                }
+              ],
+              "sequence_changed": true
+            },
+            "requirement_modals": {
+              "status": "changed",
+              "added_count": 2,
+              "removed_count": 1,
+              "added": [
+                {
+                  "value": "may",
+                  "count": 1
+                },
+                {
+                  "value": "required",
+                  "count": 1
+                }
+              ],
+              "removed": [
+                {
+                  "value": "can",
+                  "count": 1
+                }
+              ],
+              "sequence_changed": true
+            },
+            "negations": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "headings": {
+              "status": "changed",
+              "added_count": 1,
+              "removed_count": 6,
+              "added": [
+                {
+                  "value": {
+                    "depth": 2,
+                    "title": "Proposed implementation sequence"
+                  },
+                  "count": 1
+                }
+              ],
+              "removed": [
+                {
+                  "value": {
+                    "depth": 2,
+                    "title": "Next Steps"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "depth": 3,
+                    "title": "Documentation Updates"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "depth": 3,
+                    "title": "Phase 1: Critical Tools (Week 1-2)"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "depth": 3,
+                    "title": "Phase 2: High Priority Tools (Week 3)"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "depth": 3,
+                    "title": "Phase 3: Medium Priority Tools (Week 4+)"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "depth": 3,
+                    "title": "Version Bumping"
+                  },
+                  "count": 1
+                }
+              ],
+              "sequence_changed": true
+            }
+          }
+        },
+        "limitations": [
+          "CommonMark plus tables is parsed; other GFM extensions, MDX, directives, and embedded languages are not fully understood.",
+          "Sections use document-level ATX and setext headings; headings inside quotes or lists do not open sections. Line ranges are one-based and inclusive.",
+          "Readability counts visible inline prose, including headings, table cells, and image alt text; code, raw HTML blocks, reference definitions, and recognized frontmatter are excluded.",
+          "Sentence boundaries, English word and syllable counts, and Flesch scores are approximate; abbreviations, non-English prose, names, and technical terms can distort them.",
+          "Link destinations are parser-normalized values. Inline code source follows the parser's newline and container normalization; block code and reference source preserve input lines.",
+          "Frontmatter recognition is a local convention for a closed YAML or TOML block at the start, not CommonMark syntax; an initial thematic-break region can be classified as metadata.",
+          "Heading changes flag potential anchor regressions; CommonMark does not specify generated anchors, so renderer-specific link checks are required to establish whether links break.",
+          "Quantity, modal, and negation inventories are lexical warnings. Equal inventories can hide changed relationships, scope, order, or negation; they never prove preserved meaning.",
+          "No grammar, factual validity, URL reachability, or automatic acceptance is established."
+        ]
+      }
+    },
+    "challenge-03": {
+      "kind": "design",
+      "status": "evaluated",
+      "directory": "challenge-03",
+      "sha256": {
+        "original.md": "617aea47502cb9eabda9c7326dca0d1234879b9434ae9cb8b2f5f137434454dc",
+        "revised.md": "eddae25fd29d794fce80dd10c121bded2639f1fbc5f29054ac2a9ff0a29dcdaa",
+        "context.json": "201ec7d75acbf10a37921c91005f9622e2e0b7c3054e355a775f96290abd04be",
+        "input.json": "b885bfe5ea7546f1cdc824d2ef7313a04521adfd08f0ac8e826a2e33deecbc23",
+        "report.json": "9f0ec822ce6b57a50ef65967c69948e2858e6417d6cbf6853dc5de22bf318565"
+      },
+      "rubric_version": "1.1.0",
+      "rubric_sha256": "7e1b942441f113e1137ec2e5bca5ab63cd82b8012ec61fe1cd80ed41cdb3c0ac",
+      "request_sha256": "b887205b252b5c7888045d77acf9c8ea326109e29e1b89ab35f0f72033203d8e",
+      "provenance": {
+        "provider": "vercel",
+        "protocol": "gateway",
+        "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+        "state_sha256": "c8cfba052489c3755d7be2fe13561090e14fa1c5ef964d0eae612ecb752248ca",
+        "questions_sha256": "c278475d2962688630360be117d24740834fa51614bccde73845d3711288e7cd",
+        "evaluated_at": "2026-09-22T17:23:01.969832+00:00",
+        "requested_model": "typesafe-ai/jev",
+        "response_model": "typesafe-ai/jev"
+      },
+      "static_preservation": {
+        "schema_version": 1,
+        "status": "needs_review",
+        "text_changed": true,
+        "meaning_preservation": "not_established",
+        "hard_preservation": {
+          "status": "unchanged",
+          "checks": {
+            "code_blocks": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "inline_code": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "link_destinations": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "reference_definitions": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "frontmatter": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "raw_html": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            }
+          }
+        },
+        "semantic_review": {
+          "required": true,
+          "checks": {
+            "quantities": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "requirement_modals": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "negations": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "headings": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            }
+          }
+        },
+        "limitations": [
+          "CommonMark plus tables is parsed; other GFM extensions, MDX, directives, and embedded languages are not fully understood.",
+          "Sections use document-level ATX and setext headings; headings inside quotes or lists do not open sections. Line ranges are one-based and inclusive.",
+          "Readability counts visible inline prose, including headings, table cells, and image alt text; code, raw HTML blocks, reference definitions, and recognized frontmatter are excluded.",
+          "Sentence boundaries, English word and syllable counts, and Flesch scores are approximate; abbreviations, non-English prose, names, and technical terms can distort them.",
+          "Link destinations are parser-normalized values. Inline code source follows the parser's newline and container normalization; block code and reference source preserve input lines.",
+          "Frontmatter recognition is a local convention for a closed YAML or TOML block at the start, not CommonMark syntax; an initial thematic-break region can be classified as metadata.",
+          "Heading changes flag potential anchor regressions; CommonMark does not specify generated anchors, so renderer-specific link checks are required to establish whether links break.",
+          "Quantity, modal, and negation inventories are lexical warnings. Equal inventories can hide changed relationships, scope, order, or negation; they never prove preserved meaning.",
+          "No grammar, factual validity, URL reachability, or automatic acceptance is established."
+        ]
+      }
+    },
+    "challenge-04": {
+      "kind": "design",
+      "status": "evaluated",
+      "directory": "challenge-04",
+      "sha256": {
+        "original.md": "0c586641f2a854c3b0762de679b9f4b126a4e62a66208b67947c06acdbfa903e",
+        "revised.md": "b40d9cddbb071297352220f7a6e7e15fed0faefb0a4d5495ba369bac8b79b69b",
+        "context.json": "6994694760f2cbcea785f8c2865c04a21fafa7caa40f63eaec624be8ef429cd9",
+        "input.json": "99ea41a9c2b349045051367dfad640698b4fe3835167b35a89cc3b550f9ac720",
+        "report.json": "c77b7fd92a1fc979fde55def2dd9e1917ba92a5537132e558b24d28c43bb3226"
+      },
+      "rubric_version": "1.1.0",
+      "rubric_sha256": "7e1b942441f113e1137ec2e5bca5ab63cd82b8012ec61fe1cd80ed41cdb3c0ac",
+      "request_sha256": "8c3c3c9a4ee31daabd9a03ba15a0c25f4bddbc2b8fdf79074f7beaf5362a9b4a",
+      "provenance": {
+        "provider": "vercel",
+        "protocol": "gateway",
+        "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+        "state_sha256": "59ef57e22dae4f41f8655ec3eae9c24d49eba6ef458b2f221865884005ec6077",
+        "questions_sha256": "c278475d2962688630360be117d24740834fa51614bccde73845d3711288e7cd",
+        "evaluated_at": "2026-09-22T17:23:03.995647+00:00",
+        "requested_model": "typesafe-ai/jev",
+        "response_model": "typesafe-ai/jev"
+      },
+      "static_preservation": {
+        "schema_version": 1,
+        "status": "needs_review",
+        "text_changed": true,
+        "meaning_preservation": "not_established",
+        "hard_preservation": {
+          "status": "unchanged",
+          "checks": {
+            "code_blocks": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "inline_code": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "link_destinations": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "reference_definitions": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "frontmatter": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "raw_html": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            }
+          }
+        },
+        "semantic_review": {
+          "required": true,
+          "checks": {
+            "quantities": {
+              "status": "changed",
+              "added_count": 0,
+              "removed_count": 1,
+              "added": [],
+              "removed": [
+                {
+                  "value": "3",
+                  "count": 1
+                }
+              ],
+              "sequence_changed": true
+            },
+            "requirement_modals": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "negations": {
+              "status": "changed",
+              "added_count": 0,
+              "removed_count": 1,
+              "added": [],
+              "removed": [
+                {
+                  "value": "no",
+                  "count": 1
+                }
+              ],
+              "sequence_changed": true
+            },
+            "headings": {
+              "status": "changed",
+              "added_count": 1,
+              "removed_count": 1,
+              "added": [
+                {
+                  "value": {
+                    "depth": 4,
+                    "title": "Session cleanup contract"
+                  },
+                  "count": 1
+                }
+              ],
+              "removed": [
+                {
+                  "value": {
+                    "depth": 4,
+                    "title": "3. cleanup-sessions.sh"
+                  },
+                  "count": 1
+                }
+              ],
+              "sequence_changed": true
+            }
+          }
+        },
+        "limitations": [
+          "CommonMark plus tables is parsed; other GFM extensions, MDX, directives, and embedded languages are not fully understood.",
+          "Sections use document-level ATX and setext headings; headings inside quotes or lists do not open sections. Line ranges are one-based and inclusive.",
+          "Readability counts visible inline prose, including headings, table cells, and image alt text; code, raw HTML blocks, reference definitions, and recognized frontmatter are excluded.",
+          "Sentence boundaries, English word and syllable counts, and Flesch scores are approximate; abbreviations, non-English prose, names, and technical terms can distort them.",
+          "Link destinations are parser-normalized values. Inline code source follows the parser's newline and container normalization; block code and reference source preserve input lines.",
+          "Frontmatter recognition is a local convention for a closed YAML or TOML block at the start, not CommonMark syntax; an initial thematic-break region can be classified as metadata.",
+          "Heading changes flag potential anchor regressions; CommonMark does not specify generated anchors, so renderer-specific link checks are required to establish whether links break.",
+          "Quantity, modal, and negation inventories are lexical warnings. Equal inventories can hide changed relationships, scope, order, or negation; they never prove preserved meaning.",
+          "No grammar, factual validity, URL reachability, or automatic acceptance is established."
+        ]
+      }
+    },
+    "challenge-05": {
+      "kind": "adr",
+      "status": "evaluated",
+      "directory": "challenge-05",
+      "sha256": {
+        "original.md": "5bd350f057dde81f0338780348ae5f85898b3d832a5f2cb843c494554bf3e1d7",
+        "revised.md": "2b73e758d0a4bfb2137274fac609c4d68920449a96914c167be3bd51a35c75a5",
+        "context.json": "461ec8e12bdef4252aae05edbe9dda471b7c40aa7c16ba75825686a124a715a8",
+        "input.json": "005c4769c87af606d1f0282322377a1e2c6c12e62c41830ce416cfb6fe62d512",
+        "report.json": "cfa0d5c892f9b11fec49f0a7645aa42e8a3b7193ebd8625fc13d3ab8b6e102e5"
+      },
+      "rubric_version": "1.1.0",
+      "rubric_sha256": "7e1b942441f113e1137ec2e5bca5ab63cd82b8012ec61fe1cd80ed41cdb3c0ac",
+      "request_sha256": "b594ec99671443778049d25583ec08b423aabc4db0248c62a952b27a64ba665e",
+      "provenance": {
+        "provider": "vercel",
+        "protocol": "gateway",
+        "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+        "state_sha256": "a525e8727c5e8c2458d8c7aebf4cf1f6b826f26f24f0a144a634595d135af9d4",
+        "questions_sha256": "c278475d2962688630360be117d24740834fa51614bccde73845d3711288e7cd",
+        "evaluated_at": "2026-09-22T17:23:06.137282+00:00",
+        "requested_model": "typesafe-ai/jev",
+        "response_model": "typesafe-ai/jev"
+      },
+      "static_preservation": {
+        "schema_version": 1,
+        "status": "needs_review",
+        "text_changed": true,
+        "meaning_preservation": "not_established",
+        "hard_preservation": {
+          "status": "changed",
+          "checks": {
+            "code_blocks": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "inline_code": {
+              "status": "changed",
+              "added_count": 2,
+              "removed_count": 1,
+              "added": [
+                {
+                  "value": {
+                    "source": "`paste-buffer`",
+                    "text": "paste-buffer"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "source": "`safe-send.sh`",
+                    "text": "safe-send.sh"
+                  },
+                  "count": 1
+                }
+              ],
+              "removed": [
+                {
+                  "value": {
+                    "source": "`\\n`",
+                    "text": "\\n"
+                  },
+                  "count": 1
+                }
+              ],
+              "sequence_changed": true
+            },
+            "link_destinations": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "reference_definitions": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "frontmatter": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "raw_html": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            }
+          }
+        },
+        "semantic_review": {
+          "required": true,
+          "checks": {
+            "quantities": {
+              "status": "changed",
+              "added_count": 0,
+              "removed_count": 3,
+              "added": [],
+              "removed": [
+                {
+                  "value": "1",
+                  "count": 1
+                },
+                {
+                  "value": "2",
+                  "count": 1
+                },
+                {
+                  "value": "7",
+                  "count": 1
+                }
+              ],
+              "sequence_changed": true
+            },
+            "requirement_modals": {
+              "status": "changed",
+              "added_count": 4,
+              "removed_count": 0,
+              "added": [
+                {
+                  "value": "may",
+                  "count": 1
+                },
+                {
+                  "value": "must",
+                  "count": 2
+                },
+                {
+                  "value": "requires",
+                  "count": 1
+                }
+              ],
+              "removed": [],
+              "sequence_changed": true
+            },
+            "negations": {
+              "status": "changed",
+              "added_count": 0,
+              "removed_count": 2,
+              "added": [],
+              "removed": [
+                {
+                  "value": "no",
+                  "count": 1
+                },
+                {
+                  "value": "not",
+                  "count": 1
+                }
+              ],
+              "sequence_changed": true
+            },
+            "headings": {
+              "status": "changed",
+              "added_count": 1,
+              "removed_count": 3,
+              "added": [
+                {
+                  "value": {
+                    "depth": 2,
+                    "title": "Rejected alternatives for multiline input"
+                  },
+                  "count": 1
+                }
+              ],
+              "removed": [
+                {
+                  "value": {
+                    "depth": 2,
+                    "title": "7. Alternatives Considered"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "depth": 3,
+                    "title": "Alternative 1: Auto-detect Multiline"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "depth": 3,
+                    "title": "Alternative 2: Separate Tool"
+                  },
+                  "count": 1
+                }
+              ],
+              "sequence_changed": true
+            }
+          }
+        },
+        "limitations": [
+          "CommonMark plus tables is parsed; other GFM extensions, MDX, directives, and embedded languages are not fully understood.",
+          "Sections use document-level ATX and setext headings; headings inside quotes or lists do not open sections. Line ranges are one-based and inclusive.",
+          "Readability counts visible inline prose, including headings, table cells, and image alt text; code, raw HTML blocks, reference definitions, and recognized frontmatter are excluded.",
+          "Sentence boundaries, English word and syllable counts, and Flesch scores are approximate; abbreviations, non-English prose, names, and technical terms can distort them.",
+          "Link destinations are parser-normalized values. Inline code source follows the parser's newline and container normalization; block code and reference source preserve input lines.",
+          "Frontmatter recognition is a local convention for a closed YAML or TOML block at the start, not CommonMark syntax; an initial thematic-break region can be classified as metadata.",
+          "Heading changes flag potential anchor regressions; CommonMark does not specify generated anchors, so renderer-specific link checks are required to establish whether links break.",
+          "Quantity, modal, and negation inventories are lexical warnings. Equal inventories can hide changed relationships, scope, order, or negation; they never prove preserved meaning.",
+          "No grammar, factual validity, URL reachability, or automatic acceptance is established."
+        ]
+      }
+    },
+    "challenge-06": {
+      "kind": "plan",
+      "status": "evaluated",
+      "directory": "challenge-06",
+      "sha256": {
+        "original.md": "617aea47502cb9eabda9c7326dca0d1234879b9434ae9cb8b2f5f137434454dc",
+        "revised.md": "ec440a5220b68fa348e9e93f39451d19486a792967748a584455966d04b540d8",
+        "context.json": "96cc47212bb2c9604d24662d23284ec64178a567ae21c25c632bda032b3b3899",
+        "input.json": "5190194d2558648f45a9acdc5584bae6f1577f5b0b73740c683863c5d2f5d217",
+        "report.json": "dd98d07a72cd7d48a54de41a60d42bac179cf69d55032fb14cc4bc30a63e2b21"
+      },
+      "rubric_version": "1.1.0",
+      "rubric_sha256": "7e1b942441f113e1137ec2e5bca5ab63cd82b8012ec61fe1cd80ed41cdb3c0ac",
+      "request_sha256": "4ba990c1794cfe2cde62e7c97ac59db019cf94da6831474a740e332c90e1521b",
+      "provenance": {
+        "provider": "vercel",
+        "protocol": "gateway",
+        "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+        "state_sha256": "08c2a892d011da67861fd3a74b1c69b4b88872d6d457a2c194fa823532e574e1",
+        "questions_sha256": "c278475d2962688630360be117d24740834fa51614bccde73845d3711288e7cd",
+        "evaluated_at": "2026-09-22T17:23:08.047145+00:00",
+        "requested_model": "typesafe-ai/jev",
+        "response_model": "typesafe-ai/jev"
+      },
+      "static_preservation": {
+        "schema_version": 1,
+        "status": "needs_review",
+        "text_changed": true,
+        "meaning_preservation": "not_established",
+        "hard_preservation": {
+          "status": "unchanged",
+          "checks": {
+            "code_blocks": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "inline_code": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "link_destinations": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "reference_definitions": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "frontmatter": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "raw_html": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            }
+          }
+        },
+        "semantic_review": {
+          "required": true,
+          "checks": {
+            "quantities": {
+              "status": "changed",
+              "added_count": 1,
+              "removed_count": 1,
+              "added": [
+                {
+                  "value": "95%",
+                  "count": 1
+                }
+              ],
+              "removed": [
+                {
+                  "value": "90%",
+                  "count": 1
+                }
+              ],
+              "sequence_changed": true
+            },
+            "requirement_modals": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "negations": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "headings": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            }
+          }
+        },
+        "limitations": [
+          "CommonMark plus tables is parsed; other GFM extensions, MDX, directives, and embedded languages are not fully understood.",
+          "Sections use document-level ATX and setext headings; headings inside quotes or lists do not open sections. Line ranges are one-based and inclusive.",
+          "Readability counts visible inline prose, including headings, table cells, and image alt text; code, raw HTML blocks, reference definitions, and recognized frontmatter are excluded.",
+          "Sentence boundaries, English word and syllable counts, and Flesch scores are approximate; abbreviations, non-English prose, names, and technical terms can distort them.",
+          "Link destinations are parser-normalized values. Inline code source follows the parser's newline and container normalization; block code and reference source preserve input lines.",
+          "Frontmatter recognition is a local convention for a closed YAML or TOML block at the start, not CommonMark syntax; an initial thematic-break region can be classified as metadata.",
+          "Heading changes flag potential anchor regressions; CommonMark does not specify generated anchors, so renderer-specific link checks are required to establish whether links break.",
+          "Quantity, modal, and negation inventories are lexical warnings. Equal inventories can hide changed relationships, scope, order, or negation; they never prove preserved meaning.",
+          "No grammar, factual validity, URL reachability, or automatic acceptance is established."
+        ]
+      }
+    },
+    "challenge-07": {
+      "kind": "design",
+      "status": "evaluated",
+      "directory": "challenge-07",
+      "sha256": {
+        "original.md": "a22a2750314eb7988c76da25725e9474cf2127daee6f8d067a720c7f89f62e8b",
+        "revised.md": "025dae02acb9241b1924985b5cff3d1084c24b21ebfc9b19be9ad6ad4418e053",
+        "context.json": "eed627a9f69007803c3c4ab62ad367010aaa70ea17f31bafc12357283fe76e09",
+        "input.json": "09102df14ff8b92bc54861c34a76de3732c927fb98660b8bc22bb6fd4bee7139",
+        "report.json": "3c76c198c49b1048872c2dbed92871839c6215ccb5f47c8bf6e337454449b114"
+      },
+      "rubric_version": "1.1.0",
+      "rubric_sha256": "7e1b942441f113e1137ec2e5bca5ab63cd82b8012ec61fe1cd80ed41cdb3c0ac",
+      "request_sha256": "23b49b2ec95fdf38214b217af74fd705af8995a11dd7400829871772d99f9eb2",
+      "provenance": {
+        "provider": "vercel",
+        "protocol": "gateway",
+        "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+        "state_sha256": "134d99a2e211956077bb763e70c7a918dfec54fe0d77d3d228f41df9a4be17d4",
+        "questions_sha256": "c278475d2962688630360be117d24740834fa51614bccde73845d3711288e7cd",
+        "evaluated_at": "2026-09-22T17:23:09.994074+00:00",
+        "requested_model": "typesafe-ai/jev",
+        "response_model": "typesafe-ai/jev"
+      },
+      "static_preservation": {
+        "schema_version": 1,
+        "status": "needs_review",
+        "text_changed": true,
+        "meaning_preservation": "not_established",
+        "hard_preservation": {
+          "status": "changed",
+          "checks": {
+            "code_blocks": {
+              "status": "changed",
+              "added_count": 0,
+              "removed_count": 1,
+              "added": [],
+              "removed": [
+                {
+                  "value": {
+                    "info": "bash",
+                    "kind": "fence",
+                    "source": "```bash\n# Valid combinations\n-m -c \"multiline code\" -w \">>>\"  ✓\n-m -c \"code\" -S /path/to/socket  ✓\n-m -c \"code\" -s session-name     ✓\n\n# Invalid combinations (mutually exclusive)\n-m -l  ✗  # Multiline and literal mode are incompatible\n```\n",
+                    "text": "# Valid combinations\n-m -c \"multiline code\" -w \">>>\"  ✓\n-m -c \"code\" -S /path/to/socket  ✓\n-m -c \"code\" -s session-name     ✓\n\n# Invalid combinations (mutually exclusive)\n-m -l  ✗  # Multiline and literal mode are incompatible\n"
+                  },
+                  "count": 1
+                }
+              ],
+              "sequence_changed": true
+            },
+            "inline_code": {
+              "status": "changed",
+              "added_count": 9,
+              "removed_count": 1,
+              "added": [
+                {
+                  "value": {
+                    "source": "`-S /path/to/socket`",
+                    "text": "-S /path/to/socket"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "source": "`-c`",
+                    "text": "-c"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "source": "`-m -l`",
+                    "text": "-m -l"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "source": "`-m`",
+                    "text": "-m"
+                  },
+                  "count": 2
+                },
+                {
+                  "value": {
+                    "source": "`-s session-name`",
+                    "text": "-s session-name"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "source": "`-w \">>>\"`",
+                    "text": "-w \">>>\""
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "source": "`send-keys`",
+                    "text": "send-keys"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "source": "`wait-for-text.sh`",
+                    "text": "wait-for-text.sh"
+                  },
+                  "count": 1
+                }
+              ],
+              "removed": [
+                {
+                  "value": {
+                    "source": "`-l`",
+                    "text": "-l"
+                  },
+                  "count": 1
+                }
+              ],
+              "sequence_changed": true
+            },
+            "link_destinations": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "reference_definitions": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "frontmatter": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "raw_html": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            }
+          }
+        },
+        "semantic_review": {
+          "required": true,
+          "checks": {
+            "quantities": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "requirement_modals": {
+              "status": "changed",
+              "added_count": 1,
+              "removed_count": 0,
+              "added": [
+                {
+                  "value": "required",
+                  "count": 1
+                }
+              ],
+              "removed": [],
+              "sequence_changed": true
+            },
+            "negations": {
+              "status": "changed",
+              "added_count": 2,
+              "removed_count": 2,
+              "added": [
+                {
+                  "value": "not",
+                  "count": 1
+                },
+                {
+                  "value": "without",
+                  "count": 1
+                }
+              ],
+              "removed": [
+                {
+                  "value": "doesn't",
+                  "count": 1
+                },
+                {
+                  "value": "no",
+                  "count": 1
+                }
+              ],
+              "sequence_changed": true
+            },
+            "headings": {
+              "status": "changed",
+              "added_count": 1,
+              "removed_count": 2,
+              "added": [
+                {
+                  "value": {
+                    "depth": 3,
+                    "title": "Multiline mode contract"
+                  },
+                  "count": 1
+                }
+              ],
+              "removed": [
+                {
+                  "value": {
+                    "depth": 3,
+                    "title": "Behavior Specification"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "depth": 3,
+                    "title": "Flag Interactions"
+                  },
+                  "count": 1
+                }
+              ],
+              "sequence_changed": true
+            }
+          }
+        },
+        "limitations": [
+          "CommonMark plus tables is parsed; other GFM extensions, MDX, directives, and embedded languages are not fully understood.",
+          "Sections use document-level ATX and setext headings; headings inside quotes or lists do not open sections. Line ranges are one-based and inclusive.",
+          "Readability counts visible inline prose, including headings, table cells, and image alt text; code, raw HTML blocks, reference definitions, and recognized frontmatter are excluded.",
+          "Sentence boundaries, English word and syllable counts, and Flesch scores are approximate; abbreviations, non-English prose, names, and technical terms can distort them.",
+          "Link destinations are parser-normalized values. Inline code source follows the parser's newline and container normalization; block code and reference source preserve input lines.",
+          "Frontmatter recognition is a local convention for a closed YAML or TOML block at the start, not CommonMark syntax; an initial thematic-break region can be classified as metadata.",
+          "Heading changes flag potential anchor regressions; CommonMark does not specify generated anchors, so renderer-specific link checks are required to establish whether links break.",
+          "Quantity, modal, and negation inventories are lexical warnings. Equal inventories can hide changed relationships, scope, order, or negation; they never prove preserved meaning.",
+          "No grammar, factual validity, URL reachability, or automatic acceptance is established."
+        ]
+      }
+    },
+    "challenge-08": {
+      "kind": "analysis",
+      "status": "evaluated",
+      "directory": "challenge-08",
+      "sha256": {
+        "original.md": "c262fb0dcc7e6c70dd8a71b9697be5720303e9f1ebb2c08b76142f793f22b4c2",
+        "revised.md": "76101c27fc9c1f938e9d2120429443efdbf757b45a56d97519a43b380ada6795",
+        "context.json": "dc89844d695adf2ab3185066c3addaee8b1ea26dd79c4389d5ab518d2e3b60e9",
+        "input.json": "2400d3316a8f005ec597574e9fc5c344c1deb30d3da3bb47a4f6890536284e2c",
+        "report.json": "5cfa404b3a3b416408c826ff4e239d3f634ff1281dde24821a1401ec19604cac"
+      },
+      "rubric_version": "1.1.0",
+      "rubric_sha256": "7e1b942441f113e1137ec2e5bca5ab63cd82b8012ec61fe1cd80ed41cdb3c0ac",
+      "request_sha256": "21526029bf8b06736e94fd489e6426d8af51894f149fb2be7597652863ec0335",
+      "provenance": {
+        "provider": "vercel",
+        "protocol": "gateway",
+        "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+        "state_sha256": "b637cb695e83fa94b619264249edf48ab96dd4697f52d91d3bd859436c8b2b20",
+        "questions_sha256": "c278475d2962688630360be117d24740834fa51614bccde73845d3711288e7cd",
+        "evaluated_at": "2026-09-22T17:23:11.998723+00:00",
+        "requested_model": "typesafe-ai/jev",
+        "response_model": "typesafe-ai/jev"
+      },
+      "static_preservation": {
+        "schema_version": 1,
+        "status": "needs_review",
+        "text_changed": true,
+        "meaning_preservation": "not_established",
+        "hard_preservation": {
+          "status": "changed",
+          "checks": {
+            "code_blocks": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "inline_code": {
+              "status": "changed",
+              "added_count": 3,
+              "removed_count": 3,
+              "added": [
+                {
+                  "value": {
+                    "source": "`Documentation/git-absorb.adoc`",
+                    "text": "Documentation/git-absorb.adoc"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "source": "`README.md`",
+                    "text": "README.md"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "source": "`plugins/git-absorb/SKILL.md`",
+                    "text": "plugins/git-absorb/SKILL.md"
+                  },
+                  "count": 1
+                }
+              ],
+              "removed": [
+                {
+                  "value": {
+                    "source": "`/Users/me/aaa/github/claude-marketplace/plugins/git-absorb/SKILL.md`",
+                    "text": "/Users/me/aaa/github/claude-marketplace/plugins/git-absorb/SKILL.md"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "source": "`/Users/me/aaa/github/git-absorb/Documentation/git-absorb.adoc`",
+                    "text": "/Users/me/aaa/github/git-absorb/Documentation/git-absorb.adoc"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "source": "`/Users/me/aaa/github/git-absorb/README.md`",
+                    "text": "/Users/me/aaa/github/git-absorb/README.md"
+                  },
+                  "count": 1
+                }
+              ],
+              "sequence_changed": true
+            },
+            "link_destinations": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "reference_definitions": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "frontmatter": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "raw_html": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            }
+          }
+        },
+        "semantic_review": {
+          "required": true,
+          "checks": {
+            "quantities": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "requirement_modals": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "negations": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "headings": {
+              "status": "changed",
+              "added_count": 1,
+              "removed_count": 4,
+              "added": [
+                {
+                  "value": {
+                    "depth": 2,
+                    "title": "Documentation review results"
+                  },
+                  "count": 1
+                }
+              ],
+              "removed": [
+                {
+                  "value": {
+                    "depth": 2,
+                    "title": "Executive Summary"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "depth": 2,
+                    "title": "Methodology"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "depth": 3,
+                    "title": "Comparison Approach"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "depth": 3,
+                    "title": "Sources Compared"
+                  },
+                  "count": 1
+                }
+              ],
+              "sequence_changed": true
+            }
+          }
+        },
+        "limitations": [
+          "CommonMark plus tables is parsed; other GFM extensions, MDX, directives, and embedded languages are not fully understood.",
+          "Sections use document-level ATX and setext headings; headings inside quotes or lists do not open sections. Line ranges are one-based and inclusive.",
+          "Readability counts visible inline prose, including headings, table cells, and image alt text; code, raw HTML blocks, reference definitions, and recognized frontmatter are excluded.",
+          "Sentence boundaries, English word and syllable counts, and Flesch scores are approximate; abbreviations, non-English prose, names, and technical terms can distort them.",
+          "Link destinations are parser-normalized values. Inline code source follows the parser's newline and container normalization; block code and reference source preserve input lines.",
+          "Frontmatter recognition is a local convention for a closed YAML or TOML block at the start, not CommonMark syntax; an initial thematic-break region can be classified as metadata.",
+          "Heading changes flag potential anchor regressions; CommonMark does not specify generated anchors, so renderer-specific link checks are required to establish whether links break.",
+          "Quantity, modal, and negation inventories are lexical warnings. Equal inventories can hide changed relationships, scope, order, or negation; they never prove preserved meaning.",
+          "No grammar, factual validity, URL reachability, or automatic acceptance is established."
+        ]
+      }
+    },
+    "challenge-09": {
+      "kind": "analysis",
+      "status": "evaluated",
+      "directory": "challenge-09",
+      "sha256": {
+        "original.md": "e6c6752b4119c2a38a64ee8ec404ac8cc91c3a5d6faa6ff8ba28c0b4c76e9085",
+        "revised.md": "9aefb94f8eb3b55136bb05c7ebbb863b4b48e2b33953c2c968bf156a6798e0a5",
+        "context.json": "780faf9ce55d295aa16d53a65b9e736a1d9aa43246349b26288c651cd8aae9b9",
+        "input.json": "389b1c9674c17d170fc857a21ee1735d5669a18cfe6e8e798a639dba7b337156",
+        "report.json": "9c66d41b53f02c93c64b13b0c22f2ca321eb5ce68bc58d93250698d55c185e52"
+      },
+      "rubric_version": "1.1.0",
+      "rubric_sha256": "7e1b942441f113e1137ec2e5bca5ab63cd82b8012ec61fe1cd80ed41cdb3c0ac",
+      "request_sha256": "fd01a664d16ebf3b79ca10b49a3acb3635666b10a885c591ecb03ec0e47b939a",
+      "provenance": {
+        "provider": "vercel",
+        "protocol": "gateway",
+        "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+        "state_sha256": "2e952d073061cbe24b66b68ad58daabab5edf0b4455b091e23fe29a843185698",
+        "questions_sha256": "c278475d2962688630360be117d24740834fa51614bccde73845d3711288e7cd",
+        "evaluated_at": "2026-09-22T17:23:14.007260+00:00",
+        "requested_model": "typesafe-ai/jev",
+        "response_model": "typesafe-ai/jev"
+      },
+      "static_preservation": {
+        "schema_version": 1,
+        "status": "needs_review",
+        "text_changed": true,
+        "meaning_preservation": "not_established",
+        "hard_preservation": {
+          "status": "changed",
+          "checks": {
+            "code_blocks": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "inline_code": {
+              "status": "changed",
+              "added_count": 3,
+              "removed_count": 0,
+              "added": [
+                {
+                  "value": {
+                    "source": "`[mcp_servers.<name>]`",
+                    "text": "[mcp_servers.<name>]"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "source": "`codex-rs/codex-mcp/src/rmcp_client.rs:85-86`",
+                    "text": "codex-rs/codex-mcp/src/rmcp_client.rs:85-86"
+                  },
+                  "count": 1
+                },
+                {
+                  "value": {
+                    "source": "`config.toml`",
+                    "text": "config.toml"
+                  },
+                  "count": 1
+                }
+              ],
+              "removed": [],
+              "sequence_changed": true
+            },
+            "link_destinations": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "reference_definitions": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "frontmatter": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "raw_html": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            }
+          }
+        },
+        "semantic_review": {
+          "required": true,
+          "checks": {
+            "quantities": {
+              "status": "changed",
+              "added_count": 5,
+              "removed_count": 8,
+              "added": [
+                {
+                  "value": "0.1 seconds",
+                  "count": 1
+                },
+                {
+                  "value": "30 seconds",
+                  "count": 1
+                },
+                {
+                  "value": "300 seconds",
+                  "count": 1
+                },
+                {
+                  "value": "300,000 ms",
+                  "count": 1
+                },
+                {
+                  "value": "5 minutes",
+                  "count": 1
+                }
+              ],
+              "removed": [
+                {
+                  "value": "0.1",
+                  "count": 1
+                },
+                {
+                  "value": "000",
+                  "count": 1
+                },
+                {
+                  "value": "30",
+                  "count": 1
+                },
+                {
+                  "value": "300",
+                  "count": 2
+                },
+                {
+                  "value": "5 min",
+                  "count": 1
+                },
+                {
+                  "value": "5",
+                  "count": 2
+                }
+              ],
+              "sequence_changed": true
+            },
+            "requirement_modals": {
+              "status": "changed",
+              "added_count": 1,
+              "removed_count": 0,
+              "added": [
+                {
+                  "value": "required",
+                  "count": 1
+                }
+              ],
+              "removed": [],
+              "sequence_changed": true
+            },
+            "negations": {
+              "status": "changed",
+              "added_count": 0,
+              "removed_count": 2,
+              "added": [],
+              "removed": [
+                {
+                  "value": "don't",
+                  "count": 1
+                },
+                {
+                  "value": "not",
+                  "count": 1
+                }
+              ],
+              "sequence_changed": true
+            },
+            "headings": {
+              "status": "changed",
+              "added_count": 1,
+              "removed_count": 1,
+              "added": [
+                {
+                  "value": {
+                    "depth": 2,
+                    "title": "Built-in deadlines and the observed hang"
+                  },
+                  "count": 1
+                }
+              ],
+              "removed": [
+                {
+                  "value": {
+                    "depth": 2,
+                    "title": "Appendix: what codex ships built-in (verified in source, 2026-07-03)"
+                  },
+                  "count": 1
+                }
+              ],
+              "sequence_changed": true
+            }
+          }
+        },
+        "limitations": [
+          "CommonMark plus tables is parsed; other GFM extensions, MDX, directives, and embedded languages are not fully understood.",
+          "Sections use document-level ATX and setext headings; headings inside quotes or lists do not open sections. Line ranges are one-based and inclusive.",
+          "Readability counts visible inline prose, including headings, table cells, and image alt text; code, raw HTML blocks, reference definitions, and recognized frontmatter are excluded.",
+          "Sentence boundaries, English word and syllable counts, and Flesch scores are approximate; abbreviations, non-English prose, names, and technical terms can distort them.",
+          "Link destinations are parser-normalized values. Inline code source follows the parser's newline and container normalization; block code and reference source preserve input lines.",
+          "Frontmatter recognition is a local convention for a closed YAML or TOML block at the start, not CommonMark syntax; an initial thematic-break region can be classified as metadata.",
+          "Heading changes flag potential anchor regressions; CommonMark does not specify generated anchors, so renderer-specific link checks are required to establish whether links break.",
+          "Quantity, modal, and negation inventories are lexical warnings. Equal inventories can hide changed relationships, scope, order, or negation; they never prove preserved meaning.",
+          "No grammar, factual validity, URL reachability, or automatic acceptance is established."
+        ]
+      }
+    },
+    "challenge-10": {
+      "kind": "plan",
+      "status": "evaluated",
+      "directory": "challenge-10",
+      "sha256": {
+        "original.md": "f1a502940f92003986689825e4f064c54e3252ff86511170093ddb59383dca7a",
+        "revised.md": "d3d8beea7c97fda4730f390c6d220fe6683002b2fc91e7eecf0b359ebabf8d21",
+        "context.json": "a68637957e335d6ce2602246e96338ab6e8604010419d491c481015a55d8f3ff",
+        "input.json": "d7411c239ca892771bf25083d59efac24a9ef629067c3a94c2769956d38db449",
+        "report.json": "3cc1f5cef27255fdeb79bbd4481b1904e46c960fb59c782ae0a4053d386f77f5"
+      },
+      "rubric_version": "1.1.0",
+      "rubric_sha256": "7e1b942441f113e1137ec2e5bca5ab63cd82b8012ec61fe1cd80ed41cdb3c0ac",
+      "request_sha256": "3421c588c6f9ff3c7e06b0deecfb66b83a1d83f10b8a823f4f763fbb295f03b2",
+      "provenance": {
+        "provider": "vercel",
+        "protocol": "gateway",
+        "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+        "state_sha256": "26554ea1d5d909f34bc59144097ac57bb22cbbc7392286bb14c67f69939d73ba",
+        "questions_sha256": "c278475d2962688630360be117d24740834fa51614bccde73845d3711288e7cd",
+        "evaluated_at": "2026-09-22T17:23:16.031143+00:00",
+        "requested_model": "typesafe-ai/jev",
+        "response_model": "typesafe-ai/jev"
+      },
+      "static_preservation": {
+        "schema_version": 1,
+        "status": "needs_review",
+        "text_changed": true,
+        "meaning_preservation": "not_established",
+        "hard_preservation": {
+          "status": "unchanged",
+          "checks": {
+            "code_blocks": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "inline_code": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "link_destinations": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "reference_definitions": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "frontmatter": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "raw_html": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            }
+          }
+        },
+        "semantic_review": {
+          "required": true,
+          "checks": {
+            "quantities": {
+              "status": "changed",
+              "added_count": 0,
+              "removed_count": 2,
+              "added": [],
+              "removed": [
+                {
+                  "value": "2025",
+                  "count": 1
+                },
+                {
+                  "value": "3",
+                  "count": 1
+                }
+              ],
+              "sequence_changed": true
+            },
+            "requirement_modals": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "negations": {
+              "status": "unchanged",
+              "added_count": 0,
+              "removed_count": 0,
+              "added": [],
+              "removed": [],
+              "sequence_changed": false
+            },
+            "headings": {
+              "status": "changed",
+              "added_count": 1,
+              "removed_count": 1,
+              "added": [
+                {
+                  "value": {
+                    "depth": 3,
+                    "title": "Integration workflow coverage"
+                  },
+                  "count": 1
+                }
+              ],
+              "removed": [
+                {
+                  "value": {
+                    "depth": 3,
+                    "title": "3. Integration Testing"
+                  },
+                  "count": 1
+                }
+              ],
+              "sequence_changed": true
+            }
+          }
+        },
+        "limitations": [
+          "CommonMark plus tables is parsed; other GFM extensions, MDX, directives, and embedded languages are not fully understood.",
+          "Sections use document-level ATX and setext headings; headings inside quotes or lists do not open sections. Line ranges are one-based and inclusive.",
+          "Readability counts visible inline prose, including headings, table cells, and image alt text; code, raw HTML blocks, reference definitions, and recognized frontmatter are excluded.",
+          "Sentence boundaries, English word and syllable counts, and Flesch scores are approximate; abbreviations, non-English prose, names, and technical terms can distort them.",
+          "Link destinations are parser-normalized values. Inline code source follows the parser's newline and container normalization; block code and reference source preserve input lines.",
+          "Frontmatter recognition is a local convention for a closed YAML or TOML block at the start, not CommonMark syntax; an initial thematic-break region can be classified as metadata.",
+          "Heading changes flag potential anchor regressions; CommonMark does not specify generated anchors, so renderer-specific link checks are required to establish whether links break.",
+          "Quantity, modal, and negation inventories are lexical warnings. Equal inventories can hide changed relationships, scope, order, or negation; they never prove preserved meaning.",
+          "No grammar, factual validity, URL reachability, or automatic acceptance is established."
+        ]
+      }
+    }
+  },
+  "profile": {
+    "mode": "live",
+    "comparison": "paired_preservation_only",
+    "kinds": {
+      "analysis": 3,
+      "plan": 3,
+      "design": 3,
+      "adr": 1
+    },
+    "comparison_processes": 10,
+    "maximum_semantic_calls": 10,
+    "sequential": true,
+    "retries": 0,
+    "halted_by": null
+  },
+  "limitation": "Small synthetic regression suite with frozen independent labels. Meaning and evidence preservation take priority over polish. Probabilities are advisory model judgments, not calibrated guarantees. Static inventory changes require review and do not establish semantic failure or safety. Offline previews and missing judgments never count as semantic passes.",
+  "selection": {
+    "full_fixture_cases": 10,
+    "excluded_already_evaluated": [],
+    "prior_directory": null,
+    "minimum_call_interval_seconds": 2,
+    "manual_retry_budget_per_unavailable_case": 0
+  }
+}

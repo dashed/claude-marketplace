@@ -55,11 +55,19 @@ def write_fixtures(path: Path, cases: list[dict[str, Any]]) -> Path:
     return path
 
 
-def test_frozen_cases_and_labels_have_not_changed() -> None:
-    raw = evaluator.FIXTURES.read_bytes()
-    assert hashlib.sha256(raw).hexdigest() == (
-        "0960ac7daf72f57db99b3ca070ccb80db8e373597d6ab26d421c77d472900ec2"
-    )
+@pytest.mark.parametrize(
+    "filename,expected_sha256",
+    [
+        ("doc-quality.json", "0960ac7daf72f57db99b3ca070ccb80db8e373597d6ab26d421c77d472900ec2"),
+        (
+            "doc-quality-challenge.json",
+            "2de85dffeb61ea431ddc3ee111e656f2cf60ddc502e4ba3fd9ae8e34d9a25e9a",
+        ),
+    ],
+)
+def test_frozen_cases_and_labels_have_not_changed(filename: str, expected_sha256: str) -> None:
+    raw = evaluator.FIXTURES.with_name(filename).read_bytes()
+    assert hashlib.sha256(raw).hexdigest() == expected_sha256
     fixtures = evaluator.validate_fixtures(json.loads(raw))
     assert len(fixtures["cases"]) == 10
     assert sum(len(case["expectations"]) for case in fixtures["cases"]) == 30
