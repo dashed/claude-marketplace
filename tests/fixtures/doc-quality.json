@@ -1,0 +1,175 @@
+{
+  "version": "1.0.0",
+  "cases": [
+    {
+      "name": "case-01",
+      "kind": "analysis",
+      "original": "# Parser timing\n\nThere were 40 fixtures in the local run. For those fixtures, the median parse time for the old parser was 12 ms, and the median parse time for the new parser was 9 ms. In other words, the median was lower for the new parser on this fixture set. This run did not measure peak memory, and it did not measure production traffic. We cannot yet say whether the new parser improves production latency.\n",
+      "revised": "# Parser timing\n\nAcross 40 local fixtures, median parse time fell from 12 ms with the old parser to 9 ms with the new parser. Peak memory and production traffic were not measured, so the effect on production latency remains unknown.\n",
+      "context": {
+        "audience": "Engineers reviewing a parser experiment",
+        "scope": "A summary of one local timing run",
+        "evidence": ["The timing report contains per-fixture parse durations for both implementations."],
+        "missing": ["Peak-memory measurements", "Production measurements"]
+      },
+      "expectations": [
+        {"signal": "uncertainty_preserved", "minimum": 0.7},
+        {"signal": "evidence_supported", "minimum": 0.7},
+        {"signal": "preferred", "equals": "revised"}
+      ]
+    },
+    {
+      "name": "case-02",
+      "kind": "design",
+      "original": "# Webhook acceptance\n\nThe receiver MUST verify the signature before it enqueues a webhook. A missing or invalid signature MUST result in HTTP 401, and the receiver MUST NOT enqueue that webhook. These requirements apply to every request, including requests from internal networks.\n",
+      "revised": "# Webhook acceptance\n\nThe receiver SHOULD verify signatures before enqueueing webhooks and SHOULD return HTTP 401 without enqueueing requests with missing or invalid signatures. This guidance applies to all requests, including those from internal networks.\n",
+      "context": {
+        "audience": "Engineers implementing the webhook receiver",
+        "scope": "The acceptance contract for incoming webhooks",
+        "evidence": [],
+        "missing": []
+      },
+      "expectations": [
+        {"signal": "requirements_preserved", "maximum": 0.3},
+        {"signal": "behavior_preserved", "maximum": 0.3},
+        {"signal": "preferred", "equals": "original"}
+      ]
+    },
+    {
+      "name": "case-03",
+      "kind": "plan",
+      "original": "# Worker rollout\n\nFirst, the release owner will deploy the new worker to the canary pool. That pool processes 5% of jobs. The release owner will then observe the canary for 20 minutes. During that observation, if the job failure rate exceeds 1%, the release owner will roll back the canary and stop the rollout. If the observation finishes without crossing that threshold, the release owner will request on-call approval. Only after that approval may the release owner deploy to the remaining pool.\n",
+      "revised": "# Worker rollout\n\nThe release owner will:\n\n1. Deploy the new worker to the canary pool, which processes 5% of jobs.\n2. Observe it for 20 minutes. If the job failure rate exceeds 1%, roll back the canary and stop the rollout.\n3. If the observation ends without crossing the threshold, request on-call approval. Deploy to the remaining pool only after approval.\n",
+      "context": {
+        "audience": "The release owner and on-call engineer",
+        "scope": "The sequence and stop conditions for a worker release",
+        "evidence": [],
+        "missing": []
+      },
+      "expectations": [
+        {"signal": "requirements_preserved", "minimum": 0.7},
+        {"signal": "behavior_preserved", "minimum": 0.7},
+        {"signal": "preferred", "equals": "revised"}
+      ]
+    },
+    {
+      "name": "case-04",
+      "kind": "analysis",
+      "original": "# Duplicate notifications\n\nThe available logs show that duplicate notifications occurred after a worker restart. They do not show whether the acknowledgement reached the broker. One possible explanation is that the broker redelivered an unacknowledged message. We have not reproduced the duplication, so this explanation remains unconfirmed.\n",
+      "revised": "# Duplicate notifications\n\nThe worker restart interrupted acknowledgement delivery, causing the broker to redeliver the message and send duplicate notifications. The logs establish this restart-to-redelivery sequence.\n",
+      "context": {
+        "audience": "Engineers investigating duplicate notifications",
+        "scope": "A provisional explanation of one incident",
+        "evidence": ["The log extract contains a worker restart followed by duplicate notification records."],
+        "missing": ["Broker acknowledgement records", "A reproduction of the incident"]
+      },
+      "expectations": [
+        {"signal": "uncertainty_preserved", "maximum": 0.3},
+        {"signal": "evidence_supported", "maximum": 0.3},
+        {"signal": "preferred", "equals": "original"}
+      ]
+    },
+    {
+      "name": "case-05",
+      "kind": "adr",
+      "original": "# Decision: store audit events in PostgreSQL\n\nStatus: accepted.\n\nWe will store audit events in PostgreSQL. The reason for choosing it is that account updates and their audit events must commit in the same transaction. We considered a separate event store. That option was rejected because, with the proposed integration, it could not participate in the account transaction. Keeping audit events in PostgreSQL means that audit writes add load to the primary database; we accept that consequence.\n",
+      "revised": "# Decision: store audit events in PostgreSQL\n\nStatus: accepted.\n\nStore audit events in PostgreSQL so each account update and its audit event commit in the same transaction. Reject the separate event store because its proposed integration cannot join that transaction. We accept the additional audit-write load on the primary database.\n",
+      "context": {
+        "audience": "Engineers reviewing the audit-storage decision",
+        "scope": "The accepted decision, rejected alternative, and consequence",
+        "evidence": [],
+        "missing": []
+      },
+      "expectations": [
+        {"signal": "requirements_preserved", "minimum": 0.7},
+        {"signal": "evidence_supported", "minimum": 0.7},
+        {"signal": "preferred", "equals": "revised"}
+      ]
+    },
+    {
+      "name": "case-06",
+      "kind": "design",
+      "original": "# Removing expired records\n\nAt the start of each daily sweep, the cleaner selects records older than 30 days. It deletes each selected record unless the record has an active legal hold. Records under an active legal hold must be retained regardless of age. After a hold is released, the record becomes eligible for the next daily sweep.\n",
+      "revised": "# Removing expired records\n\nEach daily sweep selects and deletes all records older than 30 days, providing a uniform retention policy. Records are processed at the start of the sweep.\n",
+      "context": {
+        "audience": "Engineers implementing the record cleaner",
+        "scope": "Record eligibility and deletion behavior during the daily sweep",
+        "evidence": [],
+        "missing": []
+      },
+      "expectations": [
+        {"signal": "requirements_preserved", "maximum": 0.3},
+        {"signal": "behavior_preserved", "maximum": 0.3},
+        {"signal": "preferred", "equals": "original"}
+      ]
+    },
+    {
+      "name": "case-07",
+      "kind": "design",
+      "original": "# Preview endpoint\n\nThe endpoint checks the preview flag before doing anything else. If the preview flag is off, the endpoint returns HTTP 404. In that case it does not read the project record and does not write an access event. If the preview flag is on, the endpoint checks the caller's project permission. A caller without that permission receives HTTP 403, and the endpoint does not read the project record or write an access event. A caller with permission receives the project preview and an access event is written.\n",
+      "revised": "# Preview endpoint\n\nCheck the preview flag first:\n\n- **Off:** return HTTP 404 without reading the project record or writing an access event.\n- **On:** check the caller's project permission. Without permission, return HTTP 403 without reading the project record or writing an access event. With permission, return the project preview and write an access event.\n",
+      "context": {
+        "audience": "Engineers implementing the preview endpoint",
+        "scope": "The request flow and its data-access side effects",
+        "evidence": [],
+        "missing": []
+      },
+      "expectations": [
+        {"signal": "requirements_preserved", "minimum": 0.7},
+        {"signal": "behavior_preserved", "minimum": 0.7},
+        {"signal": "preferred", "equals": "revised"}
+      ]
+    },
+    {
+      "name": "case-08",
+      "kind": "plan",
+      "original": "# Configure request timeouts\n\nSet the upload endpoint timeout to 60 seconds. Separately, set the metadata endpoint timeout to 30 seconds. Verify both configured values before enabling the new router.\n",
+      "revised": "# Configure request timeouts\n\nBefore enabling the new router, configure and verify these endpoint timeouts:\n\n| Endpoint | Timeout |\n| --- | --- |\n| Upload | 30 seconds |\n| Metadata | 60 seconds |\n",
+      "context": {
+        "audience": "The engineer configuring the new router",
+        "scope": "The required timeout values and activation order",
+        "evidence": [],
+        "missing": []
+      },
+      "expectations": [
+        {"signal": "requirements_preserved", "maximum": 0.3},
+        {"signal": "behavior_preserved", "maximum": 0.3},
+        {"signal": "preferred", "equals": "original"}
+      ]
+    },
+    {
+      "name": "case-09",
+      "kind": "adr",
+      "original": "# Decision: compression algorithm\n\nStatus: pending.\n\nNo benchmark results have been provided for either LZ4 or Zstandard on our payloads. The throughput target has not been specified either. For that reason, this document does not select an algorithm. Before making the selection, we need to obtain the throughput target and benchmark both algorithms on representative payloads.\n",
+      "revised": "# Decision: compression algorithm\n\nStatus: pending.\n\nNo algorithm is selected: we have neither payload benchmarks for LZ4 and Zstandard nor a throughput target. Obtain the target and benchmark both algorithms on representative payloads before deciding.\n",
+      "context": {
+        "audience": "Engineers preparing a compression decision",
+        "scope": "An incomplete decision record with no accompanying research context",
+        "evidence": [],
+        "missing": ["Benchmarks for either algorithm on representative payloads", "The throughput target"]
+      },
+      "expectations": [
+        {"signal": "uncertainty_preserved", "minimum": 0.7},
+        {"signal": "evidence_supported", "minimum": 0.7},
+        {"signal": "preferred", "equals": "revised"}
+      ]
+    },
+    {
+      "name": "case-10",
+      "kind": "analysis",
+      "original": "# Index experiment\n\nOn a developer laptop, a read-only replay of 200 queries completed in 8 seconds with the new index and 11 seconds without it. This experiment did not measure concurrent writes, replication lag, or production workload behavior. It supports running a staging trial; it does not establish that the index is safe to deploy to production.\n",
+      "revised": "# Index experiment\n\nThe new index cut a 200-query replay from 11 seconds to 8 seconds on a developer laptop, validating its production readiness. The index is safe to deploy without affecting concurrent writes or replication lag.\n",
+      "context": {
+        "audience": "Engineers reviewing an index experiment",
+        "scope": "What one local replay can establish about the proposed index",
+        "evidence": ["The experiment log contains a read-only replay on one developer laptop."],
+        "missing": ["Concurrent-write measurements", "Replication-lag measurements", "Production workload measurements"]
+      },
+      "expectations": [
+        {"signal": "evidence_supported", "maximum": 0.3},
+        {"signal": "uncertainty_preserved", "maximum": 0.3},
+        {"signal": "preferred", "equals": "original"}
+      ]
+    }
+  ]
+}

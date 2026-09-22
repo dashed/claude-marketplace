@@ -1,0 +1,18 @@
+{
+  "rubric": {
+    "path": "plugins/doc-quality/skills/doc-quality/references/rubrics.json",
+    "sha256": "6891d7694a559ce72cc20a008f97e763781fe81f18e14ec17ea65f0c1b551663"
+  },
+  "fixtures": {
+    "path": "tests/fixtures/doc-quality.json",
+    "sha256": "0960ac7daf72f57db99b3ca070ccb80db8e373597d6ab26d421c77d472900ec2"
+  },
+  "unlabeled": {
+    "path": "/tmp/doc-quality-unlabeled.json",
+    "sha256": "60615f96fe80258590ac68876c203bd54baf38e3bcf750e0d710b8c7a08b6ae5"
+  },
+  "cases": 10,
+  "expectations": 30,
+  "labels_authored_independently": true,
+  "model_results_seen_at_freeze": false
+}
