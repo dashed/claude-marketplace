@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "advisory": true,
+  "provider": "vercel",
+  "protocol": "gateway",
+  "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+  "api_key_env": "AI_GATEWAY_API_KEY",
+  "questions_sha256": "cc954f2cd3b5c83731d79b53ec29b25785de46b890d6ff0de719e9b3e70543c5",
+  "state_sha256": "1e45b0c034bfb274ebafe10742fe3b5f8312feb0e8890330dd31983a44120a37",
+  "request": {
+    "model": "typesafe-ai/jev",
+    "state": {
+      "task": "Choose the input design for optional comment review after a concrete failure.",
+      "observation": "The same original tuple docstring received deletion information-loss probabilities .89 and .60 depending only on whether the supplied proposal removed or preserved tuple polarity; the same ordering comment received .80 and .56. Original-text questions and proposal-preservation question shared the entire state.",
+      "design_options": {
+        "isolate": "Ask original-text questions with source/candidate/context only; ask replacement-preservation in a separate focused request with the proposal; retain both raw reports.",
+        "repeat": "Repeat the combined request until the two original-text probabilities match.",
+        "average": "Average original-text probabilities across arbitrary proposed replacements."
+      },
+      "constraints": "Keep original fixture expectations fixed. Do not claim this change calibrates model probabilities or automatically authorizes deletion."
+    },
+    "questions": {
+      "input_design": {
+        "type": "choice",
+        "instructions": "Which design option directly removes proposal-specific evidence from the judgment of the unchanged original?",
+        "criteria": {
+          "isolate": "Separate original-text and replacement-preservation request contexts.",
+          "repeat": "Repeatedly sample combined contexts.",
+          "average": "Average combined-context answers.",
+          "none": "No option addresses the observed contamination."
+        }
+      }
+    }
+  },
+  "response": {
+    "model": "typesafe-ai/jev",
+    "answers": {
+      "input_design": {
+        "type": "choice",
+        "choice": "isolate",
+        "probabilities": {
+          "repeat": 0,
+          "isolate": 1,
+          "none": 0,
+          "average": 0
+        },
+        "confidence": 1
+      }
+    },
+    "usage": {
+      "inputTokens": 568,
+      "outputTokens": 48
+    },
+    "providerMetadata": {
+      "typesafe": {
+        "confidence": {
+          "input_design": 1
+        }
+      },
+      "gateway": {
+        "routing": {
+          "originalModelId": "typesafe-ai/jev",
+          "resolvedProvider": "typesafe-ai",
+          "fallbacksAvailable": [],
+          "planningReasoning": "System credentials planned for: typesafe-ai. Total execution order: typesafe-ai(system)",
+          "canonicalSlug": "typesafe-ai/jev",
+          "finalProvider": "typesafe-ai",
+          "modelAttemptCount": 1,
+          "modelAttempts": [
+            {
+              "canonicalSlug": "typesafe-ai/jev",
+              "success": true,
+              "providerAttemptCount": 1,
+              "providerAttempts": [
+                {
+                  "provider": "typesafe-ai",
+                  "credentialType": "system",
+                  "success": true,
+                  "startTime": 1790082265852,
+                  "endTime": 1790082266027,
+                  "statusCode": 200
+                }
+              ]
+            }
+          ],
+          "totalProviderAttemptCount": 1
+        },
+        "cost": "0",
+        "marketCost": "0.000023856",
+        "surchargeCost": "0",
+        "gatewayCost": "0",
+        "generationId": "gen_01M34KFCGAMZ6QBJTQTJX6XD2C"
+      }
+    }
+  },
+  "answers": {
+    "input_design": {
+      "type": "choice",
+      "choice": "isolate",
+      "probabilities": {
+        "repeat": 0,
+        "isolate": 1,
+        "none": 0,
+        "average": 0
+      },
+      "confidence": 1
+    }
+  },
+  "elapsed_seconds": 0.539,
+  "evaluated_at": "2026-09-22T13:04:25.982692+00:00",
+  "status": "evaluated"
+}

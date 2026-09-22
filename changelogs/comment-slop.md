@@ -4,6 +4,20 @@ All notable changes to the comment-slop skill in this marketplace will be docume
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.5.0] - 2026-09-22
+
+### Added
+- Optional source-anchored Jev review: context sufficiency, information lost on deletion, keep/delete/reduce/rewrite/needs-context disposition, and preservation of useful facts in an exact proposed replacement.
+- Separate request contexts prevent proposed replacements from influencing judgments of the original text. Full per-call reports remain available; second-call failures keep partial evidence without claiming a complete review.
+- A small stdlib adapter reuses the general Jev skill's configurable provider transport through an explicit helper path. No helper or selected key skips the consultation; failed service/configuration remains incomplete. Ordinary source-based cleanup continues.
+- Frozen independent semantic cases covering redundancy, useful why-comments, mixed docstring reductions, public/runtime documentation, doctests, pragmas, missing context, stale contracts, and good/bad proposed reductions. No source is executed or edited by the helper or evaluator.
+- `make test-comment-slop` and `make eval-comment-slop`, using uv, Ruff, and ty; retained reports distinguish semantic results from syntax/AST checks and missing evidence.
+
+### Changed
+- Review candidate clauses and concrete replacements separately; known consumer requirements override model preferences. Add explicit reduce and needs-context verdicts.
+- Preserve license/directive/docstring consumers and verify relevant docs/doctest/help/tooling outputs. A docs-only diff or unchanged executable AST does not establish consumer preservation.
+- Respect an explicitly requested repository/file scope while keeping the default diff scope. Redundancy judgments do not claim to identify AI authorship.
+
 ## [1.4.0] - 2026-08-28
 
 ### Added

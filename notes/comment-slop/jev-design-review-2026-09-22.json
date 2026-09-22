@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "advisory": true,
+  "provider": "vercel",
+  "protocol": "gateway",
+  "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+  "api_key_env": "AI_GATEWAY_API_KEY",
+  "questions_sha256": "a1bec45c77d02899c9122eb6bb362ae9fc74c172e88f4918864973a9334f2c03",
+  "state_sha256": "8583517a61edc1bbdb79b63d8dbe34c0da2800f62dada1a87c2eb2adba43e757",
+  "request": {
+    "model": "typesafe-ai/jev",
+    "state": {
+      "task": "Use optional Jev to review redundant comments and docstring clauses during coding-agent cleanup.",
+      "design": "Supply exact selected comment/docstring text, its source lines and surrounding function, verified documentation/runtime consumers, and known evidence gaps. Ask separate context sufficiency, information lost on deletion, and keep/delete/reduce/rewrite/needs-context disposition. For a concrete candidate replacement ask whether useful facts and consumer needs survive. The agent alone edits and verifies source; missing helper or key skips Jev.",
+      "boundaries": "Keep rationale/ordering/invariants and API tuple or polarity details. Protect pragmas, generated-documentation contracts, doctests and runtime docstrings. A short paraphrase is not automatically redundant for an API audience. Do not claim AI authorship from style.",
+      "tests": "Freeze examples of clear redundancy, essential why-comments, mixed useful/redundant docstrings, public/runtime consumers, missing context, stale claims, and proposed reductions which retain or lose facts. Retain failures."
+    },
+    "questions": {
+      "next_risk": {
+        "type": "choice",
+        "instructions": "Which risk most directly threatens this workflow despite an accurate redundancy judgment?",
+        "criteria": {
+          "consumer_loss": "Text that repeats visible code may still feed external docs, runtime help, doctests or tooling.",
+          "line_count": "Removing text changes line count, so no comment cleanup is possible.",
+          "more_metrics": "Not asking Jev to calculate static complexity prevents comment selection.",
+          "none": "No material risk is visible in the supplied workflow."
+        }
+      },
+      "proposal_review_useful": {
+        "type": "boolean",
+        "instructions": "Does separately judging the proposed replacement address the risk that a correct reduce verdict is implemented by deleting the useful rationale or contract?"
+      },
+      "author_detection_supported": {
+        "type": "boolean",
+        "instructions": "Does style redundancy alone establish that a particular comment was written by AI?"
+      }
+    }
+  },
+  "response": {
+    "model": "typesafe-ai/jev",
+    "answers": {
+      "author_detection_supported": {
+        "type": "boolean",
+        "probability": 0.04
+      },
+      "next_risk": {
+        "type": "choice",
+        "choice": "consumer_loss",
+        "probabilities": {
+          "none": 0,
+          "line_count": 0,
+          "more_metrics": 0,
+          "consumer_loss": 1
+        },
+        "confidence": 1
+      },
+      "proposal_review_useful": {
+        "type": "boolean",
+        "probability": 0.84
+      }
+    },
+    "usage": {
+      "inputTokens": 673,
+      "outputTokens": 89
+    },
+    "providerMetadata": {
+      "typesafe": {
+        "confidence": {
+          "next_risk": 1
+        }
+      },
+      "gateway": {
+        "routing": {
+          "originalModelId": "typesafe-ai/jev",
+          "resolvedProvider": "typesafe-ai",
+          "fallbacksAvailable": [],
+          "planningReasoning": "System credentials planned for: typesafe-ai. Total execution order: typesafe-ai(system)",
+          "canonicalSlug": "typesafe-ai/jev",
+          "finalProvider": "typesafe-ai",
+          "modelAttemptCount": 1,
+          "modelAttempts": [
+            {
+              "canonicalSlug": "typesafe-ai/jev",
+              "success": true,
+              "providerAttemptCount": 1,
+              "providerAttempts": [
+                {
+                  "provider": "typesafe-ai",
+                  "credentialType": "system",
+                  "success": true,
+                  "startTime": 1790081770946,
+                  "endTime": 1790081771085,
+                  "statusCode": 200
+                }
+              ]
+            }
+          ],
+          "totalProviderAttemptCount": 1
+        },
+        "cost": "0",
+        "marketCost": "0.000028266",
+        "surchargeCost": "0",
+        "gatewayCost": "0",
+        "generationId": "gen_01M34K094TSNQ7PPD76QCFQYK9"
+      }
+    }
+  },
+  "answers": {
+    "author_detection_supported": {
+      "type": "boolean",
+      "probability": 0.04
+    },
+    "next_risk": {
+      "type": "choice",
+      "choice": "consumer_loss",
+      "probabilities": {
+        "none": 0,
+        "line_count": 0,
+        "more_metrics": 0,
+        "consumer_loss": 1
+      },
+      "confidence": 1
+    },
+    "proposal_review_useful": {
+      "type": "boolean",
+      "probability": 0.84
+    }
+  },
+  "elapsed_seconds": 0.553,
+  "evaluated_at": "2026-09-22T12:56:11.049163+00:00",
+  "status": "evaluated"
+}

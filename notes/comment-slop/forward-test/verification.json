@@ -1,0 +1,40 @@
+{
+  "doctest_before": {
+    "failed": 0,
+    "attempted": 1
+  },
+  "doctest_after": {
+    "failed": 0,
+    "attempted": 1
+  },
+  "generated_api_contract_and_example_preserved": true,
+  "runtime_usage_preserved": true,
+  "functional_examples_preserved": true,
+  "each_proposal_structure": [
+    {
+      "status": "passed",
+      "executable_ast_unchanged": true,
+      "limitation": "Leading docstrings are excluded; docs, tooling, and runtime consumers need separate verification."
+    },
+    {
+      "status": "passed",
+      "executable_ast_unchanged": true,
+      "limitation": "Leading docstrings are excluded; docs, tooling, and runtime consumers need separate verification."
+    }
+  ],
+  "executable_ast_unchanged": true,
+  "decisions_before_and_after": {
+    "narration": {
+      "before": "delete",
+      "after": "delete"
+    },
+    "api_doc": {
+      "before": "reduce",
+      "after": "reduce"
+    },
+    "runtime_doc": {
+      "before": "keep",
+      "after": "keep"
+    }
+  }
+}

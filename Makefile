@@ -106,6 +106,28 @@ PYTHON_COMPLEXITY_JEV_FILES := plugins/python-complexity/skills/python-complexit
 
 JEV_FILES := plugins/jev/skills/jev/scripts/jev.py tests/test_jev.py
 
+COMMENT_SLOP_FILES := plugins/comment-slop/skills/comment-slop/scripts/jev_comments.py scripts/eval_comment_slop.py tests/test_comment_slop_jev.py tests/test_comment_slop_evals.py
+
+.PHONY: test-comment-slop lint-comment-slop typecheck-comment-slop format-comment-slop format-comment-slop-check eval-comment-slop
+
+test-comment-slop: lint-comment-slop typecheck-comment-slop format-comment-slop-check ## Verify optional comment/docstring Jev review offline
+	@$(UV_RUN) pytest tests/test_comment_slop_jev.py tests/test_comment_slop_evals.py --no-cov
+
+eval-comment-slop: ## Evaluate frozen comment judgments (EVAL_ARGS=--offline skips Jev)
+	@$(UV_RUN) scripts/eval_comment_slop.py $(EVAL_ARGS)
+
+lint-comment-slop: ## Run Ruff on the comment-review adapter and evals
+	@$(UV_RUN) ruff check $(COMMENT_SLOP_FILES)
+
+typecheck-comment-slop: ## Run ty on the comment-review adapter and evals
+	@$(UV_RUN) ty check $(COMMENT_SLOP_FILES)
+
+format-comment-slop: ## Format comment-review Python with Ruff
+	@$(UV_RUN) ruff format $(COMMENT_SLOP_FILES)
+
+format-comment-slop-check: ## Check comment-review Python formatting with Ruff
+	@$(UV_RUN) ruff format --check $(COMMENT_SLOP_FILES)
+
 .PHONY: test-jev lint-jev typecheck-jev format-jev format-jev-check
 
 test-jev: lint-jev typecheck-jev format-jev-check ## Check the general Jev helper and run offline contract tests

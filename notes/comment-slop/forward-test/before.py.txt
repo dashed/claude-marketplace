@@ -1,0 +1,15 @@
+def select_rows(rows, bounds):
+    """Select rows.
+
+    The first bound is inclusive; the second is exclusive.
+
+    >>> select_rows([10, 20, 30], (0, 2))
+    [10, 20]
+    """
+    # Slice the rows.
+    return rows[bounds[0]:bounds[1]]
+
+
+def usage():
+    """Usage: tiny --first N --stop N"""
+    return usage.__doc__

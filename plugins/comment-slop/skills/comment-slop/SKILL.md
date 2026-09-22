@@ -1,6 +1,6 @@
 ---
 name: comment-slop
-description: "Find and remove AI-slop comments — ones that restate the code, describe another layer's behavior, or narrate planning that never shipped — while protecting the comments that carry real reasoning. Use when a reviewer calls a comment useless, unclear, or AI-written — including one a previous cleanup pass already rewrote; when auditing or cleaning up comments and docstrings on a branch, diff, or PR; when comments should be reduced, simplified, or restyled to ASD-STE100 / simplified technical English; when writing or reviewing docstrings for completeness — tuple-return meanings, boolean polarity, silent defaults and fallbacks; when deciding whether new code needs a comment and what it should say; or before sending a change for review."
+description: "Find and remove AI-slop comments — ones that restate the code, describe another layer's behavior, or narrate planning that never shipped — while protecting the comments that carry real reasoning. Use when a reviewer calls a comment useless, unclear, or AI-written — including one a previous cleanup pass already rewrote; when auditing or cleaning up comments and docstrings on a branch, diff, or PR; when comments should be reduced, simplified, or restyled to ASD-STE100 / simplified technical English; when writing or reviewing docstrings for completeness — tuple-return meanings, boolean polarity, silent defaults and fallbacks; when deciding whether new code needs a comment and what it should say; or before sending a change for review. Optionally consult Jev on redundancy and proposed reductions; skip it when unavailable."
 license: MIT
 ---
 
@@ -15,6 +15,8 @@ A comment earns its place only if it states a fact that is:
 Every slop comment fails one of those three clauses. That is the whole diagnosis. The rest of this skill is how to apply it, and — just as important — how to recognize the comments that pass, so a cleanup pass does not delete the reasoning that was worth keeping.
 
 This is the operational form of the familiar rule: **comment the why, not the what or the how.** Code with descriptive names already tells the reader what it does, and the body is the how — a comment restating either fails clause 2. What the code cannot say is the why: context from outside the file, the business rule being implemented, the design decision that looks wrong until explained (the keep table below). But the folk rule is a compass, not a verdict — a why-shaped sentence still fails when it describes another layer or restates a convention with a documented home (see *Abstracting is not the fix either*). The three clauses decide, and the burden of proof sits on the comment: the default verdict is delete, and a comment that cannot show a pass does not get one.
+
+Apply the delete default to ordinary prose after checking its audience and consumers. Tool directives, license notices, executable examples, runtime help, and generated API documentation have functions beyond explaining nearby code; preserve those functions. A comment's style does not establish whether AI wrote it.
 
 Slop is not a length problem. It is a content-selection problem, which is why shortening or generalizing comments makes it worse rather than better (see *Trimming is not the fix* and *Abstracting is not the fix either*).
 
@@ -255,7 +257,7 @@ For the full docstring-rewrite convention — the deeper STE-100 subset (approve
 
 ### 1. Scope to the diff
 
-Slop arrives with new code, so audit the change rather than the repository. A repo-wide sweep produces mass edits nobody can review and touches comments whose context was never loaded.
+Default to the diff, or use the files/repository scope the user explicitly requests. Load the relevant context for each candidate; a repository-wide search is an inventory, not permission to delete from search hits.
 
 ```bash
 base=main                                      # the branch the PR targets
@@ -281,19 +283,47 @@ A comment asserting a fact may simply be stale: the code moved and the sentence 
 
 The same bar applies to claims you write: a sentence like "the override changes both values" is written only after reading (or running) the test that pins it — not from memory of the code.
 
+### Optional Jev check
+
+For uncertain redundancy, a mixed comment/docstring, or a proposed reduction, use
+[references/jev-review.md](references/jev-review.md). Supply the exact text and
+source location, surrounding implementation, known consumers, and missing evidence.
+Jev can suggest **keep / delete / reduce / rewrite / needs_context** and judge
+whether a concrete replacement preserves the useful information. The agent
+identifies the redundant clauses, writes the edit, and verifies it; Jev does not
+produce replacement prose or edit files.
+
+Jev is optional. Without the general Jev helper or the selected provider key,
+continue this workflow and report the consultation as skipped. An API failure
+leaves its judgment incomplete; it does not turn into deletion approval. The
+three-clause test and known consumer requirements still govern the edit.
+
 ### 4. Give one verdict per comment
 
 | Verdict | When |
 |---|---|
 | **keep** | Demonstrably passes all three clauses — it can name the keep-table fact the code cannot state. Leave it alone — rewording a good comment is churn that hides the real edits. |
+| **reduce** | The block mixes useful facts with repetition. Identify the redundant clauses and remove only those; keep rationale, contracts, and required syntax. Re-run the three-clause test on the result. |
+| **needs_context** | The claim depends on missing implementation, requirements, or consumers. Inspect that evidence before deciding; do not translate uncertainty into a delete. |
 | **rewrite** | The fact is real but stated at the wrong layer, in the wrong mood, with an undefined term, or wrapped in redundant restatement. Restate it at this layer, or *reduce* it — delete the clauses that fail the test, keep the ones that pass. Then apply the [style rules](#style-for-what-survives-asd-ste100). Reduction is selection by the test, not compression. The output is a new comment: re-run the test on it, starting with the noun heuristic — trimming and abstracting are both repairs whose output stopped passing. |
 | **delete** | The default. Once the wrong-layer content and the already-visible content are removed, nothing is left — and doubt is not a pass. For a *what*-comment that resists deletion because the code is unclear, fix the code, then delete (see *The what belongs in the code*). |
 
 Expect the pass to be a net deletion. Adding a fresh explanatory paragraph where a bad one was removed is how the next reviewer arrives at the same complaint.
 
-### 5. Watch the published-docs case
+### 5. Check documentation and runtime consumers
 
 Docstrings that feed generated documentation (Sphinx, godoc, rustdoc, JSDoc) have a second audience that never sees the source. One that restates the signature still fails the test for a reader of the code, but deleting it can blank an entry in the published API docs. Rewrite these into what the function returns, rejects, or raises rather than removing them.
+
+Also preserve lint/type/formatter/compiler directives, shebangs, encoding markers,
+license notices, doctests, runtime `__doc__` consumers, CLI help, and framework
+metadata. A directive may be redundant only after its tool confirms that; a
+semantic preference cannot establish it. For partial reductions, list the facts
+that must survive and check the proposed replacement against each one.
+
+Check syntax and the relevant docs/doctest/help/tool output after an edit. Ordinary
+comments do not execute, but docstrings are runtime values and comment directives
+can change tooling behavior. An unchanged executable AST alone does not prove
+those consumers were preserved.
 
 ### 6. Commit the cleanup on its own
 

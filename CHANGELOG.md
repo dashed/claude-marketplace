@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- comment-slop 1.5.0: optional Jev judgments for whole comments and partial docstring reductions, using the general configurable helper; preserves documentation/runtime/tooling consumers and skips without helper or credentials. Frozen semantic evals and offline uv/Ruff/ty tests retain failures.
 - `jev` skill: general-purpose typed consultations for plans, evidence checks, priorities, and counterchecks; standalone provider-configurable helper with optional credentials, request preview, and offline uv/Ruff/ty tests.
 - python-complexity 1.4.0: maintenance-focused Jev rubric and contextual guard-flattening/expression-expansion judgments, with frozen validation cases and retained before/after evidence.
 - python-complexity skill: optional Jev semantic review through configurable providers (Vercel by default; skipped without the selected key), with a versioned rubric, a stdlib helper, and comparisons over the complete behavioral scope. Static measurements remain deterministic; semantic signals remain advisory.

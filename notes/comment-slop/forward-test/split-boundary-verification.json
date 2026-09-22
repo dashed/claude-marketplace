@@ -1,0 +1,9 @@
+{
+  "candidate_request_excludes_proposal": true,
+  "changing_proposal_leaves_candidate_request_identical": true,
+  "questions_partitioned_3_plus_1": true,
+  "both_raw_reports_retained": true,
+  "second_call_skip_is_incomplete_without_combined_answers": true,
+  "adapter_schema_version": 2,
+  "network_calls": 0
+}

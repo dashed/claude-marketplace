@@ -1284,9 +1284,9 @@
     },
     {
       "name": "comment-slop",
-      "version": "1.4.0",
+      "version": "1.5.0",
       "source": "./plugins/comment-slop",
-      "description": "Find and remove AI-slop comments — ones that restate the code, describe another layer's behavior, or narrate planning that never shipped — while keeping the comments that carry real reasoning. Comment the why, not the what or how: names carry the what, and delete is the default verdict. Use when a reviewer calls a comment useless or AI-written, when auditing comments and docstrings on a branch or PR, when deciding whether new code needs a comment, or before sending a change for review.",
+      "description": "Find and remove redundant comments and docstring content while retaining rationale, contracts, and documentation/tooling functions. Apply a source-based keep/delete/reduce/rewrite review; optionally consult Jev on redundancy and whether a proposed edit loses useful information. Reuses the configurable general Jev helper and skips it without helper or credentials. Use when cleaning up AI-slop comments, auditing a diff, reducing mixed docstrings, or checking a comment rewrite.",
       "author": {
         "name": "Alberto Leal"
       },
@@ -1299,7 +1299,9 @@
         "cleanup",
         "ai-slop",
         "refactoring",
-        "documentation"
+        "documentation",
+        "jev",
+        "semantic-review"
       ],
       "strict": false,
       "skills": [
