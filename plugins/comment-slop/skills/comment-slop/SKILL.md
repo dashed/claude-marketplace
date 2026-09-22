@@ -298,7 +298,15 @@ produce replacement prose or edit files.
 Jev is optional. Without the general Jev helper or the selected provider key,
 continue this workflow and report the consultation as skipped. An API failure
 leaves its judgment incomplete; it does not turn into deletion approval. The
-three-clause test and known consumer requirements still govern the edit.
+three-clause test and known consumer requirements still govern the edit. Explicit
+published-doc, runtime-help, and tooling needs take priority over source-only
+redundancy. Preserve doctest option flags, not just example text. Correct a
+contradicted claim using verified code; preserving misinformation is not useful
+information retention. Inspect missing evidence before editing an asserted why.
+
+The recorded blind pilot showed no improvement over the agent alone. Use the
+consultation selectively, and reject advice that conflicts with verified facts.
+Passing syntax or executable-AST checks does not establish consumer preservation.
 
 ### 4. Give one verdict per comment
 

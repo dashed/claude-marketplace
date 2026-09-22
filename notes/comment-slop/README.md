@@ -1,7 +1,11 @@
 # Optional Jev comment review, 2026-09-22
 
 For the subsequent fix to the seven remaining weaknesses and fresh validation,
-see [rubric 1.2.0 results](jev-weakness-fix-2026-09-22.md).
+see the [complete follow-up](jev-weakness-fix-2026-09-22.md). Current rubric 1.3.0
+scores 30/32 original, 33/38 development, and 15/18 untouched validation
+expectations. The [blind comparison](agent-comparison/README.md) found no
+incremental decision benefit. The history below records the earlier 1.5.0 release;
+its "final" run is rubric 1.1.0, not the current rubric.
 
 The `comment-slop` skill now asks Jev about redundancy and concrete reductions
 while preserving its source-based cleanup workflow. The general `jev` skill owns

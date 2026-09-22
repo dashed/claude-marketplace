@@ -118,11 +118,14 @@ combined `answers` only when both succeed. If the second call is unavailable,
 the review is incomplete and retains `partial_answers` as partial evidence.
 A candidate skip/failure stops the sequence without a second call.
 
-Rubric 1.2.0 asks whether deletion loses **any** useful fact and distinguishes
-reviewer evidence from retained reader-facing information. For private source-only
-docstrings, a conventional summary that only repeats the name/signature does not
-earn its place merely because later sentences contain useful details. A summary
-with a documented API/runtime audience still has a separate purpose.
+Rubric 1.3.0 gives missing evidence, contradicted claims, and explicit consumer
+requirements priority over source-only redundancy. It distinguishes reviewer
+knowledge from information retained for future readers. A required published-doc
+summary or runtime-help string can matter even when its fact is visible in code;
+do not strip doctest options when preserving an example. Correcting a demonstrably
+false claim can preserve useful information. For private source-only docstrings,
+a conventional summary repeating the name/signature is still dispensable when
+later sentences carry the useful details.
 
 A mixed block can have high information loss **and** need reduction. Remove its
 redundant portion, not its useful fact. A low information-loss probability does
@@ -152,11 +155,24 @@ Python AST checks omit leading docstrings and cannot prove runtime documentation
 preservation. The source checkout's `notes/comment-slop/` records live results and
 limits. Synthetic agreement alone does not prove value across real repositories.
 
-The recorded rubric 1.1.0 run passed 25/32 expectations: 14/16 dispositions and
-all five proposed-replacement checks, including two that remove useful facts.
-Two mixed docstrings were kept instead of reduced, and five information-loss
-probabilities missed their frozen limits. These failures remain in the report.
-Use the signals to focus inspection; they do not justify a deletion threshold.
+The original seven rubric 1.1.0 failures were fixed in 1.2.0 (32/32 original
+expectations), but a new 14-case suite exposed further errors (26/38). Rubric
+1.3.0 corrects the known unsafe suggestions for API docs, runtime help, and
+executable examples: those harmful proposals now fail preservation as expected.
+It scores 30/32 original, 33/38 development, and 15/18 untouched validation
+expectations. The two original regressions are overly cautious safe-reduction
+scores. One fresh runtime-help case still misses the frozen loss/preservation
+confidence limits. All failures and unavailable-call retries remain recorded;
+no expectation thresholds were relaxed.
+
+A blind agent-only/assisted pilot using rubric 1.2.0 scored 26/26 decisions both ways, with no
+changed decisions. It demonstrates no incremental accuracy benefit over that
+agent; the perfect baseline also limits what the pilot can detect. The assisted
+agent overrode wrong Jev suggestions. Keep Jev selective and advisory, inspect
+contradictions against source, and run consumer checks regardless of its score.
+The checkout includes `make compare-comment-reviews COMPARE_ARGS="..."` to compare
+frozen baseline/assisted records without network access; see
+`notes/comment-slop/agent-comparison/README.md` for the exact recorded command.
 
 Question design follows TypeSafe's [Choice](https://docs.typesafe.ai/primitives/choice),
 [Noul](https://docs.typesafe.ai/primitives/noul), and

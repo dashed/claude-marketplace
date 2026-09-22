@@ -26,6 +26,13 @@ def test_held_out_proposals_preserve_executable_structure() -> None:
     assert all(proposal_structure(c["state"])["status"] == "passed" for c in proposals)
 
 
+def test_untouched_validation_proposals_preserve_executable_structure() -> None:
+    fixtures = json.loads(FIXTURES.with_name("comment-slop-jev-validation.json").read_text())
+    proposals = [c for c in fixtures["cases"] if "proposal" in c["state"]]
+    assert len(proposals) == 6
+    assert all(proposal_structure(c["state"])["status"] == "passed" for c in proposals)
+
+
 @pytest.mark.parametrize("replacement", ["    return 42", "    this is not valid Python !"])
 def test_structure_check_rejects_logic_and_syntax_changes(replacement: str) -> None:
     state = {

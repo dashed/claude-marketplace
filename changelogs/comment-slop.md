@@ -4,6 +4,16 @@ All notable changes to the comment-slop skill in this marketplace will be docume
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.5.2] - 2026-09-22
+
+### Fixed
+- Rubric 1.3.0 prioritizes explicit docs/runtime/tooling consumers and missing evidence over source-only redundancy, and distinguishes correcting false claims from losing supported facts. Seven known harmful proposals are rejected at their frozen limits.
+- Final results remain visible: 30/32 original, 33/38 development, 15/18 untouched validation expectations. Seven safe reductions remain too uncertain, one mixed block is kept, and one fresh runtime-help case misses two confidence limits; no universal deletion threshold is claimed.
+
+### Added
+- Frozen blind agent-only/assisted comparison, deterministic offline comparator, and independent validation fixtures. The pilot measured 26/26 decisions before and after Jev, with no improvements or regressions.
+- Deterministic tests for published-doc loss, runtime help, actual doctest flag behavior, and correcting a false allowlist claim; 97 comment-review tests pass with uv/Ruff/ty.
+
 ## [1.5.1] - 2026-09-22
 
 ### Fixed
