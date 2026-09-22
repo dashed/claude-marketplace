@@ -42,21 +42,38 @@ def behavior_check(cases: list[dict[str, Any]]) -> dict[str, Any]:
     inputs += [(value, "odd") for value in range(1, 101, 2)]
     inputs += [(value, "too_large") for value in range(101, 106)]
     failures = []
+    checks_per_case = {}
     for case in cases:
         if not case["complete"]:
             continue
         namespace: dict[str, Any] = {}
         # Only the small, checked-in fixtures are executed, never user review state.
         exec(compile(case["source"], case["name"], "exec"), namespace)
-        for value, expected in inputs:
-            actual = namespace["classify"](value)
-            if actual != expected:
+        tests = case.get(
+            "tests", [{"args": [value], "expected": expected} for value, expected in inputs]
+        )
+        checks_per_case[case["name"]] = len(tests)
+        for test in tests:
+            expected = test.get("expected")
+            try:
+                actual = namespace[case.get("entry", "classify")](*test["args"])
+                matched = "raises" not in test and actual == expected
+            except Exception as error:
+                actual = {"raises": type(error).__name__}
+                matched = test.get("raises") == type(error).__name__
+            if not matched:
                 failures.append(
-                    {"case": case["name"], "input": value, "expected": expected, "actual": actual}
+                    {
+                        "case": case["name"],
+                        "input": test["args"],
+                        "expected": test.get("raises", expected),
+                        "actual": actual,
+                    }
                 )
     return {
         "status": "failed" if failures else "passed",
-        "inputs_per_case": len(inputs),
+        "checks_per_case": checks_per_case,
+        "total_checks": sum(checks_per_case.values()),
         "failures": failures,
     }
 
@@ -145,6 +162,11 @@ def semantic_checks(checks: list[dict[str, Any]], reports: dict[str, Any]) -> li
             )
             continue
         signal = check["signal"]
+        if any(signal not in reports[name]["answers"] for name in names):
+            results.append(
+                {"expectation": check, "status": "skipped", "reason": "signal_unavailable"}
+            )
+            continue
         if "higher" in check:
             high = reports[check["higher"]]["answers"][signal]["score"]
             low = reports[check["lower"]]["answers"][signal]["score"]
@@ -154,8 +176,10 @@ def semantic_checks(checks: list[dict[str, Any]], reports: dict[str, Any]) -> li
             observed = reports[check["case"]]["answers"][signal]["choice"]
             passed = observed == check["equals"]
         else:
-            observed = reports[check["case"]]["answers"][signal]["probability"]
-            passed = observed <= check["maximum"]
+            observed = reports[check["case"]]["answers"][signal][check.get("field", "probability")]
+            passed = (
+                observed >= check["minimum"] if "minimum" in check else observed <= check["maximum"]
+            )
         results.append(
             {"expectation": check, "status": "passed" if passed else "failed", "observed": observed}
         )
@@ -172,6 +196,12 @@ def main() -> int:
     )
     parser.add_argument("--config", type=Path, help="Jev helper provider config")
     parser.add_argument("--provider", choices=("vercel", "typesafe", "custom"))
+    parser.add_argument(
+        "--fixtures",
+        type=Path,
+        default=FIXTURES,
+        help="Trusted fixture JSON; executes its source for behavior checks",
+    )
     args = parser.parse_args()
     output = (
         args.output_dir.resolve()
@@ -181,35 +211,41 @@ def main() -> int:
     if args.output_dir and output.exists() and any(output.iterdir()):
         parser.error("output directory must be empty so earlier evidence is preserved")
     output.mkdir(parents=True, exist_ok=True)
-    fixtures = json.loads(FIXTURES.read_text())
+    fixtures = json.loads(args.fixtures.read_text())
     try:
         behavior = behavior_check(fixtures["cases"])
         static = census(fixtures["cases"], output)
         m = static["cases"]
-        static_checks = {
-            "flattening_reduces_cognitive": m["flat"]["cognitive_sum"]
-            < m["nested"]["cognitive_sum"],
-            "ternary_lowers_cyclomatic_without_lowering_cognitive": m["ternary"]["max_cyclomatic"]
-            < m["flat"]["max_cyclomatic"]
-            and m["ternary"]["cognitive_sum"] > m["flat"]["cognitive_sum"],
-            "forwarders_add_defs_without_removing_decisions": m["layered"]["defs"]
-            > m["flat"]["defs"]
-            and m["layered"]["decisions"] == m["flat"]["decisions"],
-        }
+        static_checks = (
+            {
+                "flattening_reduces_cognitive": m["flat"]["cognitive_sum"]
+                < m["nested"]["cognitive_sum"],
+                "ternary_lowers_cyclomatic_without_lowering_cognitive": m["ternary"][
+                    "max_cyclomatic"
+                ]
+                < m["flat"]["max_cyclomatic"]
+                and m["ternary"]["cognitive_sum"] > m["flat"]["cognitive_sum"],
+                "forwarders_add_defs_without_removing_decisions": m["layered"]["defs"]
+                > m["flat"]["defs"]
+                and m["layered"]["decisions"] == m["flat"]["decisions"],
+            }
+            if {"flat", "nested", "layered", "ternary"} <= m.keys()
+            else {}
+        )
         reports = {}
         for case in fixtures["cases"]:
             name = case["name"]
             state = {
-                "scope": "classifier.py:classify and its call path",
-                "task": fixtures["task"],
-                "constraints": fixtures["constraints"],
-                "sources": [{"path": "classifier.py", "content": case["source"]}],
+                "scope": case.get("scope", "classifier.py:classify and its call path"),
+                "task": case.get("task", fixtures.get("task")),
+                "constraints": case.get("constraints", fixtures.get("constraints", [])),
+                "sources": [{"path": case.get("path", "classifier.py"), "content": case["source"]}],
                 "measurements": {
                     "ruff_version": static["ruff_version"],
                     "complexipy_version": "7.0.1",
                     **m[name],
                 },
-                "missing_context": []
+                "missing_context": case.get("missing_context", [])
                 if case["complete"]
                 else ["The _dispatch implementation is omitted."],
             }
@@ -240,7 +276,7 @@ def main() -> int:
         result = {
             "evaluated_at": datetime.now(timezone.utc).isoformat(),
             "fixture_version": fixtures["version"],
-            "fixture_sha256": hashlib.sha256(FIXTURES.read_bytes()).hexdigest(),
+            "fixture_sha256": hashlib.sha256(args.fixtures.read_bytes()).hexdigest(),
             "status": "incomplete"
             if incomplete
             else "failed"
@@ -262,6 +298,7 @@ def main() -> int:
                         "protocol",
                         "endpoint",
                         "rubric_sha256",
+                        "rubric_version",
                         "state_sha256",
                         "evaluated_at",
                         "response",

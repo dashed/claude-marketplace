@@ -13,7 +13,34 @@ from scripts.eval_python_complexity import FIXTURES, behavior_check, semantic_ch
 def test_complete_fixtures_match_the_behavior_contract() -> None:
     fixtures = json.loads(FIXTURES.read_text())
     result = behavior_check(fixtures["cases"])
-    assert result == {"status": "passed", "inputs_per_case": 119, "failures": []}
+    assert result["status"] == "passed" and result["failures"] == []
+    assert result["total_checks"] == 476
+    assert set(result["checks_per_case"].values()) == {119}
+
+
+def test_validation_fixtures_preserve_behavior_and_invariants() -> None:
+    fixtures = json.loads(FIXTURES.with_name("python-complexity-jev-validation.json").read_text())
+    result = behavior_check(fixtures["cases"])
+    assert result["status"] == "passed", result["failures"]
+    assert len(result["checks_per_case"]) == 8
+    assert result["checks_per_case"]["invariant_helper"] == 3
+
+
+def test_expected_exception_is_required() -> None:
+    case = {
+        "name": "lost_validation",
+        "entry": "total",
+        "complete": True,
+        "source": "def total(prices): return sum(prices)",
+        "tests": [{"args": [[-1]], "raises": "ValueError"}],
+    }
+    assert behavior_check([case])["status"] == "failed"
+
+
+def test_missing_new_signal_is_skipped_when_evaluating_old_rubric() -> None:
+    check = {"name": "action", "case": "nested", "signal": "flattening_helpful", "minimum": 0.7}
+    result = semantic_checks([check], {"nested": {"status": "evaluated", "answers": {}}})
+    assert result[0]["status"] == "skipped" and result[0]["reason"] == "signal_unavailable"
 
 
 def test_behavior_check_detects_a_broken_refactor() -> None:
@@ -21,7 +48,9 @@ def test_behavior_check_detects_a_broken_refactor() -> None:
         [{"name": "mutant", "complete": True, "source": 'def classify(value): return "accepted"'}]
     )
     assert result["status"] == "failed"
-    assert any(row["input"] is None and row["expected"] == "missing" for row in result["failures"])
+    assert any(
+        row["input"] == [None] and row["expected"] == "missing" for row in result["failures"]
+    )
 
 
 @pytest.mark.parametrize("status", ["skipped", "incomplete"])

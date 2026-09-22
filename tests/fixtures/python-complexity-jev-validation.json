@@ -1,0 +1,784 @@
+{
+  "version": 1,
+  "purpose": "Predeclared separate-domain validation and controls for rubric refinement; not a representative real-repository benchmark. Freeze before looking at candidate outputs.",
+  "cases": [
+    {
+      "name": "selection_nested",
+      "entry": "select_ids",
+      "scope": "select_ids.py:select_ids and its complete call path",
+      "path": "select_ids.py",
+      "complete": true,
+      "task": "Return record IDs in input order for enabled, unarchived EU sample records whose score is at least minimum. All records have the shown fields; do not mutate records.",
+      "constraints": [],
+      "source": "def select_ids(records, minimum):\n    result = []\n    for record in records:\n        if record[\"kind\"] == \"sample\":\n            if record[\"enabled\"]:\n                if record[\"score\"] >= minimum:\n                    if record[\"region\"] == \"eu\":\n                        if not record[\"archived\"]:\n                            result.append(record[\"id\"])\n    return result\n",
+      "tests": [
+        {
+          "args": [
+            [
+              {
+                "id": 1,
+                "kind": "sample",
+                "enabled": true,
+                "score": 9,
+                "region": "eu",
+                "archived": false
+              },
+              {
+                "id": 2,
+                "kind": "sample",
+                "enabled": true,
+                "score": 2,
+                "region": "eu",
+                "archived": false
+              },
+              {
+                "id": 3,
+                "kind": "sample",
+                "enabled": false,
+                "score": 9,
+                "region": "eu",
+                "archived": false
+              },
+              {
+                "id": 4,
+                "kind": "other",
+                "enabled": true,
+                "score": 9,
+                "region": "eu",
+                "archived": false
+              },
+              {
+                "id": 5,
+                "kind": "sample",
+                "enabled": true,
+                "score": 9,
+                "region": "us",
+                "archived": false
+              },
+              {
+                "id": 6,
+                "kind": "sample",
+                "enabled": true,
+                "score": 9,
+                "region": "eu",
+                "archived": true
+              }
+            ],
+            5
+          ],
+          "expected": [
+            1
+          ]
+        },
+        {
+          "args": [
+            [
+              {
+                "id": 1,
+                "kind": "sample",
+                "enabled": true,
+                "score": 9,
+                "region": "eu",
+                "archived": false
+              },
+              {
+                "id": 2,
+                "kind": "sample",
+                "enabled": true,
+                "score": 2,
+                "region": "eu",
+                "archived": false
+              },
+              {
+                "id": 3,
+                "kind": "sample",
+                "enabled": false,
+                "score": 9,
+                "region": "eu",
+                "archived": false
+              },
+              {
+                "id": 4,
+                "kind": "other",
+                "enabled": true,
+                "score": 9,
+                "region": "eu",
+                "archived": false
+              },
+              {
+                "id": 5,
+                "kind": "sample",
+                "enabled": true,
+                "score": 9,
+                "region": "us",
+                "archived": false
+              },
+              {
+                "id": 6,
+                "kind": "sample",
+                "enabled": true,
+                "score": 9,
+                "region": "eu",
+                "archived": true
+              }
+            ],
+            2
+          ],
+          "expected": [
+            1,
+            2
+          ]
+        },
+        {
+          "args": [
+            [
+              {
+                "id": 1,
+                "kind": "sample",
+                "enabled": true,
+                "score": 9,
+                "region": "eu",
+                "archived": false
+              },
+              {
+                "id": 2,
+                "kind": "sample",
+                "enabled": true,
+                "score": 2,
+                "region": "eu",
+                "archived": false
+              },
+              {
+                "id": 3,
+                "kind": "sample",
+                "enabled": false,
+                "score": 9,
+                "region": "eu",
+                "archived": false
+              },
+              {
+                "id": 4,
+                "kind": "other",
+                "enabled": true,
+                "score": 9,
+                "region": "eu",
+                "archived": false
+              },
+              {
+                "id": 5,
+                "kind": "sample",
+                "enabled": true,
+                "score": 9,
+                "region": "us",
+                "archived": false
+              },
+              {
+                "id": 6,
+                "kind": "sample",
+                "enabled": true,
+                "score": 9,
+                "region": "eu",
+                "archived": true
+              }
+            ],
+            10
+          ],
+          "expected": []
+        },
+        {
+          "args": [
+            [],
+            0
+          ],
+          "expected": []
+        }
+      ]
+    },
+    {
+      "name": "selection_flat",
+      "entry": "select_ids",
+      "scope": "select_ids.py:select_ids and its complete call path",
+      "path": "select_ids.py",
+      "complete": true,
+      "task": "Return record IDs in input order for enabled, unarchived EU sample records whose score is at least minimum. All records have the shown fields; do not mutate records.",
+      "constraints": [],
+      "source": "def select_ids(records, minimum):\n    result = []\n    for record in records:\n        if record[\"kind\"] != \"sample\":\n            continue\n        if not record[\"enabled\"]:\n            continue\n        if record[\"score\"] < minimum:\n            continue\n        if record[\"region\"] != \"eu\":\n            continue\n        if record[\"archived\"]:\n            continue\n        result.append(record[\"id\"])\n    return result\n",
+      "tests": [
+        {
+          "args": [
+            [
+              {
+                "id": 1,
+                "kind": "sample",
+                "enabled": true,
+                "score": 9,
+                "region": "eu",
+                "archived": false
+              },
+              {
+                "id": 2,
+                "kind": "sample",
+                "enabled": true,
+                "score": 2,
+                "region": "eu",
+                "archived": false
+              },
+              {
+                "id": 3,
+                "kind": "sample",
+                "enabled": false,
+                "score": 9,
+                "region": "eu",
+                "archived": false
+              },
+              {
+                "id": 4,
+                "kind": "other",
+                "enabled": true,
+                "score": 9,
+                "region": "eu",
+                "archived": false
+              },
+              {
+                "id": 5,
+                "kind": "sample",
+                "enabled": true,
+                "score": 9,
+                "region": "us",
+                "archived": false
+              },
+              {
+                "id": 6,
+                "kind": "sample",
+                "enabled": true,
+                "score": 9,
+                "region": "eu",
+                "archived": true
+              }
+            ],
+            5
+          ],
+          "expected": [
+            1
+          ]
+        },
+        {
+          "args": [
+            [
+              {
+                "id": 1,
+                "kind": "sample",
+                "enabled": true,
+                "score": 9,
+                "region": "eu",
+                "archived": false
+              },
+              {
+                "id": 2,
+                "kind": "sample",
+                "enabled": true,
+                "score": 2,
+                "region": "eu",
+                "archived": false
+              },
+              {
+                "id": 3,
+                "kind": "sample",
+                "enabled": false,
+                "score": 9,
+                "region": "eu",
+                "archived": false
+              },
+              {
+                "id": 4,
+                "kind": "other",
+                "enabled": true,
+                "score": 9,
+                "region": "eu",
+                "archived": false
+              },
+              {
+                "id": 5,
+                "kind": "sample",
+                "enabled": true,
+                "score": 9,
+                "region": "us",
+                "archived": false
+              },
+              {
+                "id": 6,
+                "kind": "sample",
+                "enabled": true,
+                "score": 9,
+                "region": "eu",
+                "archived": true
+              }
+            ],
+            2
+          ],
+          "expected": [
+            1,
+            2
+          ]
+        },
+        {
+          "args": [
+            [
+              {
+                "id": 1,
+                "kind": "sample",
+                "enabled": true,
+                "score": 9,
+                "region": "eu",
+                "archived": false
+              },
+              {
+                "id": 2,
+                "kind": "sample",
+                "enabled": true,
+                "score": 2,
+                "region": "eu",
+                "archived": false
+              },
+              {
+                "id": 3,
+                "kind": "sample",
+                "enabled": false,
+                "score": 9,
+                "region": "eu",
+                "archived": false
+              },
+              {
+                "id": 4,
+                "kind": "other",
+                "enabled": true,
+                "score": 9,
+                "region": "eu",
+                "archived": false
+              },
+              {
+                "id": 5,
+                "kind": "sample",
+                "enabled": true,
+                "score": 9,
+                "region": "us",
+                "archived": false
+              },
+              {
+                "id": 6,
+                "kind": "sample",
+                "enabled": true,
+                "score": 9,
+                "region": "eu",
+                "archived": true
+              }
+            ],
+            10
+          ],
+          "expected": []
+        },
+        {
+          "args": [
+            [],
+            0
+          ],
+          "expected": []
+        }
+      ]
+    },
+    {
+      "name": "shipping_clear",
+      "entry": "quote",
+      "scope": "quote.py:quote and its complete call path",
+      "path": "quote.py",
+      "complete": true,
+      "task": "Compute shipping quote: nonpositive weight costs zero. International priority costs 25+3*weight, international regular 12+2*weight, domestic priority 8+weight, domestic regular 3+weight.",
+      "constraints": [],
+      "source": "def quote(weight, priority, international):\n    if weight <= 0:\n        return 0\n    if international:\n        if priority:\n            return 25 + 3 * weight\n        return 12 + 2 * weight\n    if priority:\n        return 8 + weight\n    return 3 + weight\n",
+      "tests": [
+        {
+          "args": [
+            0,
+            true,
+            true
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            -1,
+            false,
+            false
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            2,
+            true,
+            true
+          ],
+          "expected": 31
+        },
+        {
+          "args": [
+            2,
+            false,
+            true
+          ],
+          "expected": 16
+        },
+        {
+          "args": [
+            2,
+            true,
+            false
+          ],
+          "expected": 10
+        },
+        {
+          "args": [
+            2,
+            false,
+            false
+          ],
+          "expected": 5
+        }
+      ]
+    },
+    {
+      "name": "shipping_dense",
+      "entry": "quote",
+      "scope": "quote.py:quote and its complete call path",
+      "path": "quote.py",
+      "complete": true,
+      "task": "Compute shipping quote: nonpositive weight costs zero. International priority costs 25+3*weight, international regular 12+2*weight, domestic priority 8+weight, domestic regular 3+weight.",
+      "constraints": [],
+      "source": "def quote(weight, priority, international):\n    return 0 if weight <= 0 else (25 + 3 * weight if priority else 12 + 2 * weight) if international else 8 + weight if priority else 3 + weight\n",
+      "tests": [
+        {
+          "args": [
+            0,
+            true,
+            true
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            -1,
+            false,
+            false
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            2,
+            true,
+            true
+          ],
+          "expected": 31
+        },
+        {
+          "args": [
+            2,
+            false,
+            true
+          ],
+          "expected": 16
+        },
+        {
+          "args": [
+            2,
+            true,
+            false
+          ],
+          "expected": 10
+        },
+        {
+          "args": [
+            2,
+            false,
+            false
+          ],
+          "expected": 5
+        }
+      ]
+    },
+    {
+      "name": "simple_ternary",
+      "entry": "label",
+      "scope": "label.py:label and its complete call path",
+      "path": "label.py",
+      "complete": true,
+      "task": "Return on when enabled and off otherwise.",
+      "constraints": [],
+      "source": "def label(enabled):\n    return \"on\" if enabled else \"off\"\n",
+      "tests": [
+        {
+          "args": [
+            true
+          ],
+          "expected": "on"
+        },
+        {
+          "args": [
+            false
+          ],
+          "expected": "off"
+        }
+      ]
+    },
+    {
+      "name": "natural_nesting",
+      "entry": "collect_ids",
+      "scope": "collect_ids.py:collect_ids and its complete call path",
+      "path": "collect_ids.py",
+      "complete": true,
+      "task": "Collect record IDs from a list of groups. Preserve both group order and record order within each group.",
+      "constraints": [
+        "Each loop represents a real collection boundary; both levels of iteration are required."
+      ],
+      "source": "def collect_ids(groups):\n    result = []\n    for group in groups:\n        for record in group:\n            result.append(record[\"id\"])\n    return result\n",
+      "tests": [
+        {
+          "args": [
+            [
+              [
+                {
+                  "id": 1
+                },
+                {
+                  "id": 2
+                }
+              ],
+              [],
+              [
+                {
+                  "id": 3
+                }
+              ]
+            ]
+          ],
+          "expected": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "args": [
+            []
+          ],
+          "expected": []
+        }
+      ]
+    },
+    {
+      "name": "named_predicate",
+      "entry": "can_edit",
+      "scope": "can_edit.py:can_edit and its complete call path",
+      "path": "can_edit.py",
+      "complete": true,
+      "task": "Editing requires authentication, no suspension, and either ownership or administrator status.",
+      "constraints": [],
+      "source": "def can_edit(authenticated, suspended, is_owner, is_admin):\n    return authenticated and not suspended and (is_owner or is_admin)\n",
+      "tests": [
+        {
+          "args": [
+            true,
+            false,
+            true,
+            false
+          ],
+          "expected": true
+        },
+        {
+          "args": [
+            true,
+            false,
+            false,
+            true
+          ],
+          "expected": true
+        },
+        {
+          "args": [
+            false,
+            false,
+            true,
+            true
+          ],
+          "expected": false
+        },
+        {
+          "args": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "expected": false
+        },
+        {
+          "args": [
+            true,
+            false,
+            false,
+            false
+          ],
+          "expected": false
+        }
+      ]
+    },
+    {
+      "name": "invariant_helper",
+      "entry": "total",
+      "scope": "total.py:total and its complete call path",
+      "path": "total.py",
+      "complete": true,
+      "task": "Sum prices after checking each price is nonnegative. Raise ValueError for any negative price. The validation helper is shared policy for multiple price consumers.",
+      "constraints": [
+        "The named helper centralizes the nonnegative-price invariant; future policy changes must have a single home."
+      ],
+      "source": "def require_nonnegative(price):\n    if price < 0:\n        raise ValueError(\"negative price\")\n    return price\n\ndef total(prices):\n    return sum(require_nonnegative(price) for price in prices)\n",
+      "tests": [
+        {
+          "args": [
+            [
+              1,
+              2,
+              3
+            ]
+          ],
+          "expected": 6
+        },
+        {
+          "args": [
+            []
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            [
+              1,
+              -2,
+              3
+            ]
+          ],
+          "raises": "ValueError"
+        }
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "name": "selection_flat_readability",
+      "higher": "selection_flat",
+      "lower": "selection_nested",
+      "signal": "readability",
+      "min_delta": 0.25
+    },
+    {
+      "name": "shipping_clear_readability",
+      "higher": "shipping_clear",
+      "lower": "shipping_dense",
+      "signal": "readability",
+      "min_delta": 0.25
+    },
+    {
+      "name": "selection_simplicity",
+      "higher": "selection_flat",
+      "lower": "selection_nested",
+      "signal": "simplicity",
+      "min_delta": 0.25
+    },
+    {
+      "name": "simple_ternary_readability",
+      "case": "simple_ternary",
+      "signal": "readability",
+      "field": "score",
+      "minimum": 2.4
+    },
+    {
+      "name": "simple_ternary_simplicity",
+      "case": "simple_ternary",
+      "signal": "simplicity",
+      "field": "score",
+      "minimum": 2.4
+    },
+    {
+      "name": "natural_nesting_readability",
+      "case": "natural_nesting",
+      "signal": "readability",
+      "field": "score",
+      "minimum": 2.4
+    },
+    {
+      "name": "natural_nesting_simplicity",
+      "case": "natural_nesting",
+      "signal": "simplicity",
+      "field": "score",
+      "minimum": 2.4
+    },
+    {
+      "name": "named_predicate_readability",
+      "case": "named_predicate",
+      "signal": "readability",
+      "field": "score",
+      "minimum": 2.4
+    },
+    {
+      "name": "named_predicate_simplicity",
+      "case": "named_predicate",
+      "signal": "simplicity",
+      "field": "score",
+      "minimum": 2.4
+    },
+    {
+      "name": "preserve_invariant_boundary",
+      "case": "invariant_helper",
+      "signal": "abstraction_quality",
+      "field": "score",
+      "minimum": 2.4
+    },
+    {
+      "name": "selection_nested_flattening_helpful",
+      "case": "selection_nested",
+      "signal": "flattening_helpful",
+      "minimum": 0.7
+    },
+    {
+      "name": "selection_flat_flattening_helpful",
+      "case": "selection_flat",
+      "signal": "flattening_helpful",
+      "maximum": 0.3
+    },
+    {
+      "name": "natural_nesting_flattening_helpful",
+      "case": "natural_nesting",
+      "signal": "flattening_helpful",
+      "maximum": 0.3
+    },
+    {
+      "name": "shipping_dense_expression_expansion_helpful",
+      "case": "shipping_dense",
+      "signal": "expression_expansion_helpful",
+      "minimum": 0.7
+    },
+    {
+      "name": "simple_ternary_expression_expansion_helpful",
+      "case": "simple_ternary",
+      "signal": "expression_expansion_helpful",
+      "maximum": 0.3
+    },
+    {
+      "name": "named_predicate_expression_expansion_helpful",
+      "case": "named_predicate",
+      "signal": "expression_expansion_helpful",
+      "maximum": 0.3
+    }
+  ]
+}
