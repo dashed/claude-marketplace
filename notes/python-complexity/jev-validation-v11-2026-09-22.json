@@ -1,0 +1,1438 @@
+{
+  "evaluated_at": "2026-09-22T12:41:10.987195+00:00",
+  "fixture_version": 1,
+  "fixture_sha256": "79b90030f100b20cfb6ef50eadcb964274a521685e72c4808b4ba1ca8f8ed87e",
+  "status": "failed",
+  "behavior": {
+    "status": "passed",
+    "checks_per_case": {
+      "selection_nested": 4,
+      "selection_flat": 4,
+      "shipping_clear": 6,
+      "shipping_dense": 6,
+      "simple_ternary": 2,
+      "natural_nesting": 2,
+      "named_predicate": 5,
+      "invariant_helper": 3
+    },
+    "total_checks": 32,
+    "failures": []
+  },
+  "static": {
+    "ruff_version": "ruff 0.15.16",
+    "complexipy_version": "7.0.1",
+    "cases": {
+      "selection_nested": {
+        "defs": 1,
+        "max_cyclomatic": 7,
+        "decisions": 6,
+        "cognitive_sum": 21,
+        "max_cognitive": 21
+      },
+      "selection_flat": {
+        "defs": 1,
+        "max_cyclomatic": 7,
+        "decisions": 6,
+        "cognitive_sum": 11,
+        "max_cognitive": 11
+      },
+      "shipping_clear": {
+        "defs": 1,
+        "max_cyclomatic": 5,
+        "decisions": 4,
+        "cognitive_sum": 5,
+        "max_cognitive": 5
+      },
+      "shipping_dense": {
+        "defs": 1,
+        "max_cyclomatic": 1,
+        "decisions": 0,
+        "cognitive_sum": 9,
+        "max_cognitive": 9
+      },
+      "simple_ternary": {
+        "defs": 1,
+        "max_cyclomatic": 1,
+        "decisions": 0,
+        "cognitive_sum": 1,
+        "max_cognitive": 1
+      },
+      "natural_nesting": {
+        "defs": 1,
+        "max_cyclomatic": 3,
+        "decisions": 2,
+        "cognitive_sum": 3,
+        "max_cognitive": 3
+      },
+      "named_predicate": {
+        "defs": 1,
+        "max_cyclomatic": 1,
+        "decisions": 0,
+        "cognitive_sum": 3,
+        "max_cognitive": 3
+      },
+      "invariant_helper": {
+        "defs": 2,
+        "max_cyclomatic": 2,
+        "decisions": 1,
+        "cognitive_sum": 2,
+        "max_cognitive": 1
+      }
+    }
+  },
+  "static_checks": {},
+  "semantic_counts": {
+    "passed": 15,
+    "failed": 1,
+    "skipped": 0
+  },
+  "semantic_checks": [
+    {
+      "expectation": {
+        "name": "selection_flat_readability",
+        "higher": "selection_flat",
+        "lower": "selection_nested",
+        "signal": "readability",
+        "min_delta": 0.25
+      },
+      "status": "passed",
+      "observed": {
+        "higher": 2.12,
+        "lower": 1.15,
+        "delta": 0.97
+      }
+    },
+    {
+      "expectation": {
+        "name": "shipping_clear_readability",
+        "higher": "shipping_clear",
+        "lower": "shipping_dense",
+        "signal": "readability",
+        "min_delta": 0.25
+      },
+      "status": "passed",
+      "observed": {
+        "higher": 2.34,
+        "lower": 1.24,
+        "delta": 1.1
+      }
+    },
+    {
+      "expectation": {
+        "name": "selection_simplicity",
+        "higher": "selection_flat",
+        "lower": "selection_nested",
+        "signal": "simplicity",
+        "min_delta": 0.25
+      },
+      "status": "passed",
+      "observed": {
+        "higher": 2.74,
+        "lower": 1.29,
+        "delta": 1.45
+      }
+    },
+    {
+      "expectation": {
+        "name": "simple_ternary_readability",
+        "case": "simple_ternary",
+        "signal": "readability",
+        "field": "score",
+        "minimum": 2.4
+      },
+      "status": "passed",
+      "observed": 3
+    },
+    {
+      "expectation": {
+        "name": "simple_ternary_simplicity",
+        "case": "simple_ternary",
+        "signal": "simplicity",
+        "field": "score",
+        "minimum": 2.4
+      },
+      "status": "passed",
+      "observed": 3
+    },
+    {
+      "expectation": {
+        "name": "natural_nesting_readability",
+        "case": "natural_nesting",
+        "signal": "readability",
+        "field": "score",
+        "minimum": 2.4
+      },
+      "status": "passed",
+      "observed": 3
+    },
+    {
+      "expectation": {
+        "name": "natural_nesting_simplicity",
+        "case": "natural_nesting",
+        "signal": "simplicity",
+        "field": "score",
+        "minimum": 2.4
+      },
+      "status": "passed",
+      "observed": 2.99
+    },
+    {
+      "expectation": {
+        "name": "named_predicate_readability",
+        "case": "named_predicate",
+        "signal": "readability",
+        "field": "score",
+        "minimum": 2.4
+      },
+      "status": "passed",
+      "observed": 2.99
+    },
+    {
+      "expectation": {
+        "name": "named_predicate_simplicity",
+        "case": "named_predicate",
+        "signal": "simplicity",
+        "field": "score",
+        "minimum": 2.4
+      },
+      "status": "passed",
+      "observed": 3
+    },
+    {
+      "expectation": {
+        "name": "preserve_invariant_boundary",
+        "case": "invariant_helper",
+        "signal": "abstraction_quality",
+        "field": "score",
+        "minimum": 2.4
+      },
+      "status": "passed",
+      "observed": 2.89
+    },
+    {
+      "expectation": {
+        "name": "selection_nested_flattening_helpful",
+        "case": "selection_nested",
+        "signal": "flattening_helpful",
+        "minimum": 0.7
+      },
+      "status": "passed",
+      "observed": 0.72
+    },
+    {
+      "expectation": {
+        "name": "selection_flat_flattening_helpful",
+        "case": "selection_flat",
+        "signal": "flattening_helpful",
+        "maximum": 0.3
+      },
+      "status": "failed",
+      "observed": 0.35
+    },
+    {
+      "expectation": {
+        "name": "natural_nesting_flattening_helpful",
+        "case": "natural_nesting",
+        "signal": "flattening_helpful",
+        "maximum": 0.3
+      },
+      "status": "passed",
+      "observed": 0.08
+    },
+    {
+      "expectation": {
+        "name": "shipping_dense_expression_expansion_helpful",
+        "case": "shipping_dense",
+        "signal": "expression_expansion_helpful",
+        "minimum": 0.7
+      },
+      "status": "passed",
+      "observed": 0.86
+    },
+    {
+      "expectation": {
+        "name": "simple_ternary_expression_expansion_helpful",
+        "case": "simple_ternary",
+        "signal": "expression_expansion_helpful",
+        "maximum": 0.3
+      },
+      "status": "passed",
+      "observed": 0.1
+    },
+    {
+      "expectation": {
+        "name": "named_predicate_expression_expansion_helpful",
+        "case": "named_predicate",
+        "signal": "expression_expansion_helpful",
+        "maximum": 0.3
+      },
+      "status": "passed",
+      "observed": 0.15
+    }
+  ],
+  "review_statuses": {
+    "selection_nested": "evaluated",
+    "selection_flat": "evaluated",
+    "shipping_clear": "evaluated",
+    "shipping_dense": "evaluated",
+    "simple_ternary": "evaluated",
+    "natural_nesting": "evaluated",
+    "named_predicate": "evaluated",
+    "invariant_helper": "evaluated"
+  },
+  "observations": {
+    "selection_nested": {
+      "provider": "vercel",
+      "protocol": "gateway",
+      "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+      "rubric_sha256": "f4651cc7e20fb0ab60a34588fd8fee3af9fa5a30651387d9752176b871187225",
+      "rubric_version": "1.1.0",
+      "state_sha256": "2ed4c13f395c6fd54074c02e928f4b2f6fca1f3ae9ea10f355ebe152ec96dadb",
+      "evaluated_at": "2026-09-22T12:41:08.536267+00:00",
+      "response": {
+        "model": "typesafe-ai/jev",
+        "answers": {
+          "abstraction_quality": {
+            "type": "score",
+            "score": 2.96,
+            "probabilities": {
+              "0": 0.01,
+              "1": 0,
+              "2": 0,
+              "3": 0.99
+            },
+            "confidence": 0.96
+          },
+          "complexity_justified": {
+            "type": "boolean",
+            "probability": 0.53
+          },
+          "context_sufficient": {
+            "type": "boolean",
+            "probability": 0.77
+          },
+          "dominant_cost": {
+            "type": "choice",
+            "choice": "nesting",
+            "probabilities": {
+              "no_material_obstacle": 0.2,
+              "inherent_domain_complexity": 0,
+              "indirection": 0,
+              "insufficient_context": 0.01,
+              "mixed_responsibilities": 0,
+              "dense_expressions": 0,
+              "branching": 0.01,
+              "error_handling": 0,
+              "nesting": 0.78,
+              "state_mutation": 0
+            },
+            "confidence": 0.76
+          },
+          "expression_expansion_helpful": {
+            "type": "boolean",
+            "probability": 0.12
+          },
+          "flattening_helpful": {
+            "type": "boolean",
+            "probability": 0.72
+          },
+          "readability": {
+            "type": "score",
+            "score": 1.15,
+            "probabilities": {
+              "0": 0,
+              "1": 0.91,
+              "2": 0.02,
+              "3": 0.07
+            },
+            "confidence": 0.84
+          },
+          "responsibility_cohesion": {
+            "type": "score",
+            "score": 2.75,
+            "probabilities": {
+              "0": 0.01,
+              "1": 0.09,
+              "2": 0.04,
+              "3": 0.86
+            },
+            "confidence": 0.75
+          },
+          "simplicity": {
+            "type": "score",
+            "score": 1.29,
+            "probabilities": {
+              "0": 0,
+              "1": 0.83,
+              "2": 0.05,
+              "3": 0.12
+            },
+            "confidence": 0.71
+          },
+          "split_helpful": {
+            "type": "boolean",
+            "probability": 0.5
+          }
+        },
+        "usage": {
+          "inputTokens": 2098,
+          "outputTokens": 292
+        },
+        "providerMetadata": {
+          "typesafe": {
+            "confidence": {
+              "abstraction_quality": 0.96,
+              "dominant_cost": 0.76,
+              "readability": 0.84,
+              "responsibility_cohesion": 0.75,
+              "simplicity": 0.71
+            }
+          },
+          "gateway": {
+            "routing": {
+              "originalModelId": "typesafe-ai/jev",
+              "resolvedProvider": "typesafe-ai",
+              "fallbacksAvailable": [],
+              "planningReasoning": "System credentials planned for: typesafe-ai. Total execution order: typesafe-ai(system)",
+              "canonicalSlug": "typesafe-ai/jev",
+              "finalProvider": "typesafe-ai",
+              "modelAttemptCount": 1,
+              "modelAttempts": [
+                {
+                  "canonicalSlug": "typesafe-ai/jev",
+                  "success": true,
+                  "providerAttemptCount": 1,
+                  "providerAttempts": [
+                    {
+                      "provider": "typesafe-ai",
+                      "credentialType": "system",
+                      "success": true,
+                      "startTime": 1790080868382,
+                      "endTime": 1790080868558,
+                      "statusCode": 200
+                    }
+                  ]
+                }
+              ],
+              "totalProviderAttemptCount": 1
+            },
+            "cost": "0",
+            "marketCost": "0.000088116",
+            "surchargeCost": "0",
+            "gatewayCost": "0",
+            "generationId": "gen_01M34J4QWME55V3T061SWBTQFG"
+          }
+        }
+      }
+    },
+    "selection_flat": {
+      "provider": "vercel",
+      "protocol": "gateway",
+      "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+      "rubric_sha256": "f4651cc7e20fb0ab60a34588fd8fee3af9fa5a30651387d9752176b871187225",
+      "rubric_version": "1.1.0",
+      "state_sha256": "61278ff4dbf5e7d946d163f222e41957151842ef3a68e2b2e23c9b41fd73a00e",
+      "evaluated_at": "2026-09-22T12:41:08.862848+00:00",
+      "response": {
+        "model": "typesafe-ai/jev",
+        "answers": {
+          "abstraction_quality": {
+            "type": "score",
+            "score": 2.98,
+            "probabilities": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "3": 1
+            },
+            "confidence": 0.98
+          },
+          "complexity_justified": {
+            "type": "boolean",
+            "probability": 0.58
+          },
+          "context_sufficient": {
+            "type": "boolean",
+            "probability": 0.79
+          },
+          "dominant_cost": {
+            "type": "choice",
+            "choice": "no_material_obstacle",
+            "probabilities": {
+              "insufficient_context": 0.02,
+              "indirection": 0,
+              "state_mutation": 0,
+              "inherent_domain_complexity": 0,
+              "error_handling": 0,
+              "branching": 0.11,
+              "dense_expressions": 0,
+              "no_material_obstacle": 0.87,
+              "nesting": 0,
+              "mixed_responsibilities": 0
+            },
+            "confidence": 0.85
+          },
+          "expression_expansion_helpful": {
+            "type": "boolean",
+            "probability": 0.11
+          },
+          "flattening_helpful": {
+            "type": "boolean",
+            "probability": 0.35
+          },
+          "readability": {
+            "type": "score",
+            "score": 2.12,
+            "probabilities": {
+              "0": 0,
+              "1": 0.39,
+              "2": 0.09,
+              "3": 0.52
+            },
+            "confidence": 0.12
+          },
+          "responsibility_cohesion": {
+            "type": "score",
+            "score": 2.73,
+            "probabilities": {
+              "0": 0.01,
+              "1": 0.1,
+              "2": 0.05,
+              "3": 0.84
+            },
+            "confidence": 0.73
+          },
+          "simplicity": {
+            "type": "score",
+            "score": 2.74,
+            "probabilities": {
+              "0": 0,
+              "1": 0.09,
+              "2": 0.09,
+              "3": 0.82
+            },
+            "confidence": 0.74
+          },
+          "split_helpful": {
+            "type": "boolean",
+            "probability": 0.43
+          }
+        },
+        "usage": {
+          "inputTokens": 2113,
+          "outputTokens": 295
+        },
+        "providerMetadata": {
+          "typesafe": {
+            "confidence": {
+              "abstraction_quality": 0.98,
+              "dominant_cost": 0.85,
+              "readability": 0.12,
+              "responsibility_cohesion": 0.73,
+              "simplicity": 0.74
+            }
+          },
+          "gateway": {
+            "routing": {
+              "originalModelId": "typesafe-ai/jev",
+              "resolvedProvider": "typesafe-ai",
+              "fallbacksAvailable": [],
+              "planningReasoning": "System credentials planned for: typesafe-ai. Total execution order: typesafe-ai(system)",
+              "canonicalSlug": "typesafe-ai/jev",
+              "finalProvider": "typesafe-ai",
+              "modelAttemptCount": 1,
+              "modelAttempts": [
+                {
+                  "canonicalSlug": "typesafe-ai/jev",
+                  "success": true,
+                  "providerAttemptCount": 1,
+                  "providerAttempts": [
+                    {
+                      "provider": "typesafe-ai",
+                      "credentialType": "system",
+                      "success": true,
+                      "startTime": 1790080868751,
+                      "endTime": 1790080868902,
+                      "statusCode": 200
+                    }
+                  ]
+                }
+              ],
+              "totalProviderAttemptCount": 1
+            },
+            "cost": "0",
+            "marketCost": "0.000088746",
+            "surchargeCost": "0",
+            "gatewayCost": "0",
+            "generationId": "gen_01M34J4RBKMH034HW5SKK6JFQB"
+          }
+        }
+      }
+    },
+    "shipping_clear": {
+      "provider": "vercel",
+      "protocol": "gateway",
+      "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+      "rubric_sha256": "f4651cc7e20fb0ab60a34588fd8fee3af9fa5a30651387d9752176b871187225",
+      "rubric_version": "1.1.0",
+      "state_sha256": "ae916df90d9ad03b4bf0d2c277be97ce064efe39e7653c3809c9b6caeca4cf68",
+      "evaluated_at": "2026-09-22T12:41:09.226664+00:00",
+      "response": {
+        "model": "typesafe-ai/jev",
+        "answers": {
+          "abstraction_quality": {
+            "type": "score",
+            "score": 2.99,
+            "probabilities": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "3": 1
+            },
+            "confidence": 0.99
+          },
+          "complexity_justified": {
+            "type": "boolean",
+            "probability": 0.71
+          },
+          "context_sufficient": {
+            "type": "boolean",
+            "probability": 0.88
+          },
+          "dominant_cost": {
+            "type": "choice",
+            "choice": "no_material_obstacle",
+            "probabilities": {
+              "nesting": 0.01,
+              "error_handling": 0,
+              "branching": 0.08,
+              "dense_expressions": 0,
+              "no_material_obstacle": 0.91,
+              "state_mutation": 0,
+              "indirection": 0,
+              "inherent_domain_complexity": 0,
+              "insufficient_context": 0,
+              "mixed_responsibilities": 0
+            },
+            "confidence": 0.9
+          },
+          "expression_expansion_helpful": {
+            "type": "boolean",
+            "probability": 0.1
+          },
+          "flattening_helpful": {
+            "type": "boolean",
+            "probability": 0.26
+          },
+          "readability": {
+            "type": "score",
+            "score": 2.34,
+            "probabilities": {
+              "0": 0,
+              "1": 0.2,
+              "2": 0.25,
+              "3": 0.55
+            },
+            "confidence": 0.34
+          },
+          "responsibility_cohesion": {
+            "type": "score",
+            "score": 2.9,
+            "probabilities": {
+              "0": 0,
+              "1": 0.03,
+              "2": 0.02,
+              "3": 0.95
+            },
+            "confidence": 0.9
+          },
+          "simplicity": {
+            "type": "score",
+            "score": 2.72,
+            "probabilities": {
+              "0": 0,
+              "1": 0.04,
+              "2": 0.21,
+              "3": 0.75
+            },
+            "confidence": 0.72
+          },
+          "split_helpful": {
+            "type": "boolean",
+            "probability": 0.29
+          }
+        },
+        "usage": {
+          "inputTokens": 2106,
+          "outputTokens": 295
+        },
+        "providerMetadata": {
+          "typesafe": {
+            "confidence": {
+              "abstraction_quality": 0.99,
+              "dominant_cost": 0.9,
+              "readability": 0.34,
+              "responsibility_cohesion": 0.9,
+              "simplicity": 0.72
+            }
+          },
+          "gateway": {
+            "routing": {
+              "originalModelId": "typesafe-ai/jev",
+              "resolvedProvider": "typesafe-ai",
+              "fallbacksAvailable": [],
+              "planningReasoning": "System credentials planned for: typesafe-ai. Total execution order: typesafe-ai(system)",
+              "canonicalSlug": "typesafe-ai/jev",
+              "finalProvider": "typesafe-ai",
+              "modelAttemptCount": 1,
+              "modelAttempts": [
+                {
+                  "canonicalSlug": "typesafe-ai/jev",
+                  "success": true,
+                  "providerAttemptCount": 1,
+                  "providerAttempts": [
+                    {
+                      "provider": "typesafe-ai",
+                      "credentialType": "system",
+                      "success": true,
+                      "startTime": 1790080869060,
+                      "endTime": 1790080869237,
+                      "statusCode": 200
+                    }
+                  ]
+                }
+              ],
+              "totalProviderAttemptCount": 1
+            },
+            "cost": "0",
+            "marketCost": "0.000088452",
+            "surchargeCost": "0",
+            "gatewayCost": "0",
+            "generationId": "gen_01M34J4RN69XK2Y6HQWB446MQ3"
+          }
+        }
+      }
+    },
+    "shipping_dense": {
+      "provider": "vercel",
+      "protocol": "gateway",
+      "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+      "rubric_sha256": "f4651cc7e20fb0ab60a34588fd8fee3af9fa5a30651387d9752176b871187225",
+      "rubric_version": "1.1.0",
+      "state_sha256": "0d66184267341a6e3607b12ee7f76f3d78438770b86307cc3ef0faedf091394e",
+      "evaluated_at": "2026-09-22T12:41:09.626783+00:00",
+      "response": {
+        "model": "typesafe-ai/jev",
+        "answers": {
+          "abstraction_quality": {
+            "type": "score",
+            "score": 2.98,
+            "probabilities": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "3": 1
+            },
+            "confidence": 0.98
+          },
+          "complexity_justified": {
+            "type": "boolean",
+            "probability": 0.62
+          },
+          "context_sufficient": {
+            "type": "boolean",
+            "probability": 0.85
+          },
+          "dominant_cost": {
+            "type": "choice",
+            "choice": "dense_expressions",
+            "probabilities": {
+              "nesting": 0.04,
+              "mixed_responsibilities": 0,
+              "error_handling": 0,
+              "insufficient_context": 0,
+              "indirection": 0,
+              "branching": 0.12,
+              "state_mutation": 0,
+              "no_material_obstacle": 0.33,
+              "inherent_domain_complexity": 0,
+              "dense_expressions": 0.51
+            },
+            "confidence": 0.45
+          },
+          "expression_expansion_helpful": {
+            "type": "boolean",
+            "probability": 0.86
+          },
+          "flattening_helpful": {
+            "type": "boolean",
+            "probability": 0.14
+          },
+          "readability": {
+            "type": "score",
+            "score": 1.24,
+            "probabilities": {
+              "0": 0.01,
+              "1": 0.8,
+              "2": 0.14,
+              "3": 0.05
+            },
+            "confidence": 0.75
+          },
+          "responsibility_cohesion": {
+            "type": "score",
+            "score": 2.75,
+            "probabilities": {
+              "0": 0.01,
+              "1": 0.08,
+              "2": 0.05,
+              "3": 0.86
+            },
+            "confidence": 0.75
+          },
+          "simplicity": {
+            "type": "score",
+            "score": 1.43,
+            "probabilities": {
+              "0": 0.01,
+              "1": 0.68,
+              "2": 0.18,
+              "3": 0.13
+            },
+            "confidence": 0.55
+          },
+          "split_helpful": {
+            "type": "boolean",
+            "probability": 0.35
+          }
+        },
+        "usage": {
+          "inputTokens": 2091,
+          "outputTokens": 294
+        },
+        "providerMetadata": {
+          "typesafe": {
+            "confidence": {
+              "abstraction_quality": 0.98,
+              "dominant_cost": 0.45,
+              "readability": 0.75,
+              "responsibility_cohesion": 0.75,
+              "simplicity": 0.55
+            }
+          },
+          "gateway": {
+            "routing": {
+              "originalModelId": "typesafe-ai/jev",
+              "resolvedProvider": "typesafe-ai",
+              "fallbacksAvailable": [],
+              "planningReasoning": "System credentials planned for: typesafe-ai. Total execution order: typesafe-ai(system)",
+              "canonicalSlug": "typesafe-ai/jev",
+              "finalProvider": "typesafe-ai",
+              "modelAttemptCount": 1,
+              "modelAttempts": [
+                {
+                  "canonicalSlug": "typesafe-ai/jev",
+                  "success": true,
+                  "providerAttemptCount": 1,
+                  "providerAttempts": [
+                    {
+                      "provider": "typesafe-ai",
+                      "credentialType": "system",
+                      "success": true,
+                      "startTime": 1790080869432,
+                      "endTime": 1790080869630,
+                      "statusCode": 200
+                    }
+                  ]
+                }
+              ],
+              "totalProviderAttemptCount": 1
+            },
+            "cost": "0",
+            "marketCost": "0.000087822",
+            "surchargeCost": "0",
+            "gatewayCost": "0",
+            "generationId": "gen_01M34J4S0XV44CRZCV43V1P0V5"
+          }
+        }
+      }
+    },
+    "simple_ternary": {
+      "provider": "vercel",
+      "protocol": "gateway",
+      "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+      "rubric_sha256": "f4651cc7e20fb0ab60a34588fd8fee3af9fa5a30651387d9752176b871187225",
+      "rubric_version": "1.1.0",
+      "state_sha256": "10ada2eb9746efc44d2a6464ff3e7a049824e9e8de3f9b5fdef05bb2d5e5cbf6",
+      "evaluated_at": "2026-09-22T12:41:09.948151+00:00",
+      "response": {
+        "model": "typesafe-ai/jev",
+        "answers": {
+          "abstraction_quality": {
+            "type": "score",
+            "score": 2.99,
+            "probabilities": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "3": 1
+            },
+            "confidence": 0.99
+          },
+          "complexity_justified": {
+            "type": "boolean",
+            "probability": 0.4
+          },
+          "context_sufficient": {
+            "type": "boolean",
+            "probability": 0.84
+          },
+          "dominant_cost": {
+            "type": "choice",
+            "choice": "no_material_obstacle",
+            "probabilities": {
+              "inherent_domain_complexity": 0,
+              "nesting": 0,
+              "branching": 0,
+              "state_mutation": 0,
+              "no_material_obstacle": 0.99,
+              "mixed_responsibilities": 0,
+              "insufficient_context": 0.01,
+              "indirection": 0,
+              "error_handling": 0,
+              "dense_expressions": 0
+            },
+            "confidence": 0.99
+          },
+          "expression_expansion_helpful": {
+            "type": "boolean",
+            "probability": 0.1
+          },
+          "flattening_helpful": {
+            "type": "boolean",
+            "probability": 0.06
+          },
+          "readability": {
+            "type": "score",
+            "score": 3,
+            "probabilities": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "3": 1
+            },
+            "confidence": 1
+          },
+          "responsibility_cohesion": {
+            "type": "score",
+            "score": 3,
+            "probabilities": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "3": 1
+            },
+            "confidence": 1
+          },
+          "simplicity": {
+            "type": "score",
+            "score": 3,
+            "probabilities": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "3": 1
+            },
+            "confidence": 1
+          },
+          "split_helpful": {
+            "type": "boolean",
+            "probability": 0.16
+          }
+        },
+        "usage": {
+          "inputTokens": 2010,
+          "outputTokens": 295
+        },
+        "providerMetadata": {
+          "typesafe": {
+            "confidence": {
+              "abstraction_quality": 0.99,
+              "dominant_cost": 0.99,
+              "readability": 1,
+              "responsibility_cohesion": 1,
+              "simplicity": 1
+            }
+          },
+          "gateway": {
+            "routing": {
+              "originalModelId": "typesafe-ai/jev",
+              "resolvedProvider": "typesafe-ai",
+              "fallbacksAvailable": [],
+              "planningReasoning": "System credentials planned for: typesafe-ai. Total execution order: typesafe-ai(system)",
+              "canonicalSlug": "typesafe-ai/jev",
+              "finalProvider": "typesafe-ai",
+              "modelAttemptCount": 1,
+              "modelAttempts": [
+                {
+                  "canonicalSlug": "typesafe-ai/jev",
+                  "success": true,
+                  "providerAttemptCount": 1,
+                  "providerAttempts": [
+                    {
+                      "provider": "typesafe-ai",
+                      "credentialType": "system",
+                      "success": true,
+                      "startTime": 1790080869855,
+                      "endTime": 1790080869978,
+                      "statusCode": 200
+                    }
+                  ]
+                }
+              ],
+              "totalProviderAttemptCount": 1
+            },
+            "cost": "0",
+            "marketCost": "0.00008442",
+            "surchargeCost": "0",
+            "gatewayCost": "0",
+            "generationId": "gen_01M34J4SE6RKWP1XS4YXJZYVJD"
+          }
+        }
+      }
+    },
+    "natural_nesting": {
+      "provider": "vercel",
+      "protocol": "gateway",
+      "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+      "rubric_sha256": "f4651cc7e20fb0ab60a34588fd8fee3af9fa5a30651387d9752176b871187225",
+      "rubric_version": "1.1.0",
+      "state_sha256": "dd3f15c14a18cf87f31aca860a3caa3b87670d95a11edcba6e8affe58784f90b",
+      "evaluated_at": "2026-09-22T12:41:10.291705+00:00",
+      "response": {
+        "model": "typesafe-ai/jev",
+        "answers": {
+          "abstraction_quality": {
+            "type": "score",
+            "score": 2.96,
+            "probabilities": {
+              "0": 0,
+              "1": 0.01,
+              "2": 0,
+              "3": 0.99
+            },
+            "confidence": 0.96
+          },
+          "complexity_justified": {
+            "type": "boolean",
+            "probability": 0.76
+          },
+          "context_sufficient": {
+            "type": "boolean",
+            "probability": 0.78
+          },
+          "dominant_cost": {
+            "type": "choice",
+            "choice": "no_material_obstacle",
+            "probabilities": {
+              "inherent_domain_complexity": 0,
+              "branching": 0,
+              "indirection": 0,
+              "nesting": 0.03,
+              "insufficient_context": 0.04,
+              "error_handling": 0,
+              "dense_expressions": 0,
+              "mixed_responsibilities": 0,
+              "no_material_obstacle": 0.93,
+              "state_mutation": 0
+            },
+            "confidence": 0.92
+          },
+          "expression_expansion_helpful": {
+            "type": "boolean",
+            "probability": 0.07
+          },
+          "flattening_helpful": {
+            "type": "boolean",
+            "probability": 0.08
+          },
+          "readability": {
+            "type": "score",
+            "score": 3,
+            "probabilities": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "3": 1
+            },
+            "confidence": 1
+          },
+          "responsibility_cohesion": {
+            "type": "score",
+            "score": 2.99,
+            "probabilities": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "3": 1
+            },
+            "confidence": 0.99
+          },
+          "simplicity": {
+            "type": "score",
+            "score": 2.99,
+            "probabilities": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "3": 1
+            },
+            "confidence": 0.99
+          },
+          "split_helpful": {
+            "type": "boolean",
+            "probability": 0.22
+          }
+        },
+        "usage": {
+          "inputTokens": 2060,
+          "outputTokens": 295
+        },
+        "providerMetadata": {
+          "typesafe": {
+            "confidence": {
+              "abstraction_quality": 0.96,
+              "dominant_cost": 0.92,
+              "readability": 1,
+              "responsibility_cohesion": 0.99,
+              "simplicity": 0.99
+            }
+          },
+          "gateway": {
+            "routing": {
+              "originalModelId": "typesafe-ai/jev",
+              "resolvedProvider": "typesafe-ai",
+              "fallbacksAvailable": [],
+              "planningReasoning": "System credentials planned for: typesafe-ai. Total execution order: typesafe-ai(system)",
+              "canonicalSlug": "typesafe-ai/jev",
+              "finalProvider": "typesafe-ai",
+              "modelAttemptCount": 1,
+              "modelAttempts": [
+                {
+                  "canonicalSlug": "typesafe-ai/jev",
+                  "success": true,
+                  "providerAttemptCount": 1,
+                  "providerAttempts": [
+                    {
+                      "provider": "typesafe-ai",
+                      "credentialType": "system",
+                      "success": true,
+                      "startTime": 1790080870176,
+                      "endTime": 1790080870315,
+                      "statusCode": 200
+                    }
+                  ]
+                }
+              ],
+              "totalProviderAttemptCount": 1
+            },
+            "cost": "0",
+            "marketCost": "0.00008652",
+            "surchargeCost": "0",
+            "gatewayCost": "0",
+            "generationId": "gen_01M34J4SQMXVWM6BNQ520X23J7"
+          }
+        }
+      }
+    },
+    "named_predicate": {
+      "provider": "vercel",
+      "protocol": "gateway",
+      "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+      "rubric_sha256": "f4651cc7e20fb0ab60a34588fd8fee3af9fa5a30651387d9752176b871187225",
+      "rubric_version": "1.1.0",
+      "state_sha256": "9fb1c1cbfd0b50c45d13f6451a913b09b0b0229d8f9699d2457ffb75699b0de6",
+      "evaluated_at": "2026-09-22T12:41:10.656526+00:00",
+      "response": {
+        "model": "typesafe-ai/jev",
+        "answers": {
+          "abstraction_quality": {
+            "type": "score",
+            "score": 2.99,
+            "probabilities": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "3": 1
+            },
+            "confidence": 0.99
+          },
+          "complexity_justified": {
+            "type": "boolean",
+            "probability": 0.71
+          },
+          "context_sufficient": {
+            "type": "boolean",
+            "probability": 0.85
+          },
+          "dominant_cost": {
+            "type": "choice",
+            "choice": "no_material_obstacle",
+            "probabilities": {
+              "insufficient_context": 0.01,
+              "indirection": 0,
+              "error_handling": 0,
+              "inherent_domain_complexity": 0,
+              "state_mutation": 0,
+              "dense_expressions": 0,
+              "branching": 0,
+              "no_material_obstacle": 0.99,
+              "nesting": 0,
+              "mixed_responsibilities": 0
+            },
+            "confidence": 0.99
+          },
+          "expression_expansion_helpful": {
+            "type": "boolean",
+            "probability": 0.15
+          },
+          "flattening_helpful": {
+            "type": "boolean",
+            "probability": 0.1
+          },
+          "readability": {
+            "type": "score",
+            "score": 2.99,
+            "probabilities": {
+              "0": 0,
+              "1": 0,
+              "2": 0.01,
+              "3": 0.99
+            },
+            "confidence": 0.99
+          },
+          "responsibility_cohesion": {
+            "type": "score",
+            "score": 2.98,
+            "probabilities": {
+              "0": 0,
+              "1": 0.01,
+              "2": 0,
+              "3": 0.99
+            },
+            "confidence": 0.98
+          },
+          "simplicity": {
+            "type": "score",
+            "score": 3,
+            "probabilities": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "3": 1
+            },
+            "confidence": 1
+          },
+          "split_helpful": {
+            "type": "boolean",
+            "probability": 0.21
+          }
+        },
+        "usage": {
+          "inputTokens": 2034,
+          "outputTokens": 295
+        },
+        "providerMetadata": {
+          "typesafe": {
+            "confidence": {
+              "abstraction_quality": 0.99,
+              "dominant_cost": 0.99,
+              "readability": 0.99,
+              "responsibility_cohesion": 0.98,
+              "simplicity": 1
+            }
+          },
+          "gateway": {
+            "routing": {
+              "originalModelId": "typesafe-ai/jev",
+              "resolvedProvider": "typesafe-ai",
+              "fallbacksAvailable": [],
+              "planningReasoning": "System credentials planned for: typesafe-ai. Total execution order: typesafe-ai(system)",
+              "canonicalSlug": "typesafe-ai/jev",
+              "finalProvider": "typesafe-ai",
+              "modelAttemptCount": 1,
+              "modelAttempts": [
+                {
+                  "canonicalSlug": "typesafe-ai/jev",
+                  "success": true,
+                  "providerAttemptCount": 1,
+                  "providerAttempts": [
+                    {
+                      "provider": "typesafe-ai",
+                      "credentialType": "system",
+                      "success": true,
+                      "startTime": 1790080870541,
+                      "endTime": 1790080870688,
+                      "statusCode": 200
+                    }
+                  ]
+                }
+              ],
+              "totalProviderAttemptCount": 1
+            },
+            "cost": "0",
+            "marketCost": "0.000085428",
+            "surchargeCost": "0",
+            "gatewayCost": "0",
+            "generationId": "gen_01M34J4T37SBFBVZG8GD8TV35H"
+          }
+        }
+      }
+    },
+    "invariant_helper": {
+      "provider": "vercel",
+      "protocol": "gateway",
+      "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+      "rubric_sha256": "f4651cc7e20fb0ab60a34588fd8fee3af9fa5a30651387d9752176b871187225",
+      "rubric_version": "1.1.0",
+      "state_sha256": "b2808e749505cbacd72458f6058a4af018b4c20c33b3a2ff18e3c7d02bd43ad5",
+      "evaluated_at": "2026-09-22T12:41:10.980247+00:00",
+      "response": {
+        "model": "typesafe-ai/jev",
+        "answers": {
+          "abstraction_quality": {
+            "type": "score",
+            "score": 2.89,
+            "probabilities": {
+              "0": 0.02,
+              "1": 0.01,
+              "2": 0.06,
+              "3": 0.91
+            },
+            "confidence": 0.89
+          },
+          "complexity_justified": {
+            "type": "boolean",
+            "probability": 0.53
+          },
+          "context_sufficient": {
+            "type": "boolean",
+            "probability": 0.77
+          },
+          "dominant_cost": {
+            "type": "choice",
+            "choice": "no_material_obstacle",
+            "probabilities": {
+              "error_handling": 0,
+              "dense_expressions": 0,
+              "nesting": 0,
+              "indirection": 0,
+              "inherent_domain_complexity": 0,
+              "no_material_obstacle": 0.99,
+              "state_mutation": 0,
+              "branching": 0,
+              "mixed_responsibilities": 0,
+              "insufficient_context": 0.01
+            },
+            "confidence": 0.98
+          },
+          "expression_expansion_helpful": {
+            "type": "boolean",
+            "probability": 0.09
+          },
+          "flattening_helpful": {
+            "type": "boolean",
+            "probability": 0.1
+          },
+          "readability": {
+            "type": "score",
+            "score": 2.96,
+            "probabilities": {
+              "0": 0,
+              "1": 0,
+              "2": 0.04,
+              "3": 0.96
+            },
+            "confidence": 0.96
+          },
+          "responsibility_cohesion": {
+            "type": "score",
+            "score": 2.99,
+            "probabilities": {
+              "0": 0,
+              "1": 0,
+              "2": 0,
+              "3": 1
+            },
+            "confidence": 0.99
+          },
+          "simplicity": {
+            "type": "score",
+            "score": 2.96,
+            "probabilities": {
+              "0": 0,
+              "1": 0,
+              "2": 0.04,
+              "3": 0.96
+            },
+            "confidence": 0.96
+          },
+          "split_helpful": {
+            "type": "boolean",
+            "probability": 0.54
+          }
+        },
+        "usage": {
+          "inputTokens": 2090,
+          "outputTokens": 295
+        },
+        "providerMetadata": {
+          "typesafe": {
+            "confidence": {
+              "abstraction_quality": 0.89,
+              "dominant_cost": 0.98,
+              "readability": 0.96,
+              "responsibility_cohesion": 0.99,
+              "simplicity": 0.96
+            }
+          },
+          "gateway": {
+            "routing": {
+              "originalModelId": "typesafe-ai/jev",
+              "resolvedProvider": "typesafe-ai",
+              "fallbacksAvailable": [],
+              "planningReasoning": "System credentials planned for: typesafe-ai. Total execution order: typesafe-ai(system)",
+              "canonicalSlug": "typesafe-ai/jev",
+              "finalProvider": "typesafe-ai",
+              "modelAttemptCount": 1,
+              "modelAttempts": [
+                {
+                  "canonicalSlug": "typesafe-ai/jev",
+                  "success": true,
+                  "providerAttemptCount": 1,
+                  "providerAttempts": [
+                    {
+                      "provider": "typesafe-ai",
+                      "credentialType": "system",
+                      "success": true,
+                      "startTime": 1790080870863,
+                      "endTime": 1790080871003,
+                      "statusCode": 200
+                    }
+                  ]
+                }
+              ],
+              "totalProviderAttemptCount": 1
+            },
+            "cost": "0",
+            "marketCost": "0.00008778",
+            "surchargeCost": "0",
+            "gatewayCost": "0",
+            "generationId": "gen_01M34J4TDX5D1XJ881XJKNAETT"
+          }
+        }
+      }
+    }
+  },
+  "limitation": "Small synthetic regression suite; thresholds are fixture expectations, not production gates or calibration."
+}

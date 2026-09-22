@@ -164,8 +164,16 @@ state. Every Score uses four concrete descriptions, ordered from worse to better
 | `abstraction_quality` | Whether boundaries encapsulate meaningful decisions or invariants |
 | `complexity_justified` | Probability the stated requirements need the visible complexity |
 | `split_helpful` | Probability extraction helps after accounting for new indirection |
+| `flattening_helpful` | Probability local guard exits help while preserving traversal, order, and lifetimes |
+| `expression_expansion_helpful` | Probability explicit branches help unpack a compressed conditional expression |
 | `dominant_cost` | A candidate explanation category, including no problem and insufficient context |
 | `context_sufficient` | A separate judgment about whether the shown context supports review |
+
+Rubric 1.1.0 distinguishes understanding the final result from the bookkeeping needed
+to change a path: pending guards, condition/outcome associations, expression binding,
+and helper transitions. Natural collection nesting, a simple ternary, and a useful
+short-circuit predicate can still score well. The two transformation judgments
+are specific hypotheses to inspect, not requests to flatten or expand every case.
 
 Scores are positions from **0 to 3**, not percentages or probabilities of
 correctness. Boolean probabilities range from **0 to 1**. Retain the distributions
@@ -225,6 +233,15 @@ was below the declared expectation. Those failures are retained. Keep the static
 censuses and source inspection; a near-maximum readability score does not
 establish that a path is easy to follow. The source checkout's
 `notes/python-complexity/jev-evals-2026-09-22.md` records the procedure and results.
+
+Rubric 1.1.0 passes all nine original expectations. A separately frozen eight-case
+validation suite passes 15 of 16: useful nesting and simple-expression controls
+pass, while an already-flat case produces a borderline flattening probability
+above its declared negative-control limit. The checkout's
+`notes/python-complexity/jev-improvement-2026-09-22.md` retains old/new evidence
+and further independent results. Action probabilities require inspection; better
+synthetic separation is not proof of production refactor value. Run validation
+with `make eval-python-complexity EVAL_ARGS='--fixtures tests/fixtures/python-complexity-jev-validation.json'`.
 
 ## Sources and implementation choice
 

@@ -4,6 +4,16 @@ All notable changes to the python-complexity skill in this marketplace will be d
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.4.0] - 2026-09-22
+
+### Changed
+- Rubric 1.1.0 judges maintenance tracing burden explicitly: pending guards, branch-result associations, conditional-expression binding, and helper transitions. Simplicity includes avoidable control-flow scaffolding. This fixes weak separation of nested guards and dense ternaries in the original regression suite without changing its expectations.
+
+### Added
+- Independent `flattening_helpful` and `expression_expansion_helpful` judgments suggest concrete transformations while accounting for natural traversal, short-circuit safety, cleanup lifetimes, and useful compact expressions.
+- Separate validation fixtures with behavior contracts and useful-structure controls, plus a fixture-selectable evaluator that retains missing signals as skipped and supports expected exceptions.
+- Retained Jev design review and before/after regression evidence. Scores remain advisory; changed rubric scores require rerunning the baseline.
+
 ## [1.3.0] - 2026-09-22
 
 ### Added
