@@ -1,0 +1,95 @@
+{
+  "evaluated_at": "2026-09-22T16:54:12.487009+00:00",
+  "cases": [
+    {
+      "name": "case-01",
+      "preferred": "revised",
+      "requirements_preserved": true,
+      "behavior_preserved": true,
+      "uncertainty_preserved": true,
+      "evidence_supported": true,
+      "reason": "Agree with Jev on revised and all preservation judgments. The tighter summary retains the measured quantities, local fixture scope, unmeasured dimensions, and unknown production effect; rereading provides no reason to change the baseline."
+    },
+    {
+      "name": "case-02",
+      "preferred": "original",
+      "requirements_preserved": false,
+      "behavior_preserved": false,
+      "uncertainty_preserved": true,
+      "evidence_supported": false,
+      "reason": "Agree with Jev on original and on failed requirement, behavior, and evidence preservation: SHOULD weakens the mandatory acceptance contract. Override its low uncertainty-preservation estimate because obligation strength is a normative change, not an observation-versus-hypothesis change; neither version states an epistemic uncertainty."
+    },
+    {
+      "name": "case-03",
+      "preferred": "revised",
+      "requirements_preserved": true,
+      "behavior_preserved": true,
+      "uncertainty_preserved": true,
+      "evidence_supported": true,
+      "reason": "Agree with Jev on revised and all preservation judgments. Numbering exposes the action sequence while keeping owner, canary scope, duration, strict failure threshold, rollback and stop, and approval gate intact."
+    },
+    {
+      "name": "case-04",
+      "preferred": "original",
+      "requirements_preserved": true,
+      "behavior_preserved": false,
+      "uncertainty_preserved": false,
+      "evidence_supported": false,
+      "reason": "Agree with Jev on original and on failed behavior, uncertainty, and evidence preservation: temporal sequence does not establish the acknowledgement mechanism. Override its failed requirements estimate because this incident analysis contains no normative requirement or operational constraint; the specific failures are invented behavior and causal certainty."
+    },
+    {
+      "name": "case-05",
+      "preferred": "revised",
+      "requirements_preserved": true,
+      "behavior_preserved": true,
+      "uncertainty_preserved": true,
+      "evidence_supported": true,
+      "reason": "Agree with Jev that meaning and evidence survive; override its equivalent preference. The revision removes repeated decision framing and puts the transaction rationale beside the decision while retaining accepted status, the rejected integration, and the accepted load consequence. That is a useful editorial improvement for reviewers."
+    },
+    {
+      "name": "case-06",
+      "preferred": "original",
+      "requirements_preserved": false,
+      "behavior_preserved": false,
+      "uncertainty_preserved": true,
+      "evidence_supported": false,
+      "reason": "Agree with Jev on original and on failed requirement, behavior, and evidence preservation: deletion of legally held records contradicts the contract. Override its low uncertainty-preservation estimate because a legal-hold exception is a normative condition, not epistemic uncertainty; neither text presents an uncertain claim."
+    },
+    {
+      "name": "case-07",
+      "preferred": "revised",
+      "requirements_preserved": true,
+      "behavior_preserved": true,
+      "uncertainty_preserved": true,
+      "evidence_supported": true,
+      "reason": "Agree with Jev on revised and all preservation judgments. The explicit branches improve scanning while preserving flag-first sequencing, status codes, permission checking, read/write prohibitions, and the successful preview and event path."
+    },
+    {
+      "name": "case-08",
+      "preferred": "original",
+      "requirements_preserved": false,
+      "behavior_preserved": false,
+      "uncertainty_preserved": true,
+      "evidence_supported": false,
+      "reason": "Agree with Jev on original and on failed requirement, behavior, and evidence preservation because endpoint values are swapped. Override its low uncertainty-preservation estimate: both documents state fixed configuration requirements without epistemic qualification, and the error changes values rather than certainty."
+    },
+    {
+      "name": "case-09",
+      "preferred": "revised",
+      "requirements_preserved": true,
+      "behavior_preserved": true,
+      "uncertainty_preserved": true,
+      "evidence_supported": true,
+      "reason": "Agree with Jev on all preservation judgments; override its equivalent preference. Leading with no algorithm selected and ending with a direct prerequisite action makes the pending decision and next step easier to retrieve, with the absent target and both benchmarks still explicit. Missing research does not prevent this editorial comparison."
+    },
+    {
+      "name": "case-10",
+      "preferred": "original",
+      "requirements_preserved": true,
+      "behavior_preserved": false,
+      "uncertainty_preserved": false,
+      "evidence_supported": false,
+      "reason": "Agree with Jev on original and on failed behavior, uncertainty, and evidence preservation: unmeasured production effects cannot become deployment guarantees. Override its failed requirements estimate because the original reports limits of inference and supports a staging trial without imposing a normative rollout requirement; the defect is overclaiming evidence and behavior."
+    }
+  ]
+}

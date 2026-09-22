@@ -221,3 +221,18 @@ answers, and failures. Report bounded attempts and coverage. An earlier
 code-comment pilot showed no incremental gain; that does not establish either
 benefit or failure for Markdown. Demonstrate value on document tasks before
 adopting model judgments as a recurring acceptance mechanism.
+
+## Recorded validation snapshot
+
+On 2026-09-22, the frozen ten-case Markdown pilot passed 28/30 semantic
+expectations. All five harmful rewrites were rejected; two safe improvements
+were judged equivalent. A blind agent-only/assisted comparison matched all
+30 labels both ways, with no changed decisions. This is useful preservation
+regression evidence, not proof of added accuracy over the agent or broad
+document quality. The source checkout records raw results and limitations in
+`notes/doc-quality/`. Provider aliases and probabilities may change.
+
+Question design follows TypeSafe's [Score](https://docs.typesafe.ai/primitives/score),
+[Noul](https://docs.typesafe.ai/primitives/noul), and
+[confidence](https://docs.typesafe.ai/confidence) guidance. Parsing uses
+[markdown-it-py](https://markdown-it-py.readthedocs.io/en/latest/using.html).

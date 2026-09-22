@@ -1,0 +1,137 @@
+{
+  "task": "Clarify Upload retries in a fictional implementation plan while preserving behavior and the unrelated section.",
+  "status": "passed_offline_forward_test",
+  "checks": {
+    "static_semantics_skipped_without_helper": true,
+    "static_text_change_requires_review": true,
+    "static_semantic_preservation_not_claimed": true,
+    "no_autoacceptance": true,
+    "protected_inventories_unchanged": true,
+    "quantities_modals_negations_headings_unchanged": true,
+    "full_compare_three_preview_requests": true,
+    "before_scope_exact_original_only": true,
+    "after_scope_exact_candidate": true,
+    "before_after_questions_identical": true,
+    "before_after_question_hashes_identical": true,
+    "all_comparison_context_identical": true,
+    "paired_candidates_correct": true,
+    "comparison_state_has_no_filenames": true,
+    "section_preview_only_selected_section": true,
+    "paired_only_has_one_request": true,
+    "paired_only_questions_unchanged": true,
+    "unrequested_section_unchanged": true,
+    "code_bytes_unchanged": true,
+    "code_json_valid_and_bounds_match": true,
+    "local_link_target_exists": true,
+    "referenced_heading_present": true,
+    "helper_honestly_marks_link_validation_not_run": true,
+    "comparison_leaves_both_files_unchanged": true
+  },
+  "ledger_review": {
+    "method": "Manual comparison against the supplied fictional protocol, original, and revised text; lexical equality is supporting evidence only.",
+    "items": [
+      {
+        "id": "gating",
+        "requirement": "MUST apply upload_snapshot() only when snapshot_uploads_enabled is true",
+        "finding": "Same prerequisite and mandatory force; names preserved.",
+        "status": "preserved"
+      },
+      {
+        "id": "retry_condition",
+        "requirement": "HTTP 503 permits at most 2 retries with at least 750 ms between attempts",
+        "finding": "Same status, upper retry bound, lower delay bound, and units.",
+        "status": "preserved"
+      },
+      {
+        "id": "cancellation_exception",
+        "requirement": "Cancellation interrupts the HTTP 503 retry rule; stop without another request",
+        "finding": "Exception stays in the same bullet; the worker is now the explicit subject.",
+        "status": "preserved"
+      },
+      {
+        "id": "non_retryable_error",
+        "requirement": "HTTP 400 MUST NOT be retried",
+        "finding": "Unchanged mandatory prohibition.",
+        "status": "preserved"
+      },
+      {
+        "id": "body_limit",
+        "requirement": "Payload MUST be at most 8 MiB",
+        "finding": "Same upper bound, unit, and matching JSON byte limit.",
+        "status": "preserved"
+      },
+      {
+        "id": "exhaustion",
+        "requirement": "After retry exhaustion MUST record failure rather than delete local snapshot",
+        "finding": "Same sequence and local-data preservation.",
+        "status": "preserved"
+      },
+      {
+        "id": "rationale",
+        "requirement": "Losing cancellation can leave a job waiting for a retry",
+        "finding": "Rationale retained as a separate sentence.",
+        "status": "preserved"
+      },
+      {
+        "id": "uncertainty",
+        "requirement": "HTTP 503 after server commit is unverified; duplicate processing remains a known risk",
+        "finding": "Uncertainty retained verbatim; no idempotency guarantee introduced.",
+        "status": "preserved"
+      },
+      {
+        "id": "evidence_scope",
+        "requirement": "No canary result has been collected yet",
+        "finding": "Entire unrequested Rollout evidence section unchanged.",
+        "status": "preserved"
+      }
+    ]
+  },
+  "static_metrics": {
+    "before": {
+      "word_count": 138,
+      "sentence_count": 8,
+      "paragraph_count": 2,
+      "mean_words_per_sentence": 17.25,
+      "mean_words_per_paragraph": 65.5,
+      "readability": {
+        "method": "approximate English Flesch/Flesch-Kincaid using heuristic vowel-group syllables",
+        "syllable_count": 225,
+        "flesch_reading_ease": 51.39,
+        "flesch_kincaid_grade": 10.38
+      }
+    },
+    "after": {
+      "word_count": 140,
+      "sentence_count": 15,
+      "paragraph_count": 7,
+      "mean_words_per_sentence": 9.33,
+      "mean_words_per_paragraph": 19.0,
+      "readability": {
+        "method": "approximate English Flesch/Flesch-Kincaid using heuristic vowel-group syllables",
+        "syllable_count": 230,
+        "flesch_reading_ease": 58.38,
+        "flesch_kincaid_grade": 7.44
+      }
+    },
+    "interpretation": "Sentence and paragraph density decreased while word count rose 138 to 140; readability is heuristic, not acceptance evidence."
+  },
+  "request_evidence": {
+    "rubric_version": "1.0.0",
+    "rubric_sha256": "2be51498922e0f4736aa4b546070e56df7a29ba2891c964f7dce3a5f30194fd2",
+    "quality_question_sha256": "bbc80f6df367308cb13ee245aad6d6ee9968cb88a39450575cb503297789ec40",
+    "paired_question_sha256": "98d4a440c93c70717c434286228d5e1908c875131c61b5e8f887cb6b3114ff51"
+  },
+  "scope_limits": {
+    "live_api_calls": 0,
+    "model_quality": "not_evaluated",
+    "renderer_anchor_check": "not_run",
+    "remote_link_check": "not_run",
+    "local_link_check": "target file and source heading inspected",
+    "application_behavior": "fictional; no runtime implementation tested"
+  },
+  "files_sha256": {
+    "before.md": "492c1d46ba36305943d46efa68027344b6bcdf25bdee8135c86280a2880ae6fb",
+    "after.md": "cf26bd4fcabd45b5dc25aa4ac6c3ad6605afee98326a2e0a5c08a551ed0a5fad"
+  },
+  "candidate_review": "One offline correction replaced ambiguous it with the worker before final verification. Repeated static runs validated that correction and read-only behavior; no model resampling occurred."
+}

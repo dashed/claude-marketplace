@@ -38,8 +38,12 @@ def evaluated(answers: dict[str, Any]) -> dict[str, Any]:
                 "preservation": {
                     "status": "evaluated",
                     "answers": answers,
-                    "request": {"state": {"kind": "design"}},
-                    "provenance": {"provider": "test"},
+                    "request": {"model": "jev-alias", "state": {"kind": "design"}},
+                    "response": {"model": "jev-version"},
+                    "provider": "test",
+                    "protocol": "gateway",
+                    "state_sha256": "state-hash",
+                    "questions_sha256": "question-hash",
                 }
             },
         },
@@ -129,6 +133,14 @@ def test_failed_run_retains_raw_report_inputs_and_counts(
     assert (output / "sample-01/revised.md").read_text() == fixture_case()["revised"]
     assert source.read_bytes() == before
     assert summary["fixture_sha256"] == hashlib.sha256(before).hexdigest()
+    assert summary["cases"]["sample-01"]["provenance"] == {
+        "provider": "test",
+        "protocol": "gateway",
+        "state_sha256": "state-hash",
+        "questions_sha256": "question-hash",
+        "requested_model": "jev-alias",
+        "response_model": "jev-version",
+    }
     for name, digest in summary["cases"]["sample-01"]["sha256"].items():
         assert digest == hashlib.sha256((output / "sample-01" / name).read_bytes()).hexdigest()
 

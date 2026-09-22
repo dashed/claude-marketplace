@@ -144,6 +144,27 @@ def preservation_report(report: dict[str, Any]) -> dict[str, Any]:
     return preservation if isinstance(preservation, dict) else {}
 
 
+def report_provenance(report: dict[str, Any]) -> dict[str, Any]:
+    """Extract the general helper's flat provenance without discarding raw reports."""
+    result = {
+        key: report[key]
+        for key in (
+            "provider",
+            "protocol",
+            "endpoint",
+            "state_sha256",
+            "questions_sha256",
+            "evaluated_at",
+        )
+        if key in report
+    }
+    for field, label in (("request", "requested_model"), ("response", "response_model")):
+        value = report.get(field)
+        if isinstance(value, dict) and isinstance(value.get("model"), str):
+            result[label] = value["model"]
+    return result
+
+
 def check_expectations(case: dict[str, Any], report: dict[str, Any]) -> list[dict[str, Any]]:
     preservation = preservation_report(report)
     semantic = report.get("semantic", {})
@@ -289,7 +310,7 @@ def run_evaluation(
             "request_sha256": sha256(encode(preservation["request"]))
             if "request" in preservation
             else None,
-            "provenance": preservation.get("provenance"),
+            "provenance": report_provenance(preservation),
             "static_preservation": report.get("preservation", {"status": "not_run"}),
         }
         valid_preview = args.offline and report["status"] == "preview"

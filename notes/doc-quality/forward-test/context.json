@@ -1,0 +1,15 @@
+{
+  "audience": "Engineers implementing the snapshot upload worker",
+  "reader_decision": "Apply retry and cancellation rules during implementation without changing behavior",
+  "scope": "Improve Upload retries only; preserve Rollout evidence unchanged",
+  "evidence": [
+    {
+      "source": "Provided fictional upload protocol, retry policy",
+      "excerpt": "This fictional source is provided for an offline skill forward test.\n\nThe worker must call upload_snapshot() only while snapshot_uploads_enabled is true. On HTTP 503, retry at most 2 times with at least 750 ms between attempts, unless cancellation was requested; then stop without another request. Never retry HTTP 400. Payloads cannot exceed 8 MiB (8388608 bytes). After retry exhaustion, record failure and retain the local snapshot. Losing the cancellation signal can leave a job waiting for a retry. HTTP 503 after server-side commit is not characterized, so duplicate processing remains a known risk. No canary evidence exists yet.\n"
+    }
+  ],
+  "missing": [
+    "Whether HTTP 503 can follow server-side commit",
+    "Canary retry and cancellation observations"
+  ]
+}

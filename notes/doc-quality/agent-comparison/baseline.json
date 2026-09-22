@@ -1,0 +1,95 @@
+{
+  "evaluated_at": "2026-09-22T16:43:02.941744+00:00",
+  "cases": [
+    {
+      "name": "case-01",
+      "preferred": "revised",
+      "requirements_preserved": true,
+      "behavior_preserved": true,
+      "uncertainty_preserved": true,
+      "evidence_supported": true,
+      "reason": "The shorter summary retains the 40-fixture scope, both timing values, unmeasured memory and production traffic, and the unknown production-latency effect."
+    },
+    {
+      "name": "case-02",
+      "preferred": "original",
+      "requirements_preserved": false,
+      "behavior_preserved": false,
+      "uncertainty_preserved": true,
+      "evidence_supported": false,
+      "reason": "Replacing MUST and MUST NOT with SHOULD makes signature verification, rejection, and no-enqueue behavior optional, contradicting the supplied acceptance contract."
+    },
+    {
+      "name": "case-03",
+      "preferred": "revised",
+      "requirements_preserved": true,
+      "behavior_preserved": true,
+      "uncertainty_preserved": true,
+      "evidence_supported": true,
+      "reason": "The numbered sequence retains ownership, 5% scope, 20-minute observation, the greater-than-1% rollback and stop condition, and approval before expansion."
+    },
+    {
+      "name": "case-04",
+      "preferred": "original",
+      "requirements_preserved": true,
+      "behavior_preserved": false,
+      "uncertainty_preserved": false,
+      "evidence_supported": false,
+      "reason": "The revision asserts an acknowledgement interruption and broker redelivery as established causation, although logs show only temporal sequence and acknowledgement records and reproduction are missing."
+    },
+    {
+      "name": "case-05",
+      "preferred": "revised",
+      "requirements_preserved": true,
+      "behavior_preserved": true,
+      "uncertainty_preserved": true,
+      "evidence_supported": true,
+      "reason": "The accepted status, atomic transaction requirement, rejected integration alternative, and accepted primary-database load remain explicit with less repetition."
+    },
+    {
+      "name": "case-06",
+      "preferred": "original",
+      "requirements_preserved": false,
+      "behavior_preserved": false,
+      "uncertainty_preserved": true,
+      "evidence_supported": false,
+      "reason": "Deleting all old records removes the mandatory legal-hold exception and the hold-release eligibility condition; the claimed uniform retention policy contradicts the supplied contract."
+    },
+    {
+      "name": "case-07",
+      "preferred": "revised",
+      "requirements_preserved": true,
+      "behavior_preserved": true,
+      "uncertainty_preserved": true,
+      "evidence_supported": true,
+      "reason": "The branches make flag-first ordering, 404 and 403 outcomes, forbidden read and write side effects, and the permitted preview/access-event path easy to scan without changing behavior."
+    },
+    {
+      "name": "case-08",
+      "preferred": "original",
+      "requirements_preserved": false,
+      "behavior_preserved": false,
+      "uncertainty_preserved": true,
+      "evidence_supported": false,
+      "reason": "The table reverses the endpoint-to-timeout mapping: upload requires 60 seconds and metadata requires 30 seconds. Preserving activation order does not repair that configuration error."
+    },
+    {
+      "name": "case-09",
+      "preferred": "revised",
+      "requirements_preserved": true,
+      "behavior_preserved": true,
+      "uncertainty_preserved": true,
+      "evidence_supported": true,
+      "reason": "The rewrite preserves pending status, no algorithm selection, both missing inputs, and the required target and representative benchmarks before deciding. Missing research does not prevent comparing these equivalent claims."
+    },
+    {
+      "name": "case-10",
+      "preferred": "original",
+      "requirements_preserved": true,
+      "behavior_preserved": false,
+      "uncertainty_preserved": false,
+      "evidence_supported": false,
+      "reason": "A local read-only replay cannot establish production readiness or absence of write and replication effects. The revision discards the experiment limits and staging-only conclusion in favor of unsupported guarantees."
+    }
+  ]
+}

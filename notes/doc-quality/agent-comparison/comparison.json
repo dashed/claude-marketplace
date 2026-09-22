@@ -1,0 +1,294 @@
+{
+  "status": "compared",
+  "case_count": 10,
+  "decision_count": 30,
+  "baseline_evaluated_at": "2026-09-22T16:43:02.941744+00:00",
+  "assisted_evaluated_at": "2026-09-22T16:54:12.487009+00:00",
+  "counts": {
+    "baseline_correct": 30,
+    "assisted_correct": 30,
+    "improvements": 0,
+    "regressions": 0,
+    "changed_decisions": 0,
+    "baseline_abstentions": 0,
+    "assisted_abstentions": 0
+  },
+  "input_sha256": {
+    "fixtures": "0960ac7daf72f57db99b3ca070ccb80db8e373597d6ab26d421c77d472900ec2",
+    "baseline": "f31e97a0a18ec7eae8a11ff529e389ddaac06bd672a2c95928cfd58d9200d59d",
+    "assisted": "ba6bb78135b7119bbf325b608929c23b09ac7185610707d83477aa1a4cac550b"
+  },
+  "decisions": [
+    {
+      "case": "case-01",
+      "signal": "uncertainty_preserved",
+      "expected": true,
+      "baseline": true,
+      "assisted": true,
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-01",
+      "signal": "evidence_supported",
+      "expected": true,
+      "baseline": true,
+      "assisted": true,
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-01",
+      "signal": "preferred",
+      "expected": "revised",
+      "baseline": "revised",
+      "assisted": "revised",
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-02",
+      "signal": "requirements_preserved",
+      "expected": false,
+      "baseline": false,
+      "assisted": false,
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-02",
+      "signal": "behavior_preserved",
+      "expected": false,
+      "baseline": false,
+      "assisted": false,
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-02",
+      "signal": "preferred",
+      "expected": "original",
+      "baseline": "original",
+      "assisted": "original",
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-03",
+      "signal": "requirements_preserved",
+      "expected": true,
+      "baseline": true,
+      "assisted": true,
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-03",
+      "signal": "behavior_preserved",
+      "expected": true,
+      "baseline": true,
+      "assisted": true,
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-03",
+      "signal": "preferred",
+      "expected": "revised",
+      "baseline": "revised",
+      "assisted": "revised",
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-04",
+      "signal": "uncertainty_preserved",
+      "expected": false,
+      "baseline": false,
+      "assisted": false,
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-04",
+      "signal": "evidence_supported",
+      "expected": false,
+      "baseline": false,
+      "assisted": false,
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-04",
+      "signal": "preferred",
+      "expected": "original",
+      "baseline": "original",
+      "assisted": "original",
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-05",
+      "signal": "requirements_preserved",
+      "expected": true,
+      "baseline": true,
+      "assisted": true,
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-05",
+      "signal": "evidence_supported",
+      "expected": true,
+      "baseline": true,
+      "assisted": true,
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-05",
+      "signal": "preferred",
+      "expected": "revised",
+      "baseline": "revised",
+      "assisted": "revised",
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-06",
+      "signal": "requirements_preserved",
+      "expected": false,
+      "baseline": false,
+      "assisted": false,
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-06",
+      "signal": "behavior_preserved",
+      "expected": false,
+      "baseline": false,
+      "assisted": false,
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-06",
+      "signal": "preferred",
+      "expected": "original",
+      "baseline": "original",
+      "assisted": "original",
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-07",
+      "signal": "requirements_preserved",
+      "expected": true,
+      "baseline": true,
+      "assisted": true,
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-07",
+      "signal": "behavior_preserved",
+      "expected": true,
+      "baseline": true,
+      "assisted": true,
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-07",
+      "signal": "preferred",
+      "expected": "revised",
+      "baseline": "revised",
+      "assisted": "revised",
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-08",
+      "signal": "requirements_preserved",
+      "expected": false,
+      "baseline": false,
+      "assisted": false,
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-08",
+      "signal": "behavior_preserved",
+      "expected": false,
+      "baseline": false,
+      "assisted": false,
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-08",
+      "signal": "preferred",
+      "expected": "original",
+      "baseline": "original",
+      "assisted": "original",
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-09",
+      "signal": "uncertainty_preserved",
+      "expected": true,
+      "baseline": true,
+      "assisted": true,
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-09",
+      "signal": "evidence_supported",
+      "expected": true,
+      "baseline": true,
+      "assisted": true,
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-09",
+      "signal": "preferred",
+      "expected": "revised",
+      "baseline": "revised",
+      "assisted": "revised",
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-10",
+      "signal": "evidence_supported",
+      "expected": false,
+      "baseline": false,
+      "assisted": false,
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-10",
+      "signal": "uncertainty_preserved",
+      "expected": false,
+      "baseline": false,
+      "assisted": false,
+      "baseline_correct": true,
+      "assisted_correct": true
+    },
+    {
+      "case": "case-10",
+      "signal": "preferred",
+      "expected": "original",
+      "baseline": "original",
+      "assisted": "original",
+      "baseline_correct": true,
+      "assisted_correct": true
+    }
+  ],
+  "limitation": "Small synthetic pilot; numeric model confidence is not an agent answer. Frozen probability minimum/maximum labels map to true/false for reviewer comparison. No unassisted second-pass control or time/cost benefit measured."
+}
