@@ -1,0 +1,276 @@
+{
+  "version": "1.0.0",
+  "git_head": "4b5cfeab2b916a842eb65fc411e81625b44829f1",
+  "fixture": {
+    "path": "tests/fixtures/doc-quality-challenge.json",
+    "sha256": "2de85dffeb61ea431ddc3ee111e656f2cf60ddc502e4ba3fd9ae8e34d9a25e9a",
+    "cases": 10,
+    "expectations": 30
+  },
+  "profiles": {
+    "path": "tests/fixtures/doc-quality-profiles.json",
+    "sha256": "12ff4b7cc682139a0e04fa0c56d1c9902b6db481ab965457bf00c519f2c0e22a",
+    "cases": 8,
+    "expectations": 13
+  },
+  "unlabeled": {
+    "path": "/tmp/doc-quality-challenge-unlabeled.json",
+    "sha256": "fe6685f0e088d3d77ba0155d41fad82996a3e13399eaf410c3d60b95eebbce9f",
+    "contains_expectations": false,
+    "contains_provenance": false
+  },
+  "independence": {
+    "read_model_rubric": false,
+    "read_model_outputs": false,
+    "read_existing_fixture_labels": false,
+    "model_calls": 0
+  },
+  "challenge_sources": {
+    "challenge-01": {
+      "path": "notes/codex-exec-hang-hard-timeouts.md",
+      "git_commit": "4b5cfeab2b916a842eb65fc411e81625b44829f1",
+      "git_blob": "8671e791c9827af902c988d8fb486ce325e8070b",
+      "line_start": 62,
+      "line_end": 78,
+      "excerpt_verbatim": "## The fix: mandatory hard timeouts\n\nEvery `codex exec` in this workflow is now invoked as:\n\n```bash\ntimeout 900 codex exec -s workspace-write --skip-git-repo-check -C <worktree> \"<prompt>\"\n```\n\n- **900 s** fits multi-file build tasks comfortably (the recovered double-task\n  run finished well under it). Use smaller caps (120\u2013300 s) for read-only /\n  investigation calls.\n- On timeout: the orchestrator (or the relay) does that chunk itself, or\n  retries once. Never wait-and-see \u2014 a zero-CPU codex process does not recover.\n- Relay-wrapper prompts must carry the rule explicitly (\"ALWAYS wrap codex in\n  `timeout 900`; a hung exec must die, then do that chunk yourself\"), because\n  the wrapper is the one blocked when the child hangs \u2014 it cannot apply\n  judgment after the fact.",
+      "excerpt_sha256": "2da6afe06951e0a36637cf8601b7716fd1826a51aae2f7f3032ca4906337fbc8",
+      "original_is_verbatim": true,
+      "revision_origin": "Synthetic counterfactual revision for documentation evaluation; not a repository decision or implementation."
+    },
+    "challenge-02": {
+      "path": "notes/tmux/tool-recommendations.md",
+      "git_commit": "4b5cfeab2b916a842eb65fc411e81625b44829f1",
+      "git_blob": "91d06fdceaf2549f8945fd1d6de3779c8accb3c0",
+      "line_start": 781,
+      "line_end": 836,
+      "excerpt_verbatim": "## Next Steps\n\n### Phase 1: Critical Tools (Week 1-2)\n\n**1. Implement pane-health.sh**\n- \u2713 Essential for all other tools\n- Start with basic functionality\n- Add structured output\n- Write tests\n\n**2. Implement safe-send.sh**\n- Depends on pane-health.sh\n- Start with basic retry logic\n- Add prompt waiting\n- Integrate with wait-for-text.sh\n\n**3. Implement cleanup-sessions.sh**\n- Can be developed in parallel\n- Start with basic age-based cleanup\n- Add idle detection\n- Add pattern matching\n\n### Phase 2: High Priority Tools (Week 3)\n\n**4. Implement capture-clean.sh**\n- ANSI stripping first\n- Add formatting options\n- Add JSON output\n\n**5. Implement create-session.sh**\n- Python preset first (most common)\n- Add other presets\n- Add custom command support\n\n### Phase 3: Medium Priority Tools (Week 4+)\n\n**6. Implement send-and-wait.sh** (if needed)\n- Evaluate if still useful after safe-send.sh\n- May be redundant\n\n**7. Implement monitor-pane.sh** (optional)\n- Only if debugging needs arise\n\n### Documentation Updates\n\nAfter each tool:\n- Update SKILL.md with tool documentation\n- Add examples to SKILL.md\n- Update notes/tmux/README.md with learnings\n- Create notes/tmux/implementation-notes.md if needed\n\n### Version Bumping\n\n- Tools 1-3: Minor version bump (1.0.1 \u2192 1.1.0) - new features\n- Tools 4-5: Minor version bump (1.1.0 \u2192 1.2.0) - new features\n- Tools 6-7: Patch or minor depending on scope",
+      "excerpt_sha256": "d7638eb87161ab5c9b5899a9470d38563ef1fe64e2cb209d908bdf0e55293c3f",
+      "original_is_verbatim": true,
+      "revision_origin": "Synthetic counterfactual revision for documentation evaluation; not a repository decision or implementation."
+    },
+    "challenge-03": {
+      "path": "docs/TESTING_STRATEGY.md",
+      "git_commit": "4b5cfeab2b916a842eb65fc411e81625b44829f1",
+      "git_blob": "e9cbc80f4efec3b651425921cb2de243c860ef19",
+      "line_start": 46,
+      "line_end": 76,
+      "excerpt_verbatim": "## Overview and Goals\n\n### Testing Challenges for AI Agent Skills\n\nClaude Code skills present unique testing challenges:\n\n1. **Non-deterministic behavior**: LLM-based decisions vary across runs\n2. **Context-dependent activation**: Skills must activate based on description matching\n3. **Complex workflows**: Multi-step tool usage and reasoning paths\n4. **Security vulnerabilities**: Prompt injection, context poisoning, privilege escalation\n5. **Progressive disclosure**: Skills load files dynamically during execution\n\n### Primary Goals\n\n| Goal | Description | Success Criteria |\n|------|-------------|------------------|\n| **Reliability** | Skills activate when expected and complete tasks successfully | >95% task completion rate |\n| **Discovery** | Claude correctly identifies when to use skills | >90% skill discovery accuracy |\n| **Security** | Skills resist adversarial inputs and privilege escalation | 0 critical vulnerabilities |\n| **Performance** | Skills execute efficiently without excessive resource usage | <2s average activation time |\n| **Maintainability** | Tests are automated, versioned, and easy to update | Full CI/CD integration |\n\n### Testing Philosophy\n\nBased on 2025 industry best practices, our approach embraces:\n\n- **Layered testing**: Multiple validation levels from static to production\n- **Continuous evaluation**: Automated testing throughout development lifecycle\n- **Human-in-the-loop**: Critical decisions validated by humans\n- **Sandboxed execution**: Isolated Docker environments for safety\n- **Observability**: Comprehensive logging and tracing",
+      "excerpt_sha256": "617aea47502cb9eabda9c7326dca0d1234879b9434ae9cb8b2f5f137434454dc",
+      "original_is_verbatim": true,
+      "revision_origin": "Synthetic counterfactual revision for documentation evaluation; not a repository decision or implementation."
+    },
+    "challenge-04": {
+      "path": "notes/tmux/tool-recommendations.md",
+      "git_commit": "4b5cfeab2b916a842eb65fc411e81625b44829f1",
+      "git_blob": "91d06fdceaf2549f8945fd1d6de3779c8accb3c0",
+      "line_start": 321,
+      "line_end": 386,
+      "excerpt_verbatim": "#### 3. cleanup-sessions.sh\n\n**Priority:** \ud83d\udd34 Critical\n**Rationale:** Automates error-prone cleanup, prevents resource leaks\n\n**Purpose:**\nSafe garbage collection of tmux sessions and sockets with policies for age, idle time, and patterns.\n\n**Functionality:**\n- Kill sessions by age (created > N hours ago)\n- Kill sessions by idle time (no activity for > N minutes)\n- Kill sessions by name pattern (regex matching)\n- Remove orphaned socket files\n- Clean up temp files, FIFOs, pipes\n- Reset tmux options to defaults\n- Dry-run mode (safe by default)\n- Exclude patterns (protect specific sessions)\n\n**Interface:**\n```bash\n./tools/cleanup-sessions.sh [options]\n\nOptions:\n  -S, --socket         Specific socket to clean\n  -A, --all            Clean all sockets in CLAUDE_TMUX_SOCKET_DIR\n  --older-than TIME    Kill sessions older than TIME (e.g., 1h, 30m)\n  --idle TIME          Kill sessions idle for TIME\n  --pattern REGEX      Kill sessions matching pattern\n  --exclude REGEX      Exclude sessions matching pattern\n  --dry-run            Show what would be done (default)\n  --execute            Actually perform cleanup\n  -v, --verbose        Verbose output\n\nExamples:\n  # Dry run: sessions older than 1 hour\n  cleanup-sessions.sh --older-than 1h --dry-run\n\n  # Execute: idle sessions on all sockets\n  cleanup-sessions.sh --all --idle 30m --execute\n\n  # Kill claude-* sessions except claude-main\n  cleanup-sessions.sh --pattern \"^claude-\" --exclude \"claude-main\" --execute\n```\n\n**Use Cases:**\n- After agent errors: clean up orphaned sessions\n- Periodic maintenance: remove old sessions\n- Resource management: free up sockets\n- User-requested cleanup: clear all agent sessions\n- Testing: reset to clean state\n\n**Codex Insights:**\n> \"Garbage collects orphaned sockets/sessions by policy (age, idle duration, name pattern); dry-run by default to avoid accidental kills\"\n\n**Implementation Notes:**\n- Use `tmux list-sessions -F \"#{session_created} #{session_activity} #{session_name}\"`\n- Parse timestamps for age/idle calculations\n- Require `--execute` flag for actual cleanup (safety)\n- Log all actions (what was killed, why)\n- Handle errors gracefully (socket already gone, etc.)\n- Clean socket files only if no sessions remain\n\n**Dependencies:**\n- bash, tmux, date\n\n**Estimated Effort:** Medium-Large (200-250 lines)",
+      "excerpt_sha256": "0c586641f2a854c3b0762de679b9f4b126a4e62a66208b67947c06acdbfa903e",
+      "original_is_verbatim": true,
+      "revision_origin": "Synthetic counterfactual revision for documentation evaluation; not a repository decision or implementation."
+    },
+    "challenge-05": {
+      "path": "notes/tmux/multiline-support-analysis.md",
+      "git_commit": "4b5cfeab2b916a842eb65fc411e81625b44829f1",
+      "git_blob": "5e83aa0619a0d9de46845e72bd09320fdfc895ec",
+      "line_start": 443,
+      "line_end": 476,
+      "excerpt_verbatim": "## 7. Alternatives Considered\n\n### Alternative 1: Auto-detect Multiline\n\n**Approach**: If command contains `\\n`, automatically use paste-buffer.\n\n**Pros**:\n- Transparent to user\n- No new flag needed\n- Works automatically\n\n**Cons**:\n- Magic behavior (not explicit)\n- What if user actually wants to send `\\n` literal?\n- Harder to debug (\"why is my command using paste-buffer?\")\n- Breaking change if anyone relies on current `\\n` behavior\n\n**Verdict**: \u274c Rejected - Explicit is better than implicit\n\n### Alternative 2: Separate Tool\n\n**Approach**: Create `send-multiline.sh` as separate script.\n\n**Pros**:\n- Separation of concerns\n- No changes to existing safe-send.sh\n- Can specialize for multiline use cases\n\n**Cons**:\n- Code duplication (retry logic, wait logic, health checks)\n- User confusion (which tool to use?)\n- Maintenance burden (two tools to update)\n\n**Verdict**: \u274c Rejected - DRY principle violated",
+      "excerpt_sha256": "5bd350f057dde81f0338780348ae5f85898b3d832a5f2cb843c494554bf3e1d7",
+      "original_is_verbatim": true,
+      "revision_origin": "Synthetic counterfactual revision for documentation evaluation; not a repository decision or implementation."
+    },
+    "challenge-06": {
+      "path": "docs/TESTING_STRATEGY.md",
+      "git_commit": "4b5cfeab2b916a842eb65fc411e81625b44829f1",
+      "git_blob": "e9cbc80f4efec3b651425921cb2de243c860ef19",
+      "line_start": 46,
+      "line_end": 76,
+      "excerpt_verbatim": "## Overview and Goals\n\n### Testing Challenges for AI Agent Skills\n\nClaude Code skills present unique testing challenges:\n\n1. **Non-deterministic behavior**: LLM-based decisions vary across runs\n2. **Context-dependent activation**: Skills must activate based on description matching\n3. **Complex workflows**: Multi-step tool usage and reasoning paths\n4. **Security vulnerabilities**: Prompt injection, context poisoning, privilege escalation\n5. **Progressive disclosure**: Skills load files dynamically during execution\n\n### Primary Goals\n\n| Goal | Description | Success Criteria |\n|------|-------------|------------------|\n| **Reliability** | Skills activate when expected and complete tasks successfully | >95% task completion rate |\n| **Discovery** | Claude correctly identifies when to use skills | >90% skill discovery accuracy |\n| **Security** | Skills resist adversarial inputs and privilege escalation | 0 critical vulnerabilities |\n| **Performance** | Skills execute efficiently without excessive resource usage | <2s average activation time |\n| **Maintainability** | Tests are automated, versioned, and easy to update | Full CI/CD integration |\n\n### Testing Philosophy\n\nBased on 2025 industry best practices, our approach embraces:\n\n- **Layered testing**: Multiple validation levels from static to production\n- **Continuous evaluation**: Automated testing throughout development lifecycle\n- **Human-in-the-loop**: Critical decisions validated by humans\n- **Sandboxed execution**: Isolated Docker environments for safety\n- **Observability**: Comprehensive logging and tracing",
+      "excerpt_sha256": "617aea47502cb9eabda9c7326dca0d1234879b9434ae9cb8b2f5f137434454dc",
+      "original_is_verbatim": true,
+      "revision_origin": "Synthetic counterfactual revision for documentation evaluation; not a repository decision or implementation."
+    },
+    "challenge-07": {
+      "path": "notes/tmux/multiline-support-analysis.md",
+      "git_commit": "4b5cfeab2b916a842eb65fc411e81625b44829f1",
+      "git_blob": "5e83aa0619a0d9de46845e72bd09320fdfc895ec",
+      "line_start": 185,
+      "line_end": 222,
+      "excerpt_verbatim": "### Behavior Specification\n\n**When `--multiline` is used**:\n\n1. **Use paste-buffer instead of send-keys**\n   - `tmux set-buffer \"$command\"`\n   - `tmux paste-buffer -t $target`\n\n2. **Auto-append blank line for Python**\n   - If command doesn't end with `\\n\\n`, append it\n   - Ensures Python blocks execute automatically\n   - Future: Make configurable per REPL type\n\n3. **Preserve retry logic**\n   - Apply retries to both `set-buffer` and `paste-buffer` operations\n   - Same exponential backoff as current implementation\n\n4. **Support prompt waiting**\n   - `-w` / `--wait` still works after paste completes\n   - Uses existing wait-for-text.sh integration\n\n5. **Maintain backward compatibility**\n   - Default behavior unchanged (no `-m` flag)\n   - No breaking changes to existing usage\n\n### Flag Interactions\n\n```bash\n# Valid combinations\n-m -c \"multiline code\" -w \">>>\"  \u2713\n-m -c \"code\" -S /path/to/socket  \u2713\n-m -c \"code\" -s session-name     \u2713\n\n# Invalid combinations (mutually exclusive)\n-m -l  \u2717  # Multiline and literal mode are incompatible\n```\n\n**Rationale**: Literal mode (`-l`) sends text without Enter, while multiline mode sends complete blocks with newlines. They represent different use cases.",
+      "excerpt_sha256": "a22a2750314eb7988c76da25725e9474cf2127daee6f8d067a720c7f89f62e8b",
+      "original_is_verbatim": true,
+      "revision_origin": "Synthetic counterfactual revision for documentation evaluation; not a repository decision or implementation."
+    },
+    "challenge-08": {
+      "path": "notes/git-absorb/analysis.md",
+      "git_commit": "4b5cfeab2b916a842eb65fc411e81625b44829f1",
+      "git_blob": "98502daad42d59f3cb7562f648852324e3dbfa96",
+      "line_start": 7,
+      "line_end": 35,
+      "excerpt_verbatim": "## Executive Summary\n\nThe git-absorb skill documentation is **technically accurate** with **zero inaccuracies found**. However, it covers approximately **40% of available features**. The skill effectively documents basic workflows but omits important command-line flags, all configuration options, and advanced usage patterns that users will encounter.\n\n**Key Statistics:**\n- **Command flags covered:** 4 of 13 (31%)\n- **Configuration options covered:** 0 of 7 (0%)\n- **Installation methods covered:** 4 of 13 (31%)\n- **Core workflows:** \u2705 Accurate and well-documented\n- **Safety features:** \u2705 Correctly documented\n\n## Methodology\n\n### Sources Compared\n\n**Official Documentation:**\n- `/Users/me/aaa/github/git-absorb/README.md` (primary usage guide)\n- `/Users/me/aaa/github/git-absorb/Documentation/git-absorb.adoc` (man page source)\n\n**Our Skill Documentation:**\n- `/Users/me/aaa/github/claude-marketplace/plugins/git-absorb/SKILL.md`\n\n### Comparison Approach\n\n1. Read official git-absorb repository documentation\n2. Systematically compared flags, options, workflows, and behaviors\n3. Verified technical accuracy of all claims in skill\n4. Identified gaps in coverage\n5. Prioritized missing features by user impact",
+      "excerpt_sha256": "c262fb0dcc7e6c70dd8a71b9697be5720303e9f1ebb2c08b76142f793f22b4c2",
+      "original_is_verbatim": true,
+      "revision_origin": "Synthetic counterfactual revision for documentation evaluation; not a repository decision or implementation."
+    },
+    "challenge-09": {
+      "path": "notes/codex-exec-hang-hard-timeouts.md",
+      "git_commit": "4b5cfeab2b916a842eb65fc411e81625b44829f1",
+      "git_blob": "8671e791c9827af902c988d8fb486ce325e8070b",
+      "line_start": 116,
+      "line_end": 135,
+      "excerpt_verbatim": "## Appendix: what codex ships built-in (verified in source, 2026-07-03)\n\nCodex is *not* designed to hang forever \u2014 the source has client-side deadlines\n(checked at `/Users/me/aaa/github/codex`, codex-cli 0.142.x era):\n\n- **Model streaming** (`codex-rs/model-provider-info/src/lib.rs:26-28`):\n  `stream_idle_timeout_ms` default **300 000 (5 min)**, `stream_max_retries`\n  default **5**, `request_max_retries` default **4** \u2014 configurable per\n  `[model_providers.<id>]` in config.toml.\n- **MCP servers** (`codex-rs/codex-mcp/src/rmcp_client.rs:85-86`): startup\n  timeout default **30 s** (`startup_timeout_sec`), per-tool-call timeout\n  default **300 s** (`tool_timeout_sec`) \u2014 per `[mcp_servers.<name>]`.\n\nA dead *established* stream should therefore die within ~5 idle minutes and\nretry, worst case tens of minutes. Our chains hung 5+ hours with ~0.1 s CPU\nfrom birth \u2014 i.e. the wait was in a phase these deadlines don't cover (or a\npath where the idle timer never armed), very early in the run before any real\nwork. Conclusion unchanged and reinforced: the built-ins are a first line, but\nonly an external `timeout` bounds the whole invocation regardless of which\ninternal phase wedged.",
+      "excerpt_sha256": "e6c6752b4119c2a38a64ee8ec404ac8cc91c3a5d6faa6ff8ba28c0b4c76e9085",
+      "original_is_verbatim": true,
+      "revision_origin": "Synthetic counterfactual revision for documentation evaluation; not a repository decision or implementation."
+    },
+    "challenge-10": {
+      "path": "docs/TESTING_STRATEGY.md",
+      "git_commit": "4b5cfeab2b916a842eb65fc411e81625b44829f1",
+      "git_blob": "e9cbc80f4efec3b651425921cb2de243c860ef19",
+      "line_start": 166,
+      "line_end": 208,
+      "excerpt_verbatim": "### 3. Integration Testing\n\n**Purpose**: Validate end-to-end workflows involving multiple tools and steps\n\n**Scope**:\n- Multi-step task completion\n- Tool interaction sequences (Read \u2192 Edit \u2192 Write \u2192 Bash)\n- Error handling and recovery\n- State management across turns\n- Memory and context utilization\n\n**Example Integration Test**:\n\n```python\nclass TestTmuxIntegrationWorkflow:\n    def test_debug_python_application(self):\n        \"\"\"End-to-end test: Start tmux session, run Python debugger, execute commands\"\"\"\n\n        # Step 1: User requests debugging\n        response1 = claude_code.send_prompt(\n            \"Start a tmux session to debug test_app.py with Python debugger\"\n        )\n        assert_skill_loaded(response1, \"tmux:tmux\")\n        assert_bash_command_executed(response1, \"tmux -S\")\n\n        # Step 2: Verify session created\n        response2 = claude_code.send_prompt(\"Is the session running?\")\n        assert_contains(response2, \"claude-python\")\n\n        # Step 3: Send debugger commands\n        response3 = claude_code.send_prompt(\"Set a breakpoint at line 42\")\n        assert_bash_command_executed(response3, \"send-keys\")\n\n        # Step 4: Cleanup\n        response4 = claude_code.send_prompt(\"Clean up the tmux session\")\n        assert_bash_command_executed(response4, \"kill-session\")\n```\n\n**Minimum Test Coverage**:\n- **30 test cases per skill** (industry best practice for 2025)\n- Success scenarios (happy path): 40%\n- Edge cases (boundary conditions): 40%\n- Failure scenarios (error handling): 20%",
+      "excerpt_sha256": "f1a502940f92003986689825e4f064c54e3252ff86511170093ddb59383dca7a",
+      "original_is_verbatim": true,
+      "revision_origin": "Synthetic counterfactual revision for documentation evaluation; not a repository decision or implementation."
+    }
+  },
+  "profile_sources": {
+    "profile-01": {
+      "path": "notes/tmux/multiline-support-analysis.md",
+      "git_commit": "4b5cfeab2b916a842eb65fc411e81625b44829f1",
+      "git_blob": "5e83aa0619a0d9de46845e72bd09320fdfc895ec",
+      "line_start": 185,
+      "line_end": 222,
+      "excerpt_verbatim": "### Behavior Specification\n\n**When `--multiline` is used**:\n\n1. **Use paste-buffer instead of send-keys**\n   - `tmux set-buffer \"$command\"`\n   - `tmux paste-buffer -t $target`\n\n2. **Auto-append blank line for Python**\n   - If command doesn't end with `\\n\\n`, append it\n   - Ensures Python blocks execute automatically\n   - Future: Make configurable per REPL type\n\n3. **Preserve retry logic**\n   - Apply retries to both `set-buffer` and `paste-buffer` operations\n   - Same exponential backoff as current implementation\n\n4. **Support prompt waiting**\n   - `-w` / `--wait` still works after paste completes\n   - Uses existing wait-for-text.sh integration\n\n5. **Maintain backward compatibility**\n   - Default behavior unchanged (no `-m` flag)\n   - No breaking changes to existing usage\n\n### Flag Interactions\n\n```bash\n# Valid combinations\n-m -c \"multiline code\" -w \">>>\"  \u2713\n-m -c \"code\" -S /path/to/socket  \u2713\n-m -c \"code\" -s session-name     \u2713\n\n# Invalid combinations (mutually exclusive)\n-m -l  \u2717  # Multiline and literal mode are incompatible\n```\n\n**Rationale**: Literal mode (`-l`) sends text without Enter, while multiline mode sends complete blocks with newlines. They represent different use cases.",
+      "excerpt_sha256": "a22a2750314eb7988c76da25725e9474cf2127daee6f8d067a720c7f89f62e8b",
+      "original_is_verbatim": true,
+      "revision_origin": "Synthetic counterfactual revision for documentation evaluation; not a repository decision or implementation.",
+      "text_origin": "Verbatim tracked excerpt; subsequent Markdown headings converted to bold labels to form one section",
+      "profile_text_is_verbatim": false,
+      "profile_text_sha256": "47c43e52cb22eecc275d4327db8e39d2cf61445abc0aa2cb9407f6cbe0163d4b"
+    },
+    "profile-02": {
+      "path": "notes/tmux/multiline-support-analysis.md",
+      "git_commit": "4b5cfeab2b916a842eb65fc411e81625b44829f1",
+      "git_blob": "5e83aa0619a0d9de46845e72bd09320fdfc895ec",
+      "line_start": 647,
+      "line_end": 653,
+      "excerpt_verbatim": "### Future Enhancements\n\n1. **Language Detection**: Auto-detect REPL type and adjust behavior\n2. **Configurable Termination**: `--terminator` flag for non-Python REPLs\n3. **File Input**: `--multiline-file` to send file contents\n4. **Streaming**: For very large code, stream in chunks\n5. **Validation**: Syntax check before sending (optional)",
+      "excerpt_sha256": "bb0fa91715ac34514732975dc74b3f2edc44b2d5e7a1812893b86efe129bbeff",
+      "original_is_verbatim": true,
+      "revision_origin": "Synthetic counterfactual revision for documentation evaluation; not a repository decision or implementation.",
+      "text_origin": "Verbatim tracked excerpt",
+      "profile_text_is_verbatim": true,
+      "profile_text_sha256": "bb0fa91715ac34514732975dc74b3f2edc44b2d5e7a1812893b86efe129bbeff"
+    },
+    "profile-03": {
+      "path": "notes/codex-exec-hang-hard-timeouts.md",
+      "git_commit": "4b5cfeab2b916a842eb65fc411e81625b44829f1",
+      "git_blob": "8671e791c9827af902c988d8fb486ce325e8070b",
+      "line_start": 116,
+      "line_end": 135,
+      "excerpt_verbatim": "## Appendix: what codex ships built-in (verified in source, 2026-07-03)\n\nCodex is *not* designed to hang forever \u2014 the source has client-side deadlines\n(checked at `/Users/me/aaa/github/codex`, codex-cli 0.142.x era):\n\n- **Model streaming** (`codex-rs/model-provider-info/src/lib.rs:26-28`):\n  `stream_idle_timeout_ms` default **300 000 (5 min)**, `stream_max_retries`\n  default **5**, `request_max_retries` default **4** \u2014 configurable per\n  `[model_providers.<id>]` in config.toml.\n- **MCP servers** (`codex-rs/codex-mcp/src/rmcp_client.rs:85-86`): startup\n  timeout default **30 s** (`startup_timeout_sec`), per-tool-call timeout\n  default **300 s** (`tool_timeout_sec`) \u2014 per `[mcp_servers.<name>]`.\n\nA dead *established* stream should therefore die within ~5 idle minutes and\nretry, worst case tens of minutes. Our chains hung 5+ hours with ~0.1 s CPU\nfrom birth \u2014 i.e. the wait was in a phase these deadlines don't cover (or a\npath where the idle timer never armed), very early in the run before any real\nwork. Conclusion unchanged and reinforced: the built-ins are a first line, but\nonly an external `timeout` bounds the whole invocation regardless of which\ninternal phase wedged.",
+      "excerpt_sha256": "e6c6752b4119c2a38a64ee8ec404ac8cc91c3a5d6faa6ff8ba28c0b4c76e9085",
+      "original_is_verbatim": true,
+      "revision_origin": "Synthetic counterfactual revision for documentation evaluation; not a repository decision or implementation.",
+      "text_origin": "Verbatim tracked excerpt",
+      "profile_text_is_verbatim": true,
+      "profile_text_sha256": "e6c6752b4119c2a38a64ee8ec404ac8cc91c3a5d6faa6ff8ba28c0b4c76e9085"
+    },
+    "profile-04": {
+      "path": "notes/git-absorb/analysis.md",
+      "git_commit": "4b5cfeab2b916a842eb65fc411e81625b44829f1",
+      "git_blob": "98502daad42d59f3cb7562f648852324e3dbfa96",
+      "line_start": 7,
+      "line_end": 35,
+      "excerpt_verbatim": "## Executive Summary\n\nThe git-absorb skill documentation is **technically accurate** with **zero inaccuracies found**. However, it covers approximately **40% of available features**. The skill effectively documents basic workflows but omits important command-line flags, all configuration options, and advanced usage patterns that users will encounter.\n\n**Key Statistics:**\n- **Command flags covered:** 4 of 13 (31%)\n- **Configuration options covered:** 0 of 7 (0%)\n- **Installation methods covered:** 4 of 13 (31%)\n- **Core workflows:** \u2705 Accurate and well-documented\n- **Safety features:** \u2705 Correctly documented\n\n## Methodology\n\n### Sources Compared\n\n**Official Documentation:**\n- `/Users/me/aaa/github/git-absorb/README.md` (primary usage guide)\n- `/Users/me/aaa/github/git-absorb/Documentation/git-absorb.adoc` (man page source)\n\n**Our Skill Documentation:**\n- `/Users/me/aaa/github/claude-marketplace/plugins/git-absorb/SKILL.md`\n\n### Comparison Approach\n\n1. Read official git-absorb repository documentation\n2. Systematically compared flags, options, workflows, and behaviors\n3. Verified technical accuracy of all claims in skill\n4. Identified gaps in coverage\n5. Prioritized missing features by user impact",
+      "excerpt_sha256": "c262fb0dcc7e6c70dd8a71b9697be5720303e9f1ebb2c08b76142f793f22b4c2",
+      "original_is_verbatim": true,
+      "revision_origin": "Synthetic counterfactual revision for documentation evaluation; not a repository decision or implementation.",
+      "text_origin": "Verbatim tracked excerpt; subsequent Markdown headings converted to bold labels to form one section",
+      "profile_text_is_verbatim": false,
+      "profile_text_sha256": "2c49076e0ee973e2c0029b28264b79f2bcf541aef77018a96c061c92e6d7994f"
+    },
+    "profile-05": {
+      "path": "notes/tmux/tool-recommendations.md",
+      "git_commit": "4b5cfeab2b916a842eb65fc411e81625b44829f1",
+      "git_blob": "91d06fdceaf2549f8945fd1d6de3779c8accb3c0",
+      "line_start": 781,
+      "line_end": 836,
+      "excerpt_verbatim": "## Next Steps\n\n### Phase 1: Critical Tools (Week 1-2)\n\n**1. Implement pane-health.sh**\n- \u2713 Essential for all other tools\n- Start with basic functionality\n- Add structured output\n- Write tests\n\n**2. Implement safe-send.sh**\n- Depends on pane-health.sh\n- Start with basic retry logic\n- Add prompt waiting\n- Integrate with wait-for-text.sh\n\n**3. Implement cleanup-sessions.sh**\n- Can be developed in parallel\n- Start with basic age-based cleanup\n- Add idle detection\n- Add pattern matching\n\n### Phase 2: High Priority Tools (Week 3)\n\n**4. Implement capture-clean.sh**\n- ANSI stripping first\n- Add formatting options\n- Add JSON output\n\n**5. Implement create-session.sh**\n- Python preset first (most common)\n- Add other presets\n- Add custom command support\n\n### Phase 3: Medium Priority Tools (Week 4+)\n\n**6. Implement send-and-wait.sh** (if needed)\n- Evaluate if still useful after safe-send.sh\n- May be redundant\n\n**7. Implement monitor-pane.sh** (optional)\n- Only if debugging needs arise\n\n### Documentation Updates\n\nAfter each tool:\n- Update SKILL.md with tool documentation\n- Add examples to SKILL.md\n- Update notes/tmux/README.md with learnings\n- Create notes/tmux/implementation-notes.md if needed\n\n### Version Bumping\n\n- Tools 1-3: Minor version bump (1.0.1 \u2192 1.1.0) - new features\n- Tools 4-5: Minor version bump (1.1.0 \u2192 1.2.0) - new features\n- Tools 6-7: Patch or minor depending on scope",
+      "excerpt_sha256": "d7638eb87161ab5c9b5899a9470d38563ef1fe64e2cb209d908bdf0e55293c3f",
+      "original_is_verbatim": true,
+      "revision_origin": "Synthetic counterfactual revision for documentation evaluation; not a repository decision or implementation.",
+      "text_origin": "Verbatim tracked excerpt; subsequent Markdown headings converted to bold labels to form one section",
+      "profile_text_is_verbatim": false,
+      "profile_text_sha256": "f1073bf19d4e5dc113bd813a49487376968cbc2151621830f4d9f78e2719b749"
+    },
+    "profile-06": {
+      "path": "docs/TESTING_STRATEGY.md",
+      "git_commit": "4b5cfeab2b916a842eb65fc411e81625b44829f1",
+      "git_blob": "e9cbc80f4efec3b651425921cb2de243c860ef19",
+      "line_start": 46,
+      "line_end": 76,
+      "excerpt_verbatim": "## Overview and Goals\n\n### Testing Challenges for AI Agent Skills\n\nClaude Code skills present unique testing challenges:\n\n1. **Non-deterministic behavior**: LLM-based decisions vary across runs\n2. **Context-dependent activation**: Skills must activate based on description matching\n3. **Complex workflows**: Multi-step tool usage and reasoning paths\n4. **Security vulnerabilities**: Prompt injection, context poisoning, privilege escalation\n5. **Progressive disclosure**: Skills load files dynamically during execution\n\n### Primary Goals\n\n| Goal | Description | Success Criteria |\n|------|-------------|------------------|\n| **Reliability** | Skills activate when expected and complete tasks successfully | >95% task completion rate |\n| **Discovery** | Claude correctly identifies when to use skills | >90% skill discovery accuracy |\n| **Security** | Skills resist adversarial inputs and privilege escalation | 0 critical vulnerabilities |\n| **Performance** | Skills execute efficiently without excessive resource usage | <2s average activation time |\n| **Maintainability** | Tests are automated, versioned, and easy to update | Full CI/CD integration |\n\n### Testing Philosophy\n\nBased on 2025 industry best practices, our approach embraces:\n\n- **Layered testing**: Multiple validation levels from static to production\n- **Continuous evaluation**: Automated testing throughout development lifecycle\n- **Human-in-the-loop**: Critical decisions validated by humans\n- **Sandboxed execution**: Isolated Docker environments for safety\n- **Observability**: Comprehensive logging and tracing",
+      "excerpt_sha256": "617aea47502cb9eabda9c7326dca0d1234879b9434ae9cb8b2f5f137434454dc",
+      "original_is_verbatim": true,
+      "revision_origin": "Synthetic counterfactual revision for documentation evaluation; not a repository decision or implementation.",
+      "text_origin": "Verbatim tracked excerpt; subsequent Markdown headings converted to bold labels to form one section",
+      "profile_text_is_verbatim": false,
+      "profile_text_sha256": "f465b784e0d2612e74c3a6be034d9d6e0588016fa506caf61fbdb53d18530cbb"
+    },
+    "profile-07": {
+      "path": "notes/tmux/multiline-support-analysis.md",
+      "git_commit": "4b5cfeab2b916a842eb65fc411e81625b44829f1",
+      "git_blob": "5e83aa0619a0d9de46845e72bd09320fdfc895ec",
+      "line_start": 443,
+      "line_end": 476,
+      "excerpt_verbatim": "## 7. Alternatives Considered\n\n### Alternative 1: Auto-detect Multiline\n\n**Approach**: If command contains `\\n`, automatically use paste-buffer.\n\n**Pros**:\n- Transparent to user\n- No new flag needed\n- Works automatically\n\n**Cons**:\n- Magic behavior (not explicit)\n- What if user actually wants to send `\\n` literal?\n- Harder to debug (\"why is my command using paste-buffer?\")\n- Breaking change if anyone relies on current `\\n` behavior\n\n**Verdict**: \u274c Rejected - Explicit is better than implicit\n\n### Alternative 2: Separate Tool\n\n**Approach**: Create `send-multiline.sh` as separate script.\n\n**Pros**:\n- Separation of concerns\n- No changes to existing safe-send.sh\n- Can specialize for multiline use cases\n\n**Cons**:\n- Code duplication (retry logic, wait logic, health checks)\n- User confusion (which tool to use?)\n- Maintenance burden (two tools to update)\n\n**Verdict**: \u274c Rejected - DRY principle violated",
+      "excerpt_sha256": "5bd350f057dde81f0338780348ae5f85898b3d832a5f2cb843c494554bf3e1d7",
+      "original_is_verbatim": true,
+      "revision_origin": "Synthetic counterfactual revision for documentation evaluation; not a repository decision or implementation.",
+      "text_origin": "Synthetic reorganization of the recorded rejected alternatives; subsequent Markdown headings converted to bold labels to form one section",
+      "profile_text_is_verbatim": false,
+      "profile_text_sha256": "2b73e758d0a4bfb2137274fac609c4d68920449a96914c167be3bd51a35c75a5"
+    },
+    "profile-08": {
+      "path": "notes/tmux/multiline-support-analysis.md",
+      "git_commit": "4b5cfeab2b916a842eb65fc411e81625b44829f1",
+      "git_blob": "5e83aa0619a0d9de46845e72bd09320fdfc895ec",
+      "line_start": 647,
+      "line_end": 653,
+      "excerpt_verbatim": "### Future Enhancements\n\n1. **Language Detection**: Auto-detect REPL type and adjust behavior\n2. **Configurable Termination**: `--terminator` flag for non-Python REPLs\n3. **File Input**: `--multiline-file` to send file contents\n4. **Streaming**: For very large code, stream in chunks\n5. **Validation**: Syntax check before sending (optional)",
+      "excerpt_sha256": "bb0fa91715ac34514732975dc74b3f2edc44b2d5e7a1812893b86efe129bbeff",
+      "original_is_verbatim": true,
+      "revision_origin": "Synthetic counterfactual revision for documentation evaluation; not a repository decision or implementation.",
+      "text_origin": "Verbatim tracked excerpt",
+      "profile_text_is_verbatim": true,
+      "profile_text_sha256": "bb0fa91715ac34514732975dc74b3f2edc44b2d5e7a1812893b86efe129bbeff"
+    }
+  },
+  "validation": {
+    "challenge_schema": "scripts/eval_doc_quality.py validate_fixtures passed",
+    "challenge_originals": "All ten originals exactly match recorded Git-blob line ranges",
+    "challenge_preferences": {
+      "original": 4,
+      "revised": 4,
+      "equivalent": 1,
+      "needs_context": 1
+    },
+    "profiles_one_markdown_heading_each": true,
+    "label_rule": "Authored from source text and supplied context before any model calls or results; unchanged after rubric freeze notification."
+  },
+  "rubric": {
+    "path": "plugins/doc-quality/skills/doc-quality/references/rubrics.json",
+    "version": "1.1.0",
+    "sha256": "bcce57c34fda6d8a96e22d6dce954da2a7acd8548f5b6ad0949b9bde426490e6",
+    "change": "Only editorial preference instructions/criteria clarified after initial pilot; independent challenge labels were not read during revision."
+  },
+  "protocol": {
+    "calls": "One sequential paired call per old regression and fresh challenge; one analysis per profile. No automatic retries. Retain failures.",
+    "reviewer": "Freeze first-pass, then unassisted second-pass, then assisted judgments before scoring gold. Same reviewer, sequential order; not randomized, not a matched time/cost trial."
+  }
+}

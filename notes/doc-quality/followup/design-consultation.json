@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "advisory": true,
+  "provider": "vercel",
+  "protocol": "gateway",
+  "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+  "api_key_env": "AI_GATEWAY_API_KEY",
+  "questions_sha256": "3e92e79a94a234006c65660101e8ed48a5f1c9e2f1583fadaa35633ec8746a6e",
+  "state_sha256": "31a6075de419d5b986dbc186baf9c0d9ef113ffb6c44036eb40f8afa437591ab",
+  "request": {
+    "model": "typesafe-ai/jev",
+    "state": {
+      "task": "Improve an optional engineering Markdown judge after a frozen pilot. The preservation judgments were correct on selected checks, but two safe ADR reductions in repetitive framing were classified equivalent. Keep original as preference for lost requirements and equivalent for truly cosmetic edits. Do not infer unknown system facts. A separately authored untouched challenge includes harmful changes and equivalence.",
+      "proposed_change": "Explicitly count removal of redundant framing and clearer grouping of a decision with its reason or next step as reading-effort gains, even when technical facts are unchanged. Prefer revised only when useful meaning and epistemic status are retained. Require no length ratio threshold."
+    },
+    "questions": {
+      "design": {
+        "type": "choice",
+        "instructions": "Which narrowly scoped correction best addresses the diagnosed editorial weakness while preserving meaningful abstention?",
+        "criteria": {
+          "explicit_effort": "Clarify that reduced redundant framing and clearer decision/reason grouping can be substantive editorial gains, with preservation taking precedence.",
+          "shorter_wins": "Prefer any shorter revision.",
+          "drop_equivalent": "Remove the equivalent outcome.",
+          "never_change": "Leave ambiguity about meaningful editorial gains unresolved."
+        }
+      },
+      "control": {
+        "type": "choice",
+        "instructions": "Which experiment can better distinguish help from Jev versus help from rereading alone?",
+        "criteria": {
+          "second_pass": "Freeze a blind first answer, then a second answer without Jev, then an assisted answer; disclose order and small sample limits.",
+          "assisted_only": "Measure only final agent answers after Jev.",
+          "score_only": "Report Jev confidence as proof of benefit."
+        }
+      }
+    }
+  },
+  "response": {
+    "model": "typesafe-ai/jev",
+    "answers": {
+      "control": {
+        "type": "choice",
+        "choice": "second_pass",
+        "probabilities": {
+          "score_only": 0,
+          "assisted_only": 0.01,
+          "second_pass": 0.99
+        },
+        "confidence": 0.99
+      },
+      "design": {
+        "type": "choice",
+        "choice": "explicit_effort",
+        "probabilities": {
+          "explicit_effort": 1,
+          "never_change": 0,
+          "drop_equivalent": 0,
+          "shorter_wins": 0
+        },
+        "confidence": 1
+      }
+    },
+    "usage": {
+      "inputTokens": 640,
+      "outputTokens": 97
+    },
+    "providerMetadata": {
+      "typesafe": {
+        "confidence": {
+          "control": 0.99,
+          "design": 1
+        }
+      },
+      "gateway": {
+        "routing": {
+          "originalModelId": "typesafe-ai/jev",
+          "resolvedProvider": "typesafe-ai",
+          "fallbacksAvailable": [],
+          "planningReasoning": "System credentials planned for: typesafe-ai. Total execution order: typesafe-ai(system)",
+          "canonicalSlug": "typesafe-ai/jev",
+          "finalProvider": "typesafe-ai",
+          "modelAttemptCount": 1,
+          "modelAttempts": [
+            {
+              "canonicalSlug": "typesafe-ai/jev",
+              "success": true,
+              "providerAttemptCount": 1,
+              "providerAttempts": [
+                {
+                  "provider": "typesafe-ai",
+                  "credentialType": "system",
+                  "success": true,
+                  "startTime": 1790097410292,
+                  "endTime": 1790097410453,
+                  "statusCode": 200
+                }
+              ]
+            }
+          ],
+          "totalProviderAttemptCount": 1
+        },
+        "cost": "0",
+        "marketCost": "0.00002688",
+        "surchargeCost": "0",
+        "gatewayCost": "0",
+        "generationId": "gen_01M351XHZD8XNSAPMXPE6S9H3G"
+      }
+    }
+  },
+  "answers": {
+    "control": {
+      "type": "choice",
+      "choice": "second_pass",
+      "probabilities": {
+        "score_only": 0,
+        "assisted_only": 0.01,
+        "second_pass": 0.99
+      },
+      "confidence": 0.99
+    },
+    "design": {
+      "type": "choice",
+      "choice": "explicit_effort",
+      "probabilities": {
+        "explicit_effort": 1,
+        "never_change": 0,
+        "drop_equivalent": 0,
+        "shorter_wins": 0
+      },
+      "confidence": 1
+    }
+  },
+  "elapsed_seconds": 0.552,
+  "evaluated_at": "2026-09-22T17:16:50.400520+00:00",
+  "status": "evaluated"
+}

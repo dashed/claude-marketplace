@@ -1,0 +1,186 @@
+{
+  "version": "1.0.0",
+  "cases": [
+    {
+      "name": "profile-01",
+      "kind": "design",
+      "text": "### Behavior Specification\n\n**When `--multiline` is used**:\n\n1. **Use paste-buffer instead of send-keys**\n   - `tmux set-buffer \"$command\"`\n   - `tmux paste-buffer -t $target`\n\n2. **Auto-append blank line for Python**\n   - If command doesn't end with `\\n\\n`, append it\n   - Ensures Python blocks execute automatically\n   - Future: Make configurable per REPL type\n\n3. **Preserve retry logic**\n   - Apply retries to both `set-buffer` and `paste-buffer` operations\n   - Same exponential backoff as current implementation\n\n4. **Support prompt waiting**\n   - `-w` / `--wait` still works after paste completes\n   - Uses existing wait-for-text.sh integration\n\n5. **Maintain backward compatibility**\n   - Default behavior unchanged (no `-m` flag)\n   - No breaking changes to existing usage\n\n**Flag Interactions**\n\n```bash\n# Valid combinations\n-m -c \"multiline code\" -w \">>>\"  ✓\n-m -c \"code\" -S /path/to/socket  ✓\n-m -c \"code\" -s session-name     ✓\n\n# Invalid combinations (mutually exclusive)\n-m -l  ✗  # Multiline and literal mode are incompatible\n```\n\n**Rationale**: Literal mode (`-l`) sends text without Enter, while multiline mode sends complete blocks with newlines. They represent different use cases.",
+      "context": {
+        "audience": "Maintainers reviewing the multiline design",
+        "scope": "Evaluate the selected mechanism and its stated reason in this behavior-and-flags excerpt.",
+        "evidence": [
+          "The feature is proposed as an opt-in extension of safe-send.sh.",
+          "Literal mode sends text without Enter; multiline mode sends complete blocks with newlines."
+        ],
+        "missing": []
+      },
+      "expectations": [
+        {
+          "signal": "decision_clarity",
+          "equals": "satisfied"
+        },
+        {
+          "signal": "rationale",
+          "equals": "satisfied"
+        }
+      ]
+    },
+    {
+      "name": "profile-02",
+      "kind": "design",
+      "text": "### Future Enhancements\n\n1. **Language Detection**: Auto-detect REPL type and adjust behavior\n2. **Configurable Termination**: `--terminator` flag for non-Python REPLs\n3. **File Input**: `--multiline-file` to send file contents\n4. **Streaming**: For very large code, stream in chunks\n5. **Validation**: Syntax check before sending (optional)",
+      "context": {
+        "audience": "Maintainers choosing the next multiline API design",
+        "scope": "This is the complete submitted decision section; evaluate whether it identifies the chosen approach and its tradeoffs.",
+        "evidence": [
+          "The submitted text lists five possible future directions. No direction has been selected and no costs or alternative comparison accompanies the list."
+        ],
+        "missing": []
+      },
+      "expectations": [
+        {
+          "signal": "decision_clarity",
+          "equals": "gap"
+        },
+        {
+          "signal": "tradeoffs",
+          "equals": "gap"
+        }
+      ]
+    },
+    {
+      "name": "profile-03",
+      "kind": "analysis",
+      "text": "## Appendix: what codex ships built-in (verified in source, 2026-07-03)\n\nCodex is *not* designed to hang forever — the source has client-side deadlines\n(checked at `/Users/me/aaa/github/codex`, codex-cli 0.142.x era):\n\n- **Model streaming** (`codex-rs/model-provider-info/src/lib.rs:26-28`):\n  `stream_idle_timeout_ms` default **300 000 (5 min)**, `stream_max_retries`\n  default **5**, `request_max_retries` default **4** — configurable per\n  `[model_providers.<id>]` in config.toml.\n- **MCP servers** (`codex-rs/codex-mcp/src/rmcp_client.rs:85-86`): startup\n  timeout default **30 s** (`startup_timeout_sec`), per-tool-call timeout\n  default **300 s** (`tool_timeout_sec`) — per `[mcp_servers.<name>]`.\n\nA dead *established* stream should therefore die within ~5 idle minutes and\nretry, worst case tens of minutes. Our chains hung 5+ hours with ~0.1 s CPU\nfrom birth — i.e. the wait was in a phase these deadlines don't cover (or a\npath where the idle timer never armed), very early in the run before any real\nwork. Conclusion unchanged and reinforced: the built-ins are a first line, but\nonly an external `timeout` bounds the whole invocation regardless of which\ninternal phase wedged.",
+      "context": {
+        "audience": "Maintainers reviewing the historical deadline investigation",
+        "scope": "Assess support for the conclusion that the whole invocation needs an external deadline, without requiring proof of the exact blocked internal phase.",
+        "evidence": [
+          "The cited snapshot defines a five-minute model-stream idle timeout, five stream retries, four request retries, a 30-second MCP startup timeout, and a 300-second MCP tool-call timeout.",
+          "The observed chains hung for over five hours with about 0.1 seconds of accumulated CPU and no real work.",
+          "The cited internal deadlines cover particular phases; an external process timeout covers the invocation as a whole."
+        ],
+        "missing": []
+      },
+      "expectations": [
+        {
+          "signal": "conclusion_support",
+          "equals": "satisfied"
+        }
+      ]
+    },
+    {
+      "name": "profile-04",
+      "kind": "analysis",
+      "text": "## Executive Summary\n\nThe git-absorb skill documentation is **technically accurate** with **zero inaccuracies found**. However, it covers approximately **40% of available features**. The skill effectively documents basic workflows but omits important command-line flags, all configuration options, and advanced usage patterns that users will encounter.\n\n**Key Statistics:**\n- **Command flags covered:** 4 of 13 (31%)\n- **Configuration options covered:** 0 of 7 (0%)\n- **Installation methods covered:** 4 of 13 (31%)\n- **Core workflows:** ✅ Accurate and well-documented\n- **Safety features:** ✅ Correctly documented\n\n**Methodology**\n\n**Sources Compared**\n\n**Official Documentation:**\n- `/Users/me/aaa/github/git-absorb/README.md` (primary usage guide)\n- `/Users/me/aaa/github/git-absorb/Documentation/git-absorb.adoc` (man page source)\n\n**Our Skill Documentation:**\n- `/Users/me/aaa/github/claude-marketplace/plugins/git-absorb/SKILL.md`\n\n**Comparison Approach**\n\n1. Read official git-absorb repository documentation\n2. Systematically compared flags, options, workflows, and behaviors\n3. Verified technical accuracy of all claims in skill\n4. Identified gaps in coverage\n5. Prioritized missing features by user impact",
+      "context": {
+        "audience": "Maintainers auditing a historical documentation comparison",
+        "scope": "Assess whether the accuracy conclusion is supported by the underlying comparison. This excerpt is the executive summary and methodology; the detailed source comparison is outside the supplied material.",
+        "evidence": [
+          "The summary names the official README, official man-page source, and local skill as its comparison inputs.",
+          "Only the summary and methodology are supplied here; the compared document snapshots and detailed claim-by-claim findings are unavailable."
+        ],
+        "missing": [
+          "The compared snapshots and detailed accuracy findings needed to check the zero-inaccuracies conclusion."
+        ]
+      },
+      "expectations": [
+        {
+          "signal": "claim_evidence",
+          "equals": "needs_context"
+        }
+      ]
+    },
+    {
+      "name": "profile-05",
+      "kind": "plan",
+      "text": "## Next Steps\n\n**Phase 1: Critical Tools (Week 1-2)**\n\n**1. Implement pane-health.sh**\n- ✓ Essential for all other tools\n- Start with basic functionality\n- Add structured output\n- Write tests\n\n**2. Implement safe-send.sh**\n- Depends on pane-health.sh\n- Start with basic retry logic\n- Add prompt waiting\n- Integrate with wait-for-text.sh\n\n**3. Implement cleanup-sessions.sh**\n- Can be developed in parallel\n- Start with basic age-based cleanup\n- Add idle detection\n- Add pattern matching\n\n**Phase 2: High Priority Tools (Week 3)**\n\n**4. Implement capture-clean.sh**\n- ANSI stripping first\n- Add formatting options\n- Add JSON output\n\n**5. Implement create-session.sh**\n- Python preset first (most common)\n- Add other presets\n- Add custom command support\n\n**Phase 3: Medium Priority Tools (Week 4+)**\n\n**6. Implement send-and-wait.sh** (if needed)\n- Evaluate if still useful after safe-send.sh\n- May be redundant\n\n**7. Implement monitor-pane.sh** (optional)\n- Only if debugging needs arise\n\n**Documentation Updates**\n\nAfter each tool:\n- Update SKILL.md with tool documentation\n- Add examples to SKILL.md\n- Update notes/tmux/README.md with learnings\n- Create notes/tmux/implementation-notes.md if needed\n\n**Version Bumping**\n\n- Tools 1-3: Minor version bump (1.0.1 → 1.1.0) - new features\n- Tools 4-5: Minor version bump (1.1.0 → 1.2.0) - new features\n- Tools 6-7: Patch or minor depending on scope",
+      "context": {
+        "audience": "Maintainers implementing the proposed tmux helpers",
+        "scope": "Evaluate executable work items and dependencies in the implementation sequence, without assessing unrelated release criteria.",
+        "evidence": [
+          "The sequence assigns pane-health.sh before safe-send.sh and allows cleanup-sessions.sh to proceed in parallel.",
+          "Optional tools have explicit conditions; documentation follows each tool."
+        ],
+        "missing": []
+      },
+      "expectations": [
+        {
+          "signal": "actionability",
+          "equals": "satisfied"
+        },
+        {
+          "signal": "dependencies",
+          "equals": "satisfied"
+        }
+      ]
+    },
+    {
+      "name": "profile-06",
+      "kind": "plan",
+      "text": "## Overview and Goals\n\n**Testing Challenges for AI Agent Skills**\n\nClaude Code skills present unique testing challenges:\n\n1. **Non-deterministic behavior**: LLM-based decisions vary across runs\n2. **Context-dependent activation**: Skills must activate based on description matching\n3. **Complex workflows**: Multi-step tool usage and reasoning paths\n4. **Security vulnerabilities**: Prompt injection, context poisoning, privilege escalation\n5. **Progressive disclosure**: Skills load files dynamically during execution\n\n**Primary Goals**\n\n| Goal | Description | Success Criteria |\n|------|-------------|------------------|\n| **Reliability** | Skills activate when expected and complete tasks successfully | >95% task completion rate |\n| **Discovery** | Claude correctly identifies when to use skills | >90% skill discovery accuracy |\n| **Security** | Skills resist adversarial inputs and privilege escalation | 0 critical vulnerabilities |\n| **Performance** | Skills execute efficiently without excessive resource usage | <2s average activation time |\n| **Maintainability** | Tests are automated, versioned, and easy to update | Full CI/CD integration |\n\n**Testing Philosophy**\n\nBased on 2025 industry best practices, our approach embraces:\n\n- **Layered testing**: Multiple validation levels from static to production\n- **Continuous evaluation**: Automated testing throughout development lifecycle\n- **Human-in-the-loop**: Critical decisions validated by humans\n- **Sandboxed execution**: Isolated Docker environments for safety\n- **Observability**: Comprehensive logging and tracing",
+      "context": {
+        "audience": "Editors reading a testing strategy",
+        "scope": "This excerpt is only the background and goals appendix attached to a separate implementation plan. It is not an execution sequence, rollout plan, or acceptance-and-recovery procedure.",
+        "evidence": [
+          "The supplied section inventories testing challenges, primary goals, and testing philosophy.",
+          "Task ordering, dependencies, execution steps, and rollback handling belong to a different section outside this appendix."
+        ],
+        "missing": []
+      },
+      "expectations": [
+        {
+          "signal": "dependencies",
+          "equals": "not_applicable"
+        }
+      ]
+    },
+    {
+      "name": "profile-07",
+      "kind": "adr",
+      "text": "## Rejected alternatives for multiline input\n\nThe proposal rejects both automatic mode selection and a separate multiline script. The first obscures behavior and risks changing existing calls; the second duplicates shared reliability code.\n\n| Alternative | Benefits | Costs and rejection rationale |\n|-------------|----------|-------------------------------|\n| Automatically use `paste-buffer` when a command contains `\\n` | Transparent to users, automatic, and requires no new flag. | Users may intend literal `\\n`. Implicit mode changes are harder to debug and could break callers relying on the existing behavior. Reject in favor of explicit behavior. |\n| Add a separate `send-multiline.sh` script | Separates concerns, leaves `safe-send.sh` unchanged, and can specialize for multiline input. | Duplicates retry logic, wait logic, and health checks; users must choose between tools, and maintainers must update both. Reject to avoid that duplication. |",
+      "context": {
+        "audience": "Reviewers of a proposed architecture decision",
+        "scope": "Assess the recorded rejection rationale and consequences for these two alternatives; this is an alternatives section in a proposal, not a claim of a shipped or accepted production decision.",
+        "evidence": [
+          "Automatic newline detection risks literal-input compatibility and debugging clarity.",
+          "A separate script would duplicate retry, wait, and health-check code and add a second maintenance path."
+        ],
+        "missing": []
+      },
+      "expectations": [
+        {
+          "signal": "rationale",
+          "equals": "satisfied"
+        },
+        {
+          "signal": "consequences",
+          "equals": "satisfied"
+        }
+      ]
+    },
+    {
+      "name": "profile-08",
+      "kind": "adr",
+      "text": "### Future Enhancements\n\n1. **Language Detection**: Auto-detect REPL type and adjust behavior\n2. **Configurable Termination**: `--terminator` flag for non-Python REPLs\n3. **File Input**: `--multiline-file` to send file contents\n4. **Streaming**: For very large code, stream in chunks\n5. **Validation**: Syntax check before sending (optional)",
+      "context": {
+        "audience": "Maintainers reviewing a proposed future-work decision record",
+        "scope": "The submitted record contains only these potential enhancements. It must identify a selected direction and explain the operational consequences of that selection.",
+        "evidence": [
+          "The text names candidate extensions but does not select an option or describe its resulting benefits, obligations, or downsides."
+        ],
+        "missing": []
+      },
+      "expectations": [
+        {
+          "signal": "decision_clarity",
+          "equals": "gap"
+        },
+        {
+          "signal": "consequences",
+          "equals": "gap"
+        }
+      ]
+    }
+  ]
+}
