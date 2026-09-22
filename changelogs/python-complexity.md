@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Independent `flattening_helpful` and `expression_expansion_helpful` judgments suggest concrete transformations while accounting for natural traversal, short-circuit safety, cleanup lifetimes, and useful compact expressions.
 - Separate validation fixtures with behavior contracts and useful-structure controls, plus a fixture-selectable evaluator that retains missing signals as skipped and supports expected exceptions.
 - Retained Jev design review and before/after regression evidence. Scores remain advisory; changed rubric scores require rerunning the baseline.
+- Independent matched-count layering challenge: useful policy helpers score above redundant forwarding; all 564 behavior checks pass, 36/39 semantic expectations pass, and the three weak action judgments remain recorded.
+
+### Fixed
+- Redact credentials before JSON serialization so quoted/backslash-containing keys cannot survive as escaped strings in provider metadata. Reject oversized numeric probabilities and malformed Choice values as incomplete reviews.
 
 ## [1.3.0] - 2026-09-22
 

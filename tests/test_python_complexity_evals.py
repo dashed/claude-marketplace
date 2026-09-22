@@ -26,6 +26,13 @@ def test_validation_fixtures_preserve_behavior_and_invariants() -> None:
     assert result["checks_per_case"]["invariant_helper"] == 3
 
 
+def test_independent_fixtures_preserve_behavior_and_invariants() -> None:
+    fixtures = json.loads(FIXTURES.with_name("python-complexity-jev-independent.json").read_text())
+    result = behavior_check(fixtures["cases"])
+    assert result["status"] == "passed", result["failures"]
+    assert result["total_checks"] == 56
+
+
 def test_expected_exception_is_required() -> None:
     case = {
         "name": "lost_validation",

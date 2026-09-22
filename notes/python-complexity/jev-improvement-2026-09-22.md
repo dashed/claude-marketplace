@@ -69,6 +69,31 @@ probabilities as intensity or automatically refactor based on these signals.
 Evidence: [validation old run](jev-validation-v1-2026-09-22.json),
 [validation revised run](jev-validation-v11-2026-09-22.json).
 
+## Independent challenge and layers
+
+A separate agent froze eight more cases before observing candidate outputs:
+56 behavior checks pass, and 12 of 14 semantic expectations pass. Useful shared
+policy and redundant forwarding have identical function/decision/cognitive counts,
+but abstraction quality is 2.74 versus 0.56. This supports context-sensitive
+boundary judgment beyond those static counts. The forwarding category itself
+is uncertain: indirection 0.52 versus no material obstacle 0.48.
+
+Two action expectations fail: guard flattening is 0.55 and dense-expression
+expansion is 0.54, each below the frozen minimum 0.70. Readability separates
+those problematic shapes; useful natural nesting, lifetime, and short-circuit
+controls pass. One unavailable HTTP 503 result was retried once with identical
+input, while every successful judgment was kept. See the
+[independent review](jev-independent-review-2026-09-22.md),
+[initial incomplete result](jev-independent-first-2026-09-22.json),
+[single retry](jev-independent-retry-2026-09-22.json), and
+[completed result](jev-independent-completed-2026-09-22.json).
+
+Across the three current suites: 564 behavior examples pass and 36 of 39 semantic
+expectations pass. The three failures remain in the artifacts. Better structural
+discrimination is useful for directing inspection; transformation probabilities
+do not yet justify automated choices. Path-level static analysis can also expose
+redundant call depth, so this is not a claim that layers require Jev to detect.
+
 ## Reproduce
 
 ```sh
@@ -76,6 +101,7 @@ make test-python-complexity
 make eval-python-complexity
 make eval-python-complexity EVAL_ARGS='--fixtures tests/fixtures/python-complexity-jev-validation.json'
 make eval-python-complexity EVAL_ARGS='--offline --fixtures tests/fixtures/python-complexity-jev-validation.json'
+make eval-python-complexity EVAL_ARGS='--fixtures tests/fixtures/python-complexity-jev-independent.json'
 ```
 
 Expectations are fixture tests, not production quality gates. The evaluator uses

@@ -243,6 +243,14 @@ and further independent results. Action probabilities require inspection; better
 synthetic separation is not proof of production refactor value. Run validation
 with `make eval-python-complexity EVAL_ARGS='--fixtures tests/fixtures/python-complexity-jev-validation.json'`.
 
+An independent eight-case challenge passes 12 of 14 semantic expectations. It
+distinguishes useful shared-policy helpers (abstraction 2.74/3) from forwarding
+(0.56/3) despite identical static counts, using supplied boundary constraints.
+Two transformation probabilities remain below their frozen expectations. All
+three suites total 564 passing behavior examples and 36/39 semantic expectations;
+the three failures stay visible. The source checkout's independent review also
+records the forwarding category's near tie and a single HTTP 503 retry.
+
 ## Sources and implementation choice
 
 Checked 2026-09-22:

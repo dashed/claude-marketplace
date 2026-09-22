@@ -1,0 +1,761 @@
+{
+  "version": 1,
+  "purpose": "Independent synthetic challenge corpus, written without candidate outputs. Frozen expectations test actionable discrimination and controls. The shared-policy and forwarding cases have equal function, cyclomatic, and cognitive counts but different boundary purposes supplied explicitly in context.",
+  "cases": [
+    {
+      "name": "guard_ladder",
+      "entry": "issue_credit",
+      "scope": "guard_ladder.py complete shown call path",
+      "path": "guard_ladder.py",
+      "complete": true,
+      "task": "Return the requested positive credit amount only for an active, verified account with credit enabled and enough balance; otherwise return zero. Fields are always present.",
+      "constraints": [
+        "The function is pure; no cleanup, side effects, or external hooks must be preserved."
+      ],
+      "source": "def issue_credit(account, amount):\n    if account[\"active\"]:\n        if account[\"verified\"]:\n            if account[\"credit_enabled\"]:\n                if amount > 0:\n                    if account[\"balance\"] >= amount:\n                        return amount\n    return 0\n",
+      "tests": [
+        {
+          "args": [
+            {
+              "active": true,
+              "verified": true,
+              "credit_enabled": true,
+              "balance": 20
+            },
+            10
+          ],
+          "expected": 10
+        },
+        {
+          "args": [
+            {
+              "active": true,
+              "verified": true,
+              "credit_enabled": true,
+              "balance": 20
+            },
+            21
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            {
+              "active": true,
+              "verified": true,
+              "credit_enabled": true,
+              "balance": 20
+            },
+            0
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            {
+              "active": false,
+              "verified": true,
+              "credit_enabled": true,
+              "balance": 20
+            },
+            10
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            {
+              "active": true,
+              "verified": false,
+              "credit_enabled": true,
+              "balance": 20
+            },
+            10
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            {
+              "active": true,
+              "verified": true,
+              "credit_enabled": false,
+              "balance": 20
+            },
+            10
+          ],
+          "expected": 0
+        }
+      ]
+    },
+    {
+      "name": "grouped_totals",
+      "entry": "totals",
+      "scope": "grouped_totals.py complete shown call path",
+      "path": "grouped_totals.py",
+      "complete": true,
+      "task": "Return each group's sum of positive item amounts. Keep empty groups with total zero and keep group boundaries distinct. Inputs are a mapping from group names to lists of integers.",
+      "constraints": [],
+      "source": "def totals(groups):\n    result = {}\n    for name, amounts in groups.items():\n        subtotal = 0\n        for amount in amounts:\n            if amount > 0:\n                subtotal += amount\n        result[name] = subtotal\n    return result\n",
+      "tests": [
+        {
+          "args": [
+            {}
+          ],
+          "expected": {}
+        },
+        {
+          "args": [
+            {
+              "a": [
+                3,
+                -2,
+                4
+              ],
+              "b": [],
+              "c": [
+                8,
+                0
+              ]
+            }
+          ],
+          "expected": {
+            "a": 7,
+            "b": 0,
+            "c": 8
+          }
+        },
+        {
+          "args": [
+            {
+              "a": [
+                -1
+              ],
+              "b": [
+                2
+              ]
+            }
+          ],
+          "expected": {
+            "a": 0,
+            "b": 2
+          }
+        }
+      ]
+    },
+    {
+      "name": "scoped_lifetimes",
+      "entry": "serve",
+      "scope": "scoped_lifetimes.py complete shown call path",
+      "path": "scoped_lifetimes.py",
+      "complete": true,
+      "task": "Acquire a transaction and then a lock; optionally do work, then release the lock before the transaction, including if work later raises. Return the audit log. The lease helper models resource acquisition and guaranteed release.",
+      "constraints": [
+        "Acquisition order and LIFO cleanup are contractual."
+      ],
+      "source": "from contextlib import contextmanager\n\n@contextmanager\ndef lease(log, name):\n    log.append(\"acquire:\" + name)\n    try:\n        yield\n    finally:\n        log.append(\"release:\" + name)\n\ndef serve(enabled):\n    log = []\n    with lease(log, \"transaction\"):\n        with lease(log, \"lock\"):\n            if enabled:\n                log.append(\"work\")\n    return log\n",
+      "tests": [
+        {
+          "args": [
+            false
+          ],
+          "expected": [
+            "acquire:transaction",
+            "acquire:lock",
+            "release:lock",
+            "release:transaction"
+          ]
+        },
+        {
+          "args": [
+            true
+          ],
+          "expected": [
+            "acquire:transaction",
+            "acquire:lock",
+            "work",
+            "release:lock",
+            "release:transaction"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "safe_short_circuit",
+      "entry": "within_limit",
+      "scope": "safe_short_circuit.py complete shown call path",
+      "path": "safe_short_circuit.py",
+      "complete": true,
+      "task": "Return whether samples have a positive count and their average does not exceed limit. A zero or negative count must return false without division.",
+      "constraints": [],
+      "source": "def within_limit(total, count, limit):\n    return count > 0 and total / count <= limit\n",
+      "tests": [
+        {
+          "args": [
+            10,
+            0,
+            5
+          ],
+          "expected": false
+        },
+        {
+          "args": [
+            10,
+            -2,
+            5
+          ],
+          "expected": false
+        },
+        {
+          "args": [
+            10,
+            2,
+            5
+          ],
+          "expected": true
+        },
+        {
+          "args": [
+            11,
+            2,
+            5
+          ],
+          "expected": false
+        },
+        {
+          "args": [
+            0,
+            1,
+            0
+          ],
+          "expected": true
+        }
+      ]
+    },
+    {
+      "name": "dense_status",
+      "entry": "label",
+      "scope": "dense_status.py complete shown call path",
+      "path": "dense_status.py",
+      "complete": true,
+      "task": "Render a status label. A nonempty error wins over all other states: show 'Error: ' plus its text when verbose, otherwise 'Error'. With no error, pending shows 'Loading'. Otherwise show nonempty cached text or 'Empty'.",
+      "constraints": [],
+      "source": "def label(error, pending, cached, verbose):\n    return ((\"Error: \" + error if verbose else \"Error\") if error else\n            (\"Loading\" if pending else (cached if cached else \"Empty\")))\n",
+      "tests": [
+        {
+          "args": [
+            "",
+            false,
+            "",
+            false
+          ],
+          "expected": "Empty"
+        },
+        {
+          "args": [
+            "",
+            false,
+            "",
+            true
+          ],
+          "expected": "Empty"
+        },
+        {
+          "args": [
+            "",
+            false,
+            "Saved",
+            false
+          ],
+          "expected": "Saved"
+        },
+        {
+          "args": [
+            "",
+            false,
+            "Saved",
+            true
+          ],
+          "expected": "Saved"
+        },
+        {
+          "args": [
+            "",
+            true,
+            "",
+            false
+          ],
+          "expected": "Loading"
+        },
+        {
+          "args": [
+            "",
+            true,
+            "",
+            true
+          ],
+          "expected": "Loading"
+        },
+        {
+          "args": [
+            "",
+            true,
+            "Saved",
+            false
+          ],
+          "expected": "Loading"
+        },
+        {
+          "args": [
+            "",
+            true,
+            "Saved",
+            true
+          ],
+          "expected": "Loading"
+        },
+        {
+          "args": [
+            "offline",
+            false,
+            "",
+            false
+          ],
+          "expected": "Error"
+        },
+        {
+          "args": [
+            "offline",
+            false,
+            "",
+            true
+          ],
+          "expected": "Error: offline"
+        },
+        {
+          "args": [
+            "offline",
+            false,
+            "Saved",
+            false
+          ],
+          "expected": "Error"
+        },
+        {
+          "args": [
+            "offline",
+            false,
+            "Saved",
+            true
+          ],
+          "expected": "Error: offline"
+        },
+        {
+          "args": [
+            "offline",
+            true,
+            "",
+            false
+          ],
+          "expected": "Error"
+        },
+        {
+          "args": [
+            "offline",
+            true,
+            "",
+            true
+          ],
+          "expected": "Error: offline"
+        },
+        {
+          "args": [
+            "offline",
+            true,
+            "Saved",
+            false
+          ],
+          "expected": "Error"
+        },
+        {
+          "args": [
+            "offline",
+            true,
+            "Saved",
+            true
+          ],
+          "expected": "Error: offline"
+        }
+      ]
+    },
+    {
+      "name": "explicit_status",
+      "entry": "label",
+      "scope": "explicit_status.py complete shown call path",
+      "path": "explicit_status.py",
+      "complete": true,
+      "task": "Render a status label. A nonempty error wins over all other states: show 'Error: ' plus its text when verbose, otherwise 'Error'. With no error, pending shows 'Loading'. Otherwise show nonempty cached text or 'Empty'.",
+      "constraints": [],
+      "source": "def label(error, pending, cached, verbose):\n    if error:\n        if verbose:\n            return \"Error: \" + error\n        return \"Error\"\n    if pending:\n        return \"Loading\"\n    return cached or \"Empty\"\n",
+      "tests": [
+        {
+          "args": [
+            "",
+            false,
+            "",
+            false
+          ],
+          "expected": "Empty"
+        },
+        {
+          "args": [
+            "",
+            false,
+            "",
+            true
+          ],
+          "expected": "Empty"
+        },
+        {
+          "args": [
+            "",
+            false,
+            "Saved",
+            false
+          ],
+          "expected": "Saved"
+        },
+        {
+          "args": [
+            "",
+            false,
+            "Saved",
+            true
+          ],
+          "expected": "Saved"
+        },
+        {
+          "args": [
+            "",
+            true,
+            "",
+            false
+          ],
+          "expected": "Loading"
+        },
+        {
+          "args": [
+            "",
+            true,
+            "",
+            true
+          ],
+          "expected": "Loading"
+        },
+        {
+          "args": [
+            "",
+            true,
+            "Saved",
+            false
+          ],
+          "expected": "Loading"
+        },
+        {
+          "args": [
+            "",
+            true,
+            "Saved",
+            true
+          ],
+          "expected": "Loading"
+        },
+        {
+          "args": [
+            "offline",
+            false,
+            "",
+            false
+          ],
+          "expected": "Error"
+        },
+        {
+          "args": [
+            "offline",
+            false,
+            "",
+            true
+          ],
+          "expected": "Error: offline"
+        },
+        {
+          "args": [
+            "offline",
+            false,
+            "Saved",
+            false
+          ],
+          "expected": "Error"
+        },
+        {
+          "args": [
+            "offline",
+            false,
+            "Saved",
+            true
+          ],
+          "expected": "Error: offline"
+        },
+        {
+          "args": [
+            "offline",
+            true,
+            "",
+            false
+          ],
+          "expected": "Error"
+        },
+        {
+          "args": [
+            "offline",
+            true,
+            "",
+            true
+          ],
+          "expected": "Error: offline"
+        },
+        {
+          "args": [
+            "offline",
+            true,
+            "Saved",
+            false
+          ],
+          "expected": "Error"
+        },
+        {
+          "args": [
+            "offline",
+            true,
+            "Saved",
+            true
+          ],
+          "expected": "Error: offline"
+        }
+      ]
+    },
+    {
+      "name": "shared_policy",
+      "entry": "probe",
+      "scope": "shared_policy.py complete shown call path",
+      "path": "shared_policy.py",
+      "complete": true,
+      "task": "Return the value and presence of a case-insensitive, whitespace-trimmed name in a mapping whose stored keys are already canonical. The application's public lookup and contains APIs are used independently; probe combines their results for inspection.",
+      "constraints": [
+        "Keep the independently used lookup and contains API boundaries and one shared canonicalization policy."
+      ],
+      "source": "def canonical_name(name):\n    return name.strip().casefold()\n\ndef lookup(rows, name):\n    return rows.get(canonical_name(name))\n\ndef contains(rows, name):\n    return canonical_name(name) in rows\n\ndef probe(rows, name):\n    return [lookup(rows, name), contains(rows, name)]\n",
+      "tests": [
+        {
+          "args": [
+            {
+              "alice": 12
+            },
+            " ALICE "
+          ],
+          "expected": [
+            12,
+            true
+          ]
+        },
+        {
+          "args": [
+            {
+              "alice": 12
+            },
+            "bob"
+          ],
+          "expected": [
+            null,
+            false
+          ]
+        },
+        {
+          "args": [
+            {
+              "empty": null
+            },
+            "EMPTY"
+          ],
+          "expected": [
+            null,
+            true
+          ]
+        },
+        {
+          "args": [
+            {},
+            ""
+          ],
+          "expected": [
+            null,
+            false
+          ]
+        }
+      ]
+    },
+    {
+      "name": "forwarding_chain",
+      "entry": "probe",
+      "scope": "forwarding_chain.py complete shown call path",
+      "path": "forwarding_chain.py",
+      "complete": true,
+      "task": "Return the value and presence of a case-insensitive, whitespace-trimmed name in a mapping whose stored keys are already canonical. Only probe is public.",
+      "constraints": [
+        "There are no framework hooks, instrumentation, alternative dispatchers, or external consumers of the private helpers."
+      ],
+      "source": "def probe(rows, name):\n    return _dispatch(rows, name)\n\ndef _dispatch(rows, name):\n    return _route(rows, name)\n\ndef _route(rows, name):\n    return _read(rows, name)\n\ndef _read(rows, name):\n    key = name.strip().casefold()\n    return [rows.get(key), key in rows]\n",
+      "tests": [
+        {
+          "args": [
+            {
+              "alice": 12
+            },
+            " ALICE "
+          ],
+          "expected": [
+            12,
+            true
+          ]
+        },
+        {
+          "args": [
+            {
+              "alice": 12
+            },
+            "bob"
+          ],
+          "expected": [
+            null,
+            false
+          ]
+        },
+        {
+          "args": [
+            {
+              "empty": null
+            },
+            "EMPTY"
+          ],
+          "expected": [
+            null,
+            true
+          ]
+        },
+        {
+          "args": [
+            {},
+            ""
+          ],
+          "expected": [
+            null,
+            false
+          ]
+        }
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "name": "guards_offer_flattening",
+      "case": "guard_ladder",
+      "signal": "flattening_helpful",
+      "minimum": 0.7
+    },
+    {
+      "name": "grouping_keeps_nesting",
+      "case": "grouped_totals",
+      "signal": "flattening_helpful",
+      "maximum": 0.3
+    },
+    {
+      "name": "cleanup_keeps_nesting",
+      "case": "scoped_lifetimes",
+      "signal": "flattening_helpful",
+      "maximum": 0.3
+    },
+    {
+      "name": "short_circuit_stays_compact",
+      "case": "safe_short_circuit",
+      "signal": "expression_expansion_helpful",
+      "maximum": 0.3
+    },
+    {
+      "name": "dense_status_benefits_from_expansion",
+      "case": "dense_status",
+      "signal": "expression_expansion_helpful",
+      "minimum": 0.7
+    },
+    {
+      "name": "explicit_status_needs_no_expansion",
+      "case": "explicit_status",
+      "signal": "expression_expansion_helpful",
+      "maximum": 0.3
+    },
+    {
+      "name": "status_expansion_improves_readability",
+      "higher": "explicit_status",
+      "lower": "dense_status",
+      "signal": "readability",
+      "min_delta": 0.25
+    },
+    {
+      "name": "shared_policy_beats_forwarders",
+      "higher": "shared_policy",
+      "lower": "forwarding_chain",
+      "signal": "abstraction_quality",
+      "min_delta": 0.5
+    },
+    {
+      "name": "forwarders_cost_indirection",
+      "case": "forwarding_chain",
+      "signal": "dominant_cost",
+      "equals": "indirection"
+    },
+    {
+      "name": "grouped_totals_remains_readable",
+      "case": "grouped_totals",
+      "signal": "readability",
+      "field": "score",
+      "minimum": 2.4
+    },
+    {
+      "name": "scoped_lifetimes_remains_readable",
+      "case": "scoped_lifetimes",
+      "signal": "readability",
+      "field": "score",
+      "minimum": 2.4
+    },
+    {
+      "name": "safe_short_circuit_remains_readable",
+      "case": "safe_short_circuit",
+      "signal": "readability",
+      "field": "score",
+      "minimum": 2.4
+    },
+    {
+      "name": "explicit_status_remains_readable",
+      "case": "explicit_status",
+      "signal": "readability",
+      "field": "score",
+      "minimum": 2.4
+    },
+    {
+      "name": "shared_policy_remains_useful",
+      "case": "shared_policy",
+      "signal": "abstraction_quality",
+      "field": "score",
+      "minimum": 2.4
+    }
+  ]
+}

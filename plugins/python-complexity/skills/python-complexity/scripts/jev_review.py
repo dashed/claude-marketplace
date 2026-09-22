@@ -59,6 +59,17 @@ def digest(value: Any) -> str:
     return hashlib.sha256(encode(value)).hexdigest()
 
 
+def redact(value: Any, key: str) -> Any:
+    """Remove literal credentials before JSON escaping changes their representation."""
+    if isinstance(value, str):
+        return value.replace(key, "[REDACTED]")
+    if isinstance(value, list):
+        return [redact(item, key) for item in value]
+    if isinstance(value, dict):
+        return {redact(name, key): redact(item, key) for name, item in value.items()}
+    return value
+
+
 def load_json(path: Path) -> Any:
     try:
         return json.loads(path.read_text(encoding="utf-8"))
@@ -213,7 +224,7 @@ def evaluate(request: dict[str, Any], key: str, endpoint: str = ENDPOINT) -> dic
 
 
 def finite_number(value: Any, maximum: float) -> bool:
-    return type(value) in (int, float) and math.isfinite(value) and 0 <= value <= maximum
+    return type(value) in (int, float) and 0 <= value <= maximum and math.isfinite(value)
 
 
 def validate_response(result: Any, questions: dict[str, Any]) -> None:
@@ -244,7 +255,9 @@ def validate_response(result: Any, questions: dict[str, Any]) -> None:
             raise ReviewError(f"Invalid probability distribution for {name}.")
         if kind == "score" and not finite_number(answer.get("score"), len(criteria) - 1):
             raise ReviewError(f"Invalid score for {name}.")
-        if kind == "choice" and answer.get("choice") not in keys:
+        if kind == "choice" and (
+            not isinstance(answer.get("choice"), str) or answer["choice"] not in keys
+        ):
             raise ReviewError(f"Invalid choice for {name}.")
         if "confidence" in answer and not finite_number(answer["confidence"], 1):
             raise ReviewError(f"Invalid confidence for {name}.")
@@ -304,10 +317,9 @@ def main(argv: list[str] | None = None) -> int:
                 report["elapsed_seconds"] = round(time.monotonic() - started, 3)
                 report["evaluated_at"] = datetime.now(timezone.utc).isoformat()
                 report["status"] = "evaluated"
-        output = json.dumps(report, indent=2, ensure_ascii=False, allow_nan=False)
         if key is not None:
-            output = output.replace(key, "[REDACTED]")
-        print(output)
+            report = redact(report, key)
+        print(json.dumps(report, indent=2, ensure_ascii=False, allow_nan=False))
         return 0
     except ReviewError as error:
         print(json.dumps({"status": "incomplete", "advisory": True, "error": str(error)}))

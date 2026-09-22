@@ -134,29 +134,36 @@ def test_bad_state_fails_before_network(
     assert json.loads(capsys.readouterr().out)["status"] == "incomplete"
 
 
+@pytest.mark.parametrize("key", ["secret-test-key", 'secret"quoted-key', "secret\\slash-key"])
 def test_live_contract_records_request_and_redacts_key(
-    state_file: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+    key: str,
+    state_file: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     calls = []
-    monkeypatch.setenv("AI_GATEWAY_API_KEY", "secret-test-key")
+    monkeypatch.setenv("AI_GATEWAY_API_KEY", key)
 
     class FakeGateway:
         def open(self, request: Any, timeout: int) -> io.BytesIO:
             assert request.full_url == "https://ai-gateway.vercel.sh/v1/evaluate"
             assert request.get_method() == "POST"
-            assert request.get_header("Authorization") == "Bearer secret-test-key"
+            assert request.get_header("Authorization") == "Bearer " + key
             assert timeout == 30
             payload = json.loads(request.data)
             calls.append(payload)
             response = gateway_response(payload["questions"])
-            response["providerMetadata"]["echo"] = "secret-test-key"
+            response["providerMetadata"]["echo"] = key
+            response["providerMetadata"]["nested"] = [{key: "echo " + key}]
             return io.BytesIO(json.dumps(response).encode())
 
     monkeypatch.setattr(jev.urllib.request, "build_opener", lambda *_: FakeGateway())
     assert jev.main(["--state", str(state_file)]) == 0
     output = capsys.readouterr().out
-    assert "secret-test-key" not in output
+    assert key not in output
     report = json.loads(output)
+    assert report["response"]["providerMetadata"]["echo"] == "[REDACTED]"
+    assert report["response"]["providerMetadata"]["nested"] == [{"[REDACTED]": "echo [REDACTED]"}]
     assert len(calls) == 1
     assert report["request"] == calls[0]
     assert report["status"] == "evaluated" and report["advisory"] is True
@@ -206,6 +213,7 @@ def test_redirects_are_refused() -> None:
         {"type": "boolean", "probability": True},
         {"type": "boolean", "probability": float("nan")},
         {"type": "boolean", "probability": 1.01},
+        {"type": "boolean", "probability": 10**400},
         {"type": "score", "score": 0, "probabilities": {"0": 1}},
     ],
 )
@@ -213,6 +221,14 @@ def test_rejects_malformed_boolean(broken: Any) -> None:
     questions = {"condition": {"type": "boolean"}}
     with pytest.raises(jev.ReviewError):
         jev.validate_response({"model": jev.MODEL, "answers": {"condition": broken}}, questions)
+
+
+def test_unhashable_choice_is_rejected_as_review_error() -> None:
+    question = {"action": {"type": "choice", "criteria": {"yes": "Yes", "no": "No"}}}
+    response = gateway_response(question)
+    response["answers"]["action"]["choice"] = []
+    with pytest.raises(jev.ReviewError, match="Invalid choice"):
+        jev.validate_response(response, question)
 
 
 @pytest.mark.parametrize("failure", ["timeout", "bad_json", "nonfinite_metadata"])
