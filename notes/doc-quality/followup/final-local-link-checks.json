@@ -148,8 +148,8 @@
     "link_validation": {
       "status": "checked",
       "counts": {
-        "total": 17,
-        "checked": 17,
+        "total": 18,
+        "checked": 18,
         "broken": 0,
         "not_checked": 0
       },
@@ -176,8 +176,18 @@
         },
         {
           "kind": "link",
+          "destination": "final-local-link-checks.json",
+          "source_line": 36,
+          "origin": "notes/doc-quality/followup/README.md",
+          "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/final-local-link-checks.json",
+          "fragment": "",
+          "status": "checked",
+          "reason": "local_target_exists"
+        },
+        {
+          "kind": "link",
           "destination": "freeze.json",
-          "source_line": 46,
+          "source_line": 49,
           "origin": "notes/doc-quality/followup/README.md",
           "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/freeze.json",
           "fragment": "",
@@ -187,7 +197,7 @@
         {
           "kind": "link",
           "destination": "design-consultation.json",
-          "source_line": 53,
+          "source_line": 56,
           "origin": "notes/doc-quality/followup/README.md",
           "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/design-consultation.json",
           "fragment": "",
@@ -197,7 +207,7 @@
         {
           "kind": "link",
           "destination": "regression-summary.json",
-          "source_line": 72,
+          "source_line": 75,
           "origin": "notes/doc-quality/followup/README.md",
           "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/regression-summary.json",
           "fragment": "",
@@ -207,7 +217,7 @@
         {
           "kind": "link",
           "destination": "regression-attempts.json",
-          "source_line": 72,
+          "source_line": 75,
           "origin": "notes/doc-quality/followup/README.md",
           "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/regression-attempts.json",
           "fragment": "",
@@ -217,7 +227,7 @@
         {
           "kind": "link",
           "destination": "challenge-summary.json",
-          "source_line": 73,
+          "source_line": 76,
           "origin": "notes/doc-quality/followup/README.md",
           "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/challenge-summary.json",
           "fragment": "",
@@ -227,7 +237,7 @@
         {
           "kind": "link",
           "destination": "challenge-reports.json",
-          "source_line": 73,
+          "source_line": 76,
           "origin": "notes/doc-quality/followup/README.md",
           "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/challenge-reports.json",
           "fragment": "",
@@ -237,7 +247,7 @@
         {
           "kind": "link",
           "destination": "profiles-summary.json",
-          "source_line": 74,
+          "source_line": 77,
           "origin": "notes/doc-quality/followup/README.md",
           "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/profiles-summary.json",
           "fragment": "",
@@ -247,7 +257,7 @@
         {
           "kind": "link",
           "destination": "profiles-reports.json",
-          "source_line": 74,
+          "source_line": 77,
           "origin": "notes/doc-quality/followup/README.md",
           "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/profiles-reports.json",
           "fragment": "",
@@ -257,7 +267,7 @@
         {
           "kind": "link",
           "destination": "audit.json",
-          "source_line": 104,
+          "source_line": 107,
           "origin": "notes/doc-quality/followup/README.md",
           "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/audit.json",
           "fragment": "",
@@ -267,7 +277,7 @@
         {
           "kind": "link",
           "destination": "unlabeled.json",
-          "source_line": 111,
+          "source_line": 114,
           "origin": "notes/doc-quality/followup/README.md",
           "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/unlabeled.json",
           "fragment": "",
@@ -277,7 +287,7 @@
         {
           "kind": "link",
           "destination": "baseline.json",
-          "source_line": 112,
+          "source_line": 115,
           "origin": "notes/doc-quality/followup/README.md",
           "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/baseline.json",
           "fragment": "",
@@ -287,7 +297,7 @@
         {
           "kind": "link",
           "destination": "control.json",
-          "source_line": 113,
+          "source_line": 116,
           "origin": "notes/doc-quality/followup/README.md",
           "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/control.json",
           "fragment": "",
@@ -297,7 +307,7 @@
         {
           "kind": "link",
           "destination": "assisted-input.json",
-          "source_line": 114,
+          "source_line": 117,
           "origin": "notes/doc-quality/followup/README.md",
           "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/assisted-input.json",
           "fragment": "",
@@ -307,7 +317,7 @@
         {
           "kind": "link",
           "destination": "assisted.json",
-          "source_line": 114,
+          "source_line": 117,
           "origin": "notes/doc-quality/followup/README.md",
           "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/assisted.json",
           "fragment": "",
@@ -317,7 +327,7 @@
         {
           "kind": "link",
           "destination": "agent-comparison.json",
-          "source_line": 131,
+          "source_line": 134,
           "origin": "notes/doc-quality/followup/README.md",
           "target": "/Users/me/aaa/github/claude-marketplace/notes/doc-quality/followup/agent-comparison.json",
           "fragment": "",

@@ -33,7 +33,7 @@ Ruff, ty, repository/skill validation, and the standalone uv run.
 skipped. The skill's local reference passed; workflow external URLs were reported
 unchecked. This is evidence of the bundled checker, not an external URL or site
 renderer test. Link checks use POSIX directory-relative opens for bounded reads.
-The [final local check](final-local-link-checks.json) also confirms all 17 local
+The [final local check](final-local-link-checks.json) also checks the local
 references in this evidence note after the audit artifact was created; the
 original audited link report is retained separately.
 
