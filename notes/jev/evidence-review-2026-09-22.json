@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "advisory": true,
+  "provider": "vercel",
+  "protocol": "gateway",
+  "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+  "api_key_env": "AI_GATEWAY_API_KEY",
+  "questions_sha256": "91902970c77cd2ca08b388a4c18b3c62da1141c67e7e3f77a366ed6c3e4ac0cc",
+  "state_sha256": "6bdd4d844e08eefd0f06c1c86d2fe158d20740d9c338bf6d7399b4fb8edd3612",
+  "request": {
+    "model": "typesafe-ai/jev",
+    "state": {
+      "task": "Assess claims from our frozen synthetic complexity evals.",
+      "observations": {
+        "original_suite": "old6/9, revised9/9",
+        "validation": "old8/10 with6 missing new signals, revised15/16",
+        "independent": "12/14 after one503 retry; 56 behavior checks passed",
+        "layers": "same definitions/cyclomatic/cognitive counts; useful abstraction2.74 versus forwarding0.56; category indirection0.52 vs no_obstacle0.48",
+        "remaining_failures": "flat flattening probability0.35 exceeds max0.30; guard flattening0.55 and dense expansion0.54 below min0.70",
+        "scope": "only small synthetic code; no production refactor benchmark or human ratings"
+      },
+      "claim_options": {
+        "supported": "Revised questions distinguish these examples better; layers show a contextual distinction with equal static counts; action judgments still need inspection.",
+        "unsupported": "Jev is a reliable automatic refactor gate for arbitrary repositories."
+      }
+    },
+    "questions": {
+      "supported_claim_follows": {
+        "type": "boolean",
+        "instructions": "Does claim_options.supported fairly follow from the supplied observations without overstating the evaluation scope?"
+      },
+      "automatic_gate_supported": {
+        "type": "boolean",
+        "instructions": "Do these observations establish claim_options.unsupported?"
+      },
+      "next_validation": {
+        "type": "choice",
+        "instructions": "Which validation would most directly test general usefulness beyond the remaining synthetic examples?",
+        "criteria": {
+          "blind_real_review": "Compare agent-only and agent-plus-Jev recommendations on representative real code using independent reviewer labels and behavior checks.",
+          "repeat_until_pass": "Repeat failing synthetic cases until the model returns scores meeting each threshold.",
+          "lower_thresholds": "Lower frozen thresholds to make the existing failures pass.",
+          "no_further_evidence": "Treat current observations as sufficient proof of reliability."
+        }
+      }
+    }
+  },
+  "response": {
+    "model": "typesafe-ai/jev",
+    "answers": {
+      "automatic_gate_supported": {
+        "type": "boolean",
+        "probability": 0.04
+      },
+      "next_validation": {
+        "type": "choice",
+        "choice": "blind_real_review",
+        "probabilities": {
+          "lower_thresholds": 0,
+          "blind_real_review": 1,
+          "repeat_until_pass": 0,
+          "no_further_evidence": 0
+        },
+        "confidence": 1
+      },
+      "supported_claim_follows": {
+        "type": "boolean",
+        "probability": 0.85
+      }
+    },
+    "usage": {
+      "inputTokens": 714,
+      "outputTokens": 100
+    },
+    "providerMetadata": {
+      "typesafe": {
+        "confidence": {
+          "next_validation": 1
+        }
+      },
+      "gateway": {
+        "routing": {
+          "originalModelId": "typesafe-ai/jev",
+          "resolvedProvider": "typesafe-ai",
+          "fallbacksAvailable": [],
+          "planningReasoning": "System credentials planned for: typesafe-ai. Total execution order: typesafe-ai(system)",
+          "canonicalSlug": "typesafe-ai/jev",
+          "finalProvider": "typesafe-ai",
+          "modelAttemptCount": 1,
+          "modelAttempts": [
+            {
+              "canonicalSlug": "typesafe-ai/jev",
+              "success": true,
+              "providerAttemptCount": 1,
+              "providerAttempts": [
+                {
+                  "provider": "typesafe-ai",
+                  "credentialType": "system",
+                  "success": true,
+                  "startTime": 1790081117457,
+                  "endTime": 1790081117697,
+                  "statusCode": 200
+                }
+              ]
+            }
+          ],
+          "totalProviderAttemptCount": 1
+        },
+        "cost": "0",
+        "marketCost": "0.000029988",
+        "surchargeCost": "0",
+        "gatewayCost": "0",
+        "generationId": "gen_01M34JCB5ZBBTEYRZGWF17Z4SZ"
+      }
+    }
+  },
+  "answers": {
+    "automatic_gate_supported": {
+      "type": "boolean",
+      "probability": 0.04
+    },
+    "next_validation": {
+      "type": "choice",
+      "choice": "blind_real_review",
+      "probabilities": {
+        "lower_thresholds": 0,
+        "blind_real_review": 1,
+        "repeat_until_pass": 0,
+        "no_further_evidence": 0
+      },
+      "confidence": 1
+    },
+    "supported_claim_follows": {
+      "type": "boolean",
+      "probability": 0.85
+    }
+  },
+  "elapsed_seconds": 0.452,
+  "evaluated_at": "2026-09-22T12:45:17.664995+00:00",
+  "status": "evaluated"
+}

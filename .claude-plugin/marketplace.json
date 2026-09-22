@@ -1485,6 +1485,30 @@
       "skills": [
         "./skills"
       ]
+    },
+    {
+      "name": "jev",
+      "version": "1.0.0",
+      "source": "./plugins/jev",
+      "description": "Consult Jev for bounded typed second opinions during agent work: compare plans, check claims against supplied evidence, prioritize investigations, and challenge conclusions. Uses Vercel AI Gateway by default with configurable providers; skips when the selected key is absent. Includes a standalone uv-run helper and offline contract tests.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/jev",
+      "license": "MIT",
+      "keywords": [
+        "jev",
+        "typesafe",
+        "vercel-ai-gateway",
+        "typed-judgments",
+        "agent",
+        "review",
+        "evaluation"
+      ],
+      "strict": false,
+      "skills": [
+        "./skills"
+      ]
     }
   ]
 }

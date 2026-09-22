@@ -104,6 +104,25 @@ CODEX_SKILLS_FILES := scripts/install_codex_skills.py scripts/manage_codex_skill
 
 PYTHON_COMPLEXITY_JEV_FILES := plugins/python-complexity/skills/python-complexity/scripts/jev_review.py scripts/eval_python_complexity.py tests/test_python_complexity_jev.py tests/test_python_complexity_evals.py
 
+JEV_FILES := plugins/jev/skills/jev/scripts/jev.py tests/test_jev.py
+
+.PHONY: test-jev lint-jev typecheck-jev format-jev format-jev-check
+
+test-jev: lint-jev typecheck-jev format-jev-check ## Check the general Jev helper and run offline contract tests
+	@$(UV_RUN) pytest tests/test_jev.py --no-cov
+
+lint-jev: ## Run Ruff on the general Jev helper and tests
+	@$(UV_RUN) ruff check $(JEV_FILES)
+
+typecheck-jev: ## Run ty on the general Jev helper and tests
+	@$(UV_RUN) ty check $(JEV_FILES)
+
+format-jev: ## Format the general Jev helper and tests with Ruff
+	@$(UV_RUN) ruff format $(JEV_FILES)
+
+format-jev-check: ## Check general Jev helper formatting with Ruff
+	@$(UV_RUN) ruff format --check $(JEV_FILES)
+
 .PHONY: test-python-complexity lint-python-complexity typecheck-python-complexity format-python-complexity format-python-complexity-check eval-python-complexity
 
 test-python-complexity: lint-python-complexity typecheck-python-complexity format-python-complexity-check ## Check the Jev helper and run offline contract tests

@@ -1,0 +1,46 @@
+{
+  "state": {
+    "objective": "Refactor a retry loop while preserving cancellation and timeout behavior.",
+    "observations": [
+      "The existing cancellation regression test passes on the current implementation.",
+      "A prototype helper passes a successful-request test.",
+      "Timeout and cancellation tests have not run against the prototype."
+    ],
+    "proposal": "Replace the retry loop with the helper, then report that all behavior is preserved.",
+    "candidates": {
+      "verify_failure_paths": "Run timeout and cancellation regression tests against the prototype before adopting it.",
+      "benchmark_success": "Benchmark successful requests to show that the helper is faster.",
+      "rename_helper": "Rename the helper to reflect its retry purpose."
+    }
+  },
+  "questions": {
+    "preservation_supported": {
+      "type": "boolean",
+      "instructions": "Do the supplied observations establish that the proposed helper preserves cancellation and timeout behavior? Do not assume tests that have not run.",
+      "criteria": {
+        "true": "The supplied observations directly verify both behaviors on the prototype.",
+        "false": "Evidence for either behavior on the prototype is absent or contradictory."
+      }
+    },
+    "next_step": {
+      "type": "choice",
+      "instructions": "Which candidate should be the immediate next step to resolve the most important evidence gap for the stated objective?",
+      "criteria": {
+        "verify_failure_paths": "Verify timeout and cancellation behavior on the prototype.",
+        "benchmark_success": "Measure speed on the already tested success path.",
+        "rename_helper": "Improve the helper's name.",
+        "none": "None of the candidates addresses an evidence gap relevant to the objective."
+      }
+    },
+    "evidence_coverage": {
+      "type": "score",
+      "instructions": "How completely do the supplied observations verify the proposed helper against the stated behavior-preservation objective?",
+      "criteria": [
+        "No prototype behavior has been tested.",
+        "Only successful requests have been tested; timeout and cancellation remain untested.",
+        "Successful requests and one of timeout or cancellation have been tested.",
+        "Successful requests, timeout, and cancellation have all been tested."
+      ]
+    }
+  }
+}

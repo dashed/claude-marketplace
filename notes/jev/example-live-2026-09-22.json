@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "advisory": true,
+  "provider": "vercel",
+  "protocol": "gateway",
+  "endpoint": "https://ai-gateway.vercel.sh/v1/evaluate",
+  "api_key_env": "AI_GATEWAY_API_KEY",
+  "questions_sha256": "850b9051bf2e8211ce15fbdf944137c7634dd2d3d6ef07bb6c14833e17da3442",
+  "state_sha256": "40fddb74b0566c6ea21803d52cd3c898341d9db4ef42e711f00b31c025cf27d1",
+  "request": {
+    "model": "typesafe-ai/jev",
+    "state": {
+      "objective": "Refactor a retry loop while preserving cancellation and timeout behavior.",
+      "observations": [
+        "The existing cancellation regression test passes on the current implementation.",
+        "A prototype helper passes a successful-request test.",
+        "Timeout and cancellation tests have not run against the prototype."
+      ],
+      "proposal": "Replace the retry loop with the helper, then report that all behavior is preserved.",
+      "candidates": {
+        "verify_failure_paths": "Run timeout and cancellation regression tests against the prototype before adopting it.",
+        "benchmark_success": "Benchmark successful requests to show that the helper is faster.",
+        "rename_helper": "Rename the helper to reflect its retry purpose."
+      }
+    },
+    "questions": {
+      "preservation_supported": {
+        "type": "boolean",
+        "instructions": "Do the supplied observations establish that the proposed helper preserves cancellation and timeout behavior? Do not assume tests that have not run.",
+        "criteria": {
+          "true": "The supplied observations directly verify both behaviors on the prototype.",
+          "false": "Evidence for either behavior on the prototype is absent or contradictory."
+        }
+      },
+      "next_step": {
+        "type": "choice",
+        "instructions": "Which candidate should be the immediate next step to resolve the most important evidence gap for the stated objective?",
+        "criteria": {
+          "verify_failure_paths": "Verify timeout and cancellation behavior on the prototype.",
+          "benchmark_success": "Measure speed on the already tested success path.",
+          "rename_helper": "Improve the helper's name.",
+          "none": "None of the candidates addresses an evidence gap relevant to the objective."
+        }
+      },
+      "evidence_coverage": {
+        "type": "score",
+        "instructions": "How completely do the supplied observations verify the proposed helper against the stated behavior-preservation objective?",
+        "criteria": [
+          "No prototype behavior has been tested.",
+          "Only successful requests have been tested; timeout and cancellation remain untested.",
+          "Successful requests and one of timeout or cancellation have been tested.",
+          "Successful requests, timeout, and cancellation have all been tested."
+        ]
+      }
+    }
+  },
+  "response": {
+    "model": "typesafe-ai/jev",
+    "answers": {
+      "evidence_coverage": {
+        "type": "score",
+        "score": 1.01,
+        "probabilities": {
+          "0": 0,
+          "1": 0.99,
+          "2": 0.01,
+          "3": 0
+        },
+        "confidence": 0.99
+      },
+      "next_step": {
+        "type": "choice",
+        "choice": "verify_failure_paths",
+        "probabilities": {
+          "verify_failure_paths": 1,
+          "benchmark_success": 0,
+          "rename_helper": 0,
+          "none": 0
+        },
+        "confidence": 1
+      },
+      "preservation_supported": {
+        "type": "boolean",
+        "probability": 0.03
+      }
+    },
+    "usage": {
+      "inputTokens": 704,
+      "outputTokens": 90
+    },
+    "providerMetadata": {
+      "typesafe": {
+        "confidence": {
+          "evidence_coverage": 0.99,
+          "next_step": 1
+        }
+      },
+      "gateway": {
+        "routing": {
+          "originalModelId": "typesafe-ai/jev",
+          "resolvedProvider": "typesafe-ai",
+          "fallbacksAvailable": [],
+          "planningReasoning": "System credentials planned for: typesafe-ai. Total execution order: typesafe-ai(system)",
+          "canonicalSlug": "typesafe-ai/jev",
+          "finalProvider": "typesafe-ai",
+          "modelAttemptCount": 1,
+          "modelAttempts": [
+            {
+              "canonicalSlug": "typesafe-ai/jev",
+              "success": true,
+              "providerAttemptCount": 1,
+              "providerAttempts": [
+                {
+                  "provider": "typesafe-ai",
+                  "credentialType": "system",
+                  "success": true,
+                  "startTime": 1790081005349,
+                  "endTime": 1790081005491,
+                  "statusCode": 200
+                }
+              ]
+            }
+          ],
+          "totalProviderAttemptCount": 1
+        },
+        "cost": "0",
+        "marketCost": "0.000029568",
+        "surchargeCost": "0",
+        "gatewayCost": "0",
+        "generationId": "gen_01M34J8XN92MBKKKHK8XMPGE54"
+      }
+    }
+  },
+  "answers": {
+    "evidence_coverage": {
+      "type": "score",
+      "score": 1.01,
+      "probabilities": {
+        "0": 0,
+        "1": 0.99,
+        "2": 0.01,
+        "3": 0
+      },
+      "confidence": 0.99
+    },
+    "next_step": {
+      "type": "choice",
+      "choice": "verify_failure_paths",
+      "probabilities": {
+        "verify_failure_paths": 1,
+        "benchmark_success": 0,
+        "rename_helper": 0,
+        "none": 0
+      },
+      "confidence": 1
+    },
+    "preservation_supported": {
+      "type": "boolean",
+      "probability": 0.03
+    }
+  },
+  "elapsed_seconds": 0.404,
+  "evaluated_at": "2026-09-22T12:43:25.472794+00:00",
+  "status": "evaluated"
+}
