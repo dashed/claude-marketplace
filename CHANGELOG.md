@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `make test-python-complexity`: offline Gateway contract tests plus Ruff lint/format and ty checks, all run through uv.
 - `make eval-python-complexity`: reproducible behavior/static fixtures and live Jev expectations, with raw evidence and failed expectations retained; `EVAL_ARGS=--offline` runs without Jev.
 
+### Fixed
+- doc-quality 1.1.1: fix `doc_quality.py` crashing on import when uv runs it on Python 3.13+, which is uv's choice outside this repository wherever 3.13 or 3.14 is installed. The pinned `github-slugger==0.0.3` has a docstring with lone surrogate escapes that CPython 3.13+ cannot compile; the script now requires Python `>=3.10,<3.13`. A new test runs the documented `uv run` command on the oldest and newest admitted CPython minor, since the repository's Python 3.10 test environment hid the failure.
+
 ## [0.56.0] - 2026-09-10
 
 ### Added

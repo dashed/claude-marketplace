@@ -6,12 +6,14 @@ import argparse
 import importlib.util
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
 from typing import Any
 
 import pytest
+from packaging.specifiers import SpecifierSet
 
 ROOT = Path(__file__).resolve().parents[1]
 CLI = ROOT / "plugins/doc-quality/skills/doc-quality/scripts/doc_quality.py"
@@ -413,3 +415,45 @@ def test_link_configuration_requires_explicit_check(tmp_path: Path, capsys: Any)
     report = json.loads(capsys.readouterr().out)
     assert report["status"] == "incomplete"
     assert "require --check-links" in report["error"]
+
+
+# Released CPython minors; add each new release so the newest admitted bound stays covered.
+CPYTHON_MINORS = ("3.10", "3.11", "3.12", "3.13", "3.14")
+
+
+def admitted_python_bounds() -> tuple[str, str]:
+    header = re.search(r'^# requires-python = "([^"]+)"$', CLI.read_text(), re.MULTILINE)
+    assert header
+    admitted = [minor for minor in CPYTHON_MINORS if SpecifierSet(header[1]).contains(minor)]
+    return admitted[0], admitted[-1]
+
+
+@pytest.mark.parametrize("python", admitted_python_bounds())
+def test_documented_uv_command_runs_on_admitted_python_bounds(tmp_path: Path, python: str) -> None:
+    # The other tests import the script under the project's Python. Outside the repository,
+    # uv may choose any admitted interpreter and installs the pinned dependencies there.
+    document = tmp_path / "plan.md"
+    document.write_text("# Plan\n\n## Rollout (v2)!\n\nSee [the rollout](#rollout-v2).\n")
+    result = subprocess.run(
+        [
+            "uv",
+            "run",
+            "--no-config",
+            "--no-project",
+            "--python",
+            python,
+            str(CLI),
+            "analyze",
+            str(document),
+            "--kind",
+            "plan",
+            "--check-links",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    links = json.loads(result.stdout)["link_validation"]
+    assert links["status"] == "checked"
+    assert [link["reason"] for link in links["links"]] == ["anchor_exists"]

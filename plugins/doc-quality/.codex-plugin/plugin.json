@@ -1,6 +1,6 @@
 {
   "name": "doc-quality",
-  "version": "1.1.0+codex.861be236391a",
+  "version": "1.1.1+codex.f7460e78cbda",
   "description": "Review and improve engineering Markdown designs, analyses, implementation plans, and ADRs. Measure sections and protected content with a Markdown parser; optionally use Jev for typed quality and meaning-preservation judgments. Preserve requirements, uncertainty, code, and links while the agent makes targeted edits. Jev is optional and provider configurable.",
   "author": {
     "name": "Alberto Leal"

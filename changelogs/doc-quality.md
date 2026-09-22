@@ -1,5 +1,11 @@
 # Changelog - doc-quality
 
+## [1.1.1] - 2026-09-22
+
+### Fixed
+- Fix the script crashing on import when uv runs it on Python 3.13 or newer, which uv chooses outside this repository wherever 3.13+ is installed. The pinned `github-slugger==0.0.3`, its latest release, has a docstring with lone surrogate escapes that CPython 3.13+ cannot compile. The script now requires Python `>=3.10,<3.13`, so uv selects a compatible interpreter.
+- Add a test that runs the documented `uv run` command on the oldest and newest admitted CPython minor with a local anchor check. The other tests import the script under the repository's Python 3.10 and cannot see this failure.
+
 ## [1.1.0] - 2026-09-22
 
 ### Added

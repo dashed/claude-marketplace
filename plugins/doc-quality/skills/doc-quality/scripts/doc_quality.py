@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # /// script
-# requires-python = ">=3.10"
+# # github-slugger 0.0.3 has a docstring with lone surrogates, which 3.13+ cannot compile.
+# requires-python = ">=3.10,<3.13"
 # dependencies = ["markdown-it-py==4.0.0", "github-slugger==0.0.3"]
 # ///
 """Analyze engineering Markdown or compare revisions; never edit or autoaccept.
