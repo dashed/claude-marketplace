@@ -1,0 +1,11 @@
+{
+  "cases": 6,
+  "expectations": 18,
+  "proposals": 6,
+  "fixture": "tests/fixtures/comment-slop-jev-validation.json",
+  "sha256": "193628b86fff4c563acd3593d370b444b87a27b326fe7b9aba8775a3485aad8e",
+  "holdout_sha256": "d2f1678e689ab2872eb7d28100c0ff40c136f5fc069a5d0660a0c69beed9415e",
+  "checks": "All exact spans are unique; supplied Python and proposed replacements compile; executable ASTs match excluding docstrings.",
+  "api_calls": 0,
+  "new_rubric_or_saved_model_outputs_inspected": 0
+}

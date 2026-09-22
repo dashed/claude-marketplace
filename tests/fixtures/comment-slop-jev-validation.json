@@ -1,0 +1,283 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "name": "ranking_reference",
+      "state": {
+        "scope": "ranking.py: review the selected comment or docstring and any proposed replacement",
+        "language": "python",
+        "sources": [
+          {
+            "path": "ranking.py",
+            "content": "from bisect import bisect_right\n\n\ndef insertion_index(values: list[int], value: int) -> int:\n    \"\"\"Return the insertion index to the right of equal values.\"\"\"\n    return bisect_right(values, value)\n"
+          },
+          {
+            "path": "docs/ranking.rst",
+            "content": "Ranking API\n===========\n\n.. autofunction:: ranking.insertion_index\n"
+          }
+        ],
+        "candidate": {
+          "path": "ranking.py",
+          "start_line": 5,
+          "end_line": 5,
+          "text": "    \"\"\"Return the insertion index to the right of equal values.\"\"\""
+        },
+        "context": {
+          "audience": "API callers reading the generated reference page without implementation bodies",
+          "api_surface": "published sorted-sequence API",
+          "documentation_consumers": [
+            "docs/ranking.rst renders ranking.insertion_index with autofunction."
+          ],
+          "runtime_docstring_consumers": []
+        },
+        "proposal": {
+          "replacement": ""
+        }
+      },
+      "expectations": [
+        {
+          "signal": "disposition",
+          "equals": "keep"
+        },
+        {
+          "signal": "information_loss",
+          "minimum": 0.7
+        },
+        {
+          "signal": "proposal_preserves_information",
+          "maximum": 0.3
+        }
+      ]
+    },
+    {
+      "name": "appliance_command",
+      "state": {
+        "scope": "appliance.py: review the selected comment or docstring and any proposed replacement",
+        "language": "python",
+        "sources": [
+          {
+            "path": "appliance.py",
+            "content": "def defrost_coil(controller) -> None:\n    \"\"\"Defrost the cooling coil.\"\"\"\n    controller.defrost_coil()\n\n\nCOMMANDS = {\n    \"defrost\": {\n        \"handler\": defrost_coil,\n        \"description\": defrost_coil.__doc__,\n    }\n}\n\n\ndef command_description(command: str) -> str:\n    return COMMANDS[command][\"description\"] or \"\"\n"
+          }
+        ],
+        "candidate": {
+          "path": "appliance.py",
+          "start_line": 2,
+          "end_line": 2,
+          "text": "    \"\"\"Defrost the cooling coil.\"\"\""
+        },
+        "context": {
+          "audience": "appliance-console users reading the command description",
+          "api_surface": "registered console command",
+          "documentation_consumers": [],
+          "runtime_docstring_consumers": [
+            "COMMANDS reads defrost_coil.__doc__; command_description returns that text to the console."
+          ]
+        },
+        "proposal": {
+          "replacement": ""
+        }
+      },
+      "expectations": [
+        {
+          "signal": "disposition",
+          "equals": "keep"
+        },
+        {
+          "signal": "information_loss",
+          "minimum": 0.7
+        },
+        {
+          "signal": "proposal_preserves_information",
+          "maximum": 0.3
+        }
+      ]
+    },
+    {
+      "name": "panel_label",
+      "state": {
+        "scope": "labels.py: review the selected comment or docstring and any proposed replacement",
+        "language": "python",
+        "sources": [
+          {
+            "path": "labels.py",
+            "content": "def _validate_label(text: str) -> None:\n    # The panel reserves 24 bytes per label; a multibyte character consumes\n    # more than one of those bytes, so counting characters would exceed its slot.\n    if len(text.encode(\"utf-8\")) > 24:\n        raise ValueError(\"label exceeds panel storage\")\n"
+          },
+          {
+            "path": "firmware/label_slot.h",
+            "content": "#include <stdint.h>\n\ntypedef struct {\n    uint8_t utf8_bytes[24];\n    uint8_t byte_count;\n} label_slot;\n"
+          }
+        ],
+        "candidate": {
+          "path": "labels.py",
+          "start_line": 2,
+          "end_line": 3,
+          "text": "    # The panel reserves 24 bytes per label; a multibyte character consumes\n    # more than one of those bytes, so counting characters would exceed its slot."
+        },
+        "context": {
+          "audience": "maintainers reading labels.py",
+          "api_surface": "private implementation",
+          "documentation_consumers": [],
+          "runtime_docstring_consumers": [],
+          "supporting_source_availability": "The firmware header is supplied to the reviewer as implementation evidence. It is not a retained documentation page in the Python package."
+        },
+        "proposal": {
+          "replacement": ""
+        }
+      },
+      "expectations": [
+        {
+          "signal": "disposition",
+          "equals": "keep"
+        },
+        {
+          "signal": "information_loss",
+          "minimum": 0.7
+        },
+        {
+          "signal": "proposal_preserves_information",
+          "maximum": 0.3
+        }
+      ]
+    },
+    {
+      "name": "date_stamp",
+      "state": {
+        "scope": "stamps.py: review the selected comment or docstring and any proposed replacement",
+        "language": "python",
+        "sources": [
+          {
+            "path": "stamps.py",
+            "content": "from datetime import date\n\n\ndef date_stamp(day: date) -> str:\n    \"\"\"Return a date stamp in YYYY-MM-DD format.\n\n    Formatting follows the process locale.\n    \"\"\"\n    return day.isoformat()\n"
+          },
+          {
+            "path": "docs/stamps.rst",
+            "content": "Date stamps\n===========\n\n.. autofunction:: stamps.date_stamp\n"
+          }
+        ],
+        "candidate": {
+          "path": "stamps.py",
+          "start_line": 5,
+          "end_line": 8,
+          "text": "    \"\"\"Return a date stamp in YYYY-MM-DD format.\n\n    Formatting follows the process locale.\n    \"\"\""
+        },
+        "context": {
+          "audience": "API callers reading generated reference pages",
+          "api_surface": "published date-formatting API",
+          "documentation_consumers": [
+            "docs/stamps.rst renders stamps.date_stamp with autofunction."
+          ],
+          "runtime_docstring_consumers": []
+        },
+        "proposal": {
+          "replacement": "    \"\"\"Return a date stamp in YYYY-MM-DD format.\"\"\""
+        }
+      },
+      "expectations": [
+        {
+          "signal": "disposition",
+          "equals": "rewrite"
+        },
+        {
+          "signal": "information_loss",
+          "minimum": 0.7
+        },
+        {
+          "signal": "proposal_preserves_information",
+          "minimum": 0.7
+        }
+      ]
+    },
+    {
+      "name": "manifest_publication",
+      "state": {
+        "scope": "manifest.py: review the selected comment or docstring and any proposed replacement",
+        "language": "python",
+        "sources": [
+          {
+            "path": "manifest.py",
+            "content": "\"\"\"Manifest publication contract for source maintainers.\n\nReaders do not acquire a lock. Writers publish a complete sibling temporary file\nwith atomic replacement to prevent readers from seeing partial bytes.\n\"\"\"\n\nimport os\nfrom pathlib import Path\n\n\ndef _publish_manifest(destination: Path, content: bytes) -> None:\n    # Readers do not acquire a lock, so publish a complete sibling temporary\n    # file with atomic replacement to prevent readers from seeing partial bytes.\n    temporary = destination.with_name(destination.name + \".tmp\")\n    temporary.write_bytes(content)\n    os.replace(temporary, destination)\n"
+          }
+        ],
+        "candidate": {
+          "path": "manifest.py",
+          "start_line": 12,
+          "end_line": 13,
+          "text": "    # Readers do not acquire a lock, so publish a complete sibling temporary\n    # file with atomic replacement to prevent readers from seeing partial bytes."
+        },
+        "context": {
+          "audience": "maintainers reading the module and function together",
+          "api_surface": "private implementation",
+          "documentation_consumers": [],
+          "runtime_docstring_consumers": [],
+          "retained_documentation": "The module docstring above is the maintained publication contract for these same readers and is outside the selected edit."
+        },
+        "proposal": {
+          "replacement": ""
+        }
+      },
+      "expectations": [
+        {
+          "signal": "disposition",
+          "equals": "delete"
+        },
+        {
+          "signal": "information_loss",
+          "maximum": 0.3
+        },
+        {
+          "signal": "proposal_preserves_information",
+          "minimum": 0.7
+        }
+      ]
+    },
+    {
+      "name": "color_encoding",
+      "state": {
+        "scope": "colors.py: review the selected comment or docstring and any proposed replacement",
+        "language": "python",
+        "sources": [
+          {
+            "path": "colors.py",
+            "content": "def parse_color(text: str) -> bytes:\n    \"\"\"Parse a six-digit hexadecimal color.\n\n    This function parses the supplied color text.\n    Input has no '#' prefix. The output bytes are red, green, blue, in that order.\n    \"\"\"\n    if len(text) != 6 or any(character not in \"0123456789abcdefABCDEF\" for character in text):\n        raise ValueError(\"expected six hexadecimal digits\")\n    return bytes.fromhex(text)\n"
+          },
+          {
+            "path": "docs/colors.rst",
+            "content": "Color input\n===========\n\n.. autofunction:: colors.parse_color\n"
+          }
+        ],
+        "candidate": {
+          "path": "colors.py",
+          "start_line": 2,
+          "end_line": 6,
+          "text": "    \"\"\"Parse a six-digit hexadecimal color.\n\n    This function parses the supplied color text.\n    Input has no '#' prefix. The output bytes are red, green, blue, in that order.\n    \"\"\""
+        },
+        "context": {
+          "audience": "API callers reading generated reference pages",
+          "api_surface": "published color-input API",
+          "documentation_consumers": [
+            "docs/colors.rst renders colors.parse_color with autofunction."
+          ],
+          "runtime_docstring_consumers": []
+        },
+        "proposal": {
+          "replacement": "    \"\"\"Require six hexadecimal digits without a '#' prefix; return bytes in red, green, blue order.\"\"\""
+        }
+      },
+      "expectations": [
+        {
+          "signal": "disposition",
+          "equals": "reduce"
+        },
+        {
+          "signal": "information_loss",
+          "minimum": 0.7
+        },
+        {
+          "signal": "proposal_preserves_information",
+          "minimum": 0.7
+        }
+      ]
+    }
+  ]
+}

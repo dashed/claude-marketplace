@@ -1,0 +1,87 @@
+{
+  "evaluated_at": "2026-09-22T13:19:18.456015+00:00",
+  "cases": [
+    {
+      "name": "frame_measurement_a",
+      "disposition": "delete",
+      "proposal_preserves_information": true,
+      "reason": "For source maintainers, frame_count, its int return annotation, and len(clip.frames) already state the entire docstring; no documentation or runtime consumer is supplied."
+    },
+    {
+      "name": "frame_measurement_b",
+      "disposition": "keep",
+      "proposal_preserves_information": false,
+      "reason": "docs/frames.rst publishes this docstring to API readers without the implementation. It supplies a direct return contract for those readers; deleting it removes the rendered description."
+    },
+    {
+      "name": "frame_measurement_c",
+      "disposition": "keep",
+      "proposal_preserves_information": false,
+      "reason": "help_panel.frame_count_help returns frame_count.__doc__ to application users. Deletion would replace their usable help description with an empty string."
+    },
+    {
+      "name": "month_parser_a",
+      "disposition": "reduce",
+      "proposal_preserves_information": true,
+      "reason": "The first two sentences repeat the parsing operation. The replacement preserves the exact YYYY-MM shape, leading zero, whitespace rejection, and first-day Gregorian return contract consumed by docs/calendar.rst."
+    },
+    {
+      "name": "month_parser_b",
+      "disposition": "reduce",
+      "proposal_preserves_information": false,
+      "reason": "Only the operation summaries are redundant. The proposal deletes the exact format, leading-zero requirement, whitespace rejection, and first-day Gregorian meaning needed by generated API readers."
+    },
+    {
+      "name": "audio_callback",
+      "disposition": "reduce",
+      "proposal_preserves_information": true,
+      "reason": "The zeroing statement narrates buffer[:] assignment. The retained rationale explains why clearing must precede readinto: play_chunks reuses the buffer and Device.play writes all of it even after a short read."
+    },
+    {
+      "name": "resolver_boundary",
+      "disposition": "rewrite",
+      "proposal_preserves_information": true,
+      "reason": "resolve_addresses calls getaddrinfo without an allowlist, and client.allowed_addresses filters afterward. The original security claim is false at this boundary; the proposal corrects it while retaining a useful generated API contract."
+    },
+    {
+      "name": "accelerator_padding",
+      "disposition": "needs_context",
+      "reason": "The four appended zero bytes are visible, but the claim that accelerator.submit reads beyond the last token requires its missing buffer-read contract. Preserve the potential rationale pending verification; the supplied code cannot establish or refute it."
+    },
+    {
+      "name": "interpreter_example_a",
+      "disposition": "reduce",
+      "proposal_preserves_information": true,
+      "reason": "The two prose descriptions repeat interpreter_banner and its visible expression. The replacement preserves the executable example, expected output, and ELLIPSIS directive required for the version-dependent banner to pass test_banner_examples."
+    },
+    {
+      "name": "interpreter_example_b",
+      "disposition": "reduce",
+      "proposal_preserves_information": false,
+      "reason": "The prose summaries can go, but this proposal also removes doctest: +ELLIPSIS. The unchanged expected output then becomes literal Python ... and cannot match the actual interpreter version, breaking the supplied doctest."
+    },
+    {
+      "name": "compass_convention",
+      "disposition": "keep",
+      "reason": "Modulo 360 and a float annotation do not define which direction is zero or the sign of rotation. The docstring establishes the heading convention, and needle_screen_position's sin/-cos mapping supports north at zero with clockwise positive rotation."
+    },
+    {
+      "name": "row_batching",
+      "disposition": "delete",
+      "proposal_preserves_information": true,
+      "reason": "The comment repeats BATCH_SIZE = 64 and the immediately following range/slice operations; it provides no reason for that batch size or other hidden contract."
+    },
+    {
+      "name": "decoder_alignment_a",
+      "disposition": "keep",
+      "proposal_preserves_information": false,
+      "reason": "The attached decoder contract verifies that alignment is checked before length, explaining an otherwise removable encoder padding step. The attachment is unavailable to later source readers, so deleting the comment loses the only retained rationale."
+    },
+    {
+      "name": "decoder_alignment_b",
+      "disposition": "delete",
+      "proposal_preserves_information": true,
+      "reason": "The retained authoritative decoder-contract.md already states the alignment-before-length requirement and padding contract, and the supplied context establishes that these source maintainers read it. The comment duplicates that documented home."
+    }
+  ]
+}

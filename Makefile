@@ -106,15 +106,18 @@ PYTHON_COMPLEXITY_JEV_FILES := plugins/python-complexity/skills/python-complexit
 
 JEV_FILES := plugins/jev/skills/jev/scripts/jev.py tests/test_jev.py
 
-COMMENT_SLOP_FILES := plugins/comment-slop/skills/comment-slop/scripts/jev_comments.py scripts/eval_comment_slop.py tests/test_comment_slop_jev.py tests/test_comment_slop_evals.py
+COMMENT_SLOP_FILES := plugins/comment-slop/skills/comment-slop/scripts/jev_comments.py scripts/eval_comment_slop.py scripts/compare_comment_reviews.py tests/test_comment_slop_jev.py tests/test_comment_slop_evals.py tests/test_comment_review_comparison.py
 
-.PHONY: test-comment-slop lint-comment-slop typecheck-comment-slop format-comment-slop format-comment-slop-check eval-comment-slop
+.PHONY: test-comment-slop lint-comment-slop typecheck-comment-slop format-comment-slop format-comment-slop-check eval-comment-slop compare-comment-reviews
 
 test-comment-slop: lint-comment-slop typecheck-comment-slop format-comment-slop-check ## Verify optional comment/docstring Jev review offline
-	@$(UV_RUN) pytest tests/test_comment_slop_jev.py tests/test_comment_slop_evals.py --no-cov
+	@$(UV_RUN) pytest tests/test_comment_slop_jev.py tests/test_comment_slop_evals.py tests/test_comment_review_comparison.py --no-cov
 
 eval-comment-slop: ## Evaluate frozen comment judgments (EVAL_ARGS=--offline skips Jev)
 	@$(UV_RUN) scripts/eval_comment_slop.py $(EVAL_ARGS)
+
+compare-comment-reviews: ## Compare frozen agent-only/assisted decisions (set COMPARE_ARGS)
+	@$(UV_RUN) scripts/compare_comment_reviews.py $(COMPARE_ARGS)
 
 lint-comment-slop: ## Run Ruff on the comment-review adapter and evals
 	@$(UV_RUN) ruff check $(COMMENT_SLOP_FILES)

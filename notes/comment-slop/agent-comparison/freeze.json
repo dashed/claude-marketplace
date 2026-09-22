@@ -1,0 +1,12 @@
+{
+  "cases": 14,
+  "expectations": 38,
+  "proposals": 12,
+  "fixture": "tests/fixtures/comment-slop-jev-holdout.json",
+  "sha256": "d2f1678e689ab2872eb7d28100c0ff40c136f5fc069a5d0660a0c69beed9415e",
+  "unlabeled": "/tmp/comment-holdout-unlabeled.json",
+  "unlabeled_sha256": "0b0d0526fc8e5d16fe84ccf9c9e0e0a322911bd78597424a9d195a4dfde4778a",
+  "checks": "All candidate spans uniquely anchored; all supplied Python compiles; all replacements compile and preserve executable ASTs excluding docstrings.",
+  "api_calls": 0,
+  "saved_model_outputs_inspected": 0
+}
