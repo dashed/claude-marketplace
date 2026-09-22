@@ -11,6 +11,7 @@ dependencies = [
     "pytest>=7.4.3",
     "pytest-cov>=4.1.0",
     "pytest-xdist>=3.5.0",
+    "markdown-it-py==4.0.0",
 ]
 
 [build-system]
