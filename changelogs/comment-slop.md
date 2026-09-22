@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - A small stdlib adapter reuses the general Jev skill's configurable provider transport through an explicit helper path. No helper or selected key skips the consultation; failed service/configuration remains incomplete. Ordinary source-based cleanup continues.
 - Frozen independent semantic cases covering redundancy, useful why-comments, mixed docstring reductions, public/runtime documentation, doctests, pragmas, missing context, stale contracts, and good/bad proposed reductions. No source is executed or edited by the helper or evaluator.
 - `make test-comment-slop` and `make eval-comment-slop`, using uv, Ruff, and ty; retained reports distinguish semantic results from syntax/AST checks and missing evidence.
+- Recorded final rubric results: 25/32 semantic expectations, including all five safe/harmful replacement checks; seven failures remain visible. An independent synthetic cleanup preserved generated docs, doctests, runtime help, and behavior; agreement with the agent did not establish incremental decision benefit.
 
 ### Changed
 - Review candidate clauses and concrete replacements separately; known consumer requirements override model preferences. Add explicit reduce and needs-context verdicts.

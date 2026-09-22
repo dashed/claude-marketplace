@@ -142,6 +142,12 @@ Python AST checks omit leading docstrings and cannot prove runtime documentation
 preservation. The source checkout's `notes/comment-slop/` records live results and
 limits. Synthetic agreement alone does not prove value across real repositories.
 
+The recorded rubric 1.1.0 run passed 25/32 expectations: 14/16 dispositions and
+all five proposed-replacement checks, including two that remove useful facts.
+Two mixed docstrings were kept instead of reduced, and five information-loss
+probabilities missed their frozen limits. These failures remain in the report.
+Use the signals to focus inspection; they do not justify a deletion threshold.
+
 Question design follows TypeSafe's [Choice](https://docs.typesafe.ai/primitives/choice),
 [Noul](https://docs.typesafe.ai/primitives/noul), and
 [state](https://docs.typesafe.ai/concepts/state) guidance, checked 2026-09-22.
