@@ -102,12 +102,15 @@ test-cov: ## Run tests with coverage report
 
 CODEX_SKILLS_FILES := scripts/install_codex_skills.py scripts/manage_codex_skills.py scripts/sync_codex_plugins.py tests/test_install_codex_skills.py tests/test_manage_codex_skills.py tests/test_sync_codex_plugins.py
 
-PYTHON_COMPLEXITY_JEV_FILES := plugins/python-complexity/skills/python-complexity/scripts/jev_review.py tests/test_python_complexity_jev.py
+PYTHON_COMPLEXITY_JEV_FILES := plugins/python-complexity/skills/python-complexity/scripts/jev_review.py scripts/eval_python_complexity.py tests/test_python_complexity_jev.py tests/test_python_complexity_evals.py
 
-.PHONY: test-python-complexity lint-python-complexity typecheck-python-complexity format-python-complexity format-python-complexity-check
+.PHONY: test-python-complexity lint-python-complexity typecheck-python-complexity format-python-complexity format-python-complexity-check eval-python-complexity
 
 test-python-complexity: lint-python-complexity typecheck-python-complexity format-python-complexity-check ## Check the Jev helper and run offline contract tests
-	@$(UV_RUN) pytest tests/test_python_complexity_jev.py --no-cov
+	@$(UV_RUN) pytest tests/test_python_complexity_jev.py tests/test_python_complexity_evals.py --no-cov
+
+eval-python-complexity: ## Run static/behavior fixtures and live Jev expectations (EVAL_ARGS=--offline skips Jev)
+	@$(UV_RUN) scripts/eval_python_complexity.py $(EVAL_ARGS)
 
 lint-python-complexity: ## Run Ruff on the Jev helper and its tests
 	@$(UV_RUN) ruff check $(PYTHON_COMPLEXITY_JEV_FILES)

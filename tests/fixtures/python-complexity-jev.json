@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "task": "Classify a value as missing, not_integer, negative, too_large, odd, or accepted. Check in that order. Accept even integers from 0 through 100. Python bool is an integer for this contract.",
+  "constraints": [
+    "Preserve all return values and the classify(value) signature.",
+    "There are no external framework hooks or additional domain invariants."
+  ],
+  "cases": [
+    {
+      "name": "nested",
+      "source": "def classify(value):\n    if value is not None:\n        if isinstance(value, int):\n            if value >= 0:\n                if value <= 100:\n                    if value % 2 == 0:\n                        return \"accepted\"\n                    return \"odd\"\n                return \"too_large\"\n            return \"negative\"\n        return \"not_integer\"\n    return \"missing\"\n",
+      "complete": true
+    },
+    {
+      "name": "flat",
+      "source": "def classify(value):\n    if value is None:\n        return \"missing\"\n    if not isinstance(value, int):\n        return \"not_integer\"\n    if value < 0:\n        return \"negative\"\n    if value > 100:\n        return \"too_large\"\n    if value % 2:\n        return \"odd\"\n    return \"accepted\"\n",
+      "complete": true
+    },
+    {
+      "name": "layered",
+      "source": "def classify(value):\n    return _dispatch(value)\n\ndef _dispatch(value):\n    return _prepare(value)\n\ndef _prepare(value):\n    return _route(value)\n\ndef _route(value):\n    return _evaluate(value)\n\ndef _evaluate(value):\n    return _classify_value(value)\n\ndef _classify_value(value):\n    if value is None:\n        return \"missing\"\n    if not isinstance(value, int):\n        return \"not_integer\"\n    if value < 0:\n        return \"negative\"\n    if value > 100:\n        return \"too_large\"\n    if value % 2:\n        return \"odd\"\n    return \"accepted\"\n",
+      "complete": true
+    },
+    {
+      "name": "ternary",
+      "complete": true,
+      "source": "def classify(value):\n    return (\"missing\" if value is None else \"not_integer\" if not isinstance(value, int)\n            else \"negative\" if value < 0 else \"too_large\" if value > 100\n            else \"odd\" if value % 2 else \"accepted\")\n"
+    },
+    {
+      "name": "missing_context",
+      "complete": false,
+      "source": "def classify(value):\n    return _dispatch(value)\n"
+    }
+  ],
+  "checks": [
+    {
+      "name": "flat_is_simpler_than_nested",
+      "higher": "flat",
+      "lower": "nested",
+      "signal": "simplicity",
+      "min_delta": 0.25
+    },
+    {
+      "name": "flat_is_more_readable_than_nested",
+      "higher": "flat",
+      "lower": "nested",
+      "signal": "readability",
+      "min_delta": 0.25
+    },
+    {
+      "name": "forwarders_hurt_abstraction",
+      "higher": "flat",
+      "lower": "layered",
+      "signal": "abstraction_quality",
+      "min_delta": 0.5
+    },
+    {
+      "name": "forwarders_hurt_simplicity",
+      "higher": "flat",
+      "lower": "layered",
+      "signal": "simplicity",
+      "min_delta": 0.5
+    },
+    {
+      "name": "dense_ternary_hurts_readability",
+      "higher": "flat",
+      "lower": "ternary",
+      "signal": "readability",
+      "min_delta": 0.25
+    },
+    {
+      "name": "recognizes_indirection",
+      "case": "layered",
+      "signal": "dominant_cost",
+      "equals": "indirection"
+    },
+    {
+      "name": "recognizes_nesting",
+      "case": "nested",
+      "signal": "dominant_cost",
+      "equals": "nesting"
+    },
+    {
+      "name": "recognizes_missing_context",
+      "case": "missing_context",
+      "signal": "context_sufficient",
+      "maximum": 0.3
+    },
+    {
+      "name": "abstains_with_missing_context",
+      "case": "missing_context",
+      "signal": "dominant_cost",
+      "equals": "insufficient_context"
+    }
+  ]
+}

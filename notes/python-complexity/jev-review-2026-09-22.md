@@ -2,6 +2,8 @@
 
 Python-complexity v1.3.0 adds a Vercel Gateway judgment step to the existing censuses. The helper runs through uv and needs no third-party Python runtime packages. The credential stayed in the private user file; only the synthetic classifier below and its measurements were sent.
 
+The subsequent [reproducible eval suite](jev-evals-2026-09-22.md) retains three failed semantic expectations. The observations below are the earlier exploratory run.
+
 ## Live evidence
 
 One request per implementation, using `typesafe-ai/jev` and rubric 1.0.0. No retries or selection of better-scoring responses. All three returned successful, structurally valid evaluations; the Gateway reported cost `0` for each request. These are smoke observations, not a calibrated quality benchmark.
@@ -103,7 +105,7 @@ The shipped helper defaults to Vercel and also supports direct TypeSafe and comp
 
 ## Validation and skill review
 
-- `make test-python-complexity` runs Ruff lint and format checks, ty, and 50 offline tests through `uv run --no-config --locked`. Tests exercise request preservation, secret handling, literal key-file parsing, previews, invalid inputs/answers, HTTP/network failures, and missing/empty credentials skipping semantic review without network access. Configured malformed credentials and API errors still report incomplete evaluations.
+- `make test-python-complexity` runs Ruff lint and format checks, ty, and 61 offline tests through `uv run --no-config --locked`. Tests exercise request preservation, secret handling, literal key-file parsing, previews, invalid inputs/answers, HTTP/network failures, and missing/empty credentials skipping semantic review without network access. Configured malformed credentials and API errors still report incomplete evaluations.
 - `make validate-strict` passes the repository structure, JSON, skill frontmatter, and MCP-name checks.
 - The generic skill-creator quick validator rejects the existing `when_to_use` frontmatter field. This repository explicitly supports that field in `schemas/skill-frontmatter-schema.json`; it was preserved.
 - Full Codex manifest regeneration also changes cache hashes for 12 unrelated plugins in this checkout. Those unrelated refreshes were reverted; only python-complexity metadata was regenerated and checked for this change.

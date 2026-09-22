@@ -6,6 +6,7 @@
 - [Configure and run a provider](#configure-and-run-a-provider)
 - [Read the judgments](#read-the-judgments)
 - [Compare and decide](#compare-and-decide)
+- [Evaluation limits](#evaluation-limits)
 - [Sources and implementation choice](#sources-and-implementation-choice)
 
 ## Evidence and scope
@@ -208,6 +209,22 @@ require inspection or an explicitly incomplete semantic review. Do not repeatedl
 sample for a higher score or let a semantic result waive a failing behavior check.
 Existing user-defined gates still apply; this workflow introduces no new numeric
 merge gate and does not automatically accept edits, publish reviews, or merge PRs.
+
+## Evaluation limits
+
+The marketplace includes a reproducible five-case suite at
+`tests/fixtures/python-complexity-jev.json`, run with `make eval-python-complexity`
+from the source checkout (`EVAL_ARGS=--offline` skips Jev). It compares nested,
+flat, forwarding-layer, and dense-ternary implementations, plus a missing-helper
+case. These are small regression fixtures, not project-wide calibration.
+
+The initial live run passed six of nine declared semantic expectations. It
+detected redundant layers and missing context, but readability barely separated
+flat code from nested code or dense ternaries, and the nesting simplicity gap
+was below the declared expectation. Those failures are retained. Keep the static
+censuses and source inspection; a near-maximum readability score does not
+establish that a path is easy to follow. The source checkout's
+`notes/python-complexity/jev-evals-2026-09-22.md` records the procedure and results.
 
 ## Sources and implementation choice
 

@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Provider selection through CLI flags or user JSON config: endpoint, model, evaluation protocol, and credential variable/file. Compatible custom endpoints need no code edit; native TypeSafe Noul answers are normalized while the raw response is retained. Provider changes never reuse another provider's key or silently fall back.
 - `references/jev-review.md` and versioned `jev-rubric.json`: anchored judgments, credential convention, complete-scope comparisons, limitations, and primary-source links. No MCP service or community plugin dependency.
 - Offline contract and failure tests with `make test-python-complexity`, using uv, Ruff, and ty.
+- Reproducible five-case semantic evals and 476 behavior checks via `make eval-python-complexity`, plus evaluator tests. The initial live run passed six of nine semantic expectations; failed readability and nesting-simplicity expectations remain recorded, demonstrating why scores are advisory.
 
 ### Changed
 - Refactor acceptance requires verified behavior and an explainable maintainability improvement. It no longer requires every complexity number to drop; clear explicit branches can raise a metric, and an unchanged decision count does not rule out improved cohesion.
