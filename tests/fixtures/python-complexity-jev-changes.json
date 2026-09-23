@@ -1,0 +1,1680 @@
+{
+  "version": 1,
+  "purpose": "Frozen before/after refactoring pairs for scoring Jev's paired change judgments against the python-complexity change rubric. Each pair is one small Python module before and after a refactor that preserves behavior (checked by the pair's tests on both versions, except the one pair marked incomplete). For each of the four properties (pass-through, domain rule, mixed responsibilities, duplicated rule) at least one pair introduces it and at least one removes it; hard negatives test the rubric's stated exceptions (a forwarding helper that adds a domain constant, a required public endpoint that forwards, similar-looking code that implements different rules, one rule called from several places, a long single-purpose function, a short orchestrator); one pair is cosmetic only and one cannot be judged without code that is not shown. Several pairs are chosen so the static census (function count, cyclomatic and cognitive complexity) is flat or points the wrong way, to show whether Jev adds information beyond static tools. Labels were written by an independent author from the rubric definitions and the code alone; a label is left out where the author judged the rubric wording genuinely ambiguous for that pair, with the reason in the pair's notes.",
+  "authoring": {
+    "author": "independent agent",
+    "written_at": "2026-09-22T22:38:10+00:00",
+    "rubric_sha256": "4b8a965953ebe1bd0455869cfdb34954692379d93d20144d2813b0429fc04037",
+    "independence": "Read the rubric (plugins/python-complexity/skills/python-complexity/references/jev-change-rubric.json), scripts/eval_python_complexity_changes.py, and the behavior_check and census helpers in scripts/eval_python_complexity.py to learn the fixture format and the code constraints. Did not read notes/, zzz.local/, any *-review.json file, tests/test_python_complexity_*.py, or any other python-complexity fixture file. Called no model or provider and did not run jev_review.py; the only runs were local behavior checks and the eval runner with --offline. Labels reflect the author's reading of the code against the rubric definitions, not predictions of Jev's answers."
+  },
+  "controls": {
+    "repeat_max_delta": 0.05,
+    "reformat_max_delta": 0.15,
+    "swap_max_delta": 0.25
+  },
+  "pairs": [
+    {
+      "name": "shipping_quote_layers",
+      "task": "Quote a shipping price in cents for a parcel weight in grams and a destination zone. Weight is billed in whole 500 g steps, rounded up; each zone has a base fee and a per-step fee. Unknown zones and non-positive weights raise ValueError.",
+      "constraints": [
+        "`quote_shipping` is the public function other services call."
+      ],
+      "entry": "quote_shipping",
+      "complete": true,
+      "before": {
+        "path": "module.py",
+        "source": "ZONE_RATES = {\n    \"domestic\": (400, 150),\n    \"regional\": (700, 250),\n    \"international\": (1500, 600),\n}\nSTEP_GRAMS = 500\n\n\ndef billable_steps(weight_grams):\n    if weight_grams <= 0:\n        raise ValueError(\"weight must be positive\")\n    return -(-weight_grams // STEP_GRAMS)\n\n\ndef quote_shipping(weight_grams, zone):\n    if zone not in ZONE_RATES:\n        raise ValueError(f\"unknown zone: {zone}\")\n    base_fee, step_fee = ZONE_RATES[zone]\n    return base_fee + step_fee * billable_steps(weight_grams)\n"
+      },
+      "after": {
+        "path": "module.py",
+        "source": "ZONE_RATES = {\n    \"domestic\": (400, 150),\n    \"regional\": (700, 250),\n    \"international\": (1500, 600),\n}\nSTEP_GRAMS = 500\n\n\ndef billable_steps(weight_grams):\n    if weight_grams <= 0:\n        raise ValueError(\"weight must be positive\")\n    return -(-weight_grams // STEP_GRAMS)\n\n\ndef quote_shipping(weight_grams, zone):\n    return _compute_quote(weight_grams, zone)\n\n\ndef _compute_quote(weight_grams, zone):\n    return _quote_for_zone(weight_grams, zone)\n\n\ndef _quote_for_zone(weight_grams, zone):\n    if zone not in ZONE_RATES:\n        raise ValueError(f\"unknown zone: {zone}\")\n    base_fee, step_fee = ZONE_RATES[zone]\n    return base_fee + step_fee * billable_steps(weight_grams)\n"
+      },
+      "tests": [
+        {
+          "args": [
+            1200,
+            "domestic"
+          ],
+          "expected": 850
+        },
+        {
+          "args": [
+            500,
+            "regional"
+          ],
+          "expected": 950
+        },
+        {
+          "args": [
+            501,
+            "international"
+          ],
+          "expected": 2700
+        },
+        {
+          "args": [
+            1,
+            "domestic"
+          ],
+          "expected": 550
+        },
+        {
+          "args": [
+            0,
+            "domestic"
+          ],
+          "raises": "ValueError"
+        },
+        {
+          "args": [
+            100,
+            "mars"
+          ],
+          "raises": "ValueError"
+        }
+      ],
+      "notes": "After moves the quote body into _quote_for_zone and routes the public quote_shipping through _compute_quote, a private function that only forwards both arguments to one callee. That introduces a pass-through (quote_shipping itself is the required public entry point and does not count). ZONE_RATES, STEP_GRAMS and billable_steps are identical in both versions, so no domain rule, responsibility split, or duplication changes. Static census: only the function count rises; complexity per function is unchanged."
+    },
+    {
+      "name": "loan_status_forwarders",
+      "task": "Report a library loan's status from a loan record (`due_day`, optional `returned_day`) and today's day number: 'returned' once returned, 'overdue' when today is more than 2 grace days past the due day, otherwise 'on_loan'.",
+      "constraints": [
+        "`loan_status` is the public function the circulation desk app calls with loan records.",
+        "`classify_loan` is also called directly by the nightly reminder job."
+      ],
+      "entry": "loan_status",
+      "complete": true,
+      "before": {
+        "path": "module.py",
+        "source": "GRACE_DAYS = 2\n\n\ndef classify_loan(due_day, returned_day, today):\n    if returned_day is not None:\n        return \"returned\"\n    if today > due_day + GRACE_DAYS:\n        return \"overdue\"\n    return \"on_loan\"\n\n\ndef _status_of(due_day, returned_day, today):\n    return _loan_state(due_day, returned_day, today)\n\n\ndef _loan_state(due_day, returned_day, today):\n    return classify_loan(due_day, returned_day, today)\n\n\ndef loan_status(loan, today):\n    return _status_of(loan[\"due_day\"], loan.get(\"returned_day\"), today)\n"
+      },
+      "after": {
+        "path": "module.py",
+        "source": "GRACE_DAYS = 2\n\n\ndef classify_loan(due_day, returned_day, today):\n    if returned_day is not None:\n        return \"returned\"\n    if today > due_day + GRACE_DAYS:\n        return \"overdue\"\n    return \"on_loan\"\n\n\ndef loan_status(loan, today):\n    return classify_loan(loan[\"due_day\"], loan.get(\"returned_day\"), today)\n"
+      },
+      "tests": [
+        {
+          "args": [
+            {
+              "due_day": 10,
+              "returned_day": 9
+            },
+            20
+          ],
+          "expected": "returned"
+        },
+        {
+          "args": [
+            {
+              "due_day": 10,
+              "returned_day": null
+            },
+            12
+          ],
+          "expected": "on_loan"
+        },
+        {
+          "args": [
+            {
+              "due_day": 10,
+              "returned_day": null
+            },
+            13
+          ],
+          "expected": "overdue"
+        },
+        {
+          "args": [
+            {
+              "due_day": 10
+            },
+            5
+          ],
+          "expected": "on_loan"
+        },
+        {
+          "args": [
+            {
+              "due_day": 10,
+              "returned_day": 30
+            },
+            40
+          ],
+          "expected": "returned"
+        }
+      ],
+      "notes": "Before routes loan_status through _status_of and _loan_state, two private functions that only forward the same three arguments to one callee. After calls classify_loan directly, so the pass-throughs are removed. The remaining loan_status is the required public entry point and adapts the loan record into fields, so it does not count. classify_loan and GRACE_DAYS are unchanged, so no domain rule is added or removed. Static census: only the function count drops."
+    },
+    {
+      "name": "refund_window_rule",
+      "task": "Review a return request (`price_cents`, `purchased_day`, `returned_day`, `opened`). Returns within 30 days of purchase get a refund, minus a 15% restocking fee (rounded down) if the item was opened; later returns get nothing. The result has the refund in cents and a label. A return dated before the purchase raises ValueError.",
+      "constraints": [
+        "The refund window changes for holiday promotions."
+      ],
+      "entry": "review_return",
+      "complete": true,
+      "before": {
+        "path": "module.py",
+        "source": "def restocking_fee(price_cents, opened):\n    return price_cents * 15 // 100 if opened else 0\n\n\ndef refund_cents(price_cents, days_held, opened):\n    if days_held > 30:\n        return 0\n    return price_cents - restocking_fee(price_cents, opened)\n\n\ndef return_label(days_held, opened):\n    if days_held <= 30:\n        return \"refund-opened\" if opened else \"refund\"\n    return \"no-refund\"\n\n\ndef review_return(request):\n    days_held = request[\"returned_day\"] - request[\"purchased_day\"]\n    if days_held < 0:\n        raise ValueError(\"returned before purchase\")\n    return {\n        \"refund_cents\": refund_cents(request[\"price_cents\"], days_held, request[\"opened\"]),\n        \"label\": return_label(days_held, request[\"opened\"]),\n    }\n"
+      },
+      "after": {
+        "path": "module.py",
+        "source": "REFUND_WINDOW_DAYS = 30\n\n\ndef within_refund_window(days_held):\n    return days_held <= REFUND_WINDOW_DAYS\n\n\ndef restocking_fee(price_cents, opened):\n    return price_cents * 15 // 100 if opened else 0\n\n\ndef refund_cents(price_cents, days_held, opened):\n    if not within_refund_window(days_held):\n        return 0\n    return price_cents - restocking_fee(price_cents, opened)\n\n\ndef return_label(days_held, opened):\n    if within_refund_window(days_held):\n        return \"refund-opened\" if opened else \"refund\"\n    return \"no-refund\"\n\n\ndef review_return(request):\n    days_held = request[\"returned_day\"] - request[\"purchased_day\"]\n    if days_held < 0:\n        raise ValueError(\"returned before purchase\")\n    return {\n        \"refund_cents\": refund_cents(request[\"price_cents\"], days_held, request[\"opened\"]),\n        \"label\": return_label(days_held, request[\"opened\"]),\n    }\n"
+      },
+      "tests": [
+        {
+          "args": [
+            {
+              "price_cents": 2000,
+              "purchased_day": 1,
+              "returned_day": 10,
+              "opened": false
+            }
+          ],
+          "expected": {
+            "refund_cents": 2000,
+            "label": "refund"
+          }
+        },
+        {
+          "args": [
+            {
+              "price_cents": 2000,
+              "purchased_day": 1,
+              "returned_day": 31,
+              "opened": true
+            }
+          ],
+          "expected": {
+            "refund_cents": 1700,
+            "label": "refund-opened"
+          }
+        },
+        {
+          "args": [
+            {
+              "price_cents": 2000,
+              "purchased_day": 1,
+              "returned_day": 32,
+              "opened": false
+            }
+          ],
+          "expected": {
+            "refund_cents": 0,
+            "label": "no-refund"
+          }
+        },
+        {
+          "args": [
+            {
+              "price_cents": 999,
+              "purchased_day": 5,
+              "returned_day": 10,
+              "opened": true
+            }
+          ],
+          "expected": {
+            "refund_cents": 850,
+            "label": "refund-opened"
+          }
+        },
+        {
+          "args": [
+            {
+              "price_cents": 2000,
+              "purchased_day": 10,
+              "returned_day": 9,
+              "opened": false
+            }
+          ],
+          "raises": "ValueError"
+        }
+      ],
+      "notes": "Before writes the 30-day refund window twice, as `days_held > 30` in refund_cents and `days_held <= 30` in return_label. After names it once (REFUND_WINDOW_DAYS, within_refund_window) and both callers use it: introduces a domain rule and removes a duplicated rule. within_refund_window adds a comparison and a named constant, so it is not a pass-through; one rule called from two places is not duplication. restocking_fee and review_return are unchanged. Static census: one more function, complexity otherwise flat."
+    },
+    {
+      "name": "loyalty_tiers_inlined",
+      "task": "Summarize a loyalty purchase: points earned are one per whole dollar spent times the tier multiplier (bronze 1, silver 2, gold 3), and a message states the tier's points per dollar. Unknown tiers raise ValueError.",
+      "constraints": [
+        "Marketing adjusts tier multipliers several times a year."
+      ],
+      "entry": "purchase_summary",
+      "complete": true,
+      "before": {
+        "path": "module.py",
+        "source": "TIER_MULTIPLIERS = {\"bronze\": 1, \"silver\": 2, \"gold\": 3}\n\n\ndef tier_multiplier(tier):\n    if tier not in TIER_MULTIPLIERS:\n        raise ValueError(f\"unknown tier: {tier}\")\n    return TIER_MULTIPLIERS[tier]\n\n\ndef points_earned(amount_cents, tier):\n    return (amount_cents // 100) * tier_multiplier(tier)\n\n\ndef rate_message(tier):\n    return f\"{tier} members earn {tier_multiplier(tier)} points per dollar\"\n\n\ndef purchase_summary(amount_cents, tier):\n    return {\"points\": points_earned(amount_cents, tier), \"message\": rate_message(tier)}\n"
+      },
+      "after": {
+        "path": "module.py",
+        "source": "def points_earned(amount_cents, tier):\n    if tier == \"gold\":\n        multiplier = 3\n    elif tier == \"silver\":\n        multiplier = 2\n    elif tier == \"bronze\":\n        multiplier = 1\n    else:\n        raise ValueError(f\"unknown tier: {tier}\")\n    return (amount_cents // 100) * multiplier\n\n\ndef rate_message(tier):\n    if tier == \"gold\":\n        return \"gold members earn 3 points per dollar\"\n    if tier == \"silver\":\n        return \"silver members earn 2 points per dollar\"\n    if tier == \"bronze\":\n        return \"bronze members earn 1 points per dollar\"\n    raise ValueError(f\"unknown tier: {tier}\")\n\n\ndef purchase_summary(amount_cents, tier):\n    return {\"points\": points_earned(amount_cents, tier), \"message\": rate_message(tier)}\n"
+      },
+      "tests": [
+        {
+          "args": [
+            1250,
+            "gold"
+          ],
+          "expected": {
+            "points": 36,
+            "message": "gold members earn 3 points per dollar"
+          }
+        },
+        {
+          "args": [
+            99,
+            "silver"
+          ],
+          "expected": {
+            "points": 0,
+            "message": "silver members earn 2 points per dollar"
+          }
+        },
+        {
+          "args": [
+            5000,
+            "bronze"
+          ],
+          "expected": {
+            "points": 50,
+            "message": "bronze members earn 1 points per dollar"
+          }
+        },
+        {
+          "args": [
+            1000,
+            "platinum"
+          ],
+          "raises": "ValueError"
+        }
+      ],
+      "notes": "Before keeps the tier multipliers and the unknown-tier check in TIER_MULTIPLIERS and tier_multiplier, called from two places (one rule called from several places, not duplication). After inlines them into points_earned and rate_message, each with its own if-chain holding the multipliers and the unknown-tier error: removes a domain rule and introduces a duplicated rule. introduced_mixed_responsibilities is not labeled: after rate_message holds both the multiplier values and the message wording, which fits the definition's wording, but the main effect is the scattered rule. Static census: decisions and cognitive complexity rise."
+    },
+    {
+      "name": "receipt_render_split",
+      "task": "Render a receipt from order text with one `name,quantity,unit_cents` item per line (blank lines ignored): one line per item with its amount, then 8% sales tax on the subtotal rounded half up to the cent, then the total, all as dollars. A malformed line raises ValueError.",
+      "constraints": [
+        "The order text format and the receipt layout are owned by different teams."
+      ],
+      "entry": "render_receipt",
+      "complete": true,
+      "before": {
+        "path": "module.py",
+        "source": "TAX_RATE_PERCENT = 8\n\n\ndef dollars(cents):\n    return f\"${cents // 100}.{cents % 100:02d}\"\n\n\ndef sales_tax_cents(subtotal_cents):\n    return (subtotal_cents * TAX_RATE_PERCENT + 50) // 100\n\n\ndef render_receipt(text):\n    lines = []\n    subtotal = 0\n    for raw in text.splitlines():\n        if not raw.strip():\n            continue\n        parts = [part.strip() for part in raw.split(\",\")]\n        if len(parts) != 3:\n            raise ValueError(f\"malformed line: {raw!r}\")\n        name, quantity, unit_cents = parts[0], int(parts[1]), int(parts[2])\n        amount = quantity * unit_cents\n        subtotal += amount\n        lines.append(f\"{name} x {quantity}: {dollars(amount)}\")\n    tax = sales_tax_cents(subtotal)\n    lines.append(f\"Tax: {dollars(tax)}\")\n    lines.append(f\"Total: {dollars(subtotal + tax)}\")\n    return \"\\n\".join(lines)\n"
+      },
+      "after": {
+        "path": "module.py",
+        "source": "TAX_RATE_PERCENT = 8\n\n\ndef dollars(cents):\n    return f\"${cents // 100}.{cents % 100:02d}\"\n\n\ndef sales_tax_cents(subtotal_cents):\n    return (subtotal_cents * TAX_RATE_PERCENT + 50) // 100\n\n\ndef parse_items(text):\n    items = []\n    for raw in text.splitlines():\n        if not raw.strip():\n            continue\n        parts = [part.strip() for part in raw.split(\",\")]\n        if len(parts) != 3:\n            raise ValueError(f\"malformed line: {raw!r}\")\n        items.append((parts[0], int(parts[1]), int(parts[2])))\n    return items\n\n\ndef format_receipt(priced_items, tax, total):\n    lines = [f\"{name} x {quantity}: {dollars(amount)}\" for name, quantity, amount in priced_items]\n    lines.append(f\"Tax: {dollars(tax)}\")\n    lines.append(f\"Total: {dollars(total)}\")\n    return \"\\n\".join(lines)\n\n\ndef render_receipt(text):\n    priced = [(name, qty, qty * unit_cents) for name, qty, unit_cents in parse_items(text)]\n    subtotal = sum(amount for _, _, amount in priced)\n    tax = sales_tax_cents(subtotal)\n    return format_receipt(priced, tax, subtotal + tax)\n"
+      },
+      "tests": [
+        {
+          "args": [
+            "apple,2,150\npear,1,99"
+          ],
+          "expected": "apple x 2: $3.00\npear x 1: $0.99\nTax: $0.32\nTotal: $4.31"
+        },
+        {
+          "args": [
+            "\n widget , 3 , 1000 \n\n"
+          ],
+          "expected": "widget x 3: $30.00\nTax: $2.40\nTotal: $32.40"
+        },
+        {
+          "args": [
+            "gum,1,7"
+          ],
+          "expected": "gum x 1: $0.07\nTax: $0.01\nTotal: $0.08"
+        },
+        {
+          "args": [
+            ""
+          ],
+          "expected": "Tax: $0.00\nTotal: $0.00"
+        },
+        {
+          "args": [
+            "apple,2"
+          ],
+          "raises": "ValueError"
+        },
+        {
+          "args": [
+            "apple,two,150"
+          ],
+          "raises": "ValueError"
+        }
+      ],
+      "notes": "Before's render_receipt parses the order text, prices the lines and lays out the receipt in one loop, so the input format and the layout, which change for different reasons, live in one function: mixed responsibilities. After moves parsing to parse_items and layout to format_receipt; render_receipt becomes a short orchestrator that prices the parsed items (not mixed). dollars, sales_tax_cents and TAX_RATE_PERCENT exist unchanged in both; parse_items and format_receipt move statements without naming a new domain rule. Static census: function count and cognitive sum rise slightly; the maxima are unchanged because the parsing loop moves intact into parse_items."
+    },
+    {
+      "name": "restock_report_merged",
+      "task": "Build restock alerts from CSV text whose first line is the header `sku,on_hand,reorder_level`. A SKU needs restocking when on hand is at or below its reorder level, and the order quantity brings stock to twice the reorder level. Return `RESTOCK <sku>: order <n>` lines sorted by SKU. A missing header or a malformed row raises ValueError.",
+      "constraints": [
+        "The CSV export comes from a warehouse system that is being replaced; the alert wording is set by the purchasing team."
+      ],
+      "entry": "restock_alerts",
+      "complete": true,
+      "before": {
+        "path": "module.py",
+        "source": "HEADER = \"sku,on_hand,reorder_level\"\n\n\ndef parse_rows(text):\n    lines = text.strip().splitlines()\n    if not lines or lines[0].strip() != HEADER:\n        raise ValueError(\"missing header\")\n    rows = []\n    for line in lines[1:]:\n        sku, on_hand, level = line.split(\",\")\n        rows.append((sku.strip(), int(on_hand), int(level)))\n    return rows\n\n\ndef needs_restock(on_hand, reorder_level):\n    return on_hand <= reorder_level\n\n\ndef order_quantity(on_hand, reorder_level):\n    return 2 * reorder_level - on_hand\n\n\ndef format_alert(sku, quantity):\n    return f\"RESTOCK {sku}: order {quantity}\"\n\n\ndef restock_alerts(text):\n    return [\n        format_alert(sku, order_quantity(on_hand, level))\n        for sku, on_hand, level in sorted(parse_rows(text))\n        if needs_restock(on_hand, level)\n    ]\n"
+      },
+      "after": {
+        "path": "module.py",
+        "source": "HEADER = \"sku,on_hand,reorder_level\"\n\n\ndef needs_restock(on_hand, reorder_level):\n    return on_hand <= reorder_level\n\n\ndef order_quantity(on_hand, reorder_level):\n    return 2 * reorder_level - on_hand\n\n\ndef restock_alerts(text):\n    lines = text.strip().splitlines()\n    if not lines or lines[0].strip() != HEADER:\n        raise ValueError(\"missing header\")\n    rows = []\n    for line in lines[1:]:\n        sku, on_hand, level = line.split(\",\")\n        rows.append((sku.strip(), int(on_hand), int(level)))\n    alerts = []\n    for sku, on_hand, level in sorted(rows):\n        if needs_restock(on_hand, level):\n            alerts.append(f\"RESTOCK {sku}: order {order_quantity(on_hand, level)}\")\n    return alerts\n"
+      },
+      "tests": [
+        {
+          "args": [
+            "sku,on_hand,reorder_level\nB2,3,5\nA1,10,4\nA10,4,4"
+          ],
+          "expected": [
+            "RESTOCK A10: order 4",
+            "RESTOCK B2: order 7"
+          ]
+        },
+        {
+          "args": [
+            "sku,on_hand,reorder_level\nC3,0,1\n"
+          ],
+          "expected": [
+            "RESTOCK C3: order 2"
+          ]
+        },
+        {
+          "args": [
+            "sku,on_hand,reorder_level"
+          ],
+          "expected": []
+        },
+        {
+          "args": [
+            "sku,qty\nA,1,2"
+          ],
+          "raises": "ValueError"
+        },
+        {
+          "args": [
+            ""
+          ],
+          "raises": "ValueError"
+        },
+        {
+          "args": [
+            "sku,on_hand,reorder_level\nA,x,2"
+          ],
+          "raises": "ValueError"
+        }
+      ],
+      "notes": "Before separates CSV parsing (parse_rows), the restock rules (needs_restock, order_quantity), alert wording (format_alert) and a short orchestrator. After folds parsing and alert formatting into restock_alerts, so one function now reads the warehouse CSV format, applies the rules and writes the purchasing team's wording: introduces mixed responsibilities. The named rules needs_restock and order_quantity stay; parse_rows and format_alert were not domain rules. Static census: function count down, maximum cognitive complexity up."
+    },
+    {
+      "name": "parking_tariff_names",
+      "task": "Charge for a parking stay of 0 to 1440 minutes. Cars park free for 15 minutes, then pay 4.00 up to 2 hours, 9.00 up to 8 hours, and 18.00 beyond; motorcycles park free for 30 minutes, then pay 2.00 up to 3 hours and 7.00 beyond. Charges are in cents. Other vehicles and stays outside the range raise ValueError.",
+      "constraints": [
+        "Operations staff update the tariffs; they read this module but rarely write Python."
+      ],
+      "entry": "parking_charge",
+      "complete": true,
+      "before": {
+        "path": "module.py",
+        "source": "MAX_STAY_MINUTES = 1440\n\n\ndef tiered_charge(minutes, tiers):\n    if not 0 <= minutes <= MAX_STAY_MINUTES:\n        raise ValueError(\"stay must be between 0 and 24 hours\")\n    charge = 0\n    for over_minutes, price_cents in tiers:\n        if minutes > over_minutes:\n            charge = price_cents\n    return charge\n\n\ndef parking_charge(minutes, vehicle):\n    if vehicle == \"car\":\n        return tiered_charge(minutes, [(15, 400), (120, 900), (480, 1800)])\n    if vehicle == \"motorcycle\":\n        return tiered_charge(minutes, [(30, 200), (180, 700)])\n    raise ValueError(f\"unknown vehicle: {vehicle}\")\n"
+      },
+      "after": {
+        "path": "module.py",
+        "source": "MAX_STAY_MINUTES = 1440\nCAR_TARIFF = [(15, 400), (120, 900), (480, 1800)]\nMOTORCYCLE_TARIFF = [(30, 200), (180, 700)]\n\n\ndef tiered_charge(minutes, tiers):\n    if not 0 <= minutes <= MAX_STAY_MINUTES:\n        raise ValueError(\"stay must be between 0 and 24 hours\")\n    charge = 0\n    for over_minutes, price_cents in tiers:\n        if minutes > over_minutes:\n            charge = price_cents\n    return charge\n\n\ndef car_charge(minutes):\n    return tiered_charge(minutes, CAR_TARIFF)\n\n\ndef motorcycle_charge(minutes):\n    return tiered_charge(minutes, MOTORCYCLE_TARIFF)\n\n\ndef parking_charge(minutes, vehicle):\n    if vehicle == \"car\":\n        return car_charge(minutes)\n    if vehicle == \"motorcycle\":\n        return motorcycle_charge(minutes)\n    raise ValueError(f\"unknown vehicle: {vehicle}\")\n"
+      },
+      "tests": [
+        {
+          "args": [
+            15,
+            "car"
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            16,
+            "car"
+          ],
+          "expected": 400
+        },
+        {
+          "args": [
+            121,
+            "car"
+          ],
+          "expected": 900
+        },
+        {
+          "args": [
+            1440,
+            "car"
+          ],
+          "expected": 1800
+        },
+        {
+          "args": [
+            45,
+            "motorcycle"
+          ],
+          "expected": 200
+        },
+        {
+          "args": [
+            200,
+            "motorcycle"
+          ],
+          "expected": 700
+        },
+        {
+          "args": [
+            1441,
+            "car"
+          ],
+          "raises": "ValueError"
+        },
+        {
+          "args": [
+            60,
+            "bus"
+          ],
+          "raises": "ValueError"
+        }
+      ],
+      "notes": "Hard negative for pass-through. After names the two tariffs (CAR_TARIFF, MOTORCYCLE_TARIFF) and adds car_charge and motorcycle_charge. Each forwards to one callee, but each adds a tariff that its caller does not carry, so neither is a pass-through. Naming the tariff tables introduces domain rules; before held them as anonymous literals inside parking_charge. The two wrappers look alike but apply different tariffs, which is not duplication. Static census matches shipping_quote_layers: only the function count rises."
+    },
+    {
+      "name": "price_endpoint_alias",
+      "task": "Price an order line in cents: the catalog unit price times quantity, with 10% off (rounded down) for 10 or more units. Unknown SKUs and quantities below 1 raise ValueError. `route_price_request` sends each API request to the v1 or v2 endpoint.",
+      "constraints": [
+        "`price_v1` is a deprecated public endpoint still called by old mobile clients; it must keep its name and signature and must return exactly what `price_v2` returns.",
+        "`route_price_request` is the HTTP handler; unsupported versions raise ValueError."
+      ],
+      "entry": "route_price_request",
+      "complete": true,
+      "before": {
+        "path": "module.py",
+        "source": "CATALOG_CENTS = {\"pen\": 150, \"notebook\": 450, \"stapler\": 1200}\n\n\ndef price_v2(sku, qty):\n    if sku not in CATALOG_CENTS or qty < 1:\n        raise ValueError(f\"bad request: {sku} x {qty}\")\n    total = CATALOG_CENTS[sku] * qty\n    if qty >= 10:\n        total = total * 90 // 100\n    return total\n\n\ndef price_v1(sku, qty):\n    if sku not in CATALOG_CENTS or qty < 1:\n        raise ValueError(f\"bad request: {sku} x {qty}\")\n    total = CATALOG_CENTS[sku] * qty\n    if qty >= 10:\n        total = total * 90 // 100\n    return total\n\n\ndef route_price_request(request):\n    handlers = {\"v1\": price_v1, \"v2\": price_v2}\n    version = request.get(\"version\")\n    if version not in handlers:\n        raise ValueError(f\"unsupported version: {version}\")\n    return handlers[version](request[\"sku\"], request[\"qty\"])\n"
+      },
+      "after": {
+        "path": "module.py",
+        "source": "CATALOG_CENTS = {\"pen\": 150, \"notebook\": 450, \"stapler\": 1200}\n\n\ndef price_v2(sku, qty):\n    if sku not in CATALOG_CENTS or qty < 1:\n        raise ValueError(f\"bad request: {sku} x {qty}\")\n    total = CATALOG_CENTS[sku] * qty\n    if qty >= 10:\n        total = total * 90 // 100\n    return total\n\n\ndef price_v1(sku, qty):\n    return price_v2(sku, qty)\n\n\ndef route_price_request(request):\n    handlers = {\"v1\": price_v1, \"v2\": price_v2}\n    version = request.get(\"version\")\n    if version not in handlers:\n        raise ValueError(f\"unsupported version: {version}\")\n    return handlers[version](request[\"sku\"], request[\"qty\"])\n"
+      },
+      "tests": [
+        {
+          "args": [
+            {
+              "version": "v2",
+              "sku": "pen",
+              "qty": 3
+            }
+          ],
+          "expected": 450
+        },
+        {
+          "args": [
+            {
+              "version": "v1",
+              "sku": "pen",
+              "qty": 3
+            }
+          ],
+          "expected": 450
+        },
+        {
+          "args": [
+            {
+              "version": "v1",
+              "sku": "notebook",
+              "qty": 10
+            }
+          ],
+          "expected": 4050
+        },
+        {
+          "args": [
+            {
+              "version": "v2",
+              "sku": "stapler",
+              "qty": 12
+            }
+          ],
+          "expected": 12960
+        },
+        {
+          "args": [
+            {
+              "version": "v1",
+              "sku": "eraser",
+              "qty": 1
+            }
+          ],
+          "raises": "ValueError"
+        },
+        {
+          "args": [
+            {
+              "version": "v2",
+              "sku": "pen",
+              "qty": 0
+            }
+          ],
+          "raises": "ValueError"
+        },
+        {
+          "args": [
+            {
+              "version": "v3",
+              "sku": "pen",
+              "qty": 1
+            }
+          ],
+          "raises": "ValueError"
+        }
+      ],
+      "notes": "Before copies the validation and the bulk-discount rule (10 units, 10% off) into both price_v1 and price_v2. After makes price_v1 forward to price_v2, which removes the duplicated rule. Hard negative for pass-through: price_v1 now only forwards, but it is a required public entry point, so it does not count. introduced_domain_rule is not labeled: price_v2 becomes the single home that price_v1 uses, but it states several rules (catalog lookup, validation, discount), not one, and it already existed before, so either answer is defensible. Static census: decisions and cognitive complexity drop."
+    },
+    {
+      "name": "signup_validators_merged",
+      "task": "List which signup form fields are invalid, in form order. A username must be 3 to 20 characters of lowercase letters, digits, or underscores. A display name must have 1 to 40 characters after trimming whitespace and contain only printable characters. Missing fields count as empty.",
+      "constraints": [
+        "Username rules come from the identity team and display-name rules from the community team; they change independently."
+      ],
+      "entry": "signup_errors",
+      "complete": true,
+      "before": {
+        "path": "module.py",
+        "source": "USERNAME_CHARS = set(\"abcdefghijklmnopqrstuvwxyz0123456789_\")\n\n\ndef valid_username(name):\n    return 3 <= len(name) <= 20 and set(name) <= USERNAME_CHARS\n\n\ndef valid_display_name(name):\n    return 1 <= len(name.strip()) <= 40 and name.isprintable()\n\n\ndef signup_errors(form):\n    errors = []\n    if not valid_username(form.get(\"username\", \"\")):\n        errors.append(\"username\")\n    if not valid_display_name(form.get(\"display_name\", \"\")):\n        errors.append(\"display_name\")\n    return errors\n"
+      },
+      "after": {
+        "path": "module.py",
+        "source": "def valid_name(name, min_length, max_length, strict):\n    if strict:\n        text = name\n        allowed = all(char in \"abcdefghijklmnopqrstuvwxyz0123456789_\" for char in name)\n    else:\n        text = name.strip()\n        allowed = name.isprintable()\n    return min_length <= len(text) <= max_length and allowed\n\n\ndef signup_errors(form):\n    errors = []\n    if not valid_name(form.get(\"username\", \"\"), 3, 20, strict=True):\n        errors.append(\"username\")\n    if not valid_name(form.get(\"display_name\", \"\"), 1, 40, strict=False):\n        errors.append(\"display_name\")\n    return errors\n"
+      },
+      "tests": [
+        {
+          "args": [
+            {
+              "username": "ada_l",
+              "display_name": "Ada L."
+            }
+          ],
+          "expected": []
+        },
+        {
+          "args": [
+            {
+              "username": "Ada",
+              "display_name": "Ada"
+            }
+          ],
+          "expected": [
+            "username"
+          ]
+        },
+        {
+          "args": [
+            {
+              "username": "al",
+              "display_name": "   "
+            }
+          ],
+          "expected": [
+            "username",
+            "display_name"
+          ]
+        },
+        {
+          "args": [
+            {}
+          ],
+          "expected": [
+            "username",
+            "display_name"
+          ]
+        },
+        {
+          "args": [
+            {
+              "username": "grace_hopper_1906",
+              "display_name": "Grace\tHopper"
+            }
+          ],
+          "expected": [
+            "display_name"
+          ]
+        },
+        {
+          "args": [
+            {
+              "username": "abcdefghijklmnopqrstu",
+              "display_name": "x"
+            }
+          ],
+          "expected": [
+            "username"
+          ]
+        }
+      ],
+      "notes": "Hard negative for duplication: before's valid_username and valid_display_name look alike (length range plus allowed characters) but implement different rules owned by different teams, so before has no duplicated rule. After merges them into a generic valid_name driven by a strict flag, moving the length limits into the caller's arguments: removes the two named domain rules, and valid_name itself does not state one rule. introduced_mixed_responsibilities is not labeled: valid_name couples two independently changing rules behind a flag, which fits the definition's wording but not its parsing/rule/formatting examples. Static census: function count down, decisions up."
+    },
+    {
+      "name": "duration_parser_split",
+      "task": "Parse a duration such as `1h30m` or `45s` into seconds. Units are h, m and s, each used at most once and each preceded by digits; input is case-insensitive and surrounding whitespace is ignored. Empty input, unknown characters, repeated units, and digits without a unit raise ValueError.",
+      "constraints": [],
+      "entry": "parse_duration",
+      "complete": true,
+      "before": {
+        "path": "module.py",
+        "source": "UNIT_SECONDS = {\"h\": 3600, \"m\": 60, \"s\": 1}\n\n\ndef parse_duration(text):\n    text = text.strip().lower()\n    if not text:\n        raise ValueError(\"empty duration\")\n    total = 0\n    digits = \"\"\n    seen = set()\n    for char in text:\n        if char.isdigit():\n            digits += char\n        elif char in UNIT_SECONDS:\n            if not digits or char in seen:\n                raise ValueError(f\"bad duration: {text!r}\")\n            seen.add(char)\n            total += int(digits) * UNIT_SECONDS[char]\n            digits = \"\"\n        else:\n            raise ValueError(f\"bad character: {char!r}\")\n    if digits:\n        raise ValueError(f\"missing unit in {text!r}\")\n    return total\n"
+      },
+      "after": {
+        "path": "module.py",
+        "source": "UNIT_SECONDS = {\"h\": 3600, \"m\": 60, \"s\": 1}\n\n\ndef parse_duration(text):\n    text = _normalize(text)\n    total, digits, seen = 0, \"\", set()\n    for char in text:\n        total, digits = _consume(char, text, total, digits, seen)\n    _check_trailing(digits, text)\n    return total\n\n\ndef _normalize(text):\n    text = text.strip().lower()\n    if not text:\n        raise ValueError(\"empty duration\")\n    return text\n\n\ndef _consume(char, text, total, digits, seen):\n    if char.isdigit():\n        return total, digits + char\n    if char in UNIT_SECONDS:\n        return _apply_unit(char, text, total, digits, seen), \"\"\n    raise ValueError(f\"bad character: {char!r}\")\n\n\ndef _apply_unit(char, text, total, digits, seen):\n    if not digits or char in seen:\n        raise ValueError(f\"bad duration: {text!r}\")\n    seen.add(char)\n    return total + int(digits) * UNIT_SECONDS[char]\n\n\ndef _check_trailing(digits, text):\n    if digits:\n        raise ValueError(f\"missing unit in {text!r}\")\n"
+      },
+      "tests": [
+        {
+          "args": [
+            "1h30m"
+          ],
+          "expected": 5400
+        },
+        {
+          "args": [
+            "45s"
+          ],
+          "expected": 45
+        },
+        {
+          "args": [
+            " 2H5S "
+          ],
+          "expected": 7205
+        },
+        {
+          "args": [
+            "30m1h"
+          ],
+          "expected": 5400
+        },
+        {
+          "args": [
+            "10m10m"
+          ],
+          "raises": "ValueError"
+        },
+        {
+          "args": [
+            "12"
+          ],
+          "raises": "ValueError"
+        },
+        {
+          "args": [
+            "1h 30m"
+          ],
+          "raises": "ValueError"
+        },
+        {
+          "args": [
+            ""
+          ],
+          "raises": "ValueError"
+        }
+      ],
+      "notes": "Hard negative for mixed responsibilities: before is one longer function with a single purpose (scan a duration string), so removing it does not remove mixed responsibilities. After splits the scan into helpers that thread total, digits, text and a mutated seen set through five-argument calls; none only forwards, none names a new rule (UNIT_SECONDS is in both), and nothing is duplicated, so every directional label is false. Static census moves in a misleading direction: maximum cognitive complexity drops sharply although the state is now spread across four functions."
+    },
+    {
+      "name": "slug_cosmetic",
+      "task": "Turn an article title into a URL slug: strip accents, lowercase, replace each run of other characters with one hyphen, trim hyphens, and cap the slug at 60 characters without a trailing hyphen. A title with no letters or digits raises ValueError.",
+      "constraints": [],
+      "entry": "make_slug",
+      "complete": true,
+      "before": {
+        "path": "module.py",
+        "source": "import re\nimport unicodedata\n\nMAX_SLUG_LENGTH = 60\n\n\ndef strip_accents(text):\n    decomposed = unicodedata.normalize(\"NFKD\", text)\n    return \"\".join(ch for ch in decomposed if not unicodedata.combining(ch))\n\n\ndef make_slug(title):\n    text = strip_accents(title).lower()\n    text = re.sub(r\"[^a-z0-9]+\", \"-\", text).strip(\"-\")\n    if not text:\n        raise ValueError(\"title has no usable characters\")\n    return text[:MAX_SLUG_LENGTH].rstrip(\"-\")\n"
+      },
+      "after": {
+        "path": "module.py",
+        "source": "import re\nimport unicodedata\n\nSLUG_MAX_LENGTH = 60\n\n\ndef make_slug(title):\n    slug = remove_diacritics(title).lower()\n    slug = re.sub(r\"[^a-z0-9]+\", \"-\", slug)\n    slug = slug.strip(\"-\")\n    if not slug:\n        raise ValueError(\"title has no usable characters\")\n    return slug[:SLUG_MAX_LENGTH].rstrip(\"-\")\n\n\ndef remove_diacritics(value):\n    normalized = unicodedata.normalize(\"NFKD\", value)\n    return \"\".join(\n        char for char in normalized if not unicodedata.combining(char)\n    )\n"
+      },
+      "tests": [
+        {
+          "args": [
+            "Héllo, Wörld!"
+          ],
+          "expected": "hello-world"
+        },
+        {
+          "args": [
+            "Crème brûlée recipe #2"
+          ],
+          "expected": "creme-brulee-recipe-2"
+        },
+        {
+          "args": [
+            "ÆON flux"
+          ],
+          "expected": "on-flux"
+        },
+        {
+          "args": [
+            "  --  "
+          ],
+          "raises": "ValueError"
+        },
+        {
+          "args": [
+            "Ten practical tips for writing maintainable Python code for large teams"
+          ],
+          "expected": "ten-practical-tips-for-writing-maintainable-python-code-for"
+        }
+      ],
+      "notes": "Cosmetic only: the helper and the constant are renamed, the helper moves below its caller, variables are renamed, and one chained call is split over two statements. Every function does the same work in the same place, so every directional label is false and the versions are equivalent. Static census: all deltas are zero."
+    },
+    {
+      "name": "invoice_settlement_unseen",
+      "task": "Record a customer payment against an invoice: apply the payment, credit any overpayment to the customer so the stored balance never goes below zero, persist the new balance, and return it.",
+      "constraints": [
+        "`store` and `ledger` are implemented in other modules that are not shown."
+      ],
+      "entry": "settle_invoice",
+      "complete": false,
+      "before": {
+        "path": "module.py",
+        "source": "def settle_invoice(invoice_id, payment_cents, store, ledger):\n    invoice = store.load(invoice_id)\n    balance = ledger.apply_payment(invoice, payment_cents)\n    if balance < 0:\n        ledger.issue_credit(invoice[\"customer_id\"], -balance)\n        balance = 0\n    store.save(invoice_id, balance)\n    return balance\n"
+      },
+      "after": {
+        "path": "module.py",
+        "source": "def settle_invoice(invoice_id, payment_cents, store, ledger):\n    invoice = store.load(invoice_id, for_update=True)\n    balance = ledger.post_payment(invoice, payment_cents, overpayment=\"credit\")\n    store.save(invoice_id, balance)\n    return balance\n"
+      },
+      "tests": [],
+      "notes": "After drops the visible overpayment branch and passes overpayment=\"credit\" to ledger.post_payment, and it loads the invoice for update. Whether that centralizes the overpayment rule or pushes a flag into a general-purpose ledger method depends on ledger and store code that neither version shows, so the preference cannot be judged. Neither version shows a pass-through or a duplicated rule; before has no named overpayment rule to remove, and after's settle_invoice is a plain orchestrator. Not labeled: introduced_domain_rule (depends on what post_payment does with the flag) and removed_mixed_responsibilities (before is an orchestrator with one inline rule branch). No behavior tests: the collaborators are not shown."
+    },
+    {
+      "name": "run_length_regrouped",
+      "task": "Run-length encode text as character-count pairs, for example `aaab` becomes `a3b1`; runs longer than 9 are split so every count is one digit. Text containing digits raises ValueError.",
+      "constraints": [],
+      "entry": "encode_runs",
+      "complete": true,
+      "before": {
+        "path": "module.py",
+        "source": "MAX_RUN = 9\n\n\ndef _flush(parts, char, count):\n    if count:\n        parts.append(f\"{char}{count}\")\n\n\ndef _advance(parts, current, count, char):\n    if char == current and count < MAX_RUN:\n        return current, count + 1\n    _flush(parts, current, count)\n    return char, 1\n\n\ndef encode_runs(text):\n    if any(char.isdigit() for char in text):\n        raise ValueError(\"digits cannot be encoded\")\n    parts = []\n    current, count = \"\", 0\n    for char in text:\n        current, count = _advance(parts, current, count, char)\n    _flush(parts, current, count)\n    return \"\".join(parts)\n"
+      },
+      "after": {
+        "path": "module.py",
+        "source": "from itertools import groupby\n\nMAX_RUN = 9\n\n\ndef encode_runs(text):\n    if any(char.isdigit() for char in text):\n        raise ValueError(\"digits cannot be encoded\")\n    parts = []\n    for char, group in groupby(text):\n        length = len(list(group))\n        while length > 0:\n            chunk = min(length, MAX_RUN)\n            parts.append(f\"{char}{chunk}\")\n            length -= chunk\n    return \"\".join(parts)\n"
+      },
+      "tests": [
+        {
+          "args": [
+            "aaab"
+          ],
+          "expected": "a3b1"
+        },
+        {
+          "args": [
+            ""
+          ],
+          "expected": ""
+        },
+        {
+          "args": [
+            "aaaaaaaaaaa"
+          ],
+          "expected": "a9a2"
+        },
+        {
+          "args": [
+            "zzzzzzzzz"
+          ],
+          "expected": "z9"
+        },
+        {
+          "args": [
+            "ab  b"
+          ],
+          "expected": "a1b1 2b1"
+        },
+        {
+          "args": [
+            "abc1"
+          ],
+          "raises": "ValueError"
+        }
+      ],
+      "notes": "After replaces _advance and _flush, which thread the current run through a sentinel start state and append to a list they do not own, with one function that groups runs and splits them at MAX_RUN. Hard negative for mixed responsibilities: the merged function is longer but has one purpose. Neither version has a pass-through, MAX_RUN is the only named rule in both, and nothing is duplicated, so every directional label is false. Static census moves in a misleading direction: the maximum per-function cognitive complexity rises although the code is easier to follow."
+    },
+    {
+      "name": "account_service_layer",
+      "task": "Apply a list of `[kind, amount_cents]` transactions to an account with a starting balance and an overdraft limit. Deposits must be positive. Withdrawals must be positive and are declined when they would take the balance below minus the overdraft limit. Unknown kinds raise ValueError. Return the final balance and the indexes of declined transactions.",
+      "constraints": [
+        "There is one account type, and this module has no persistence or remote API."
+      ],
+      "entry": "apply_transactions",
+      "complete": true,
+      "before": {
+        "path": "module.py",
+        "source": "class Account:\n    def __init__(self, balance_cents, overdraft_limit_cents):\n        self.balance_cents = balance_cents\n        self.overdraft_limit_cents = overdraft_limit_cents\n\n    def deposit(self, amount_cents):\n        if amount_cents <= 0:\n            raise ValueError(\"deposit must be positive\")\n        self.balance_cents += amount_cents\n\n    def withdraw(self, amount_cents):\n        if amount_cents <= 0:\n            raise ValueError(\"withdrawal must be positive\")\n        if self.balance_cents - amount_cents < -self.overdraft_limit_cents:\n            return False\n        self.balance_cents -= amount_cents\n        return True\n\n\ndef apply_transactions(balance_cents, overdraft_limit_cents, transactions):\n    account = Account(balance_cents, overdraft_limit_cents)\n    declined = []\n    for index, (kind, amount) in enumerate(transactions):\n        if kind == \"deposit\":\n            account.deposit(amount)\n        elif kind == \"withdraw\":\n            if not account.withdraw(amount):\n                declined.append(index)\n        else:\n            raise ValueError(f\"unknown transaction: {kind}\")\n    return {\"balance_cents\": account.balance_cents, \"declined\": declined}\n"
+      },
+      "after": {
+        "path": "module.py",
+        "source": "class Account:\n    def __init__(self, balance_cents, overdraft_limit_cents):\n        self.balance_cents = balance_cents\n        self.overdraft_limit_cents = overdraft_limit_cents\n\n    def deposit(self, amount_cents):\n        if amount_cents <= 0:\n            raise ValueError(\"deposit must be positive\")\n        self.balance_cents += amount_cents\n\n    def withdraw(self, amount_cents):\n        if amount_cents <= 0:\n            raise ValueError(\"withdrawal must be positive\")\n        if self.balance_cents - amount_cents < -self.overdraft_limit_cents:\n            return False\n        self.balance_cents -= amount_cents\n        return True\n\n\nclass AccountService:\n    def __init__(self, account):\n        self.account = account\n\n    def deposit(self, amount_cents):\n        return self.account.deposit(amount_cents)\n\n    def withdraw(self, amount_cents):\n        return self.account.withdraw(amount_cents)\n\n\ndef apply_transactions(balance_cents, overdraft_limit_cents, transactions):\n    service = AccountService(Account(balance_cents, overdraft_limit_cents))\n    declined = []\n    for index, (kind, amount) in enumerate(transactions):\n        if kind == \"deposit\":\n            service.deposit(amount)\n        elif kind == \"withdraw\":\n            if not service.withdraw(amount):\n                declined.append(index)\n        else:\n            raise ValueError(f\"unknown transaction: {kind}\")\n    return {\"balance_cents\": service.account.balance_cents, \"declined\": declined}\n"
+      },
+      "tests": [
+        {
+          "args": [
+            1000,
+            500,
+            [
+              [
+                "withdraw",
+                1200
+              ],
+              [
+                "deposit",
+                300
+              ],
+              [
+                "withdraw",
+                700
+              ]
+            ]
+          ],
+          "expected": {
+            "balance_cents": 100,
+            "declined": [
+              2
+            ]
+          }
+        },
+        {
+          "args": [
+            0,
+            0,
+            []
+          ],
+          "expected": {
+            "balance_cents": 0,
+            "declined": []
+          }
+        },
+        {
+          "args": [
+            100,
+            0,
+            [
+              [
+                "withdraw",
+                100
+              ],
+              [
+                "withdraw",
+                1
+              ]
+            ]
+          ],
+          "expected": {
+            "balance_cents": 0,
+            "declined": [
+              1
+            ]
+          }
+        },
+        {
+          "args": [
+            100,
+            0,
+            [
+              [
+                "deposit",
+                0
+              ]
+            ]
+          ],
+          "raises": "ValueError"
+        },
+        {
+          "args": [
+            100,
+            0,
+            [
+              [
+                "refund",
+                5
+              ]
+            ]
+          ],
+          "raises": "ValueError"
+        },
+        {
+          "args": [
+            100,
+            50,
+            [
+              [
+                "withdraw",
+                -5
+              ]
+            ]
+          ],
+          "raises": "ValueError"
+        }
+      ],
+      "notes": "After wraps Account in an AccountService whose deposit and withdraw methods only forward their argument to the same Account method, adding no validation, conversion, or domain name; apply_transactions now calls the service. That introduces pass-throughs (methods count). The overdraft and positivity rules stay in Account in both versions. Static census: the function count rises and nothing else moves."
+    },
+    {
+      "name": "delivery_cutoff_inline",
+      "task": "Compute the delivery day for an order placed on `order_day` at `order_minute` (minutes after midnight). Days are integers; a day whose `day % 7` is 5 or 6 is a weekend. An order placed on a business day before 14:00 ships that day, otherwise on the next business day. Delivery is 3 business days after shipping for standard service and 1 for express. Unknown services raise ValueError.",
+      "constraints": [
+        "Public holidays will be added to the business-day calendar next quarter."
+      ],
+      "entry": "delivery_day",
+      "complete": true,
+      "before": {
+        "path": "module.py",
+        "source": "WEEKEND_DAYS = (5, 6)\nCUTOFF_MINUTE = 14 * 60\nTRANSIT_DAYS = {\"standard\": 3, \"express\": 1}\n\n\ndef is_business_day(day):\n    return day % 7 not in WEEKEND_DAYS\n\n\ndef next_business_day(day):\n    day += 1\n    while not is_business_day(day):\n        day += 1\n    return day\n\n\ndef ship_day(order_day, order_minute):\n    if is_business_day(order_day) and order_minute < CUTOFF_MINUTE:\n        return order_day\n    return next_business_day(order_day)\n\n\ndef delivery_day(order_day, order_minute, service):\n    if service not in TRANSIT_DAYS:\n        raise ValueError(f\"unknown service: {service}\")\n    day = ship_day(order_day, order_minute)\n    for _ in range(TRANSIT_DAYS[service]):\n        day = next_business_day(day)\n    return day\n"
+      },
+      "after": {
+        "path": "module.py",
+        "source": "WEEKEND_DAYS = (5, 6)\nCUTOFF_MINUTE = 14 * 60\nTRANSIT_DAYS = {\"standard\": 3, \"express\": 1}\n\n\ndef is_business_day(day):\n    return day % 7 not in WEEKEND_DAYS\n\n\ndef next_business_day(day):\n    day += 1\n    while not is_business_day(day):\n        day += 1\n    return day\n\n\ndef ship_day(order_day, order_minute):\n    weekday = order_day % 7\n    same_day = weekday not in WEEKEND_DAYS and order_minute < CUTOFF_MINUTE\n    return order_day if same_day else next_business_day(order_day)\n\n\ndef delivery_day(order_day, order_minute, service):\n    if service not in TRANSIT_DAYS:\n        raise ValueError(f\"unknown service: {service}\")\n    day = ship_day(order_day, order_minute)\n    for _ in range(TRANSIT_DAYS[service]):\n        day = next_business_day(day)\n    return day\n"
+      },
+      "tests": [
+        {
+          "args": [
+            0,
+            600,
+            "standard"
+          ],
+          "expected": 3
+        },
+        {
+          "args": [
+            4,
+            900,
+            "express"
+          ],
+          "expected": 8
+        },
+        {
+          "args": [
+            5,
+            100,
+            "standard"
+          ],
+          "expected": 10
+        },
+        {
+          "args": [
+            3,
+            839,
+            "express"
+          ],
+          "expected": 4
+        },
+        {
+          "args": [
+            2,
+            840,
+            "standard"
+          ],
+          "expected": 8
+        },
+        {
+          "args": [
+            0,
+            0,
+            "overnight"
+          ],
+          "raises": "ValueError"
+        }
+      ],
+      "notes": "After rewrites ship_day to compute `order_day % 7 not in WEEKEND_DAYS` itself instead of calling is_business_day, so the business-day rule is now written in two places; adding holidays to is_business_day would miss ship_day. Introduces a duplicated rule; no new named rule, pass-through, or responsibility change. removed_domain_rule is not labeled: is_business_day still exists and is still used by next_business_day, but the rest of the code no longer always uses it. Static census: decisions drop by one (an if statement became a conditional expression) and nothing else moves, so static tools read the change as neutral or slightly better."
+    }
+  ],
+  "checks": [
+    {
+      "pair": "shipping_quote_layers",
+      "signal": "introduced_pass_through",
+      "minimum": 0.7
+    },
+    {
+      "pair": "shipping_quote_layers",
+      "signal": "removed_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "shipping_quote_layers",
+      "signal": "introduced_domain_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "shipping_quote_layers",
+      "signal": "removed_domain_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "shipping_quote_layers",
+      "signal": "introduced_mixed_responsibilities",
+      "maximum": 0.3
+    },
+    {
+      "pair": "shipping_quote_layers",
+      "signal": "removed_mixed_responsibilities",
+      "maximum": 0.3
+    },
+    {
+      "pair": "shipping_quote_layers",
+      "signal": "introduced_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "shipping_quote_layers",
+      "signal": "removed_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "shipping_quote_layers",
+      "signal": "preferred",
+      "equals": "before"
+    },
+    {
+      "pair": "loan_status_forwarders",
+      "signal": "introduced_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "loan_status_forwarders",
+      "signal": "removed_pass_through",
+      "minimum": 0.7
+    },
+    {
+      "pair": "loan_status_forwarders",
+      "signal": "introduced_domain_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "loan_status_forwarders",
+      "signal": "removed_domain_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "loan_status_forwarders",
+      "signal": "introduced_mixed_responsibilities",
+      "maximum": 0.3
+    },
+    {
+      "pair": "loan_status_forwarders",
+      "signal": "removed_mixed_responsibilities",
+      "maximum": 0.3
+    },
+    {
+      "pair": "loan_status_forwarders",
+      "signal": "introduced_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "loan_status_forwarders",
+      "signal": "removed_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "loan_status_forwarders",
+      "signal": "preferred",
+      "equals": "after"
+    },
+    {
+      "pair": "refund_window_rule",
+      "signal": "introduced_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "refund_window_rule",
+      "signal": "removed_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "refund_window_rule",
+      "signal": "introduced_domain_rule",
+      "minimum": 0.7
+    },
+    {
+      "pair": "refund_window_rule",
+      "signal": "removed_domain_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "refund_window_rule",
+      "signal": "introduced_mixed_responsibilities",
+      "maximum": 0.3
+    },
+    {
+      "pair": "refund_window_rule",
+      "signal": "removed_mixed_responsibilities",
+      "maximum": 0.3
+    },
+    {
+      "pair": "refund_window_rule",
+      "signal": "introduced_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "refund_window_rule",
+      "signal": "removed_duplicated_rule",
+      "minimum": 0.7
+    },
+    {
+      "pair": "refund_window_rule",
+      "signal": "preferred",
+      "equals": "after"
+    },
+    {
+      "pair": "loyalty_tiers_inlined",
+      "signal": "introduced_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "loyalty_tiers_inlined",
+      "signal": "removed_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "loyalty_tiers_inlined",
+      "signal": "introduced_domain_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "loyalty_tiers_inlined",
+      "signal": "removed_domain_rule",
+      "minimum": 0.7
+    },
+    {
+      "pair": "loyalty_tiers_inlined",
+      "signal": "removed_mixed_responsibilities",
+      "maximum": 0.3
+    },
+    {
+      "pair": "loyalty_tiers_inlined",
+      "signal": "introduced_duplicated_rule",
+      "minimum": 0.7
+    },
+    {
+      "pair": "loyalty_tiers_inlined",
+      "signal": "removed_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "loyalty_tiers_inlined",
+      "signal": "preferred",
+      "equals": "before"
+    },
+    {
+      "pair": "receipt_render_split",
+      "signal": "introduced_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "receipt_render_split",
+      "signal": "removed_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "receipt_render_split",
+      "signal": "introduced_domain_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "receipt_render_split",
+      "signal": "removed_domain_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "receipt_render_split",
+      "signal": "introduced_mixed_responsibilities",
+      "maximum": 0.3
+    },
+    {
+      "pair": "receipt_render_split",
+      "signal": "removed_mixed_responsibilities",
+      "minimum": 0.7
+    },
+    {
+      "pair": "receipt_render_split",
+      "signal": "introduced_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "receipt_render_split",
+      "signal": "removed_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "receipt_render_split",
+      "signal": "preferred",
+      "equals": "after"
+    },
+    {
+      "pair": "restock_report_merged",
+      "signal": "introduced_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "restock_report_merged",
+      "signal": "removed_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "restock_report_merged",
+      "signal": "introduced_domain_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "restock_report_merged",
+      "signal": "removed_domain_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "restock_report_merged",
+      "signal": "introduced_mixed_responsibilities",
+      "minimum": 0.7
+    },
+    {
+      "pair": "restock_report_merged",
+      "signal": "removed_mixed_responsibilities",
+      "maximum": 0.3
+    },
+    {
+      "pair": "restock_report_merged",
+      "signal": "introduced_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "restock_report_merged",
+      "signal": "removed_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "restock_report_merged",
+      "signal": "preferred",
+      "equals": "before"
+    },
+    {
+      "pair": "parking_tariff_names",
+      "signal": "introduced_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "parking_tariff_names",
+      "signal": "removed_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "parking_tariff_names",
+      "signal": "introduced_domain_rule",
+      "minimum": 0.7
+    },
+    {
+      "pair": "parking_tariff_names",
+      "signal": "removed_domain_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "parking_tariff_names",
+      "signal": "introduced_mixed_responsibilities",
+      "maximum": 0.3
+    },
+    {
+      "pair": "parking_tariff_names",
+      "signal": "removed_mixed_responsibilities",
+      "maximum": 0.3
+    },
+    {
+      "pair": "parking_tariff_names",
+      "signal": "introduced_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "parking_tariff_names",
+      "signal": "removed_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "parking_tariff_names",
+      "signal": "preferred",
+      "equals": "after"
+    },
+    {
+      "pair": "price_endpoint_alias",
+      "signal": "introduced_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "price_endpoint_alias",
+      "signal": "removed_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "price_endpoint_alias",
+      "signal": "removed_domain_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "price_endpoint_alias",
+      "signal": "introduced_mixed_responsibilities",
+      "maximum": 0.3
+    },
+    {
+      "pair": "price_endpoint_alias",
+      "signal": "removed_mixed_responsibilities",
+      "maximum": 0.3
+    },
+    {
+      "pair": "price_endpoint_alias",
+      "signal": "introduced_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "price_endpoint_alias",
+      "signal": "removed_duplicated_rule",
+      "minimum": 0.7
+    },
+    {
+      "pair": "price_endpoint_alias",
+      "signal": "preferred",
+      "equals": "after"
+    },
+    {
+      "pair": "signup_validators_merged",
+      "signal": "introduced_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "signup_validators_merged",
+      "signal": "removed_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "signup_validators_merged",
+      "signal": "introduced_domain_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "signup_validators_merged",
+      "signal": "removed_domain_rule",
+      "minimum": 0.7
+    },
+    {
+      "pair": "signup_validators_merged",
+      "signal": "removed_mixed_responsibilities",
+      "maximum": 0.3
+    },
+    {
+      "pair": "signup_validators_merged",
+      "signal": "introduced_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "signup_validators_merged",
+      "signal": "removed_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "signup_validators_merged",
+      "signal": "preferred",
+      "equals": "before"
+    },
+    {
+      "pair": "duration_parser_split",
+      "signal": "introduced_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "duration_parser_split",
+      "signal": "removed_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "duration_parser_split",
+      "signal": "introduced_domain_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "duration_parser_split",
+      "signal": "removed_domain_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "duration_parser_split",
+      "signal": "introduced_mixed_responsibilities",
+      "maximum": 0.3
+    },
+    {
+      "pair": "duration_parser_split",
+      "signal": "removed_mixed_responsibilities",
+      "maximum": 0.3
+    },
+    {
+      "pair": "duration_parser_split",
+      "signal": "introduced_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "duration_parser_split",
+      "signal": "removed_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "duration_parser_split",
+      "signal": "preferred",
+      "equals": "before"
+    },
+    {
+      "pair": "slug_cosmetic",
+      "signal": "introduced_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "slug_cosmetic",
+      "signal": "removed_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "slug_cosmetic",
+      "signal": "introduced_domain_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "slug_cosmetic",
+      "signal": "removed_domain_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "slug_cosmetic",
+      "signal": "introduced_mixed_responsibilities",
+      "maximum": 0.3
+    },
+    {
+      "pair": "slug_cosmetic",
+      "signal": "removed_mixed_responsibilities",
+      "maximum": 0.3
+    },
+    {
+      "pair": "slug_cosmetic",
+      "signal": "introduced_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "slug_cosmetic",
+      "signal": "removed_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "slug_cosmetic",
+      "signal": "preferred",
+      "equals": "equivalent"
+    },
+    {
+      "pair": "invoice_settlement_unseen",
+      "signal": "introduced_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "invoice_settlement_unseen",
+      "signal": "removed_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "invoice_settlement_unseen",
+      "signal": "removed_domain_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "invoice_settlement_unseen",
+      "signal": "introduced_mixed_responsibilities",
+      "maximum": 0.3
+    },
+    {
+      "pair": "invoice_settlement_unseen",
+      "signal": "introduced_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "invoice_settlement_unseen",
+      "signal": "removed_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "invoice_settlement_unseen",
+      "signal": "preferred",
+      "equals": "insufficient_context"
+    },
+    {
+      "pair": "run_length_regrouped",
+      "signal": "introduced_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "run_length_regrouped",
+      "signal": "removed_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "run_length_regrouped",
+      "signal": "introduced_domain_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "run_length_regrouped",
+      "signal": "removed_domain_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "run_length_regrouped",
+      "signal": "introduced_mixed_responsibilities",
+      "maximum": 0.3
+    },
+    {
+      "pair": "run_length_regrouped",
+      "signal": "removed_mixed_responsibilities",
+      "maximum": 0.3
+    },
+    {
+      "pair": "run_length_regrouped",
+      "signal": "introduced_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "run_length_regrouped",
+      "signal": "removed_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "run_length_regrouped",
+      "signal": "preferred",
+      "equals": "after"
+    },
+    {
+      "pair": "account_service_layer",
+      "signal": "introduced_pass_through",
+      "minimum": 0.7
+    },
+    {
+      "pair": "account_service_layer",
+      "signal": "removed_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "account_service_layer",
+      "signal": "introduced_domain_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "account_service_layer",
+      "signal": "removed_domain_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "account_service_layer",
+      "signal": "introduced_mixed_responsibilities",
+      "maximum": 0.3
+    },
+    {
+      "pair": "account_service_layer",
+      "signal": "removed_mixed_responsibilities",
+      "maximum": 0.3
+    },
+    {
+      "pair": "account_service_layer",
+      "signal": "introduced_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "account_service_layer",
+      "signal": "removed_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "account_service_layer",
+      "signal": "preferred",
+      "equals": "before"
+    },
+    {
+      "pair": "delivery_cutoff_inline",
+      "signal": "introduced_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "delivery_cutoff_inline",
+      "signal": "removed_pass_through",
+      "maximum": 0.3
+    },
+    {
+      "pair": "delivery_cutoff_inline",
+      "signal": "introduced_domain_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "delivery_cutoff_inline",
+      "signal": "introduced_mixed_responsibilities",
+      "maximum": 0.3
+    },
+    {
+      "pair": "delivery_cutoff_inline",
+      "signal": "removed_mixed_responsibilities",
+      "maximum": 0.3
+    },
+    {
+      "pair": "delivery_cutoff_inline",
+      "signal": "introduced_duplicated_rule",
+      "minimum": 0.7
+    },
+    {
+      "pair": "delivery_cutoff_inline",
+      "signal": "removed_duplicated_rule",
+      "maximum": 0.3
+    },
+    {
+      "pair": "delivery_cutoff_inline",
+      "signal": "preferred",
+      "equals": "before"
+    }
+  ]
+}

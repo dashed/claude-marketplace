@@ -102,7 +102,7 @@ test-cov: ## Run tests with coverage report
 
 CODEX_SKILLS_FILES := scripts/install_codex_skills.py scripts/manage_codex_skills.py scripts/sync_codex_plugins.py tests/test_install_codex_skills.py tests/test_manage_codex_skills.py tests/test_sync_codex_plugins.py
 
-PYTHON_COMPLEXITY_JEV_FILES := plugins/python-complexity/skills/python-complexity/scripts/jev_review.py scripts/eval_python_complexity.py tests/test_python_complexity_jev.py tests/test_python_complexity_evals.py
+PYTHON_COMPLEXITY_JEV_FILES := plugins/python-complexity/skills/python-complexity/scripts/jev_review.py scripts/eval_python_complexity.py scripts/eval_python_complexity_changes.py tests/test_python_complexity_jev.py tests/test_python_complexity_evals.py tests/test_python_complexity_changes.py
 
 JEV_FILES := plugins/jev/skills/jev/scripts/jev.py tests/test_jev.py
 
@@ -194,13 +194,16 @@ format-test-sloc-cut: ## Format the coverage map and its tests with Ruff
 format-test-sloc-cut-check: ## Check coverage map formatting with Ruff
 	@$(UV_RUN) ruff format --check $(TEST_SLOC_CUT_FILES)
 
-.PHONY: test-python-complexity lint-python-complexity typecheck-python-complexity format-python-complexity format-python-complexity-check eval-python-complexity
+.PHONY: test-python-complexity lint-python-complexity typecheck-python-complexity format-python-complexity format-python-complexity-check eval-python-complexity eval-python-complexity-changes
 
 test-python-complexity: lint-python-complexity typecheck-python-complexity format-python-complexity-check ## Check the Jev helper and run offline contract tests
-	@$(UV_RUN) pytest tests/test_python_complexity_jev.py tests/test_python_complexity_evals.py --no-cov
+	@$(UV_RUN) pytest tests/test_python_complexity_jev.py tests/test_python_complexity_evals.py tests/test_python_complexity_changes.py --no-cov
 
 eval-python-complexity: ## Run static/behavior fixtures and live Jev expectations (EVAL_ARGS=--offline skips Jev)
 	@$(UV_RUN) scripts/eval_python_complexity.py $(EVAL_ARGS)
+
+eval-python-complexity-changes: ## Run the frozen before/after suite with repeat, reformat and swap controls (EVAL_ARGS=--offline skips Jev)
+	@$(UV_RUN) scripts/eval_python_complexity_changes.py $(EVAL_ARGS)
 
 lint-python-complexity: ## Run Ruff on the Jev helper and its tests
 	@$(UV_RUN) ruff check $(PYTHON_COMPLEXITY_JEV_FILES)

@@ -1,0 +1,31 @@
+{
+  "recorded_at": "2026-09-22T22:39:02+00:00",
+  "rubric": {
+    "path": "plugins/python-complexity/skills/python-complexity/references/jev-change-rubric.json",
+    "version": "1.0.0",
+    "sha256": "4b8a965953ebe1bd0455869cfdb34954692379d93d20144d2813b0429fc04037",
+    "frozen_at": "2026-09-22T22:21:44Z",
+    "note": "Written and hashed before any case existed."
+  },
+  "fixture": {
+    "path": "tests/fixtures/python-complexity-jev-changes.json",
+    "sha256": "6e5f0ad287b879a83fc5fc27ddeda8b0622c6a4b7a23feb70ac3e149ceb50838",
+    "pairs": 15,
+    "checks": 129,
+    "authoring": {
+      "author": "independent agent",
+      "written_at": "2026-09-22T22:38:10+00:00",
+      "rubric_sha256": "4b8a965953ebe1bd0455869cfdb34954692379d93d20144d2813b0429fc04037",
+      "independence": "Read the rubric (plugins/python-complexity/skills/python-complexity/references/jev-change-rubric.json), scripts/eval_python_complexity_changes.py, and the behavior_check and census helpers in scripts/eval_python_complexity.py to learn the fixture format and the code constraints. Did not read notes/, zzz.local/, any *-review.json file, tests/test_python_complexity_*.py, or any other python-complexity fixture file. Called no model or provider and did not run jev_review.py; the only runs were local behavior checks and the eval runner with --offline. Labels reflect the author's reading of the code against the rubric definitions, not predictions of Jev's answers."
+    },
+    "note": "Written by a separate agent from the rubric's definitions and the file format only; it read no earlier model output and made no provider call."
+  },
+  "controls": {
+    "repeat_max_delta": 0.05,
+    "reformat_max_delta": 0.15,
+    "swap_max_delta": 0.25
+  },
+  "controls_rationale": "Set before the suite was written: identical requests should answer identically (0.05 allows rounding); AST-identical reformatting should barely move an answer (0.15); swapping before and after should mirror the introduced/removed answers and the preference (0.25, the hardest consistency property).",
+  "lead_verification": "Offline run before any live call: behavior passed on all 15 pairs (both versions), static census complete, status static_only. Labels were not edited after authoring.",
+  "live_runs_before_freeze": 0
+}

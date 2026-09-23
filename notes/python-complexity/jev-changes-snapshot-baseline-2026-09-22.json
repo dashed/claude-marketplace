@@ -1,0 +1,112 @@
+{
+  "rule": "Snapshot-rubric baseline for the frozen change suite, with its derivation rule fixed up front.\n\nRule (declared before any snapshot call): delta = sum over readability, simplicity,\nabstraction_quality and responsibility_cohesion of (after score - before score).\ncontext_sufficient < 0.5 on either version -> insufficient_context; else delta > 0.25 -> after,\ndelta < -0.25 -> before, otherwise equivalent. The same state files as the paired run's main\nvariant are used, so both methods see identical code, task and constraints.\n",
+  "correct": 10,
+  "total": 15,
+  "rows": [
+    {
+      "pair": "shipping_quote_layers",
+      "label": "before",
+      "derived": "before",
+      "score_delta": -3.27,
+      "min_context_sufficient": 0.81
+    },
+    {
+      "pair": "loan_status_forwarders",
+      "label": "after",
+      "derived": "after",
+      "score_delta": 3.69,
+      "min_context_sufficient": 0.67
+    },
+    {
+      "pair": "refund_window_rule",
+      "label": "after",
+      "derived": "after",
+      "score_delta": 0.25,
+      "min_context_sufficient": 0.61
+    },
+    {
+      "pair": "loyalty_tiers_inlined",
+      "label": "before",
+      "derived": "equivalent",
+      "score_delta": -0.14,
+      "min_context_sufficient": 0.56
+    },
+    {
+      "pair": "receipt_render_split",
+      "label": "after",
+      "derived": "after",
+      "score_delta": 0.33,
+      "min_context_sufficient": 0.66
+    },
+    {
+      "pair": "restock_report_merged",
+      "label": "before",
+      "derived": "equivalent",
+      "score_delta": -0.12,
+      "min_context_sufficient": 0.66
+    },
+    {
+      "pair": "parking_tariff_names",
+      "label": "after",
+      "derived": "equivalent",
+      "score_delta": -0.03,
+      "min_context_sufficient": 0.81
+    },
+    {
+      "pair": "price_endpoint_alias",
+      "label": "after",
+      "derived": "after",
+      "score_delta": 0.43,
+      "min_context_sufficient": 0.76
+    },
+    {
+      "pair": "signup_validators_merged",
+      "label": "before",
+      "derived": "before",
+      "score_delta": -2.17,
+      "min_context_sufficient": 0.54
+    },
+    {
+      "pair": "duration_parser_split",
+      "label": "before",
+      "derived": "before",
+      "score_delta": -1.06,
+      "min_context_sufficient": 0.85
+    },
+    {
+      "pair": "slug_cosmetic",
+      "label": "equivalent",
+      "derived": "equivalent",
+      "score_delta": -0.06,
+      "min_context_sufficient": 0.85
+    },
+    {
+      "pair": "invoice_settlement_unseen",
+      "label": "insufficient_context",
+      "derived": "insufficient_context",
+      "score_delta": -0.22,
+      "min_context_sufficient": 0.22
+    },
+    {
+      "pair": "run_length_regrouped",
+      "label": "after",
+      "derived": "equivalent",
+      "score_delta": -0.07,
+      "min_context_sufficient": 0.81
+    },
+    {
+      "pair": "account_service_layer",
+      "label": "before",
+      "derived": "before",
+      "score_delta": -2.1,
+      "min_context_sufficient": 0.83
+    },
+    {
+      "pair": "delivery_cutoff_inline",
+      "label": "before",
+      "derived": "equivalent",
+      "score_delta": -0.05,
+      "min_context_sufficient": 0.68
+    }
+  ]
+}

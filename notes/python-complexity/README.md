@@ -8,6 +8,8 @@ For the Jev integration's reproducible evaluations, observed strengths, and
 initial failed readability expectations, see [Jev evals](jev-evals-2026-09-22.md).
 For the revised rubric and separate validation, see
 [Jev improvement](jev-improvement-2026-09-22.md).
+For the paired before/after review, its frozen suite, controls and the comparison
+with separate snapshot scores, see [paired changes](jev-changes-2026-09-22.md).
 
 The skill measures per-function cyclomatic (ruff `C901`) and cognitive (`complexipy`) complexity
 with no project install, and — since v1.1.0 — the path-level census that a per-function threshold

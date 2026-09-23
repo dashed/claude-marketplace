@@ -16,7 +16,7 @@ license: MIT
 
 Each census catches the other's golf. Run the first on any module. Run the second whenever the first comes back green and the code is still hard to follow — and before believing any "complexity went down" that came from a split.
 
-When the selected provider's API key is available and semantic review is wanted, add **census → Jev judgment → agent refactor → tests → census + Jev again**. Jev assesses the selected source and context; the existing tools calculate the metrics. Read [references/jev-review.md](references/jev-review.md) for provider configuration, the helper, rubric, and comparison rules. If that provider's API key is unavailable, skip Jev and complete the static census, source review, refactor, and behavior checks. Do not require key setup or block completion; report semantic review as skipped. Static analysis requires no credentials or network access.
+When the selected provider's API key is available and semantic review is wanted, add **census → Jev judgment → agent refactor → tests → census + one paired Jev request on before and after** (`jev_review.py --before … --after …`, which asks what the change introduced and removed instead of scoring each version separately). Jev assesses the selected source and context; the existing tools calculate the metrics. Read [references/jev-review.md](references/jev-review.md) for provider configuration, the helper, both rubrics, and comparison rules. If that provider's API key is unavailable, skip Jev and complete the static census, source review, refactor, and behavior checks. Do not require key setup or block completion; report semantic review as skipped. Static analysis requires no credentials or network access.
 
 ## Per function: two numbers, two questions
 

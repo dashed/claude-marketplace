@@ -5,6 +5,7 @@
 - [Evidence and scope](#evidence-and-scope)
 - [Configure and run a provider](#configure-and-run-a-provider)
 - [Read the judgments](#read-the-judgments)
+- [Compare a refactor in one request](#compare-a-refactor-in-one-request)
 - [Compare and decide](#compare-and-decide)
 - [Evaluation limits](#evaluation-limits)
 - [Sources and implementation choice](#sources-and-implementation-choice)
@@ -191,21 +192,81 @@ The agent must explain findings with actual source evidence. A `dominant_cost`
 choice is a hypothesis to inspect, not a generated explanation or proof. Compare
 signals separately; do not blend them into an uncalibrated overall quality grade.
 
+## Compare a refactor in one request
+
+To judge a refactor, send both versions in **one** request instead of scoring each
+and subtracting. A version already scored near the top of a scale has no room left
+to rise, so two absolute requests can miss a real change; the snapshot scores in
+this skill's first evaluation clustered near 3 for exactly that reason. Supercov's
+quality command reached the same conclusion and asks "does `after` show this where
+`before` did not?" in one request.
+
+```sh
+uv run --no-project "$skill_dir/scripts/jev_review.py" \
+  --before before.json --after after.json > change-review.json
+```
+
+`before.json` and `after.json` are ordinary state files for the same behavioral
+scope. Their `task` and `constraints` must be identical, because the two versions
+must satisfy one contract; the helper refuses otherwise. The request carries only
+that contract and the two versions' code (several sources are joined under
+`# file:` headers). Measurements, scope and missing-context notes stay in your
+report, not in the request: extra structure around the versions weakened detection
+in Supercov's testing, and static numbers belong to the static tools.
+
+The [change rubric](jev-change-rubric.json) asks about four properties that the
+static censuses cannot decide, each in both directions, plus one preference:
+
+| Question | Yes means |
+|---|---|
+| `introduced_pass_through` / `removed_pass_through` | The change added / removed a layer that only forwards to one callee and adds no validation, conversion, invariant or domain name |
+| `introduced_domain_rule` / `removed_domain_rule` | The change named one domain rule in a single place / inlined or scattered one |
+| `introduced_mixed_responsibilities` / `removed_mixed_responsibilities` | The change merged / separated concerns that change for different reasons |
+| `introduced_duplicated_rule` / `removed_duplicated_rule` | The change copied / consolidated one rule written in several places |
+| `preferred` | `before`, `after`, `equivalent` (cosmetic, or an even trade) or `insufficient_context` |
+
+Each yes/no question states its exception — a forwarding public entry point or
+adapter is not a pass-through; similar-looking code implementing different rules is
+not duplication — and defines both answers. The questions are presence questions,
+not "would this help?" questions, which stayed indecisive in the snapshot rubric.
+The agent still decides what to change and why.
+
+How far to trust each answer, from the frozen suite described under
+[Evaluation limits](#evaluation-limits):
+
+- **`preferred` is the signal.** It matched an independent author on 14 of 15
+  refactors and held under repeated requests, reformatting and a missing task.
+  On ambiguous changes it leans toward whichever version is in the `after` slot.
+- **The directional answers are pointers, not findings.** They rank real changes
+  well but raised confident false alarms on exactly the stated exceptions (a
+  forwarding public endpoint called a new pass-through at 0.97), and asking with
+  the versions swapped moved them by up to 0.77. Use a high one to decide what to
+  inspect; confirm the property in the source before reporting it.
+- **Missing code needs the snapshot check.** The paired preference picked `after`
+  for a change that called code not shown; the snapshot `context_sufficient`
+  question flagged it (0.22). When the change depends on unseen callees, run a
+  snapshot review of the after version too.
+- **Any answer can move by about 0.1 between identical requests.** A probability
+  within that distance of a cutoff decides nothing.
+
+A `preferred` answer does not outrank a concrete introduced problem that the agent
+can point to in the source.
+
 ## Compare and decide
 
-1. Capture the baseline's behavior checks and static census; add a semantic
-   report when the selected provider key is available. If review is skipped, finish using
-   the static evidence, source inspection, and behavior checks.
+1. Capture the baseline's behavior checks and static census. If review is skipped,
+   finish using the static evidence, source inspection, and behavior checks.
 2. Refactor a specific concern and rerun the relevant behavior checks.
 3. Re-census the same behavioral scope, including extracted helpers, new types,
-   parameter threading, and unresolved call sites. Re-evaluate with the same
-   question definitions, task, constraints, and context-selection rules.
-4. Compare per-dimension values and distributions alongside measured changes.
-   Reports retain the request, rubric hash/version, state hash, timestamp, model,
-   usage, and provider metadata. Check rubric hashes, provider, endpoint, protocol, and requested/returned model
-   identities before comparing. Re-evaluate the baseline when switching providers
-   or models. A provider model alias can change underneath
-   the same name, so these are time-bound observations, not reproducibility proof.
+   parameter threading, and unresolved call sites.
+4. When the selected provider key is available, send the paired request above with
+   the same task, constraints and context-selection rules for both versions. Compare
+   its answers with the measured changes. Reports retain the request, rubric
+   hash/version, state hash, timestamp, model, usage, and provider metadata. A
+   provider model alias can change underneath the same name, so these are
+   time-bound observations, not reproducibility proof. Snapshot reviews of each
+   version remain useful for triage, but compare two snapshot reports only with the
+   same rubric hash, provider, endpoint, protocol and returned model.
 5. Accept based on preserved behavior, required repository checks, and a concrete
    improvement the agent can explain. Describe tradeoffs: clearer explicit
    branches may raise cyclomatic complexity; extracting a domain concept may add
@@ -250,6 +311,19 @@ Two transformation probabilities remain below their frozen expectations. All
 three suites total 564 passing behavior examples and 36/39 semantic expectations;
 the three failures stay visible. The source checkout's independent review also
 records the forwarding category's near tie and a single HTTP 503 retry.
+
+The paired change rubric has its own frozen suite: 15 before/after pairs and 129
+labels written by a separate agent from the rubric's definitions, run with
+`make eval-python-complexity-changes`. On one live run the paired `preferred`
+answer matched 14 of 15 labels, against 7 for always choosing the most common
+label and 10 for scoring each version with the snapshot rubric and subtracting;
+no static census delta separated those labels. The directional questions found 12
+of 13 labeled changes but raised 22 false alarms among 101 non-changes, and 23
+repeat, reformat and swap controls failed their frozen tolerances. The checkout's
+`notes/python-complexity/jev-changes-2026-09-22.md` records the freeze, every
+response, the snapshot baseline's pre-declared rule, and the limits: one small
+synthetic suite, one run, and no measurement of whether an agent decides better
+with these answers.
 
 ## Sources and implementation choice
 

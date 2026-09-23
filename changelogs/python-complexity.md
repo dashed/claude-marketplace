@@ -4,6 +4,17 @@ All notable changes to the python-complexity skill in this marketplace will be d
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.5.0] - 2026-09-22
+
+### Added
+- Paired review: `jev_review.py --before B --after A` sends both versions of a refactor in one request, with only the shared task, constraints and code, and refuses two different contracts. Scoring each version separately and subtracting left clustered scores little room to move.
+- `references/jev-change-rubric.json` 1.0.0: four properties the static censuses cannot decide (pass-through layer, named domain rule, mixed responsibilities, duplicated rule), each asked in both directions as a presence question with its stated exception and true/false criteria, plus a `preferred` choice. Adapted from Supercov's change questions.
+- A frozen 15-pair, 129-label suite written by a separate agent from the rubric's definitions, and `scripts/eval_python_complexity_changes.py` (`make eval-python-complexity-changes`). It scores the frozen expectations and runs five controls per pair: repeat, AST-identical reformat, before/after swap, no task or constraints, and per-signal static separability. A test pins the suite to its recorded freeze hash.
+- Results on one live run: `preferred` matched 14 of 15 labels (7 for the most common label, 10 for separate snapshot scores) and held under repeat, reformat and a missing task. The directional questions ranked changes well but raised 22 false alarms among 101 non-changes, including confident ones on the stated exceptions, and failed the swap control on 12 of 15 pairs. Identical requests moved by up to 0.14. All failures are retained in `notes/python-complexity/jev-changes-2026-09-22.md`.
+
+### Changed
+- The Jev workflow ends with one paired request instead of a second snapshot review. `references/jev-review.md` says how far to trust each paired answer: `preferred` as the signal, directional answers as pointers to inspect, the snapshot `context_sufficient` check for missing code, and about 0.1 of run-to-run movement.
+
 ## [1.4.0] - 2026-09-22
 
 ### Changed

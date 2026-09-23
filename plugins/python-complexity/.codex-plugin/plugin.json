@@ -1,6 +1,6 @@
 {
   "name": "python-complexity",
-  "version": "1.4.0+codex.6eb7b81b4e1f",
+  "version": "1.5.0+codex.ff0ea8f324b3",
   "description": "Measure Python complexity per function and per call path with ruff and complexipy; optionally add Jev judgments through configurable providers (Vercel by default). Use when prioritizing refactors, investigating over-layering, or verifying that a refactor improved the whole path. Without the selected provider key, semantic review is skipped and static analysis continues. Tests verify behavior.",
   "author": {
     "name": "Alberto Leal"

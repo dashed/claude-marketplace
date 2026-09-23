@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """Evaluate a curated Python function or call path with a configurable Jev provider.
 
-Python 3.10+, stdlib only. Prints JSON; 0 means evaluated/previewed/skipped,
-2 means incomplete. Missing credentials skip optional semantic review.
-A successful evaluation is advisory, never a quality pass.
+--state reviews one snapshot with the snapshot rubric. --before and --after
+compare two versions in one request with the change rubric, which asks what
+the change introduced and removed. Python 3.10+, stdlib only. Prints JSON;
+0 means evaluated/previewed/skipped, 2 means incomplete. Missing credentials
+skip optional semantic review. A successful evaluation is advisory, never a
+quality pass.
 """
 
 from __future__ import annotations
@@ -27,6 +30,7 @@ from typing import Any
 ENDPOINT = "https://ai-gateway.vercel.sh/v1/evaluate"
 MODEL = "typesafe-ai/jev"
 RUBRIC = Path(__file__).resolve().parent.parent / "references" / "jev-rubric.json"
+CHANGE_RUBRIC = RUBRIC.with_name("jev-change-rubric.json")
 DEFAULT_ENV = Path.home() / ".config" / "typesafe-ai" / "env"
 DEFAULT_CONFIG = Path.home() / ".config" / "typesafe-ai" / "jev-review.json"
 PROVIDERS = {
@@ -127,9 +131,7 @@ def provider_settings(args: argparse.Namespace) -> dict[str, str]:
     return settings
 
 
-def build_request(
-    state: Any, rubric: dict[str, Any], model: str = MODEL, protocol: str = "gateway"
-) -> dict[str, Any]:
+def check_state(state: Any) -> None:
     if not isinstance(state, dict) or not isinstance(state.get("scope"), str):
         raise ReviewError("State needs a scope string and a nonempty sources array.")
     if not state["scope"].strip():
@@ -143,6 +145,11 @@ def build_request(
             for key in ("path", "content")
         ):
             raise ReviewError("Each source needs nonempty path and content strings.")
+
+
+def finish_request(
+    state: dict[str, Any], rubric: dict[str, Any], model: str, protocol: str
+) -> dict[str, Any]:
     questions = {
         name: {
             **question,
@@ -160,6 +167,36 @@ def build_request(
     if size > MAX_REQUEST_BYTES:
         raise ReviewError("Request exceeds 100,000 UTF-8 bytes; select a smaller coherent scope.")
     return request
+
+
+def build_request(
+    state: Any, rubric: dict[str, Any], model: str = MODEL, protocol: str = "gateway"
+) -> dict[str, Any]:
+    check_state(state)
+    return finish_request(state, rubric, model, protocol)
+
+
+def render_sources(sources: list[dict[str, str]]) -> str:
+    """One version's code as a single string; several files are separated by path headers."""
+    if len(sources) == 1:
+        return sources[0]["content"]
+    return "\n".join(f"# file: {s['path']}\n{s['content']}" for s in sources)
+
+
+def build_change_request(
+    before: Any, after: Any, rubric: dict[str, Any], model: str = MODEL, protocol: str = "gateway"
+) -> dict[str, Any]:
+    check_state(before)
+    check_state(after)
+    contract = ("task", "constraints")
+    if any(before.get(key) != after.get(key) for key in contract):
+        raise ReviewError("Before and after must state the same task and constraints.")
+    # Only the contract and the two versions: supercov found that wrapping the versions in
+    # more structure weakened detection. Measurements stay in the report, not the request.
+    state: dict[str, Any] = {key: before[key] for key in contract if before.get(key)}
+    state["before"] = render_sources(before["sources"])
+    state["after"] = render_sources(after["sources"])
+    return finish_request(state, rubric, model, protocol)
 
 
 def load_key(env_file: Path | None, key_name: str = "AI_GATEWAY_API_KEY") -> str | None:
@@ -265,7 +302,9 @@ def validate_response(result: Any, questions: dict[str, Any]) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--state", required=True, type=Path, help="Curated source/context JSON")
+    parser.add_argument("--state", type=Path, help="Curated source/context JSON")
+    parser.add_argument("--before", type=Path, help="State JSON of the version before a change")
+    parser.add_argument("--after", type=Path, help="State JSON of the version after the change")
     parser.add_argument("--env-file", type=Path, help="Literal key assignment; never executed")
     parser.add_argument("--config", type=Path, help="Provider JSON (default: user jev-review.json)")
     parser.add_argument("--provider", choices=PROVIDERS, help="Provider preset (default: vercel)")
@@ -277,12 +316,24 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--dry-run", action="store_true", help="Print request; no key or network")
     args = parser.parse_args(argv)
+    change = args.before is not None or args.after is not None
+    if change and (args.state is not None or args.before is None or args.after is None):
+        parser.error("use --state alone, or --before and --after together")
+    if not change and args.state is None:
+        parser.error("--state, or --before and --after, is required")
     try:
         settings = provider_settings(args)
-        rubric = load_json(RUBRIC)
-        request = build_request(
-            load_json(args.state), rubric, settings["model"], settings["protocol"]
-        )
+        if change:
+            rubric = load_json(CHANGE_RUBRIC)
+            before, after = load_json(args.before), load_json(args.after)
+            request = build_change_request(
+                before, after, rubric, settings["model"], settings["protocol"]
+            )
+        else:
+            rubric = load_json(RUBRIC)
+            request = build_request(
+                load_json(args.state), rubric, settings["model"], settings["protocol"]
+            )
         report: dict[str, Any] = {
             "schema_version": 1,
             "advisory": True,
@@ -295,6 +346,9 @@ def main(argv: list[str] | None = None) -> int:
             "state_sha256": digest(request["state"]),
             "request": request,
         }
+        if change:
+            report["mode"] = "change"
+            report["scope"] = {"before": before["scope"], "after": after["scope"]}
         key = None
         if args.dry_run:
             report["status"] = "preview"
