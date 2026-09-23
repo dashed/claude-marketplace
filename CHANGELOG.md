@@ -21,7 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `make test-python-complexity`: offline Gateway contract tests plus Ruff lint/format and ty checks, all run through uv.
 - `make eval-python-complexity`: reproducible behavior/static fixtures and live Jev expectations, with raw evidence and failed expectations retained; `EVAL_ARGS=--offline` runs without Jev.
 
+### Changed
+- `make ci` now runs `check-codex-plugins`, so a version bump without a Codex manifest sync fails the pull request instead of shipping stale manifests.
+
 ### Fixed
+- Codex manifest sync hashed every file on disk in a plugin directory, including ignored local lock files (`uv.lock`, `package-lock.json`) and caches, so six committed manifests matched only the machine that generated them and `check-codex-plugins` would fail on a clean checkout. It now hashes the files a commit would contain (tracked, plus untracked but not ignored); the six manifests are regenerated and a git-based test covers a clean clone.
 - test-sloc-cut 1.1.0: fix `coverage_map.py` treating pytest-cov's setup, run and teardown contexts as separate tests, which listed a test as coverage-redundant when only its fixture reached some lines. Deleting that test lost the coverage.
 - test-sloc-cut 1.1.0: the after-the-cut coverage check now compares covered lines and arcs by name with `coverage_map.py --diff`, because equal per-module counts can hide a lost arc behind a gained one.
 - test-sloc-cut 1.1.0: document and list the outcomes branch coverage cannot see inside a line (zero-iteration loops, `and`/`or` operands, ternary arms, comprehension filters, lambdas, match guards), and the process-wide context trap for thread and subprocess work. Nine traps in total. Reference output blocks are now real runs on a committed fixture, pinned by `tests/test_test_sloc_cut.py`.

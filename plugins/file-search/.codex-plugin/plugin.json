@@ -1,6 +1,6 @@
 {
   "name": "file-search",
-  "version": "1.0.2+codex.bea6a48ede3d",
+  "version": "1.0.2+codex.7a0cf6deefcb",
   "description": "MCP server exposing search_files and filter_files tools for fast file-NAME discovery powered by fd (regex/glob) and fzf (fuzzy matching). Use when locating files by name or partial path \u2014 not for searching file contents.",
   "author": {
     "name": "Alberto Leal"

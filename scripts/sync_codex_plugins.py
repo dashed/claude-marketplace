@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import subprocess
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -153,11 +154,33 @@ def has_mcp_servers(plugin_dir: Path) -> bool:
     return (plugin_dir / ".mcp.json").is_file()
 
 
+def git_listed_files(plugin_dir: Path) -> set[str] | None:
+    """Return the files a commit would contain: tracked, plus untracked but not ignored.
+
+    Returns None outside a git work tree, where every file on disk is hashed.
+    """
+    try:
+        listing = subprocess.run(
+            ["git", "-C", str(plugin_dir), "ls-files", "-z", "--cached", "--others"]
+            + ["--exclude-standard", "."],
+            capture_output=True,
+            check=True,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    return {name for name in listing.stdout.decode("utf-8").split("\0") if name}
+
+
 def hashable_paths(plugin_dir: Path) -> list[Path]:
     """Return plugin files that should participate in the Codex cachebuster hash."""
+    # Ignored files such as local lock files and caches differ between checkouts, so a hash
+    # that included them would never match in CI.
+    listed = git_listed_files(plugin_dir)
     paths: list[Path] = []
     for path in plugin_dir.rglob("*"):
         relative = path.relative_to(plugin_dir)
+        if listed is not None and relative.as_posix() not in listed:
+            continue
         if any(part in EXCLUDED_HASH_DIRS for part in relative.parts):
             continue
         if path.is_symlink() or not path.is_file():

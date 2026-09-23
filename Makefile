@@ -552,7 +552,7 @@ clean: ## Clean up generated files
 	@echo "$(GREEN)✓ Cleaned up$(NC)"
 
 # CI/CD target for continuous integration
-ci: validate-strict test lint type-check format-check test-tmux ## Run all CI/CD checks (strict mode)
+ci: validate-strict check-codex-plugins test lint type-check format-check test-tmux ## Run all CI/CD checks (strict mode)
 	@echo "$(GREEN)✓ All CI/CD checks passed$(NC)"
 
 # Quick check target for development

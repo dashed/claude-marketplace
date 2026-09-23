@@ -4,12 +4,16 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
+import subprocess
 from pathlib import Path
 from typing import Any
 
 import pytest
 
 from scripts.sync_codex_plugins import (
+    codex_cache_hash,
+    hashable_paths,
     CODEX_MARKETPLACE,
     CODEX_MCP_CONFIG,
     CODEX_PLUGIN_MANIFEST,
@@ -162,3 +166,30 @@ def test_cli_dry_run_does_not_write_generated_files(
     assert exit_code == 0
     assert "would update: .agents/plugins/marketplace.json" in captured.out
     assert not (repo_root / CODEX_MARKETPLACE).exists()
+
+
+def git(repo: Path, *args: str) -> None:
+    subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True)
+
+
+@pytest.mark.skipif(shutil.which("git") is None, reason="needs git")
+def test_hash_covers_committable_files_only_so_a_clean_checkout_matches(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    plugin = repo / "plugins" / "demo"
+    plugin.mkdir(parents=True)
+    (repo / ".gitignore").write_text("uv.lock\n")
+    (plugin / "server.py").write_text("print('hi')\n")
+    git(repo, "init", "-q")
+    git(repo, "add", ".")
+    git(repo, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "init")
+    clean = tmp_path / "clean"
+    git(tmp_path, "clone", "-q", str(repo), str(clean))
+    # Local runs leave ignored lock files that a CI checkout never has.
+    (plugin / "uv.lock").write_text("local only\n")
+    names = [p.relative_to(plugin).as_posix() for p in hashable_paths(plugin)]
+    assert names == ["server.py"]
+    entry = {"name": "demo", "version": "1.0.0"}
+    assert codex_cache_hash(plugin, entry) == codex_cache_hash(clean / "plugins" / "demo", entry)
+    # A new file that is not ignored counts before it is committed, so syncing then adding works.
+    (plugin / "new.py").write_text("x = 1\n")
+    assert [p.name for p in hashable_paths(plugin)] == ["new.py", "server.py"]
