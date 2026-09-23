@@ -45,10 +45,32 @@ it asserts stated as short propositions with stable ids
 - **Fold proposals** with the resulting assertion list and an honest line estimate each,
   including the ones that only move lines around.
 
-**Brief — deliver:** per-test rows (path driven, facts as propositions with ids); facts owned
-outside the files; cross-file duplicates with an owner under the cheapest-layer rule; strict
-subsets with the mutant each would or would not kill; single-pinned facts; fold proposals with
-assertion lists and line estimates. Verify by reading code paths, not names.
+**Record the matrix where it can be checked.** `scripts/fact_matrix.py seed` lists every
+assertion site in the files under review — each `assert`, `pytest.raises`/`warns`, `assert*`
+method or helper, and call to a module helper that asserts — anchored by test, line and exact
+text. For each fact, fill `proposition`, `kind` (`eq`, `contains`, `len`, `truthy`, `raises`,
+`called_with`, `absent` with the `window` it is observed over, or `other`) and, where you can
+point at it, the `production` lines it drives. Map every site to its facts, or give a `no_fact`
+reason. Two sites pin the same fact only when the kind and the value match: a truthiness check
+is not an equality check, and a weaker fact may name a stronger one in `subsumed_by`, never the
+reverse. Leave anything you are unsure of in the fact's `questions`; `check` refuses to pass
+while one is open.
+
+```bash
+python3 scripts/fact_matrix.py seed tests/test_a.py tests/test_b.py --out scratch/facts.json
+# fill scratch/facts.json, then:
+python3 scripts/fact_matrix.py check scratch/facts.json
+```
+
+`check` passes only when every site is mapped, every fact is asserted by some site, and anchors
+still match the source. It prints the single-pinned and the duplicated facts, so those tables
+are computed, not claimed. It is bookkeeping, not proof: it cannot tell whether a proposition is
+true, only whether the matrix is consistent with the code.
+
+**Brief — deliver:** a `facts.json` that passes `check`; facts owned outside the
+files; cross-file duplicates with an owner under the cheapest-layer rule; strict subsets with
+the mutant each would or would not kill; fold proposals with assertion lists and line estimates.
+Verify by reading code paths, not names.
 
 ## Helper and arrangement economics
 
@@ -109,22 +131,29 @@ contribution and a minimum covering set — commands, the script and the traps a
 - Baseline per module: statements covered, branch arcs taken, the list of uncovered lines and
   arcs, and whether each is a real hole or a scoping artifact owned by a test file outside the
   set.
-- Per test: the lines and arcs no other test reaches. Tests with an empty unique set are
-  coverage-redundant. State plainly that this is not assertion-redundant.
+- Per test (setup, call and teardown merged): the lines and arcs no other test reaches. Tests with
+  an empty unique set are coverage-redundant. State plainly that this is not
+  assertion-redundant, and list each one's sub-line sites — outcomes inside a line that coverage
+  cannot see, which the fact matrix or a mutant has to cover instead.
 - **Leave-one-out is not a licence.** If exactly two tests reach a line, neither is unique, yet
   dropping both loses the line. So also compute a greedy minimum covering set and *verify it by
-  running only those tests* and comparing the item set to the baseline. In the example 11 of 61
-  tests reproduced all 514 covered items. That is the floor, not a target: the other 50 must
-  justify themselves on assertion strength.
+  running only those tests* and diffing the item set against the baseline (`--diff`). In the
+  example 11 of 61 tests reproduced all 514 covered items. That is the floor, not a target: the
+  other 50 must justify themselves on assertion strength.
 
 **Brief — deliver:** baseline per module with uncovered lines and arcs classified; per-test
-unique contribution; the coverage-redundant table; the verified covering set; the exact commands
-and artifact paths so the run can be repeated after the cut. Run only the files under review,
-serially.
+unique contribution; the coverage-redundant table with each test's sub-line sites; any test
+missing from the map (compare with `pytest --collect-only -q`); the verified covering set; the
+exact commands and the baseline JSON path so the run can be diffed after the cut. Run only the
+files under review, serially.
 
 ## Reading the four reports together
 
-Read all four before touching a file. Dedupe findings that name the same test or mechanism —
+Read all four before touching a file. First join the two oracles mechanically:
+`fact_matrix.py check facts.json --coverage baseline.json` also requires that some test
+asserting each fact runs that fact's `production` lines. A fact asserted only through a mock or a
+different path fails here, before anyone reasons about deleting its tests. Then dedupe findings
+that name the same test or mechanism —
 the fact matrix's strict subset and the runner's coverage-redundant row are often the same test
 seen from two sides, and it is the *intersection* that licenses a delete. Where they disagree,
 the disagreement is the finding: a coverage-redundant test with a single-pinned fact stays, and a

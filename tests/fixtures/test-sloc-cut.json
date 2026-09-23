@@ -1,0 +1,14 @@
+{
+  "description": "Project for tests/test_test_sloc_cut.py and the output blocks in plugins/test-sloc-cut/skills/test-sloc-cut/references/coverage-and-mutants.md. test_calc.py is the reference's worked example; test_store.py has coverage reached only through a fixture's setup and teardown; test_loops.py has outcomes coverage cannot see inside a line (a zero-iteration loop and an `or` default).",
+  "files": {
+    "pytest.ini": "[pytest]\npythonpath = .\n",
+    "pkg/__init__.py": "",
+    "pkg/calc.py": "def price(kind, qty, discount=\"0\"):\n    if kind == \"premium\":\n        base = 20 * qty\n    elif kind == \"bulk\":\n        base = 8 * qty\n    else:\n        base = 10 * qty\n    try:\n        pct = int(discount)\n    except ValueError:\n        return None\n    return base - base * pct // 100\n",
+    "pkg/fmt.py": "def label(n):\n    if n < 0:\n        return \"neg\"\n    return \"pos\"\n",
+    "pkg/store.py": "def connect(url):\n    if url.startswith(\"mem:\"):\n        return {\"kind\": \"memory\"}\n    return {\"kind\": \"remote\"}\n\n\ndef close(conn):\n    if conn[\"kind\"] == \"memory\":\n        conn[\"closed\"] = True\n    return conn\n\n\ndef lookup(conn, key):\n    return (conn[\"kind\"], key)\n",
+    "pkg/loops.py": "def total(xs):\n    s = 0\n    for x in xs:\n        s += x\n    return s\n\n\ndef pick(d):\n    return d.get(\"k\") or \"default\"\n",
+    "tests/test_calc.py": "from pkg.calc import price\nfrom pkg.fmt import label\n\n\ndef test_premium():\n    assert price(\"premium\", 2) == 40\n\n\ndef test_premium_again():\n    assert price(\"premium\", 2, \"0\") == 40\n\n\ndef test_bulk():\n    assert price(\"bulk\", 3, \"10\") == 22\n\n\ndef test_bad_discount():\n    assert price(\"standard\", 1, \"ten\") is None\n\n\ndef test_label_neg():\n    assert label(-1) == \"neg\"\n",
+    "tests/test_store.py": "import pytest\n\nfrom pkg.store import close, connect, lookup\n\n\n@pytest.fixture\ndef conn():\n    c = connect(\"mem:db\")  # only this fixture reaches the memory branch\n    yield c\n    close(c)  # only this teardown reaches close()\n\n\ndef test_lookup_memory(conn):\n    assert lookup(conn, \"k\") == (\"memory\", \"k\")\n\n\ndef test_lookup_remote():\n    assert lookup(connect(\"db://x\"), \"k\") == (\"remote\", \"k\")\n",
+    "tests/test_loops.py": "from pkg.loops import pick, total\n\n\ndef test_total_many():\n    assert total([1, 2]) == 3\n\n\ndef test_total_zero():\n    assert total([]) == 0\n\n\ndef test_pick_set():\n    assert pick({\"k\": \"v\"}) == \"v\"\n\n\ndef test_pick_default():\n    assert pick({}) == \"default\"\n"
+  }
+}

@@ -106,6 +106,8 @@ PYTHON_COMPLEXITY_JEV_FILES := plugins/python-complexity/skills/python-complexit
 
 JEV_FILES := plugins/jev/skills/jev/scripts/jev.py tests/test_jev.py
 
+TEST_SLOC_CUT_FILES := plugins/test-sloc-cut/skills/test-sloc-cut/scripts/coverage_map.py plugins/test-sloc-cut/skills/test-sloc-cut/scripts/fact_matrix.py tests/test_test_sloc_cut.py
+
 DOC_QUALITY_FILES := plugins/doc-quality/skills/doc-quality/scripts/doc_links.py scripts/eval_doc_profiles.py tests/test_doc_links.py tests/test_doc_profile_evals.py plugins/doc-quality/skills/doc-quality/scripts/doc_metrics.py plugins/doc-quality/skills/doc-quality/scripts/doc_quality.py scripts/eval_doc_quality.py tests/test_doc_metrics.py tests/test_doc_quality.py tests/test_doc_quality_evals.py
 
 .PHONY: test-doc-quality lint-doc-quality typecheck-doc-quality format-doc-quality format-doc-quality-check eval-doc-quality
@@ -174,6 +176,23 @@ format-jev: ## Format the general Jev helper and tests with Ruff
 
 format-jev-check: ## Check general Jev helper formatting with Ruff
 	@$(UV_RUN) ruff format --check $(JEV_FILES)
+
+.PHONY: test-test-sloc-cut lint-test-sloc-cut typecheck-test-sloc-cut format-test-sloc-cut format-test-sloc-cut-check
+
+test-test-sloc-cut: lint-test-sloc-cut typecheck-test-sloc-cut format-test-sloc-cut-check ## Check the coverage map against real per-test pytest-cov runs
+	@$(UV_RUN) pytest tests/test_test_sloc_cut.py --no-cov
+
+lint-test-sloc-cut: ## Run Ruff on the coverage map and its tests
+	@$(UV_RUN) ruff check $(TEST_SLOC_CUT_FILES)
+
+typecheck-test-sloc-cut: ## Run ty on the coverage map and its tests
+	@$(UV_RUN) ty check $(TEST_SLOC_CUT_FILES)
+
+format-test-sloc-cut: ## Format the coverage map and its tests with Ruff
+	@$(UV_RUN) ruff format $(TEST_SLOC_CUT_FILES)
+
+format-test-sloc-cut-check: ## Check coverage map formatting with Ruff
+	@$(UV_RUN) ruff format --check $(TEST_SLOC_CUT_FILES)
 
 .PHONY: test-python-complexity lint-python-complexity typecheck-python-complexity format-python-complexity format-python-complexity-check eval-python-complexity
 

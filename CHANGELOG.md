@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- test-sloc-cut 1.2.0: `scripts/fact_matrix.py` seeds every assertion site with an exact anchor, checks a filled fact matrix (every site mapped, every fact asserted, and with the coverage map, every fact's production lines run by a test that asserts it), and compares the baseline and after-the-cut matrices, failing on any fact lost, weakened, or moved without a recorded mutant. Adapted from Supercov's assertion maps, keeping their checks and leaving out their review tokens and cross-run flow graphs.
 - doc-quality 1.1.0: bounded local link/anchor validation, clearer editorial-gain criteria, frozen repository-excerpt challenges and all-profile evals, and a rereading control for agent comparisons; optional provider-configurable Jev remains advisory.
 - doc-quality 1.0.0: section-aware engineering Markdown review with deterministic Markdown inventories and readability metrics, four document-specific Jev profiles, separate before/after and preservation requests, optional shared provider configuration, frozen semantic evals, and offline uv/Ruff/ty tests.
 - comment-slop 1.5.2: prioritize verified documentation/tooling consumers, add deterministic consumer regressions and a frozen blind agent comparison; retain all semantic failures and document no observed incremental agent accuracy gain.
@@ -20,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `make eval-python-complexity`: reproducible behavior/static fixtures and live Jev expectations, with raw evidence and failed expectations retained; `EVAL_ARGS=--offline` runs without Jev.
 
 ### Fixed
+- test-sloc-cut 1.1.0: fix `coverage_map.py` treating pytest-cov's setup, run and teardown contexts as separate tests, which listed a test as coverage-redundant when only its fixture reached some lines. Deleting that test lost the coverage.
+- test-sloc-cut 1.1.0: the after-the-cut coverage check now compares covered lines and arcs by name with `coverage_map.py --diff`, because equal per-module counts can hide a lost arc behind a gained one.
+- test-sloc-cut 1.1.0: document and list the outcomes branch coverage cannot see inside a line (zero-iteration loops, `and`/`or` operands, ternary arms, comprehension filters, lambdas, match guards), and the process-wide context trap for thread and subprocess work. Nine traps in total. Reference output blocks are now real runs on a committed fixture, pinned by `tests/test_test_sloc_cut.py`.
 - doc-quality 1.1.1: fix `doc_quality.py` crashing on import when uv runs it on Python 3.13+, which is uv's choice outside this repository wherever 3.13 or 3.14 is installed. The pinned `github-slugger==0.0.3` has a docstring with lone surrogate escapes that CPython 3.13+ cannot compile; the script now requires Python `>=3.10,<3.13`. A new test runs the documented `uv run` command on the oldest and newest admitted CPython minor, since the repository's Python 3.10 test environment hid the failure.
 
 ## [0.56.0] - 2026-09-10

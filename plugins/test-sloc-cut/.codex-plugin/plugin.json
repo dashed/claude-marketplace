@@ -1,6 +1,6 @@
 {
   "name": "test-sloc-cut",
-  "version": "1.0.0+codex.36ddeee13e5c",
+  "version": "1.2.0+codex.f57fc345b8fb",
   "description": "Shrink a test suite without losing an asserted fact or a covered branch: a fact matrix of what each test pins plus per-test branch coverage and a verified covering set, deleting only on the intersection, with a mutant check for every relocated fact. Use when asked to trim, dedupe, consolidate, or reduce tests or test SLOC, when a suite grew by accretion, when deciding whether to delete, fold, or parametrize tests, or before cutting a test on 'coverage is unchanged' alone. Python/pytest.",
   "author": {
     "name": "Alberto Leal"
