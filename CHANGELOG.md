@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.57.0] - 2026-09-28
+
 ### Added
 - test-audit 1.0.0: decide whether a test earns its place, adapted from the OpenClaw `test-audit` skill (MIT). An authoring gate for new and changed tests (what the test protects, which regression fails it, why coverage misses it, no test-only production seams, and a regression test proven red on the pre-fix code), low-value patterns grouped by what a test pins, a retention bar, an evidence ledger with `R`/`F`/`C`/`D` marks before any delete, test-only seam removal, and a campaign mode for a whole subsystem. Consolidations hand off to test-sloc-cut. Two stdlib scripts: `scan_smells.py` reports the patterns ruff cannot see (`no-assert`, `self-compare`, `repeat-call`, `dup-body`, `reads-source`) and names the ruff rules for the rest; `find_seams.py` lists production symbols only tests refer to, with reachability tags. Measured on six open-source suites and a 33,619-test Django application: every `dup-body` hit was a real duplicate, and several were copies that never got the input their name promises. The pattern examples run in CI against a working and a broken implementation.
 - python-complexity 1.5.0: paired before/after Jev review (`jev_review.py --before --after`) with a directional change rubric adapted from Supercov, a frozen 15-pair suite written by a separate agent, and an eval runner with repeat, reformat, swap, no-context and static-separability controls. On one live run the paired preference matched 14 of 15 labels, against 10 for separate snapshot scores; the directional questions over-fire and fail the swap control, and are documented as pointers only.
@@ -802,7 +804,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.56.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.57.0...HEAD
+[0.57.0]: https://github.com/dashed/claude-marketplace/compare/v0.56.0...v0.57.0
 [0.56.0]: https://github.com/dashed/claude-marketplace/compare/v0.55.0...v0.56.0
 [0.55.0]: https://github.com/dashed/claude-marketplace/compare/v0.54.1...v0.55.0
 [0.54.1]: https://github.com/dashed/claude-marketplace/compare/v0.54.0...v0.54.1
