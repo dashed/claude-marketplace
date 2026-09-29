@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `make eval-python-complexity`: reproducible behavior/static fixtures and live Jev expectations, with raw evidence and failed expectations retained; `EVAL_ARGS=--offline` runs without Jev.
 
 ### Changed
+- test-sloc-cut 1.2.1: point to test-audit for facts that are worthless in themselves (an expected value computed by the code under test, a copied inventory, a mock that answers its own assertion), which a lossless cut would keep, and record baseline pass/fail so a failing test is reported as a possible product bug instead of cut.
 - `make ci` now runs `check-codex-plugins`, so a version bump without a Codex manifest sync fails the pull request instead of shipping stale manifests.
 
 ### Fixed

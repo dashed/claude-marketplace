@@ -27,6 +27,8 @@ Use it when a suite has grown by accretion: several review passes, tests added p
 
 Do not use it to reach a number. Every cut is justified by a fact that survives elsewhere or a measured coverage identity. If a proposed cut cannot show either, it is not a simplification — it is a coverage loss with a smaller diff.
 
+The method keeps every fact, including a worthless one: an expected value computed by the code under test, a copied inventory, a mock that supplies the answer its test asserts. Whether a fact is worth pinning at all is a value decision with its own evidence — use the `test-audit` skill for it, and bring the tests it keeps back here to consolidate.
+
 ## The workflow
 
 1. **Baseline** — pin the commit; count lines and tests per file with the tokenizer.
@@ -43,6 +45,8 @@ Pin the tree at one commit and record three numbers per file: total lines, code 
 python3 scripts/count_code_lines.py tests/test_a.py tests/test_b.py
 #   26 total    14 code    1 comment-only    5 tests  tests/test_a.py
 ```
+
+Record which tests pass: a test that fails on the baseline is a possible product bug to report, not a cut candidate.
 
 If the files live on stacked branches, write down which branch owns which file. A helper added on the base branch is visible to the dependents; the reverse is not true, and the cut has to be committed base-first.
 
@@ -112,4 +116,4 @@ Then, per branch: which tests were deleted and which test now owns each of their
 - [references/coverage-and-mutants.md](references/coverage-and-mutants.md) — the `.coveragerc`, the pytest command, reading the map, the nine traps, verifying the covering set, the identity diff after the cut, and the mutant check for a relocated fact.
 - [references/worked-example.md](references/worked-example.md) — the 61 → 46 cut: what each oracle found, what was done, what was refused.
 
-Related skills: `comment-slop` for the comment audit; `pytest` for the runner's mechanics.
+Related skills: `test-audit` for whether a test earns its place at all; `comment-slop` for the comment audit; `pytest` for the runner's mechanics.

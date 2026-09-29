@@ -4,6 +4,12 @@ All notable changes to the test-sloc-cut skill in this marketplace will be docum
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.2.1] - 2026-09-28
+
+### Changed
+- "When this applies" points to the new `test-audit` skill for facts that are worthless in themselves — an expected value computed by the code under test, a copied inventory, a mock that supplies the answer its test asserts. The fact matrix keeps such facts, so deciding whether one is worth pinning belongs to a value audit, not a lossless cut.
+- The baseline records which tests pass; a test that fails on the baseline is reported as a possible product bug instead of becoming a cut candidate.
+
 ## [1.2.0] - 2026-09-22
 
 ### Added
