@@ -737,6 +737,18 @@
       "category": "Productivity"
     },
     {
+      "name": "test-audit",
+      "source": {
+        "source": "local",
+        "path": "./plugins/test-audit"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
       "name": "jev",
       "source": {
         "source": "local",

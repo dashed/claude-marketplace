@@ -108,6 +108,8 @@ JEV_FILES := plugins/jev/skills/jev/scripts/jev.py tests/test_jev.py
 
 TEST_SLOC_CUT_FILES := plugins/test-sloc-cut/skills/test-sloc-cut/scripts/coverage_map.py plugins/test-sloc-cut/skills/test-sloc-cut/scripts/fact_matrix.py tests/test_test_sloc_cut.py
 
+TEST_AUDIT_FILES := plugins/test-audit/skills/test-audit/scripts/scan_smells.py plugins/test-audit/skills/test-audit/scripts/find_seams.py tests/test_test_audit.py
+
 DOC_QUALITY_FILES := plugins/doc-quality/skills/doc-quality/scripts/doc_links.py scripts/eval_doc_profiles.py tests/test_doc_links.py tests/test_doc_profile_evals.py plugins/doc-quality/skills/doc-quality/scripts/doc_metrics.py plugins/doc-quality/skills/doc-quality/scripts/doc_quality.py scripts/eval_doc_quality.py tests/test_doc_metrics.py tests/test_doc_quality.py tests/test_doc_quality_evals.py
 
 .PHONY: test-doc-quality lint-doc-quality typecheck-doc-quality format-doc-quality format-doc-quality-check eval-doc-quality
@@ -193,6 +195,23 @@ format-test-sloc-cut: ## Format the coverage map and its tests with Ruff
 
 format-test-sloc-cut-check: ## Check coverage map formatting with Ruff
 	@$(UV_RUN) ruff format --check $(TEST_SLOC_CUT_FILES)
+
+.PHONY: test-test-audit lint-test-audit typecheck-test-audit format-test-audit format-test-audit-check
+
+test-test-audit: lint-test-audit typecheck-test-audit format-test-audit-check ## Check the smell scanner, seam finder and pattern examples
+	@$(UV_RUN) pytest tests/test_test_audit.py --no-cov
+
+lint-test-audit: ## Run Ruff on the test-audit scripts and their tests
+	@$(UV_RUN) ruff check $(TEST_AUDIT_FILES)
+
+typecheck-test-audit: ## Run ty on the test-audit scripts and their tests
+	@$(UV_RUN) ty check $(TEST_AUDIT_FILES)
+
+format-test-audit: ## Format the test-audit scripts and their tests with Ruff
+	@$(UV_RUN) ruff format $(TEST_AUDIT_FILES)
+
+format-test-audit-check: ## Check test-audit formatting with Ruff
+	@$(UV_RUN) ruff format --check $(TEST_AUDIT_FILES)
 
 .PHONY: test-python-complexity lint-python-complexity typecheck-python-complexity format-python-complexity format-python-complexity-check eval-python-complexity eval-python-complexity-changes
 

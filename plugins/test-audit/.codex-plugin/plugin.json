@@ -1,0 +1,34 @@
+{
+  "name": "test-audit",
+  "version": "1.0.0+codex.0a6106905232",
+  "description": "Decide whether a test earns its place: an authoring gate for new tests (what it protects, which regression fails it, why coverage misses it, no test-only seams, regression tests proven red before the fix), low-value patterns, a retention bar and an evidence ledger before deletes. Use when writing or reviewing tests, when asked for a regression test, or when auditing a suite for junk tests or test-only production code. Ships a pytest smell scanner and a test-only-symbol finder.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "testing",
+    "pytest",
+    "test-quality",
+    "code-review",
+    "regression-tests",
+    "mocking",
+    "dead-code",
+    "python"
+  ],
+  "interface": {
+    "displayName": "Test Audit",
+    "shortDescription": "Decide whether a test earns its place: an authoring gate for new tests (what it protects, which regression fails it, why coverage misses it, no test-only seams, regression tests...",
+    "longDescription": "Decide whether a test earns its place: an authoring gate for new tests (what it protects, which regression fails it, why coverage misses it, no test-only seams, regression tests proven red before the fix), low-value patterns, a retention bar and an evidence ledger before deletes. Use when writing or reviewing tests, when asked for a regression test, or when auditing a suite for junk tests or test-only production code. Ships a pytest smell scanner and a test-only-symbol finder.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $test-audit for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/test-audit",
+  "skills": "./skills/"
+}
