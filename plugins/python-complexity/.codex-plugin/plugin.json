@@ -1,7 +1,7 @@
 {
   "name": "python-complexity",
-  "version": "1.5.0+codex.ff0ea8f324b3",
-  "description": "Measure Python complexity per function and per call path with ruff and complexipy; optionally add Jev judgments through configurable providers (Vercel by default). Use when prioritizing refactors, investigating over-layering, or verifying that a refactor improved the whole path. Without the selected provider key, semantic review is skipped and static analysis continues. Tests verify behavior.",
+  "version": "1.6.0+codex.e9543deae551",
+  "description": "Two censuses of Python complexity, no project install: per function (ruff C901 cyclomatic + complexipy cognitive, read as a pair) and per call path (hops, pass-through layers, selector parameters) for code where every function scores low but the path is hard to follow. Use when asking which functions to refactor first, whether a function or call path is too complex or over-layered, when triaging a legacy codebase, or when verifying a refactor reduced rather than relocated complexity.",
   "author": {
     "name": "Alberto Leal"
   },
@@ -18,16 +18,12 @@
     "layering",
     "call-path",
     "indirection",
-    "over-abstraction",
-    "jev",
-    "typesafe",
-    "vercel-ai-gateway",
-    "semantic-review"
+    "over-abstraction"
   ],
   "interface": {
     "displayName": "Python Complexity",
-    "shortDescription": "Measure Python complexity per function and per call path with ruff and complexipy; optionally add Jev judgments through configurable providers (Vercel by default). Use when...",
-    "longDescription": "Measure Python complexity per function and per call path with ruff and complexipy; optionally add Jev judgments through configurable providers (Vercel by default). Use when prioritizing refactors, investigating over-layering, or verifying that a refactor improved the whole path. Without the selected provider key, semantic review is skipped and static analysis continues. Tests verify behavior.",
+    "shortDescription": "Two censuses of Python complexity, no project install: per function (ruff C901 cyclomatic + complexipy cognitive, read as a pair) and per call path (hops, pass-through layers...",
+    "longDescription": "Two censuses of Python complexity, no project install: per function (ruff C901 cyclomatic + complexipy cognitive, read as a pair) and per call path (hops, pass-through layers, selector parameters) for code where every function scores low but the path is hard to follow. Use when asking which functions to refactor first, whether a function or call path is too complex or over-layered, when triaging a legacy codebase, or when verifying a refactor reduced rather than relocated complexity.",
     "developerName": "Alberto Leal",
     "category": "Productivity",
     "capabilities": [

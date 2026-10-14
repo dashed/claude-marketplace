@@ -1284,9 +1284,9 @@
     },
     {
       "name": "comment-slop",
-      "version": "1.5.2",
+      "version": "1.6.0",
       "source": "./plugins/comment-slop",
-      "description": "Find and remove redundant comments and docstring content while retaining rationale, contracts, and documentation/tooling functions. Apply a source-based keep/delete/reduce/rewrite review; optionally consult Jev on redundancy and whether a proposed edit loses useful information. Reuses the configurable general Jev helper and skips it without helper or credentials. Use when cleaning up AI-slop comments, auditing a diff, reducing mixed docstrings, or checking a comment rewrite.",
+      "description": "Find and remove AI-slop comments — ones that restate the code, describe another layer's behavior, or narrate planning that never shipped — while keeping the comments that carry real reasoning. Comment the why, not the what or how: names carry the what, and delete is the default verdict. Use when a reviewer calls a comment useless or AI-written, when auditing comments and docstrings on a branch or PR, when deciding whether new code needs a comment, or before sending a change for review.",
       "author": {
         "name": "Alberto Leal"
       },
@@ -1299,9 +1299,7 @@
         "cleanup",
         "ai-slop",
         "refactoring",
-        "documentation",
-        "jev",
-        "semantic-review"
+        "documentation"
       ],
       "strict": false,
       "skills": [
@@ -1432,9 +1430,9 @@
     },
     {
       "name": "python-complexity",
-      "version": "1.5.0",
+      "version": "1.6.0",
       "source": "./plugins/python-complexity",
-      "description": "Measure Python complexity per function and per call path with ruff and complexipy; optionally add Jev judgments through configurable providers (Vercel by default). Use when prioritizing refactors, investigating over-layering, or verifying that a refactor improved the whole path. Without the selected provider key, semantic review is skipped and static analysis continues. Tests verify behavior.",
+      "description": "Two censuses of Python complexity, no project install: per function (ruff C901 cyclomatic + complexipy cognitive, read as a pair) and per call path (hops, pass-through layers, selector parameters) for code where every function scores low but the path is hard to follow. Use when asking which functions to refactor first, whether a function or call path is too complex or over-layered, when triaging a legacy codebase, or when verifying a refactor reduced rather than relocated complexity.",
       "author": {
         "name": "Alberto Leal"
       },
@@ -1452,11 +1450,7 @@
         "layering",
         "call-path",
         "indirection",
-        "over-abstraction",
-        "jev",
-        "typesafe",
-        "vercel-ai-gateway",
-        "semantic-review"
+        "over-abstraction"
       ],
       "strict": false,
       "skills": [
@@ -1539,9 +1533,9 @@
     },
     {
       "name": "doc-quality",
-      "version": "1.1.1",
+      "version": "1.2.0",
       "source": "./plugins/doc-quality",
-      "description": "Review and improve engineering Markdown designs, analyses, implementation plans, and ADRs. Measure sections and protected content with a Markdown parser; optionally use Jev for typed quality and meaning-preservation judgments. Preserve requirements, uncertainty, code, and links while the agent makes targeted edits. Jev is optional and provider configurable.",
+      "description": "Review and improve engineering Markdown designs, analyses, implementation plans, and ADRs with static section, readability, preservation-inventory, and local link/anchor checks while the agent makes targeted edits. Use when clarifying sections, preserving requirements, uncertainty, code, and links through a rewrite, or comparing a revision with its original.",
       "author": {
         "name": "Alberto Leal"
       },
@@ -1553,7 +1547,6 @@
         "design",
         "analysis",
         "adr",
-        "jev",
         "review"
       ],
       "strict": false,

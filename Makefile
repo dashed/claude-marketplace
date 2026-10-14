@@ -102,25 +102,23 @@ test-cov: ## Run tests with coverage report
 
 CODEX_SKILLS_FILES := scripts/install_codex_skills.py scripts/manage_codex_skills.py scripts/sync_codex_plugins.py tests/test_install_codex_skills.py tests/test_manage_codex_skills.py tests/test_sync_codex_plugins.py
 
-PYTHON_COMPLEXITY_JEV_FILES := plugins/python-complexity/skills/python-complexity/scripts/jev_review.py scripts/eval_python_complexity.py scripts/eval_python_complexity_changes.py tests/test_python_complexity_jev.py tests/test_python_complexity_evals.py tests/test_python_complexity_changes.py
-
 JEV_FILES := plugins/jev/skills/jev/scripts/jev.py tests/test_jev.py
 
 TEST_SLOC_CUT_FILES := plugins/test-sloc-cut/skills/test-sloc-cut/scripts/coverage_map.py plugins/test-sloc-cut/skills/test-sloc-cut/scripts/fact_matrix.py tests/test_test_sloc_cut.py
 
 TEST_AUDIT_FILES := plugins/test-audit/skills/test-audit/scripts/scan_smells.py plugins/test-audit/skills/test-audit/scripts/find_seams.py tests/test_test_audit.py
 
-DOC_QUALITY_FILES := plugins/doc-quality/skills/doc-quality/scripts/doc_links.py scripts/eval_doc_profiles.py tests/test_doc_links.py tests/test_doc_profile_evals.py plugins/doc-quality/skills/doc-quality/scripts/doc_metrics.py plugins/doc-quality/skills/doc-quality/scripts/doc_quality.py scripts/eval_doc_quality.py tests/test_doc_metrics.py tests/test_doc_quality.py tests/test_doc_quality_evals.py
+DOC_QUALITY_FILES := plugins/doc-quality/skills/doc-quality/scripts/doc_links.py plugins/doc-quality/skills/doc-quality/scripts/doc_metrics.py plugins/doc-quality/skills/doc-quality/scripts/doc_quality.py tests/test_doc_links.py tests/test_doc_metrics.py tests/test_doc_quality.py
 
-.PHONY: test-doc-quality lint-doc-quality typecheck-doc-quality format-doc-quality format-doc-quality-check eval-doc-quality
+.PHONY: test-doc-quality lint-doc-quality typecheck-doc-quality format-doc-quality format-doc-quality-check
 
 test-doc-quality: lint-doc-quality typecheck-doc-quality format-doc-quality-check ## Verify Markdown review and preservation checks offline
-	@$(UV_RUN) pytest tests/test_doc_metrics.py tests/test_doc_quality.py tests/test_doc_quality_evals.py tests/test_doc_links.py tests/test_doc_profile_evals.py --no-cov
+	@$(UV_RUN) pytest tests/test_doc_metrics.py tests/test_doc_quality.py tests/test_doc_links.py --no-cov
 
-lint-doc-quality: ## Run Ruff on Markdown review and evals
+lint-doc-quality: ## Run Ruff on the Markdown review helper and tests
 	@$(UV_RUN) ruff check $(DOC_QUALITY_FILES)
 
-typecheck-doc-quality: ## Run ty on Markdown review and evals
+typecheck-doc-quality: ## Run ty on the Markdown review helper and tests
 	@$(UV_RUN) ty check $(DOC_QUALITY_FILES)
 
 format-doc-quality: ## Format Markdown review Python
@@ -128,39 +126,6 @@ format-doc-quality: ## Format Markdown review Python
 
 format-doc-quality-check: ## Check Markdown review formatting
 	@$(UV_RUN) ruff format --check $(DOC_QUALITY_FILES)
-
-.PHONY: eval-doc-profiles
-
-eval-doc-profiles: ## Evaluate frozen document profile judgments (EVAL_ARGS=--offline skips Jev)
-	@$(UV_RUN) scripts/eval_doc_profiles.py $(EVAL_ARGS)
-
-eval-doc-quality: ## Evaluate frozen document revisions (EVAL_ARGS=--offline skips Jev)
-	@$(UV_RUN) scripts/eval_doc_quality.py $(EVAL_ARGS)
-
-COMMENT_SLOP_FILES := plugins/comment-slop/skills/comment-slop/scripts/jev_comments.py scripts/eval_comment_slop.py scripts/compare_comment_reviews.py tests/test_comment_slop_jev.py tests/test_comment_slop_evals.py tests/test_comment_review_comparison.py tests/test_comment_consumer_regressions.py
-
-.PHONY: test-comment-slop lint-comment-slop typecheck-comment-slop format-comment-slop format-comment-slop-check eval-comment-slop compare-comment-reviews
-
-test-comment-slop: lint-comment-slop typecheck-comment-slop format-comment-slop-check ## Verify optional comment/docstring Jev review offline
-	@$(UV_RUN) pytest tests/test_comment_slop_jev.py tests/test_comment_slop_evals.py tests/test_comment_review_comparison.py tests/test_comment_consumer_regressions.py --no-cov
-
-eval-comment-slop: ## Evaluate frozen comment judgments (EVAL_ARGS=--offline skips Jev)
-	@$(UV_RUN) scripts/eval_comment_slop.py $(EVAL_ARGS)
-
-compare-comment-reviews: ## Compare frozen agent-only/assisted decisions (set COMPARE_ARGS)
-	@$(UV_RUN) scripts/compare_comment_reviews.py $(COMPARE_ARGS)
-
-lint-comment-slop: ## Run Ruff on the comment-review adapter and evals
-	@$(UV_RUN) ruff check $(COMMENT_SLOP_FILES)
-
-typecheck-comment-slop: ## Run ty on the comment-review adapter and evals
-	@$(UV_RUN) ty check $(COMMENT_SLOP_FILES)
-
-format-comment-slop: ## Format comment-review Python with Ruff
-	@$(UV_RUN) ruff format $(COMMENT_SLOP_FILES)
-
-format-comment-slop-check: ## Check comment-review Python formatting with Ruff
-	@$(UV_RUN) ruff format --check $(COMMENT_SLOP_FILES)
 
 .PHONY: test-jev lint-jev typecheck-jev format-jev format-jev-check
 
@@ -212,29 +177,6 @@ format-test-audit: ## Format the test-audit scripts and their tests with Ruff
 
 format-test-audit-check: ## Check test-audit formatting with Ruff
 	@$(UV_RUN) ruff format --check $(TEST_AUDIT_FILES)
-
-.PHONY: test-python-complexity lint-python-complexity typecheck-python-complexity format-python-complexity format-python-complexity-check eval-python-complexity eval-python-complexity-changes
-
-test-python-complexity: lint-python-complexity typecheck-python-complexity format-python-complexity-check ## Check the Jev helper and run offline contract tests
-	@$(UV_RUN) pytest tests/test_python_complexity_jev.py tests/test_python_complexity_evals.py tests/test_python_complexity_changes.py --no-cov
-
-eval-python-complexity: ## Run static/behavior fixtures and live Jev expectations (EVAL_ARGS=--offline skips Jev)
-	@$(UV_RUN) scripts/eval_python_complexity.py $(EVAL_ARGS)
-
-eval-python-complexity-changes: ## Run the frozen before/after suite with repeat, reformat and swap controls (EVAL_ARGS=--offline skips Jev)
-	@$(UV_RUN) scripts/eval_python_complexity_changes.py $(EVAL_ARGS)
-
-lint-python-complexity: ## Run Ruff on the Jev helper and its tests
-	@$(UV_RUN) ruff check $(PYTHON_COMPLEXITY_JEV_FILES)
-
-typecheck-python-complexity: ## Run ty on the Jev helper and its tests
-	@$(UV_RUN) ty check $(PYTHON_COMPLEXITY_JEV_FILES)
-
-format-python-complexity: ## Format the Jev helper and its tests with Ruff
-	@$(UV_RUN) ruff format $(PYTHON_COMPLEXITY_JEV_FILES)
-
-format-python-complexity-check: ## Check Jev helper and test formatting with Ruff
-	@$(UV_RUN) ruff format --check $(PYTHON_COMPLEXITY_JEV_FILES)
 
 test-codex-skills: lint-codex-skills typecheck-codex-skills format-codex-skills-check check-codex-plugins ## Run Codex skill/plugin checks and unit tests
 	@echo "$(CYAN)Running Codex skills tests...$(NC)"

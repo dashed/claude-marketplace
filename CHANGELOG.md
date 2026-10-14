@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+- Jev consultations from comment-slop, doc-quality, and python-complexity: the skill-side adapters and helpers (`jev_comments.py`, `jev_review.py` including the paired before/after review, and doc-quality's Jev options), their rubrics and references, the Jev eval scripts, tests, frozen fixtures, recorded results under `notes/`, and the Makefile targets `test-comment-slop`, `eval-comment-slop`, `compare-comment-reviews`, `test-python-complexity`, `eval-python-complexity`, `eval-python-complexity-changes`, `eval-doc-quality`, and `eval-doc-profiles`. Jev-independent guidance added alongside it stays: comment-slop's consumer checks and reduce/needs_context verdicts, and python-complexity's refactor acceptance criteria. The standalone `jev` skill is unchanged (comment-slop v1.6.0, python-complexity v1.6.0, doc-quality v1.2.0)
+
+### Changed
+- doc-quality: `doc_quality.py` is static-only. `--kind`, `--context`, `--section`, `--max-sections`, `--paired-only`, `--dry-run`, `--jev-helper`, and the provider flags are removed; reports move to `schema_version` 2 with top-level `status: analyzed`, and exit 2 now means only invalid input or options (doc-quality v1.2.0)
+
 ## [0.57.0] - 2026-09-28
 
 ### Added

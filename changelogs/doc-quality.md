@@ -1,5 +1,15 @@
 # Changelog - doc-quality
 
+## [1.2.0] - 2026-10-14
+
+### Removed
+- Optional Jev quality profiles and paired preservation judgments: `references/rubrics.json` and the `doc_quality.py` options `--kind`, `--context`, `--section`, `--max-sections`, `--paired-only`, `--dry-run`, `--jev-helper`, and the provider-forwarding flags. Reports drop `semantic`, `selected_sections`, `not_selected`, `kind`, and the rubric fields.
+- Jev evaluation tooling: `make eval-doc-quality`, `make eval-doc-profiles`, their scripts, tests, frozen fixtures, and the recorded results under `notes/doc-quality/`.
+
+### Changed
+- Report `schema_version` 2: top-level `status` is `analyzed`, or `incomplete` with an error for invalid input. Exit codes: 0 report produced, 1 broken local links in the selected (revised) document, 2 invalid input or options.
+- The kind-specific quality profiles remain in `references/workflow.md` as checklists for the agent.
+
 ## [1.1.1] - 2026-09-22
 
 ### Fixed

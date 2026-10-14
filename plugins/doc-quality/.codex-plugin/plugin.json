@@ -1,7 +1,7 @@
 {
   "name": "doc-quality",
-  "version": "1.1.1+codex.f7460e78cbda",
-  "description": "Review and improve engineering Markdown designs, analyses, implementation plans, and ADRs. Measure sections and protected content with a Markdown parser; optionally use Jev for typed quality and meaning-preservation judgments. Preserve requirements, uncertainty, code, and links while the agent makes targeted edits. Jev is optional and provider configurable.",
+  "version": "1.2.0+codex.c9ac117a551e",
+  "description": "Review and improve engineering Markdown designs, analyses, implementation plans, and ADRs with static section, readability, preservation-inventory, and local link/anchor checks while the agent makes targeted edits. Use when clarifying sections, preserving requirements, uncertainty, code, and links through a rewrite, or comparing a revision with its original.",
   "author": {
     "name": "Alberto Leal"
   },
@@ -12,13 +12,12 @@
     "design",
     "analysis",
     "adr",
-    "jev",
     "review"
   ],
   "interface": {
     "displayName": "Doc Quality",
-    "shortDescription": "Review and improve engineering Markdown designs, analyses, implementation plans, and ADRs. Measure sections and protected content with a Markdown parser; optionally use Jev for...",
-    "longDescription": "Review and improve engineering Markdown designs, analyses, implementation plans, and ADRs. Measure sections and protected content with a Markdown parser; optionally use Jev for typed quality and meaning-preservation judgments. Preserve requirements, uncertainty, code, and links while the agent makes targeted edits. Jev is optional and provider configurable.",
+    "shortDescription": "Review and improve engineering Markdown designs, analyses, implementation plans, and ADRs with static section, readability, preservation-inventory, and local link/anchor checks...",
+    "longDescription": "Review and improve engineering Markdown designs, analyses, implementation plans, and ADRs with static section, readability, preservation-inventory, and local link/anchor checks while the agent makes targeted edits. Use when clarifying sections, preserving requirements, uncertainty, code, and links through a rewrite, or comparing a revision with its original.",
     "developerName": "Alberto Leal",
     "category": "Productivity",
     "capabilities": [

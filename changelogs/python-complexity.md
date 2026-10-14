@@ -4,6 +4,17 @@ All notable changes to the python-complexity skill in this marketplace will be d
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.6.0] - 2026-10-14
+
+### Removed
+- Optional Jev semantic review, including the 1.5.0 paired before/after review: `scripts/jev_review.py`, `references/jev-review.md`, `references/jev-rubric.json`, `references/jev-change-rubric.json`, and the Jev steps in the workflow.
+- Jev evaluation tooling: `make test-python-complexity`, `make eval-python-complexity`, `make eval-python-complexity-changes`, both evaluators, their tests and frozen fixtures, and the Jev notes under `notes/python-complexity/`.
+
+### Changed
+- Frontmatter description, marketplace description, and keywords return to the 1.2.0 wording.
+- Workflow step 6 again names layer-golf (every function reads fine alone, the path does not), which the 1.3.0 rewrite dropped.
+- Kept from 1.3.0: refactor acceptance requires verified behavior and an explainable maintainability improvement rather than every metric falling.
+
 ## [1.5.0] - 2026-09-22
 
 ### Added

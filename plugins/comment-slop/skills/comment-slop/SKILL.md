@@ -1,6 +1,6 @@
 ---
 name: comment-slop
-description: "Find and remove AI-slop comments — ones that restate the code, describe another layer's behavior, or narrate planning that never shipped — while protecting the comments that carry real reasoning. Use when a reviewer calls a comment useless, unclear, or AI-written — including one a previous cleanup pass already rewrote; when auditing or cleaning up comments and docstrings on a branch, diff, or PR; when comments should be reduced, simplified, or restyled to ASD-STE100 / simplified technical English; when writing or reviewing docstrings for completeness — tuple-return meanings, boolean polarity, silent defaults and fallbacks; when deciding whether new code needs a comment and what it should say; or before sending a change for review. Optionally consult Jev on redundancy and proposed reductions; skip it when unavailable."
+description: "Find and remove AI-slop comments — ones that restate the code, describe another layer's behavior, or narrate planning that never shipped — while protecting the comments that carry real reasoning. Use when a reviewer calls a comment useless, unclear, or AI-written — including one a previous cleanup pass already rewrote; when auditing or cleaning up comments and docstrings on a branch, diff, or PR; when comments should be reduced, simplified, or restyled to ASD-STE100 / simplified technical English; when writing or reviewing docstrings for completeness — tuple-return meanings, boolean polarity, silent defaults and fallbacks; when deciding whether new code needs a comment and what it should say; or before sending a change for review."
 license: MIT
 ---
 
@@ -283,31 +283,6 @@ A comment asserting a fact may simply be stale: the code moved and the sentence 
 
 The same bar applies to claims you write: a sentence like "the override changes both values" is written only after reading (or running) the test that pins it — not from memory of the code.
 
-### Optional Jev check
-
-For uncertain redundancy, a mixed comment/docstring, or a proposed reduction, use
-[references/jev-review.md](references/jev-review.md). Supply the exact text and
-source location, surrounding implementation, known consumers, and missing evidence.
-Distinguish facts supplied only to verify the claim from documentation the intended
-reader can still access after deletion; identify any retained document explicitly.
-Jev can suggest **keep / delete / reduce / rewrite / needs_context** and judge
-whether a concrete replacement preserves the useful information. The agent
-identifies the redundant clauses, writes the edit, and verifies it; Jev does not
-produce replacement prose or edit files.
-
-Jev is optional. Without the general Jev helper or the selected provider key,
-continue this workflow and report the consultation as skipped. An API failure
-leaves its judgment incomplete; it does not turn into deletion approval. The
-three-clause test and known consumer requirements still govern the edit. Explicit
-published-doc, runtime-help, and tooling needs take priority over source-only
-redundancy. Preserve doctest option flags, not just example text. Correct a
-contradicted claim using verified code; preserving misinformation is not useful
-information retention. Inspect missing evidence before editing an asserted why.
-
-The recorded blind pilot showed no improvement over the agent alone. Use the
-consultation selectively, and reject advice that conflicts with verified facts.
-Passing syntax or executable-AST checks does not establish consumer preservation.
-
 ### 4. Give one verdict per comment
 
 | Verdict | When |
@@ -324,16 +299,9 @@ Expect the pass to be a net deletion. Adding a fresh explanatory paragraph where
 
 Docstrings that feed generated documentation (Sphinx, godoc, rustdoc, JSDoc) have a second audience that never sees the source. One that restates the signature still fails the test for a reader of the code, but deleting it can blank an entry in the published API docs. Rewrite these into what the function returns, rejects, or raises rather than removing them.
 
-Also preserve lint/type/formatter/compiler directives, shebangs, encoding markers,
-license notices, doctests, runtime `__doc__` consumers, CLI help, and framework
-metadata. A directive may be redundant only after its tool confirms that; a
-semantic preference cannot establish it. For partial reductions, list the facts
-that must survive and check the proposed replacement against each one.
+Also preserve lint/type/formatter/compiler directives, shebangs, encoding markers, license notices, doctests (including their option flags), runtime `__doc__` consumers, CLI help, and framework metadata. A directive may be redundant only after its tool confirms that; a semantic preference cannot establish it. For partial reductions, list the facts that must survive and check the proposed replacement against each one.
 
-Check syntax and the relevant docs/doctest/help/tool output after an edit. Ordinary
-comments do not execute, but docstrings are runtime values and comment directives
-can change tooling behavior. An unchanged executable AST alone does not prove
-those consumers were preserved.
+Check syntax and the relevant docs/doctest/help/tool output after an edit. Ordinary comments do not execute, but docstrings are runtime values and comment directives can change tooling behavior. An unchanged executable AST alone does not prove those consumers were preserved.
 
 ### 6. Commit the cleanup on its own
 

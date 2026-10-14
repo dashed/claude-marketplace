@@ -23,8 +23,10 @@ The second consultation supported keeping the existing cautious conclusion and
 identified a representative real-code comparison as the next evidence needed.
 The agent independently checked those claims against the saved evaluation
 summaries. Jev's agreement did not change test labels or establish their truth.
-The earlier [design consultation](../python-complexity/jev-design-review-2026-09-22.json)
-helped select matched-count boundary examples for independent validation.
+An earlier design consultation helped select matched-count boundary examples
+for the python-complexity validation. That integration has since been removed;
+its record remains in history at
+`35b1df2:notes/python-complexity/jev-design-review-2026-09-22.json`.
 
 These calls establish live Vercel connectivity and expected behavior on two
 bounded examples. They do not establish general decision quality or live direct

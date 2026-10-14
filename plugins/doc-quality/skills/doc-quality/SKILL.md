@@ -1,14 +1,14 @@
 ---
 name: doc-quality
-description: Review and improve engineering Markdown designs, analyses, implementation plans, and architecture decision records. Use for section-level clarity edits, requirement and evidence preservation, or comparing a proposed rewrite with its original. Uses static checks and an optional Jev second opinion; not a general prose or code-comment reviewer.
+description: Review and improve engineering Markdown designs, analyses, implementation plans, and architecture decision records. Use for section-level clarity edits, requirement and evidence preservation, or comparing a proposed rewrite with its original. Uses static Markdown checks; not a general prose or code-comment reviewer.
 ---
 
 # Engineering document quality
 
 Improve the reader's ability to understand a decision or act correctly while
 preserving the document's facts, requirements, rationale, and known unknowns.
-The agent checks evidence and edits; the bundled helper reports observations and
-optional model judgments. It never rewrites files or accepts a candidate.
+The agent checks evidence and edits; the bundled helper reports static
+observations. It never rewrites files or accepts a candidate.
 
 ## Choose the scope
 
@@ -36,12 +36,12 @@ The helper pins its Markdown parser and heading slugger in Python script metadat
 
 ```bash
 uv run --no-config --no-project "$DOC_SKILL_DIR/scripts/doc_quality.py" \
-  analyze docs/design.md --kind design --check-links --link-root . > /tmp/doc-before.json
+  analyze docs/design.md --check-links --link-root . > /tmp/doc-before.json
 ```
 
-Use `--kind design|analysis|plan|adr`. The static report exposes section IDs,
-structural observations, preservation inventories, and prose metrics. Code is
-excluded from prose readability calculations. Readability formulas are rough
+The static report exposes section IDs, structural observations, preservation
+inventories, and prose metrics. Code is excluded from prose readability
+calculations. Readability formulas are rough
 English-language heuristics; counts do not establish clarity, completeness,
 correctness, or semantic equivalence.
 
@@ -49,30 +49,6 @@ correctness, or semantic equivalence.
 document's directory). Remote URLs, unsupported syntax, and targets outside that
 root remain explicitly unchecked. Read the renderer profile and coverage in
 `link_validation`; this bounded check does not replace the site's build checks.
-
-For a semantic second opinion, resolve the separately installed general Jev
-skill's directory as `JEV_SKILL_DIR` and pass its helper explicitly:
-
-```bash
-uv run --no-config --no-project "$DOC_SKILL_DIR/scripts/doc_quality.py" \
-  analyze docs/design.md --kind design --section section-1 \
-  --context /tmp/doc-context.json \
-  --jev-helper "$JEV_SKILL_DIR/scripts/jev.py" --dry-run
-```
-
-Preview the selected sections, evidence, and questions; omit `--dry-run` for the
-bounded consultation. Dry runs need no helper or credential. Repeat `--section`
-for multiple sections. The default model
-budget is six sections; select a coherent smaller scope or explicitly set
-`--max-sections` before evaluating more. Do not mistake partial coverage for a full
-review. Oversized scope retains static results and incomplete semantic coverage.
-
-Jev is optional. An absent helper or provider key skips semantic evaluation;
-continue with source inspection and static results without a setup detour. The
-general helper defaults to Vercel and reads `AI_GATEWAY_API_KEY` from the process
-environment or `~/.config/typesafe-ai/env`. Forward provider options such as
-`--provider typesafe` when needed; details belong to the installed Jev skill.
-Never assume an adjacent plugin path exists in another installation.
 
 ## Rewrite and compare
 
@@ -83,38 +59,25 @@ document longer. Prefer precise claims over confident language.
 
 ```bash
 uv run --no-config --no-project "$DOC_SKILL_DIR/scripts/doc_quality.py" \
-  compare /tmp/design-original.md docs/design.md --kind design \
-  --check-links --link-root . --document-path docs/design.md \
-  --context /tmp/doc-context.json \
-  --jev-helper "$JEV_SKILL_DIR/scripts/jev.py" > /tmp/doc-comparison.json
+  compare /tmp/design-original.md docs/design.md \
+  --check-links --link-root . --document-path docs/design.md > /tmp/doc-comparison.json
 ```
 
-`compare` reports deterministic preservation differences and, with Jev, evaluates
-before quality, after quality, and paired preservation in three separate calls.
-It compares both complete files; use coherent matching excerpts for a focused
-comparison. Use `--paired-only` to omit separate before/after assessments.
-Inspect both candidates and the underlying evidence. Inventory
-matches cannot prove meaning is preserved; differences can be justified edits.
+`compare` reports deterministic preservation differences between both complete
+files; use coherent matching excerpts for a focused comparison. Inspect both
+candidates and the underlying evidence. Inventory matches cannot prove meaning
+is preserved; differences can be justified edits.
 Both snapshots use the same logical `--document-path` (default: revised file),
 so self-links are checked against each snapshot's own headings. Link failures in
 the revised file return exit 1; historical failures remain visible separately.
-Use the same question version, audience, requirements, evidence, and scope for
-before/after analysis and paired comparison. Preserve exact requests and hashes
-when evaluating whether the workflow helps.
-
-Read statuses before answers. Preview, skipped, failed, missing, and incomplete
-judgments are not passes. A probability is neither severity nor an issue count;
-0.95 and 0.98 are not universal acceptance thresholds. Do not resample until a
-preferred candidate wins. Set a small attempt budget; revise again only for a
-specific defect and verify that defect directly.
 
 For faithful revisions, compare reading effort explicitly: removing redundant
 framing or grouping a decision with its reason can help even when facts stay the
-same. Shortness alone is not a gain. Keep `equivalent` for changes with no clear
-audience benefit and `needs_context` for unresolved evidence needed to choose.
+same. Shortness alone is not a gain. When a revision has no clear audience
+benefit, or choosing needs evidence you do not have, say so instead of picking one.
 
 Finish by checking the actual Markdown diff, source claims, links and anchors,
 code or command examples, and the repository's relevant documentation checks.
 Report the meaningful improvements, preserved constraints, and unresolved gaps.
-If an evaluation pilot shows no benefit, report that result; a successful API
-call or a higher score does not establish better documentation.
+Better readability metrics or unchanged inventories do not establish better
+documentation.

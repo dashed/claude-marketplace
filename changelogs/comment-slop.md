@@ -4,6 +4,17 @@ All notable changes to the comment-slop skill in this marketplace will be docume
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.6.0] - 2026-10-14
+
+### Removed
+- Optional Jev review: `scripts/jev_comments.py`, `references/jev-review.md`, `references/jev-rubric.json`, and the SKILL.md "Optional Jev check" section. The workflow no longer consults an external model.
+- Jev evaluation tooling: `make test-comment-slop`, `make eval-comment-slop`, `make compare-comment-reviews`, their scripts, tests, frozen fixtures, and the recorded results under `notes/comment-slop/`.
+
+### Changed
+- Frontmatter, marketplace description, and keywords no longer mention Jev; the marketplace description returns to the 1.4.0 wording.
+- Step 5 now lists doctest option flags among the consumer functions to preserve; this rule was previously stated only in the Jev section.
+- Kept from 1.5.x: the reduce and needs_context verdicts, the documentation/runtime/tooling consumer checks, and the explicitly requested file/repository scope.
+
 ## [1.5.2] - 2026-09-22
 
 ### Fixed
