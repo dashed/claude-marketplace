@@ -1553,6 +1553,28 @@
       "skills": [
         "./skills"
       ]
+    },
+    {
+      "name": "show-me",
+      "version": "1.0.0",
+      "source": "./plugins/show-me",
+      "description": "Explain the current topic visually with the smallest view that makes the point: pseudocode, a call tree, a component or file tree, a Mermaid diagram, a diff of the shape that changes, or one focused HTML page. Use when you want to see the topic instead of reading about it. Manual only: run it with /show-me. Ported from HumanLayer.",
+      "author": {
+        "name": "humanlayer"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/show-me",
+      "license": "MIT",
+      "keywords": [
+        "visualization",
+        "diagrams",
+        "mermaid",
+        "code",
+        "html"
+      ],
+      "strict": false,
+      "skills": [
+        "./skills"
+      ]
     }
   ]
 }
