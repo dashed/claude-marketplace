@@ -1,7 +1,7 @@
 {
   "name": "show-me",
-  "version": "1.0.0+codex.d16cc25f2203",
-  "description": "Explain the current topic visually with the smallest view that makes the point: pseudocode, a call tree, a component or file tree, a Mermaid diagram, a diff of the shape that changes, or one focused HTML page. Use when you want to see the topic instead of reading about it. Manual only: run it with /show-me. Ported from HumanLayer.",
+  "version": "1.1.0+codex.5387f4ddc4f7",
+  "description": "Explain the current topic visually with the smallest view that makes the point: pseudocode, a call tree, a component or file tree, a Mermaid diagram, a diff of the shape that changes, or one focused HTML page. Use when you ask to see the topic instead of reading about it ('show me', 'diagram this', /show-me), not for ordinary explanations. Ported from HumanLayer.",
   "author": {
     "name": "humanlayer"
   },
@@ -16,7 +16,7 @@
   "interface": {
     "displayName": "Show Me",
     "shortDescription": "Explain the current topic visually with the smallest view that makes the point: pseudocode, a call tree, a component or file tree, a Mermaid diagram, a diff of the shape that...",
-    "longDescription": "Explain the current topic visually with the smallest view that makes the point: pseudocode, a call tree, a component or file tree, a Mermaid diagram, a diff of the shape that changes, or one focused HTML page. Use when you want to see the topic instead of reading about it. Manual only: run it with /show-me. Ported from HumanLayer.",
+    "longDescription": "Explain the current topic visually with the smallest view that makes the point: pseudocode, a call tree, a component or file tree, a Mermaid diagram, a diff of the shape that changes, or one focused HTML page. Use when you ask to see the topic instead of reading about it ('show me', 'diagram this', /show-me), not for ordinary explanations. Ported from HumanLayer.",
     "developerName": "humanlayer",
     "category": "Productivity",
     "capabilities": [

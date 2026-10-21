@@ -1,7 +1,6 @@
 ---
 name: show-me
-description: Help the user understand the current topic visually with concise diagrams, code-shape sketches, and focused HTML artifacts. Use when the user runs /show-me to see the current topic as pseudocode, a call tree, a component or file tree, a Mermaid diagram, a diff, or a focused HTML page.
-disable-model-invocation: true
+description: Help the user understand the current topic visually with concise diagrams, code-shape sketches, and focused HTML artifacts. Use when the user asks to see the current topic instead of reading about it, such as "show me", "/show-me", "draw it", "diagram this", "visualize this", or "what does the call tree look like", or asks for pseudocode, a call tree, a component or file tree, a Mermaid diagram, a diff of the shape that changes, or one focused HTML page. Not for ordinary explanations the user did not ask to see.
 ---
 
 Help the user understand the current topic of conversation visually. Skip the preamble and keep prose brief. Pick the smallest view that makes the key point clear.
@@ -129,4 +128,4 @@ You may use one of these, you may use several, it is unlikely you will use all o
 
 ## Credits
 
-Ported from the [show-me](https://github.com/humanlayer/skills/tree/main/plugins/show-me/skills/show-me) skill by HumanLayer, licensed under MIT. This copy adds a "Use when" clause to the `description` and this Credits section; the body is otherwise unchanged.
+Ported from the [show-me](https://github.com/humanlayer/skills/tree/main/plugins/show-me/skills/show-me) skill by HumanLayer, licensed under MIT. This copy rewrites the `description` with "Use when" triggers, drops upstream's `disable-model-invocation: true` (it blocks the Skill tool even when the user asks for the skill in a message) and its Codex `agents/openai.yaml`, and adds this Credits section; the body is otherwise unchanged.

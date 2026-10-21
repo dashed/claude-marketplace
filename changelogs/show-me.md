@@ -4,6 +4,15 @@ All notable changes to the show-me skill in this marketplace will be documented 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.1.0] - 2026-10-21
+
+### Fixed
+- Asking for the skill in a message ("use show-me", "show me the call tree") no longer fails with "Skill show-me cannot be used with Skill tool due to disable-model-invocation". That flag blocks the Skill tool outright, so only a typed `/show-me` worked.
+
+### Changed
+- Remove upstream's `disable-model-invocation: true` from `SKILL.md` and its Codex `agents/openai.yaml` (`allow_implicit_invocation: false`), so the skill behaves the same on both hosts.
+- Rewrite the `description` triggers to fire only when the user asks to see the topic ("show me", "/show-me", "diagram this", "visualize this", a call tree, file tree, Mermaid diagram, diff, or one HTML page), and not for ordinary explanations. This replaces the gate the removed flag provided.
+
 ## [1.0.0] - 2026-10-21
 
 ### Added

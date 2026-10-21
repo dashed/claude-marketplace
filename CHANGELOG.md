@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- show-me 1.1.0: asking for the skill in a message no longer fails with "cannot be used with Skill tool due to disable-model-invocation". The skill is model-invocable again on Claude Code and Codex, and a narrower description limits it to requests to see the topic
+
 ## [0.58.0] - 2026-10-21
 
 ### Added
