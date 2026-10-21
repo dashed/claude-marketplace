@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.58.1] - 2026-10-21
+
 ### Fixed
 - show-me 1.1.0: asking for the skill in a message no longer fails with "cannot be used with Skill tool due to disable-model-invocation". The skill is model-invocable again on Claude Code and Codex, and a narrower description limits it to requests to see the topic
 
@@ -818,7 +820,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.58.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.58.1...HEAD
+[0.58.1]: https://github.com/dashed/claude-marketplace/compare/v0.58.0...v0.58.1
 [0.58.0]: https://github.com/dashed/claude-marketplace/compare/v0.57.0...v0.58.0
 [0.57.0]: https://github.com/dashed/claude-marketplace/compare/v0.56.0...v0.57.0
 [0.56.0]: https://github.com/dashed/claude-marketplace/compare/v0.55.0...v0.56.0
