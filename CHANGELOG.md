@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.59.0] - 2026-11-16
+
 ### Added
 - code-walkthrough 1.1.0: syntax highlighting with highlight.js (`class="language-<name>"`), which keeps per-line diff colours and walker line numbers; dark mode now also covers code tokens and mermaid diagrams, which re-render in the page's palette when the theme changes
 
@@ -826,7 +828,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.58.1...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.59.0...HEAD
+[0.59.0]: https://github.com/dashed/claude-marketplace/compare/v0.58.1...v0.59.0
 [0.58.1]: https://github.com/dashed/claude-marketplace/compare/v0.58.0...v0.58.1
 [0.58.0]: https://github.com/dashed/claude-marketplace/compare/v0.57.0...v0.58.0
 [0.57.0]: https://github.com/dashed/claude-marketplace/compare/v0.56.0...v0.57.0
