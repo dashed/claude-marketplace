@@ -10,11 +10,67 @@ Produce ONE self-contained interactive HTML file that teaches a code change from
 
 The output is a teaching document, not a diff dump. Code is quoted verbatim; understanding is built in layers; interactivity does real pedagogical work (toggles for before/after, walkers for execution order, playgrounds for logic under study).
 
+**Aim for understanding over economy.** Put the bottom line first, and write in ASD-STE100. The [prose rules](#prose-rules) give the details.
+
 ## When to Use
 
 - "Walk me through this branch/PR/diff (before/after) in an HTML file"
 - "I want to learn/review this change effectively — make it interactive, with diagrams"
 - "Teach me this subsystem from zero" (with code as the source of truth)
+
+## Prose rules
+
+Three rules control all prose in the document: body text, captions, callouts, walker steps, and glossary entries. Each rule has a different job. Rule 1 selects the content. Rule 2 sets the order. Rule 3 controls the words. Quoted code and quoted code comments stay verbatim, so these rules do not apply to them.
+
+### 1. Aim for understanding over economy
+
+If a shorter text would be less clear, write the longer text. The reader does not know this domain or this codebase, so the reader cannot fill a gap. A step that you skip to save space is a step that the reader cannot make. Use one test for each section: after one read, can the reader explain it back? The length of the section is not the test.
+
+- **Say why, not only what.** For each before/after, state:
+  - what the old code did, and what problem it had
+  - what the new code does
+  - why the author chose this design over the obvious alternative
+- **Trace one real example.** Follow one concrete value (a request, a row, an event) through each mechanism, from input to output. When the tests have values, use them.
+- **Show enough code.** Quote the full function when the reader needs its context to follow the change. Remove only the lines that the reader does not need, and mark each removal. A hunk without its caller is not enough.
+- **Define each term at its first use** in a short clause, and also in the glossary. The reader must not need the glossary to read a sentence.
+- **Restate facts. Do not trust the reader's memory.** When a section uses a fact from an earlier section, restate the fact in one sentence. Link to the section that teaches it.
+- **Give each diagram and widget a caption** that says where to look and what it shows. A diagram adds to its paragraph. It does not replace the paragraph.
+- **Teach one idea in each section.** Do not merge two mechanisms to save a heading.
+- **Split the document, do not cut it.** If the document becomes too long, split it into a cross-linked series (see [Scaling notes](#scaling-notes)). Do not make the explanations shorter.
+
+Understanding is not length. Some text adds words and removes understanding, so delete it:
+
+- a point said again in different words
+- a description of what a line of syntax does
+- lessons on the programming language (Phase 0 excludes them)
+- an introduction before the point
+
+This rule also applies to the work behind the document. Read the full function and its callers before you explain a hunk. An explanation of code that you only skimmed is short because it is shallow.
+
+### 2. Bottom line up front (BLUF)
+
+Put the conclusion first at each level. Put the support after it.
+
+- **Document.** The "30-second version" comes immediately after the hero. It states what changes, why, and what the reviewer must check. A reader who stops there has the answer.
+- **Section.** The first paragraph states the point of the section in one to three sentences. The code, the diagrams, and the detail come after it. Keep `h2` titles short for the sidebar. Put the point in the first sentence, not in the title.
+- **Paragraph.** The first sentence states the topic.
+- **Before/after, walker step, callout, caption.** The first sentence states what changes or what the step does.
+
+BLUF does not break the spiral order of Phase 3. A bottom line uses only plain words and terms that an earlier section taught. The section then teaches what its bottom line needs.
+
+### 3. Write in ASD-STE100 (Simplified Technical English)
+
+Use the STE rules. STE permits technical names, so code identifiers, file paths, and the domain terms in the glossary are correct words.
+
+- **One idea in each sentence.** Use a maximum of 20 words in an instruction and 25 words in a description. Use a maximum of six sentences in a paragraph. Use a vertical list for three or more items or conditions.
+- **Complete sentences.** Keep the articles. Do not write verbless fragments such as "Retries on failure."
+- **Active voice with a named actor.** Write "The scheduler retries the job", not "The job is retried". In a code explanation, the actor is often the important fact: it tells the reader which layer does the work.
+- **Simple tenses.** Use the present tense for what the code does. Use the past tense only for what the old code did before the change.
+- **One word, one meaning.** Use the identifier or the glossary term each time. Do not change the word for variety, because the reader will think that a new word is a new thing.
+- **Literal verbs.** Code does not "consult", "answer", or "follow" a rule. Say what it does: it reads, returns, calls, or writes.
+- **No `-ing` forms, no double negatives, no idioms.** Technical names are the exception.
+
+**A style rule must not delete a fact.** STE makes sentences shorter, not explanations. If an explanation needs 60 words, write three sentences of 20 words. If a rule and a fact conflict, keep the fact. Rule 3 serves rule 1, not the reverse.
 
 ## The Pipeline
 
@@ -43,7 +99,7 @@ Never bake agent output into the document unverified. Independently re-read ever
 Order the document so each section only needs what came before:
 
 1. **Hero** — title, scope chips (refs, sizes, commit counts)
-2. **The 30-second version** — what changes, in plain language, with a map diagram
+2. **The 30-second version** — the bottom line: what changes, why, and what the reviewer must check, in plain words, with a map diagram
 3. **Foundations** — domain 101, the wire contracts/interfaces, the core mechanisms (this is where "the X stuff" gets taught when the user asks "teach me X too")
 4. **Per-unit walkthroughs** — one per branch/module: overview → file-by-file before/after → subtleties → tests
 5. **End-to-end flows** — sequence diagrams that tie the units together
@@ -53,7 +109,7 @@ Order the document so each section only needs what came before:
 
 ### Phase 4 — Author (fragments + components)
 
-Write the document as fragment files, then concatenate in order. This keeps a 1500-line file editable and lets you fix one section without rewriting all of it. Copy [references/template-shell.html](references/template-shell.html) — it contains the full CSS theme and the JS for every component below, with `<!-- @SLOT -->` markers showing where content goes.
+Write every fragment to the [prose rules](#prose-rules). Write the document as fragment files, then concatenate in order. This keeps a 1500-line file editable and lets you fix one section without rewriting all of it. Copy [references/template-shell.html](references/template-shell.html) — it contains the full CSS theme and the JS for every component below, with `<!-- @SLOT -->` markers showing where content goes.
 
 **Component library** (all wired in the template; use them, don't reinvent):
 
@@ -92,7 +148,12 @@ Write the document as fragment files, then concatenate in order. This keeps a 15
    - playgrounds: exercise them via `evaluate` (set input, assert verdict output)
    - console: no errors (a favicon 404 is fine; a 404 for `…/languages/<name>.min.js` means a `language-` name highlight.js does not know)
 3. **Screenshots** in light AND dark of the hero, one diagram-heavy section, and each custom widget — look at them yourself; rendering bugs hide in screenshots, not in DOM assertions.
-4. Fix and re-check until clean. Delete screenshots and kill the server when done.
+4. **Read-through** as the reader, top to bottom, against the [prose rules](#prose-rules):
+   - the first paragraph of each section states its point
+   - no sentence uses a term before the document defines it
+   - each before/after says why
+   - a short script flags prose sentences over 25 words (text of `p`, `li`, `.wstep`, `summary`, and captions; skip `pre` and `code`). Split each one into shorter sentences; do not cut a fact.
+5. Fix and re-check until clean. Delete screenshots and kill the server when done.
 
 ### Phase 6 — Deliver
 

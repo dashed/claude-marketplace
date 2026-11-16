@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- code-walkthrough 1.2.0: prose rules for the generated document. Understanding over economy selects the content, bottom line up front (BLUF) sets the order at every level, and ASD-STE100 controls the words, with the rule that a style edit may not delete a fact. Phase 5 gains a read-through check, and the template's section example opens with its bottom line
+
 ## [0.59.0] - 2026-11-16
 
 ### Added

@@ -4,6 +4,19 @@ All notable changes to the code-walkthrough skill in this marketplace will be do
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.2.0] - 2026-11-16
+
+### Added
+- Prose rules for the generated document. Three rules do separate jobs, and the SKILL.md intro names them:
+  - **Understanding over economy** selects the content. It asks for the why of each before/after, one traced example per mechanism, enough code to follow the change, terms defined at first use, and facts restated instead of assumed. It also asks for captions on diagrams, one idea per section, and a split into a series instead of shorter explanations. It names the padding to delete.
+  - **Bottom line up front (BLUF)** sets the order at each level: the document, each section, each paragraph, and each before/after, walker step, callout, and caption. A bottom line uses only terms that an earlier section taught, so BLUF keeps the spiral order.
+  - **ASD-STE100** controls the words: one idea per sentence (20 words for an instruction, 25 for a description), complete sentences, active voice with a named actor, simple tenses, one word for one meaning, and literal verbs. Technical names are permitted. A style rule must not delete a fact.
+- Phase 5 read-through: check that each section opens with its point, that no term comes before its definition, and that each before/after says why. Flag prose sentences over 25 words.
+
+### Changed
+- The 30-second version states what changes, why, and what the reviewer must check.
+- The template's section example opens with a bottom-line paragraph, and the slot comment points to the prose rules.
+
 ## [1.1.0] - 2026-11-16
 
 ### Added

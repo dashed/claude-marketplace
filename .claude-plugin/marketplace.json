@@ -1260,7 +1260,7 @@
     },
     {
       "name": "code-walkthrough",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "source": "./plugins/code-walkthrough",
       "description": "Create self-contained interactive HTML documents that teach a code change (branch, PR, diff, subsystem) to a reviewer with no prior knowledge — before/after code toggles, mermaid diagrams, step-through code walkers, and playground widgets. Use when the user wants an interactive walkthrough/teaching document of a branch or PR, before/after visuals, or to learn a codebase area from zero.",
       "author": {
