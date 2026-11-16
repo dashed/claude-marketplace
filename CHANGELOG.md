@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- code-walkthrough 1.1.0: syntax highlighting with highlight.js (`class="language-<name>"`), which keeps per-line diff colours and walker line numbers; dark mode now also covers code tokens and mermaid diagrams, which re-render in the page's palette when the theme changes
+
+### Fixed
+- code-walkthrough 1.1.0: template fixes for a slot comment that ended early at a mermaid `-->` arrow, a blank line rendered after every code line, broken diagrams inside hidden tabs or closed `<details>`, and buttons that fell back to Arial
+
 ## [0.58.1] - 2026-10-21
 
 ### Fixed

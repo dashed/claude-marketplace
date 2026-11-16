@@ -62,12 +62,13 @@ Write the document as fragment files, then concatenate in order. This keeps a 15
 | Sidebar TOC + scrollspy | navigation in long docs |
 | Before/after tab toggles | every meaningful diff — reader flips between base and tip |
 | Diff-colored lines (`.cl.add/.cl.del/.cl.hl`) | real diffs (add/del) and attention (hl = not a diff!) |
+| Syntax highlighting (`<code class="language-python">`) | every code block — highlight.js colours the tokens and keeps the per-line diff/walker classes |
 | Collapsible `<details>` deep-dives | side context that would interrupt the spiral |
 | Step-through walker | execution-ordered code (a write path, a state machine) — steps highlight line ranges |
 | Mermaid diagrams | chain maps, ER diagrams, dependency graphs, sequence diagrams, state transitions |
 | Callouts (`.note/.warn/.key`) | the one idea per section the reader must not miss |
 | Glossary-linked `<dfn>` | domain terms, clickable to the glossary |
-| Light/dark theme toggle | persisted; diagrams keep a light canvas in both |
+| Light/dark theme | follows the OS until the reader toggles (then persisted); set before first paint; code tokens and diagrams re-theme too |
 | Playground widgets | mirror the logic under study in JS (a validator the reader can throw inputs at, a scheduler that shows race outcomes) — the strongest teaching tool when the domain allows |
 
 **Fidelity rules:**
@@ -75,6 +76,8 @@ Write the document as fragment files, then concatenate in order. This keeps a 15
 - Quote code **verbatim** at stated refs. If you condense, mark it ("condensed for width", elision comments) — never silently alter.
 - HTML-escape everything (`<=` → `&lt;=`); run the balance check in phase 5 to catch what you missed.
 - `add`/`del` colors only for lines that are actually added/removed in the diff; use `hl` for emphasis elsewhere.
+- Put `language-<name>` (a highlight.js name or alias: `python`, `ts`, `tsx`, `go`, `sql`, ...) on every code block's `<code>`. Keep lines plain text — no `+`/`-` prefixes, no spans inside a `.cl` line; a line with markup in it opts its whole block out of highlighting.
+- No hard-coded colours in mermaid source (`style X fill:#…`, coloured `classDef`): they break in one of the two themes. Mark the node the reader should look at with `class NodeId current`.
 - No planning artifacts, ticket IDs, or local scratch paths in the document unless the user asks for them.
 
 ### Phase 5 — Verify in a real browser
@@ -82,29 +85,31 @@ Write the document as fragment files, then concatenate in order. This keeps a 15
 1. **Structure**: parse the HTML (any lenient parser) for unbalanced tags; check every `href="#…"` resolves; check tab buttons match panes; count mermaid blocks.
 2. **Render**: serve the file (`python3 -m http.server`) and drive a headless browser (e.g. the Playwright MCP):
    - every `.mermaid` contains an `svg` (count them)
+   - every `code[class*=language-]` block contains `.hljs-*` spans and still has its original number of `.cl` lines
    - walker: click next/prev, assert the active step and highlighted lines change
    - tabs: toggle each group, assert pane visibility flips
-   - theme: toggle dark, re-check diagram readability
+   - theme: toggle dark, assert the diagram SVGs were replaced (new `svg` ids) and re-check readability of diagrams and code
    - playgrounds: exercise them via `evaluate` (set input, assert verdict output)
-   - console: no errors (a favicon 404 is fine)
+   - console: no errors (a favicon 404 is fine; a 404 for `…/languages/<name>.min.js` means a `language-` name highlight.js does not know)
 3. **Screenshots** in light AND dark of the hero, one diagram-heavy section, and each custom widget — look at them yourself; rendering bugs hide in screenshots, not in DOM assertions.
 4. Fix and re-check until clean. Delete screenshots and kill the server when done.
 
 ### Phase 6 — Deliver
 
-Deliver the single HTML file at the requested path. Keep the fragments directory (mention it — it is how the user iterates). Note the one external dependency (mermaid CDN) and that the document degrades to readable diagram source offline. If the user is currently reading an earlier document, write a NEW file and cross-link; never edit a file the user has open.
+Deliver the single HTML file at the requested path. Keep the fragments directory (mention it — it is how the user iterates). Note the two external dependencies (mermaid and highlight.js, both from the jsDelivr CDN) and that offline the document degrades to plain code and readable diagram source. If the user is currently reading an earlier document, write a NEW file and cross-link; never edit a file the user has open.
 
 ## Pitfalls (learned the hard way)
 
 1. **Mermaid + dynamic import**: `mermaid.initialize({startOnLoad: true})` silently never renders when the import resolves after the load event. Use `startOnLoad: false` + explicit `await mermaid.run({querySelector: ".mermaid"})`, with a fallback that swaps diagrams for their (readable) source text if the CDN is unreachable.
-2. **Dark-mode diagrams**: mermaid's neutral theme draws dark text — invisible on a dark page. Keep the diagram canvas light in both themes (`.mermaid { background: #fbfafc }`).
-3. **Empty grep false negatives**: an empty result from a tree-wide search proves nothing if you were in the wrong directory. Sanity-grep a term you KNOW exists first; check `pwd` after hopping between repos.
-4. **Agent claims ≠ facts**: the two classic failures are plausible-but-wrong mechanism descriptions ("the setting lives in an org option" — actually a model column) and unverified counts ("12 tests" — actually 7). Phase 2 exists for this; do not skip it when the agents sounded confident.
-5. **`order_by` vs in-Python sort** (and similar framework subtleties): when the code comments explain a non-obvious choice, quote the comment — it is usually the reason the reader was confused.
-6. **cwd drift**: assembling fragments or running validation from the wrong working directory produces confusing "file not found" storms. Use absolute paths in assembly commands.
+2. **Dark-mode diagrams**: mermaid's stock themes are fixed palettes; the neutral theme draws dark text, invisible on a dark page. The template uses the `base` theme with `themeVariables` read from the page's CSS colours, and re-renders every diagram when the theme changes. It renders off-screen and swaps the SVG in, because rendering in place shows raw source mid-render, and a diagram inside a hidden tab or closed `<details>` lays out broken (clipped notes, missing actor boxes).
+3. **Highlighters flatten line markup**: `hljs.highlightElement` and similar re-read `textContent` and replace the block, destroying the `.cl` line spans that carry diff colours and walker line numbers. The template highlights the joined text and splits the HTML back onto the lines, closing and re-opening any span (a multi-line string or comment) that crosses a newline.
+4. **Empty grep false negatives**: an empty result from a tree-wide search proves nothing if you were in the wrong directory. Sanity-grep a term you KNOW exists first; check `pwd` after hopping between repos.
+5. **Agent claims ≠ facts**: the two classic failures are plausible-but-wrong mechanism descriptions ("the setting lives in an org option" — actually a model column) and unverified counts ("12 tests" — actually 7). Phase 2 exists for this; do not skip it when the agents sounded confident.
+6. **`order_by` vs in-Python sort** (and similar framework subtleties): when the code comments explain a non-obvious choice, quote the comment — it is usually the reason the reader was confused.
+7. **cwd drift**: assembling fragments or running validation from the wrong working directory produces confusing "file not found" storms. Use absolute paths in assembly commands.
 
 ## Scaling notes
 
 - Small change (≤3 files): skip agent fan-out; extract directly, still follow phases 2→5.
-- Multi-branch stacks: one document per 1–2 branches, cross-linked in a series — better than one 4000-line document. Give each part a chain-map diagram with the current part highlighted.
+- Multi-branch stacks: one document per 1–2 branches, cross-linked in a series — better than one 4000-line document. Give each part a chain-map diagram with the current part highlighted (`class NodeId current`).
 - Keep widgets honest: a playground must implement the same logic as the code it teaches (port the checks, don't fake outcomes), and say so in the document.

@@ -4,32 +4,53 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><!-- @SLOT:title --></title>
+<script>
+/* Set the theme before first paint: a saved choice, else the OS preference. */
+(function () {
+  var t = null;
+  try { t = localStorage.getItem("walkthrough-theme"); } catch (e) {}
+  if (t !== "light" && t !== "dark") {
+    t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  document.documentElement.setAttribute("data-theme", t);
+})();
+</script>
 <style>
+/* Mermaid reads the --diagram-* values (and --ink, --accent, ...) through
+   getComputedStyle, so keep every colour here a 6-digit hex. Token colours
+   (--tk-*) pass WCAG AA on code, add, del and highlighted lines. */
 :root {
+  color-scheme: light;
   --bg: #f7f6f9; --panel: #ffffff; --ink: #1d1627; --ink-2: #584d6b; --ink-3: #8a7f9c;
-  --accent: #6c5fc7; --accent-soft: #efedfb; --accent-ink: #4a3fa3;
+  --accent: #6c5fc7; --accent-soft: #efedfb; --accent-ink: #4a3fa3; --on-accent: #ffffff;
   --line: #e4e0ee; --code-bg: #f4f2fa; --code-ink: #2b2440;
   --add-bg: #dcf5e3; --add-bar: #1f9d55; --del-bg: #fde4e4; --del-bar: #d64545;
   --note-bg: #eef4ff; --note-bar: #3b82c4; --warn-bg: #fdf3e0; --warn-bar: #d9930d;
   --key-bg: #f0ebfd; --key-bar: #6c5fc7;
-  --str: #0b7a4b; --cmt: #8a7f9c; --kw: #4a3fa3;
+  --tk-kw: #5b3cc4; --tk-str: #0b5e86; --tk-num: #9a4a00; --tk-fn: #9c2a7a;
+  --tk-type: #0d6b5a; --tk-cmt: #6b6280; --tk-meta: #7a5a00;
+  --diagram-bg: #fbfafc; --diagram-node: #efedfb; --diagram-alt: #f4f2fa; --diagram-current: #d9d2fb;
   --shadow: 0 1px 3px rgba(29,22,39,.08), 0 4px 14px rgba(29,22,39,.05);
 }
 [data-theme="dark"] {
+  color-scheme: dark;
   --bg: #16121f; --panel: #1e1830; --ink: #ece8f5; --ink-2: #b6aecb; --ink-3: #7d7396;
-  --accent: #9d8fef; --accent-soft: #2a2244; --accent-ink: #b6a8ff;
+  --accent: #9d8fef; --accent-soft: #2a2244; --accent-ink: #b6a8ff; --on-accent: #16121f;
   --line: #322a4d; --code-bg: #241d3a; --code-ink: #e2dcf2;
   --add-bg: #143a24; --add-bar: #34c774; --del-bg: #441f24; --del-bar: #ef6a6a;
   --note-bg: #16283f; --note-bar: #58a6e8; --warn-bg: #3a2c12; --warn-bar: #e8b04b;
   --key-bg: #2a2244; --key-bar: #9d8fef;
-  --str: #6fd3a0; --cmt: #7d7396; --kw: #b6a8ff;
+  --tk-kw: #c4b5ff; --tk-str: #8ccff7; --tk-num: #ffb470; --tk-fn: #f39bd3;
+  --tk-type: #6fdac2; --tk-cmt: #a197bb; --tk-meta: #e7c36a;
+  --diagram-bg: #1a1529; --diagram-node: #2a2244; --diagram-alt: #241d3a; --diagram-current: #43367a;
   --shadow: 0 1px 3px rgba(0,0,0,.35), 0 4px 14px rgba(0,0,0,.25);
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+:root { --ui-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
 body {
   margin: 0; background: var(--bg); color: var(--ink);
-  font: 16px/1.62 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font: 16px/1.62 var(--ui-font);
 }
 /* ---------- layout ---------- */
 #sidebar {
@@ -80,16 +101,31 @@ code { font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, mo
 .codewrap { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 14px 0; background: var(--code-bg); }
 .codewrap .codehead { display: flex; justify-content: space-between; align-items: center; background: var(--accent-soft); padding: 6px 14px; font-size: 12.5px; font-family: ui-monospace, Menlo, monospace; color: var(--accent-ink); }
 .codewrap pre { margin: 0; padding: 14px 0; overflow-x: auto; font-size: 13px; line-height: 1.55; }
-.codewrap pre code { background: none; padding: 0; font-size: inherit; color: var(--code-ink); display: block; }
-.cl { display: block; padding: 0 16px 0 14px; border-left: 3px solid transparent; white-space: pre; }
+.codewrap pre code, .walker .wcode pre code { background: none; padding: 0; font-size: inherit; color: var(--code-ink); display: block; }
+/* .cl lines are blocks, so the source newline between two lines would render
+   as an extra blank line: collapse it. min-height keeps empty lines visible. */
+pre code:has(> .cl) { white-space: normal; }
+.codewrap pre code:not(:has(> .cl)) { padding: 0 16px 0 17px; }
+.cl { display: block; padding: 0 16px 0 14px; border-left: 3px solid transparent; white-space: pre; min-height: 1lh; }
 .cl.add { background: var(--add-bg); border-left-color: var(--add-bar); }
 .cl.del { background: var(--del-bg); border-left-color: var(--del-bar); }
 .cl.hl  { background: var(--accent-soft); border-left-color: var(--accent); }
 .cl.dim { opacity: .62; }
-.cmt { color: var(--cmt); font-style: italic; } .str { color: var(--str); } .kw { color: var(--kw); font-weight: 600; }
+/* ---------- syntax tokens: highlight.js classes and hand-marked .kw/.str/.cmt share one palette ---------- */
+.hljs-keyword, .hljs-selector-tag, .hljs-name, .hljs-variable.language_, .hljs-doctag, .kw { color: var(--tk-kw); }
+.hljs-keyword, .kw { font-weight: 600; }
+.hljs-string, .hljs-regexp, .hljs-char.escape_, .hljs-meta .hljs-string, .hljs-template-tag, .str { color: var(--tk-str); }
+.hljs-number, .hljs-literal, .hljs-symbol, .hljs-bullet, .hljs-variable.constant_, .hljs-link { color: var(--tk-num); }
+.hljs-title, .hljs-section, .hljs-selector-id, .hljs-selector-class { color: var(--tk-fn); }
+.hljs-type, .hljs-built_in, .hljs-title.class_, .hljs-attr, .hljs-attribute, .hljs-selector-attr, .hljs-selector-pseudo { color: var(--tk-type); }
+.hljs-meta, .hljs-template-variable { color: var(--tk-meta); }
+.hljs-comment, .hljs-quote, .cmt { color: var(--tk-cmt); font-style: italic; }
+.hljs-subst { color: var(--code-ink); }
+.hljs-addition { background: var(--add-bg); } .hljs-deletion { background: var(--del-bg); }
+.hljs-emphasis { font-style: italic; } .hljs-strong { font-weight: 700; }
 /* ---------- before/after tabs ---------- */
 .batabs { display: inline-flex; background: var(--accent-soft); border-radius: 9px; padding: 3px; gap: 3px; margin: 6px 0; }
-.batabs button { border: none; background: transparent; color: var(--accent-ink); font: 600 12.5px/1 inherit; padding: 7px 16px; border-radius: 7px; cursor: pointer; }
+.batabs button { border: none; background: transparent; color: var(--accent-ink); font: 600 12.5px/1 var(--ui-font); padding: 7px 16px; border-radius: 7px; cursor: pointer; }
 .batabs button.on { background: var(--panel); box-shadow: var(--shadow); }
 .bapane { display: none; } .bapane.on { display: block; }
 /* ---------- details ---------- */
@@ -104,8 +140,12 @@ table.tbl { border-collapse: collapse; width: 100%; font-size: 13.5px; margin: 1
 .tbl td { padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
 .tbl tr:nth-child(even) td { background: color-mix(in srgb, var(--accent-soft) 40%, transparent); }
 .tbl td code { font-size: 12px; }
-/* ---------- mermaid: light canvas in BOTH themes (dark text unreadable on dark) ---------- */
-.mermaid { background: #fbfafc; border: 1px solid var(--line); border-radius: 10px; padding: 18px 10px; margin: 14px 0; text-align: center; overflow-x: auto; }
+/* ---------- mermaid: themed from the --diagram-* tokens, re-rendered on theme change ---------- */
+.mermaid { background: var(--diagram-bg); border: 1px solid var(--line); border-radius: 10px; padding: 18px 10px; margin: 14px 0; text-align: center; overflow-x: auto; }
+/* `class NodeId current` in a flowchart: theme-aware highlight (mermaid's own rules use an id selector, hence !important) */
+.mermaid .node.current .label-container, .mermaid .node.current > rect, .mermaid .node.current > polygon,
+.mermaid .node.current > circle, .mermaid .node.current > path { fill: var(--diagram-current) !important; stroke: var(--accent) !important; stroke-width: 2.5px !important; }
+.mermaid .node.current .nodeLabel { font-weight: 700; }
 .mermaid-fallback { font-size: 12.5px; color: var(--ink-3); text-align: left; }
 /* ---------- walker ---------- */
 .walker { display: grid; grid-template-columns: minmax(0,7fr) minmax(0,5fr); gap: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin: 16px 0; }
@@ -116,7 +156,7 @@ table.tbl { border-collapse: collapse; width: 100%; font-size: 13.5px; margin: 1
 .walker .wstep { display: none; } .walker .wstep.on { display: block; }
 .walker .wstep h4 { margin-top: 0; }
 .walker .wctl { margin-top: auto; padding-top: 14px; display: flex; align-items: center; gap: 10px; }
-.walker .wctl button { border: 1px solid var(--accent); background: var(--accent); color: #fff; border-radius: 8px; padding: 7px 15px; font: 600 13px inherit; cursor: pointer; }
+.walker .wctl button { border: 1px solid var(--accent); background: var(--accent); color: var(--on-accent); border-radius: 8px; padding: 7px 15px; font: 600 13px var(--ui-font); cursor: pointer; }
 .walker .wctl button.sec { background: transparent; color: var(--accent-ink); }
 .walker .wctl button:disabled { opacity: .35; cursor: default; }
 .walker .wdots { display: flex; gap: 5px; }
@@ -135,12 +175,12 @@ dfn { font-style: normal; border-bottom: 1.5px dotted var(--accent); cursor: hel
 .legend .l-hl  { background: var(--accent-soft); border-left-color: var(--accent); }
 .big { font-size: 17.5px; }
 .kbd { border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 0 6px; font-size: 12px; background: var(--panel); }
-#themeBtn { position: fixed; top: 14px; right: 16px; z-index: 50; border: 1px solid var(--line); background: var(--panel); color: var(--ink-2); border-radius: 999px; padding: 7px 14px; font: 600 12.5px inherit; cursor: pointer; box-shadow: var(--shadow); }
+#themeBtn { position: fixed; top: 14px; right: 16px; z-index: 50; border: 1px solid var(--line); background: var(--panel); color: var(--ink-2); border-radius: 999px; padding: 7px 14px; font: 600 12.5px var(--ui-font); cursor: pointer; box-shadow: var(--shadow); }
 .sig { font-family: ui-monospace, Menlo, monospace; font-size: 13px; background: var(--code-bg); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 8px; padding: 10px 14px; overflow-x: auto; white-space: pre; margin: 8px 0; }
 </style>
 </head>
 <body>
-<button id="themeBtn" title="Toggle light/dark">◐ theme</button>
+<button id="themeBtn" type="button">◐ theme</button>
 <nav id="sidebar">
   <div class="brand"><!-- @SLOT:brand --></div>
   <div class="sub"><!-- @SLOT:brand-sub --></div>
@@ -173,20 +213,27 @@ COMPONENT PATTERNS (all wired by the JS below):
 <div class="bapane on" data-pane="grp-a">...before code...</div>
 <div class="bapane" data-pane="grp-b">...after code...</div>
 
-3) Code with diff colors (escape &lt; as &amp;lt;):
+3) Code with diff colors and syntax highlighting (escape &lt; as &amp;lt;):
 <div class="codewrap"><div class="codehead"><span>path/to/file.py</span><span>tip &lt;sha&gt;</span></div>
-<pre><code><span class="cl">context line</span>
+<pre><code class="language-python"><span class="cl">context line</span>
 <span class="cl add">added line (real diff only)</span>
 <span class="cl del">removed line (real diff only)</span>
 <span class="cl hl">emphasized line (NOT a diff)</span></code></pre></div>
-Inline emphasis spans: <span class="kw">keyword</span> <span class="str">string</span> <span class="cmt">comment</span>
+`language-<name>` takes any highlight.js name or alias (python, ts, tsx, go, rust,
+sql, yaml, bash, json, ...); names outside the common bundle load on demand.
+The whole block is highlighted as one text, then split back onto the .cl lines,
+so add/del/hl/dim classes and walker data-l attributes survive. Lines stay plain
+text: no "+"/"-" prefixes (the classes carry the diff). A block with no
+language-* class, or with any element inside a .cl line, is left exactly as
+written; hand-mark such a block with <span class="kw|str|cmt">. The same class
+works on a .sig signature box.
 
 4) Callouts:
 <div class="callout key"><span class="t">Title</span><p>...</p></div>   (.key | .note | .warn)
 
 5) Step-through walker (steps own line ranges via data-lines; lines carry data-l):
 <div class="walker" data-walker>
-  <div class="wcode"><pre><code>
+  <div class="wcode"><pre><code class="language-python">
 <span class="cl" data-l="1">line one</span>
 <span class="cl" data-l="2">line two</span></code></pre></div>
   <div class="wside">
@@ -198,11 +245,17 @@ Inline emphasis spans: <span class="kw">keyword</span> <span class="str">string<
   </div>
 </div>
 
-6) Mermaid (renders via CDN; degrades to readable source offline):
+6) Mermaid (renders via CDN; degrades to readable source offline).
+This example uses ==> (thick arrows) only because the usual arrow would end
+this HTML comment; write normal arrows in real diagrams:
 <div class="mermaid">
 flowchart LR
-    A["start"] --> B["end"]
+    A["part 1"] ==> B["part 2"] ==> C["part 3"]
+    class B current
 </div>
+Colours come from the page theme and re-render on toggle, so do not hard-code
+fills (`style X fill:#...`, classDef colours): they break in one theme.
+`class NodeId current` highlights a flowchart node in both themes.
 
 7) Glossary terms: <dfn title="short definition">term</dfn> (click jumps to .glos)
 <dl class="glos"><dt>term</dt><dd>definition</dd></dl>
@@ -214,17 +267,37 @@ flowchart LR
 <script>
 (function () {
   "use strict";
-  /* ---------- theme ---------- */
+  /* ---------- theme (initial value is set by the script in <head>) ---------- */
   var root = document.documentElement;
-  var saved = null;
-  try { saved = localStorage.getItem("walkthrough-theme"); } catch (e) {}
-  if (!saved && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) saved = "dark";
-  if (saved) root.setAttribute("data-theme", saved);
-  document.getElementById("themeBtn").addEventListener("click", function () {
+  var themeBtn = document.getElementById("themeBtn");
+  var KEY = "walkthrough-theme";
+  function savedTheme() {
+    try { return localStorage.getItem(KEY); } catch (e) { return null; }
+  }
+  function labelButton() {
+    var dark = root.getAttribute("data-theme") === "dark";
+    themeBtn.textContent = dark ? "☀ light" : "☾ dark";
+    themeBtn.title = dark ? "Switch to light theme" : "Switch to dark theme";
+  }
+  function setTheme(t) {
+    root.setAttribute("data-theme", t);
+    labelButton();
+    // The mermaid module re-renders diagrams on this event.
+    document.dispatchEvent(new CustomEvent("walkthrough:theme", { detail: { theme: t } }));
+  }
+  labelButton();
+  themeBtn.addEventListener("click", function () {
     var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-    root.setAttribute("data-theme", next);
-    try { localStorage.setItem("walkthrough-theme", next); } catch (e) {}
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    setTheme(next);
   });
+  // Follow OS changes until the reader picks a theme with the button.
+  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  if (mq && mq.addEventListener) {
+    mq.addEventListener("change", function (ev) {
+      if (!savedTheme()) setTheme(ev.matches ? "dark" : "light");
+    });
+  }
   /* ---------- before/after tabs ---------- */
   document.querySelectorAll(".batabs").forEach(function (tabs) {
     tabs.addEventListener("click", function (ev) {
@@ -308,28 +381,153 @@ flowchart LR
 })();
 </script>
 <script type="module">
-  var fallback = function () {
-    document.querySelectorAll(".mermaid").forEach(function (el) {
+  /* Both CDN libraries are optional: without them code stays plain and diagrams
+     fall back to their source text. */
+  var root = document.documentElement;
+  var HLJS = "https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.12.0/es";
+  var MERMAID = "https://cdn.jsdelivr.net/npm/mermaid@10.9.3/dist/mermaid.esm.min.mjs";
+
+  /* ---------- syntax highlighting ---------- */
+  function langOf(el) {
+    var m = /(?:^|\s)language-(\S+)/.exec(el.className);
+    return m ? m[1].toLowerCase() : null;
+  }
+  // highlight.js output keeps a span open across a newline (a multi-line
+  // string or comment). Close the open spans at each newline and reopen them
+  // on the next line, so every line is balanced HTML.
+  function splitLines(html) {
+    var lines = [], open = [], cur = "";
+    html.replace(/<span[^>]*>|<\/span>|\n|[^<\n]+/g, function (tok) {
+      if (tok === "\n") {
+        lines.push(cur + "</span>".repeat(open.length));
+        cur = open.join("");
+      } else if (tok === "</span>") {
+        open.pop(); cur += tok;
+      } else {
+        if (tok.charAt(0) === "<") open.push(tok);
+        cur += tok;
+      }
+      return "";
+    });
+    lines.push(cur);
+    return lines;
+  }
+  async function highlightCode() {
+    var blocks = Array.prototype.slice.call(
+      document.querySelectorAll('pre > code[class*="language-"], .sig[class*="language-"]'));
+    if (!blocks.length) return;
+    var hljs = (await import(HLJS + "/highlight.min.js")).default;
+    var missing = {};
+    blocks.forEach(function (b) {
+      var lang = langOf(b);
+      if (lang && /^[a-z0-9-]+$/.test(lang) && !hljs.getLanguage(lang)) missing[lang] = true;
+    });
+    // Grammars outside the common bundle load on demand. An unknown name
+    // fails here (a 404 in the console) and its blocks stay plain.
+    await Promise.all(Object.keys(missing).map(function (lang) {
+      return import(HLJS + "/languages/" + lang + ".min.js")
+        .then(function (mod) { hljs.registerLanguage(lang, mod.default); })
+        .catch(function () {});
+    }));
+    blocks.forEach(function (block) {
+      var lang = langOf(block);
+      if (!lang || !hljs.getLanguage(lang)) return;
+      var lines = Array.prototype.slice.call(block.querySelectorAll(":scope > .cl"));
+      var targets = lines.length ? lines : [block];
+      // Elements inside a line mean the author marked it by hand: keep it.
+      if (targets.some(function (t) { return t.children.length; })) return;
+      var text = targets.map(function (t) { return t.textContent; }).join("\n");
+      var out = splitLines(hljs.highlight(text, { language: lang, ignoreIllegals: true }).value);
+      if (!lines.length) { block.innerHTML = out.join("\n"); return; }
+      if (out.length !== lines.length) return;  // a .cl held a newline: leave the block plain
+      lines.forEach(function (cl, i) { cl.innerHTML = out[i]; });
+    });
+  }
+  highlightCode().catch(function () {});
+
+  /* ---------- mermaid ---------- */
+  var diagrams = Array.prototype.slice.call(document.querySelectorAll(".mermaid"));
+  var sources = diagrams.map(function (el) { return el.innerHTML; });
+  function cssVar(name) { return getComputedStyle(root).getPropertyValue(name).trim(); }
+  // The "base" theme is the only mermaid theme that takes themeVariables, and
+  // it needs real colours, not var() references: read them from the page.
+  function mermaidConfig() {
+    var ink = cssVar("--ink");
+    return {
+      startOnLoad: false,
+      theme: "base",
+      themeVariables: {
+        darkMode: root.getAttribute("data-theme") === "dark",
+        fontFamily: getComputedStyle(document.body).fontFamily,
+        background: cssVar("--diagram-bg"),
+        primaryColor: cssVar("--diagram-node"),
+        primaryTextColor: ink,
+        primaryBorderColor: cssVar("--accent"),
+        secondaryColor: cssVar("--diagram-alt"),
+        tertiaryColor: cssVar("--diagram-alt"),
+        lineColor: cssVar("--ink-2"),
+        textColor: ink,
+        edgeLabelBackground: cssVar("--diagram-bg"),
+        clusterBkg: cssVar("--diagram-alt"),
+        clusterBorder: cssVar("--line"),
+        noteBkgColor: cssVar("--warn-bg"),
+        noteTextColor: ink,
+        noteBorderColor: cssVar("--warn-bar"),
+        actorLineColor: cssVar("--ink-3"),
+        attributeBackgroundColorOdd: cssVar("--panel"),
+        attributeBackgroundColorEven: cssVar("--diagram-alt")
+      },
+      flowchart: { htmlLabels: true, curve: "basis" },
+      sequence: { actorMargin: 60, messageMargin: 34 },
+      er: { layoutDirection: "LR" }
+    };
+  }
+  // Render off-screen, then swap each SVG in. The visible diagram never shows
+  // its source mid-render, and diagrams in a hidden tab or a closed <details>
+  // still get a real layout.
+  async function renderDiagrams(mermaid) {
+    mermaid.initialize(mermaidConfig());
+    var stage = document.createElement("div");
+    stage.setAttribute("aria-hidden", "true");
+    stage.style.cssText = "position:absolute;left:-10000px;top:0;visibility:hidden;width:" +
+      ((document.querySelector("main") || document.body).clientWidth || 1000) + "px";
+    document.body.appendChild(stage);
+    var clones = sources.map(function (src) {
+      var c = document.createElement("div");
+      c.className = "mermaid";
+      c.innerHTML = src;
+      stage.appendChild(c);
+      return c;
+    });
+    try {
+      await mermaid.run({ nodes: clones, suppressErrors: true });
+      diagrams.forEach(function (el, i) {
+        if (clones[i].querySelector("svg")) el.replaceChildren.apply(el, Array.prototype.slice.call(clones[i].childNodes));
+      });
+    } finally {
+      stage.remove();
+    }
+  }
+  function fallback() {
+    diagrams.forEach(function (el) {
       var pre = document.createElement("pre");
       pre.className = "mermaid-fallback";
       pre.textContent = el.textContent;
       el.replaceWith(pre);
     });
-  };
-  try {
-    var mermaid = (await import("https://cdn.jsdelivr.net/npm/mermaid@10.9.3/dist/mermaid.esm.min.mjs")).default;
-    mermaid.initialize({
-      startOnLoad: false,
-      theme: "neutral",
-      flowchart: { htmlLabels: true, curve: "basis" },
-      sequence: { actorMargin: 60, messageMargin: 34 },
-      er: { layoutDirection: "LR" }
-    });
-    // The dynamic import resolves after the load event, so startOnLoad would
-    // never fire — render explicitly instead.
-    await mermaid.run({ querySelector: ".mermaid", suppressErrors: true });
-  } catch (e) {
-    fallback();
+  }
+  if (diagrams.length) {
+    try {
+      var mermaid = (await import(MERMAID)).default;
+      // One render at a time: a toggle during a render queues the next one.
+      var queue = renderDiagrams(mermaid);
+      document.addEventListener("walkthrough:theme", function () {
+        queue = queue.catch(function () {}).then(function () { return renderDiagrams(mermaid); });
+      });
+      await queue;
+    } catch (e) {
+      fallback();
+    }
   }
 </script>
 </body>
