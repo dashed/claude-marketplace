@@ -526,7 +526,7 @@ def test_pattern_ruff_rules_find_their_weak_tests(tmp_path: Path) -> None:
     path = pattern_module(tmp_path)
     result = subprocess.run(
         ["ruff", "check", "--isolated", "--output-format", "json", "--select"]
-        + ["PT011,PT012,PT017,B015,F631,PLR0124", path.name],
+        + ["PT011,PT012,PT017,B015,F631,PLR0124,SLF001", path.name],
         cwd=tmp_path,
         capture_output=True,
         text=True,
@@ -549,6 +549,7 @@ def test_pattern_ruff_rules_find_their_weak_tests(tmp_path: Path) -> None:
         ("PT011", "test_overdraw_weak"),
         ("PT011", "test_port_range_weak"),
         ("PT012", "test_port_range_weak"),
+        ("SLF001", "test_receive_weak"),
     }
 
 

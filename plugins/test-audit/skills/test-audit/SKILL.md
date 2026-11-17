@@ -1,6 +1,6 @@
 ---
 name: test-audit
-description: "Decide whether a test earns its place, at write time and in audits: an authoring gate for every new or changed test (what it protects, which regression fails it, why existing coverage misses that, whether it needs a test-only seam, and a regression test that fails before the fix); a checklist of low-value patterns — assertion-free tests, expected values computed by the code under test, duplicate bodies that hide a missing test, mocks that implement the asserted behavior, negative controls that pass for the wrong reason, names that promise more than the input exercises; a retention bar; and an evidence ledger before any delete. Use when writing, changing, or reviewing tests; when a reviewer asks whether a test is needed or calls it tautological, redundant, or implementation-coupled; when asked for a regression test; when auditing a suite for junk tests or for production code only tests use; or when planning a subsystem test-pruning campaign. Ships a pytest smell scanner and a test-only-symbol finder."
+description: "Decide whether a test earns its place, at write time and in audits: an authoring gate for every new or changed test (what it protects, which regression fails it, why existing coverage misses that, any test-only seam it needs, a regression test that fails before the fix); a checklist of low-value patterns — assertion-free tests, tests of a dependency, tombstones for removed code, expected values computed by the code under test or copied from its formula, private state, duplicate bodies that hide a missing test, mocks that implement the asserted behavior, negative controls that pass for the wrong reason; a retention bar; an evidence ledger before any delete. Use when writing, changing, or reviewing tests; when a reviewer calls a test tautological, redundant, or implementation-coupled; when asked for a regression test; when asked to prune tests or audit a suite for junk tests or production code only tests use; or when planning a test-pruning campaign. Ships a pytest smell scanner and a test-only-symbol finder."
 license: MIT
 ---
 
@@ -50,17 +50,22 @@ One checklist for both modes: the gate rejects a new test that matches a pattern
 **Pins nothing**
 - an assertion-free test: it pins only "does not raise" — keep it only when not raising is the contract, and then name that contract;
 - a comparison without `assert`, or an `assert` on a tuple or a constant;
-- an expression compared with itself (`assert sub.interval == sub.interval`).
+- an expression compared with itself (`assert sub.interval == sub.interval`);
+- a test that only exercises a dependency: it passes for any implementation of your code, because the framework or the standard library produces the result (a dataclass stores its fields, the ORM saves a plain field). Keep it when it pins your configuration of the dependency, or a dependency behavior your code relies on.
+
+**Pins the past**
+- a tombstone: an assertion that removed code stays removed (a module gone from its old path, a deleted function, a dropped flag). No change to the live code can make it fail. Keep it only as a deliberate guard against bringing back something removed on purpose ([retention bar](#retention-bar)).
 
 **Pins its own inputs**
 - an expected value that the code under test computes (`expected = slug(t); assert slug(t) == expected`);
+- an expected value rebuilt from the production formula or constant (`net * (100 + TAX_PERCENT) // 100`): a wrong rate moves both sides of the comparison;
 - a determinism, idempotency or caching check that never pins a value: a function that always returns `""` passes `key(a) == key(a)`;
 - a mock that implements the asserted behavior, or one bare `Mock` that stands in for different APIs — `create_autospec` makes the mock reject calls the real API rejects;
 - a fixture that supplies the state, ordering or callback the owner should produce, or persistence asserted against a store that the path never writes;
 - a copied inventory: a literal list, manifest or `__all__` compared with the production constant — it fails on every legitimate addition and catches nothing else.
 
 **Pins implementation**
-- private predicates and call shapes (`assert_called_once_with` on an internal helper) that the real boundary already covers;
+- private state, private predicates and call shapes (`inventory._stock`, `assert_called_once_with` on an internal helper) that the real boundary already covers;
 - source and string greps (`inspect.getsource`, reading a `.py` file);
 - a test whose only job is to keep a test-only export, global, flag or wrapper alive, and production code that only tests call ([test-only seams](#test-only-seams)).
 
@@ -76,7 +81,7 @@ One checklist for both modes: the gate rejects a new test that matches a pattern
 
 ## Discovery
 
-Keep discovery read-only, and report evidence before any edit. Three mechanical passes start it. None of them is a verdict.
+Keep discovery read-only, and report evidence before any edit. Four mechanical passes start it. None of them is a verdict.
 
 ```bash
 # Patterns ruff cannot see: no-assert, self-compare, repeat-call, dup-body, reads-source.
@@ -87,6 +92,10 @@ python3 scripts/scan_smells.py tests/ --assert-helper '^get_(success|error)_resp
 # compared with itself (PLR0124).
 ruff check --isolated --select PT011,PT012,PT017,B015,F631,PLR0124 tests/
 
+# Private names read outside their class (SLF001): a triage list for "pins implementation".
+ruff check --isolated --select SLF001 \
+  --config 'lint.flake8-self.extend-ignore-names = ["_meta", "_get_current_object"]' tests/
+
 # Production symbols that only tests refer to.
 python3 scripts/find_seams.py --src src/pkg ../consumer-repo/pkg --tests tests
 ```
@@ -96,6 +105,8 @@ python3 scripts/find_seams.py --src src/pkg ../consumer-repo/pkg --tests tests
 - **`self-compare` is usually a bug** (a typo for the expected value). **`repeat-call` is usually a deliberate determinism, idempotency or caching test**; check that it also pins a value.
 - **`find_seams.py` matches by name.** It misses a seam whose name production uses for anything, and it cannot see a codebase you do not pass under `--src`. `decorated`, `override`, `string` and `exported` tags mean "check how production reaches it"; start from the untagged candidates. A cluster of candidates in one package, all subclasses of one base, is usually a registry that production loads by name.
 - **ruff's PT011** flags every `pytest.raises` of a broad type without `match=`. Triage it by asking whether another guard on the path raises the same type.
+- **`SLF001` is noisy.** It reported 320 sites in six open-source suites and 1,467 on the Django suite. Besides private state, it flags underscore names that are public by contract (Django's `_meta` was 121 of the 1,467; add the framework's names to `extend-ignore-names`) and private modules that a suite tests on purpose (`click._termui_impl`). Apply the refactor check to each site.
+- **An absence assertion is not a tombstone until the history says so.** On the Django suite, 14 of the 15 `pytest.raises(ModuleNotFoundError)` and `not hasattr(` assertions pinned live behavior. A tombstone usually landed in the commit that removed what it asserts is gone; `git log -S '<test name>' --reverse -- <file>` lists that commit first.
 
 For a broad scope, split discovery into parallel read-only lanes — core packages, plugins or apps, tooling and scripts, and one cross-cutting pattern sweep. Outside a campaign, prefer a few high-confidence candidates to a large speculative list.
 
@@ -110,6 +121,8 @@ Before you judge a candidate, read the complete test and its production owner: t
 Keep a test that alone enforces a public API, protocol, configuration, migration, storage format, security, platform, default, serialization, generated-code, packaging, release or architecture contract. Also keep:
 
 - call ordering, when the order is observable behavior;
+- a guard against bringing back something removed on purpose (a banned dependency, an insecure endpoint, a public API removed in a major release), with the reason in its name or a comment. Write a guard that applies only for a while to fail with "delete this test" when its condition ends;
+- a test of dependency behavior that your code relies on and the dependency does not promise, named after the dependency, so that the upgrade that changes the behavior fails a test that says why;
 - a regression test with a credible failure mode;
 - source inspection, when it is the cheapest independent guard: it fails when the contract changes (a user-facing key, a byte, a path, generated code) and survives a rename;
 - an assertion-free test whose contract is not raising (a validator that accepts valid input, a handler that must swallow an error, a Hypothesis `@given` property that the code never raises) — mark it `F` so its name or a comment states that contract;
@@ -181,4 +194,4 @@ Report:
 
 Related skills: `test-sloc-cut` for lossless consolidation, `comment-slop` for the comments in tests, `pytest` for the runner, `ruff` for the lint rules above.
 
-Adapted from the OpenClaw `test-audit` skill (Copyright (c) 2026 OpenClaw Foundation, MIT License), with the pytest detectors, the owner-boundary rule shared with test-sloc-cut, and the evidence from the runs above added here.
+Adapted from the OpenClaw `test-audit` skill (Copyright (c) 2026 OpenClaw Foundation, MIT License), with the pytest detectors, the owner-boundary rule shared with test-sloc-cut, and the evidence from the runs above added here. The tombstone, dependency-only and formula-copy patterns were prompted by the `prune-tests` skill in caldoai/skills (Copyright (c) 2026 Maze, MIT License); the retention exceptions and the measurements are ours.

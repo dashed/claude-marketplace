@@ -4,6 +4,19 @@ All notable changes to the test-audit skill in this marketplace will be document
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.1.0] - 2026-11-17
+
+### Added
+- New pattern group **Pins the past**: a tombstone asserts that removed code stays removed, so no change to the live code can fail it. The retention bar keeps a deliberate guard against bringing back something removed on purpose (a banned dependency, an insecure endpoint, a public API removed in a major release), and a guard that applies only for a while fails with "delete this test" when its condition ends. An absence assertion is a candidate, not a finding: on the 33,619-test Django application, 14 of the 15 absence assertions pinned live behavior, and the fifteenth guarded a banned dependency. The history decides
+- Pattern: a test that only exercises a dependency (it passes for any implementation of your code), with an `isinstance` check on a type-checked return value as a special case, and a retention exception for your configuration of the dependency or a dependency behavior you rely on
+- Pattern: an expected value that repeats the production formula or reads the production constant, so a wrong rate moves both sides of the comparison. A computed expected value is kept only when it is independent: a reference implementation, an inverse, or a property
+- Pattern: private state read from outside the class, with ruff `SLF001` as a fourth discovery pass. It is a triage list: 320 sites in the test suites of requests `3c7baaa`, httpx `7cff5f7`, attrs `2a1fb86`, flask `49943b5`, rich `3a109cc` and click `08b803c`, and 1,467 on the Django application, of which 121 were Django's `_meta`. The documented command ignores `_meta` and werkzeug's `_get_current_object`
+- Runnable examples for the dependency-only, formula-copy and private-state patterns in `references/patterns.md`; the repository test suite runs them both ways, and its ruff check now asserts that `SLF001` finds exactly the private-state weak test
+- Credit to the `prune-tests` skill in caldoai/skills (MIT), which prompted the three new patterns
+
+### Changed
+- The description names the new patterns and triggers on requests to prune tests
+
 ## [1.0.0] - 2026-09-28
 
 ### Added
