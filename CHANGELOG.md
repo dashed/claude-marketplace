@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.60.0] - 2026-11-16
+
 ### Added
 - code-walkthrough 1.2.0: prose rules for the generated document. Understanding over economy selects the content, bottom line up front (BLUF) sets the order at every level, and ASD-STE100 controls the words, with the rule that a style edit may not delete a fact. Phase 5 gains a read-through check, and the template's section example opens with its bottom line
 
@@ -831,7 +833,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.59.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.60.0...HEAD
+[0.60.0]: https://github.com/dashed/claude-marketplace/compare/v0.59.0...v0.60.0
 [0.59.0]: https://github.com/dashed/claude-marketplace/compare/v0.58.1...v0.59.0
 [0.58.1]: https://github.com/dashed/claude-marketplace/compare/v0.58.0...v0.58.1
 [0.58.0]: https://github.com/dashed/claude-marketplace/compare/v0.57.0...v0.58.0

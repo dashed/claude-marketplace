@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal marketplace for custom skills and plugins",
-    "version": "0.59.0"
+    "version": "0.60.0"
   },
   "plugins": [
     {
