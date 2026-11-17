@@ -193,14 +193,28 @@ def analyze(scratch: str, modules: list[str], ranges: dict[str, tuple[int, int]]
         # negative values are function or module exits; positive ones must be real statements
         return in_scope(mod, value) and (value < 0 or value in statements[mod])
 
+    reporters = {m: cov._get_file_reporter(m) for m in modules}
+
+    def translated_arcs(mod: str, raw: list[tuple[int, int]]) -> set[tuple[int, int]]:
+        # A self-loop that only the translation creates (two lines of one statement) is not an
+        # arc; a recorded self-loop is, so it is translated on its own.
+        reporter = reporters[mod]
+        loops = reporter.translate_arcs([(x, y) for x, y in raw if x == y])
+        moves = reporter.translate_arcs([(x, y) for x, y in raw if x != y])
+        return set(loops) | {(x, y) for x, y in moves if x != y}
+
     def items_for(context: str) -> set[Item]:
         data.set_query_context(context)
         items: set[Item] = set()
         for mod in modules:
-            items |= {("L", mod, n) for n in (data.lines(mod) or []) if n in statements[mod]}
+            # Coverage records parts of a multi-line statement on its continuation lines, and
+            # the statement set has only first lines. Translate first, as coverage's own
+            # analysis does, or those lines and arcs are lost without a warning.
+            lines = reporters[mod].translate_lines(data.lines(mod) or [])
+            items |= {("L", mod, n) for n in lines if n in statements[mod]}
             items |= {
                 ("A", mod, x, y)
-                for (x, y) in (data.arcs(mod) or [])
+                for (x, y) in translated_arcs(mod, data.arcs(mod) or [])
                 if endpoint_ok(mod, x) and endpoint_ok(mod, y)
             }
         return items

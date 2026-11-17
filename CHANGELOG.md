@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- test-sloc-cut 1.2.2: `coverage_map.py` lost the lines and branch arcs that coverage records on the continuation lines of multi-line statements, such as a multi-line `if`, so `--diff` could pass a cut that deleted their only test. It now translates them to the statement's first line before filtering, as coverage's own analysis does.
+
 ## [0.60.0] - 2026-11-16
 
 ### Added

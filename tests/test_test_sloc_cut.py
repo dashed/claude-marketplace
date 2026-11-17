@@ -198,6 +198,22 @@ def test_deleting_a_fixture_owner_is_reported_as_a_loss(project: Path) -> None:
     assert "  lost: pkg/store.py:9\n" in result.stdout
 
 
+def test_items_recorded_on_continuation_lines_are_kept(project: Path) -> None:
+    # Coverage records the branch arcs of a multi-line `if` from the condition's last line, and
+    # Python 3.12+ records no line event on the `if` line itself.
+    measure(project, ["pkg/tier.py"], "tests/test_tier.py")
+    run_map(project, "--scratch", "scratch", "--out", "scratch/baseline.json", "pkg/tier.py")
+    baseline = report(project, "baseline.json")
+    assert {"pkg/tier.py:3", "pkg/tier.py:3->7", "pkg/tier.py:3->8"} <= set(
+        baseline["modules"]["pkg/tier.py"]["covered_items"]
+    )
+    measure(project, ["pkg/tier.py"], "tests/test_tier.py::test_gold")
+    run_map(project, "--scratch", "scratch", "--out", "scratch/after.json", "pkg/tier.py")
+    result = run_map(project, "--diff", "scratch/baseline.json", "scratch/after.json")
+    assert result.returncode == 1
+    assert "  lost: pkg/tier.py:3->8\n" in result.stdout
+
+
 def test_subline_sites_are_listed_for_coverage_redundant_tests(project: Path) -> None:
     measure(project, ["pkg/loops.py"], "tests/test_loops.py")
     run_map(project, "--scratch", "scratch", "pkg/loops.py")

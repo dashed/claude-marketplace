@@ -187,9 +187,14 @@ three were reproduced with pytest-cov afterwards.
 - **Coverage does not model exception edges statically.** Filtering executed arcs against
   `arc_possibilities` silently drops the arcs into an `except` handler and makes every error-path
   test look redundant. Keep exception arcs; tag them.
-- **`CoverageData.lines()` returns raw traced lines** including signature and continuation lines.
-  Intersect with the analysis's `statements` or counts inflate (347 versus a true 226 in the
-  worked example).
+- **`CoverageData.lines()` and `.arcs()` return raw traced line numbers**, including signature
+  lines and the continuation lines of multi-line statements. Used raw, counts inflate (347 versus
+  a true 226 in the worked example). Intersected with the analysis's `statements` without
+  translating, every line and arc recorded on a continuation line silently drops out of both
+  maps: coverage records a multi-line `if`'s branch arcs from the condition's last line, and
+  Python 3.12+ records no line event on the `if` line itself. On a real cut that hid 26 of 427
+  items. Translate first (`translate_lines`, `translate_arcs`), as coverage's own analysis does,
+  then filter; the script does.
 - **`--cov` bare plus `--cov-config=<rcfile>` activates the rcfile's `include` filter;
   `--cov=<pkg>` sets `source` and makes `include` inert.** Use the bare form with the scratch
   rcfile.

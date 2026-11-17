@@ -4,6 +4,11 @@ All notable changes to the test-sloc-cut skill in this marketplace will be docum
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.2.2] - 2026-11-17
+
+### Fixed
+- `coverage_map.py` filtered the recorded lines and arcs against the statements' first lines without translating them. Coverage records parts of a multi-line statement on its continuation lines: the branch arcs of a multi-line `if` come from the condition's last line, and Python 3.12+ records no line event on the `if` line itself. Those items dropped out of the baseline and the after-the-cut map alike, so `--diff` passed a cut that deleted their only test (on a real cut, 26 of 427 items). The script now translates lines and arcs as coverage's own analysis does, keeps recorded self-loops, and drops the self-loops that only the translation creates. The reference's trap on raw line numbers now says to translate before filtering.
+
 ## [1.2.1] - 2026-09-28
 
 ### Changed
