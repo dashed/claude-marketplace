@@ -11,8 +11,11 @@ RED := \033[0;31m
 NC := \033[0m # No Color
 
 UV ?= uv
-UV_RUN ?= $(UV) run --no-config --locked
-UV_SYNC ?= $(UV) sync --no-config --locked
+# --no-config also skips .python-version, so pass the pin explicitly. Without
+# it, uv takes the first interpreter it finds (3.14 on ubuntu-26.04 runners).
+PYTHON_VERSION ?= $(shell cat .python-version)
+UV_RUN ?= $(UV) run --no-config --locked --python $(PYTHON_VERSION)
+UV_SYNC ?= $(UV) sync --no-config --locked --python $(PYTHON_VERSION)
 
 help: ## Show this help message
 	@echo "$(CYAN)Claude Marketplace - Makefile Commands$(NC)"

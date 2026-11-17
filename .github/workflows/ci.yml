@@ -27,7 +27,7 @@ jobs:
           node-version: '22'
 
       - name: Install Python dependencies
-        run: uv sync --no-config --locked
+        run: make sync
 
       - name: Install linear plugin dependencies
         run: make setup-linear

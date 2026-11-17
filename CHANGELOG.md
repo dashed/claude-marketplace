@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - test-sloc-cut 1.2.2: `coverage_map.py` lost the lines and branch arcs that coverage records on the continuation lines of multi-line statements, such as a multi-line `if`, so `--diff` could pass a cut that deleted their only test. It now translates them to the statement's first line before filtering, as coverage's own analysis does.
+- CI and the Makefile now run the project environment on the Python in `.python-version` (3.10). `--no-config` also skips `.python-version`, so `uv` took the first interpreter it found. When `ubuntu-latest` moved to ubuntu-26.04, that interpreter changed from 3.12 to 3.14, and the doc-quality tests failed at import because `github-slugger` 0.0.3 does not load on Python 3.13+. `UV_RUN` and `UV_SYNC` now pass `--python`, and the workflow syncs with `make sync`.
 
 ## [0.60.0] - 2026-11-16
 
