@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.61.0] - 2026-11-18
+
 ### Added
 - code-walkthrough 1.3.0: code explainers of how existing code works, not only of a change, and a description that claims every request for an explainer HTML file. A related-skills table names `mermaid-cli` for diagram validation and the browser skills for Phase 5. Phase 5 now fails a diagram that mermaid drew as a syntax-error SVG, which the old SVG count passed
 - show-me 1.2.0: sends requests for an explainer HTML file to code-walkthrough
@@ -842,7 +844,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marketplace metadata and owner information
 - Plugin entry with `skills` field for proper skill loading
 
-[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.60.0...HEAD
+[Unreleased]: https://github.com/dashed/claude-marketplace/compare/v0.61.0...HEAD
+[0.61.0]: https://github.com/dashed/claude-marketplace/compare/v0.60.0...v0.61.0
 [0.60.0]: https://github.com/dashed/claude-marketplace/compare/v0.59.0...v0.60.0
 [0.59.0]: https://github.com/dashed/claude-marketplace/compare/v0.58.1...v0.59.0
 [0.58.1]: https://github.com/dashed/claude-marketplace/compare/v0.58.0...v0.58.1
