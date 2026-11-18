@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- code-walkthrough 1.3.0: code explainers of how existing code works, not only of a change, and a description that claims every request for an explainer HTML file. A related-skills table names `mermaid-cli` for diagram validation and the browser skills for Phase 5. Phase 5 now fails a diagram that mermaid drew as a syntax-error SVG, which the old SVG count passed
+- show-me 1.2.0: sends requests for an explainer HTML file to code-walkthrough
 - test-audit 1.1.0: three new low-value patterns, each with a retention exception. A tombstone asserts that removed code stays removed; a guard against bringing back something removed on purpose stays. A test that only exercises a dependency passes for any implementation of your code. An expected value that repeats the production formula moves with a wrong constant. Private state gets ruff `SLF001` as a fourth discovery pass, documented as a triage list with counts from six open-source suites and a large Django application
 
 ### Fixed

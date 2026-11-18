@@ -4,6 +4,11 @@ All notable changes to the show-me skill in this marketplace will be documented 
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.2.0] - 2026-11-18
+
+### Changed
+- A request for an explainer HTML file or a walkthrough document goes to code-walkthrough. The `description` excludes it, and one new body bullet after the HTML-file bullet says to use code-walkthrough, which has the template, prose rules, and browser checks an explainer needs. The Credits section names the added bullet.
+
 ## [1.1.0] - 2026-10-21
 
 ### Fixed

@@ -1,7 +1,7 @@
 {
   "name": "code-walkthrough",
-  "version": "1.2.0+codex.dc8fc951de56",
-  "description": "Create self-contained interactive HTML documents that teach a code change (branch, PR, diff, subsystem) to a reviewer with no prior knowledge \u2014 before/after code toggles, mermaid diagrams, step-through code walkers, and playground widgets. Use when the user wants an interactive walkthrough/teaching document of a branch or PR, before/after visuals, or to learn a codebase area from zero.",
+  "version": "1.3.0+codex.5389367f3487",
+  "description": "Create a self-contained interactive HTML explainer of code for a reader with no prior knowledge: a change (branch, PR, diff) or how existing code works (subsystem, feature, flow), with before/after toggles, mermaid diagrams, step-through code walkers, and playground widgets. Use when the user asks for an explainer HTML file or page, a walkthrough or teaching document of a branch or PR, before/after visuals, or to learn a codebase area from zero.",
   "author": {
     "name": "Alberto Leal"
   },
@@ -17,8 +17,8 @@
   ],
   "interface": {
     "displayName": "Code Walkthrough",
-    "shortDescription": "Create self-contained interactive HTML documents that teach a code change (branch, PR, diff, subsystem) to a reviewer with no prior knowledge \u2014 before/after code toggles, mermaid...",
-    "longDescription": "Create self-contained interactive HTML documents that teach a code change (branch, PR, diff, subsystem) to a reviewer with no prior knowledge \u2014 before/after code toggles, mermaid diagrams, step-through code walkers, and playground widgets. Use when the user wants an interactive walkthrough/teaching document of a branch or PR, before/after visuals, or to learn a codebase area from zero.",
+    "shortDescription": "Create a self-contained interactive HTML explainer of code for a reader with no prior knowledge: a change (branch, PR, diff) or how existing code works (subsystem, feature...",
+    "longDescription": "Create a self-contained interactive HTML explainer of code for a reader with no prior knowledge: a change (branch, PR, diff) or how existing code works (subsystem, feature, flow), with before/after toggles, mermaid diagrams, step-through code walkers, and playground widgets. Use when the user asks for an explainer HTML file or page, a walkthrough or teaching document of a branch or PR, before/after visuals, or to learn a codebase area from zero.",
     "developerName": "Alberto Leal",
     "category": "Productivity",
     "capabilities": [

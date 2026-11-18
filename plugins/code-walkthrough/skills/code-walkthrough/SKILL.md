@@ -1,12 +1,12 @@
 ---
 name: code-walkthrough
-description: "Create a self-contained interactive HTML document that teaches a code change (branch, PR, diff, or subsystem) to a reviewer with no prior knowledge — with before/after code toggles, mermaid diagrams, step-through walkthroughs, and playground widgets. Use when the user wants to learn or review a code change interactively, asks for a walkthrough/teaching/review document of a branch or PR, wants before/after explanations with visuals, or mentions interactive HTML docs, mermaid walkthroughs, or teaching a codebase area from zero."
+description: "Create a self-contained interactive HTML explainer that teaches code to a reader with no prior knowledge: a change (branch, PR, diff) or how existing code works (a subsystem, feature, mechanism, or flow), with before/after code toggles, mermaid diagrams, step-through code walkers, and playground widgets, checked in a real browser. Use when the user asks for an explainer HTML file, page, or document, or to explain code as an HTML page; asks for a walkthrough, teaching, or review document of a branch or PR; wants to learn or review a change interactively, or wants before/after explanations with visuals; wants to learn a codebase area from zero; or mentions interactive HTML docs or mermaid walkthroughs. Use it instead of show-me or a hand-written page whenever the request is an explainer file."
 license: MIT
 ---
 
 # Code Walkthrough
 
-Produce ONE self-contained interactive HTML file that teaches a code change from zero prior knowledge. The reader finishes able to review the change line-by-line: what each module does, why the seams are where they are, what the failure modes are, and what to scrutinize.
+Produce ONE self-contained interactive HTML file that teaches code from zero prior knowledge: a change, or how existing code works. After a change explainer, the reader can review the change line by line: what each module does, why the seams are where they are, what the failure modes are, and what to scrutinize. After a code explainer, the reader can change the code safely: what each part does, how a request moves through the parts, and which invariants a change must keep.
 
 The output is a teaching document, not a diff dump. Code is quoted verbatim; understanding is built in layers; interactivity does real pedagogical work (toggles for before/after, walkers for execution order, playgrounds for logic under study).
 
@@ -14,9 +14,26 @@ The output is a teaching document, not a diff dump. Code is quoted verbatim; und
 
 ## When to Use
 
+- "Make an explainer HTML file for this PR" or "an explainer of how the retry scheduler works"
 - "Walk me through this branch/PR/diff (before/after) in an HTML file"
 - "I want to learn/review this change effectively — make it interactive, with diagrams"
 - "Teach me this subsystem from zero" (with code as the source of truth)
+
+Use this skill for every request for an explainer HTML file, also when another skill could write a page (`show-me` writes one focused visual; this skill writes the explainer). The [related skills](#related-skills) do parts of the pipeline.
+
+### Two kinds of explainer
+
+Decide the kind from the request. "An explainer for this PR" is a change explainer. "An explainer of how X works" is a code explainer. Both use the same pipeline, template, prose rules, and browser checks. Only these parts differ:
+
+| | Change explainer | Code explainer |
+|---|---|---|
+| Subject | a branch, PR, diff, or commit range | existing code: a subsystem, feature, mechanism, or flow |
+| Refs (Phase 0) | before and after | the one commit that you read |
+| 30-second version | what changes, why, and what the reviewer must check | what the code does, why it has this shape, and what a change must keep |
+| Units (Phase 3, step 4) | one for each branch or module, with before/after toggles | one for each component, in the order that a request reaches it; a toggle only compares with an earlier design or an alternative |
+| Last section before the glossary (Phase 3, step 7) | reviewer checklist | "Before you change it": each invariant, the code that enforces it, and the test that guards it |
+
+If the topic is not code in the repository (a protocol, or the design of a library), use the same pipeline. Take the facts from the source that the user names (a spec, the library's code, its documentation), and cite that source where the document would cite a ref.
 
 ## Prose rules
 
@@ -51,7 +68,7 @@ This rule also applies to the work behind the document. Read the full function a
 
 Put the conclusion first at each level. Put the support after it.
 
-- **Document.** The "30-second version" comes immediately after the hero. It states what changes, why, and what the reviewer must check. A reader who stops there has the answer.
+- **Document.** The "30-second version" comes immediately after the hero. It states what changes, why, and what the reviewer must check (a code explainer states the items in [its row of the table](#two-kinds-of-explainer)). A reader who stops there has the answer.
 - **Section.** The first paragraph states the point of the section in one to three sentences. The code, the diagrams, and the detail come after it. Keep `h2` titles short for the sidebar. Put the point in the first sentence, not in the title.
 - **Paragraph.** The first sentence states the topic.
 - **Before/after, walker step, callout, caption.** The first sentence states what changes or what the step does.
@@ -78,7 +95,7 @@ Follow these phases in order. Phases 1–2 protect fidelity; phases 3–4 build 
 
 ### Phase 0 — Frame
 
-1. Pin the exact refs that define **before** and **after** (branch tips, PR base/head, commit range). Write them into the document later — every code claim must trace to a ref.
+1. Pin the exact refs that define **before** and **after** (branch tips, PR base/head, commit range). For a code explainer, pin the one commit that you read. Write them into the document later — every code claim must trace to a ref.
 2. Define the audience contract: "no prior knowledge" means no knowledge of *this domain and this codebase* — include a glossary of domain terms, but do not teach the programming language.
 3. Identify the 1–3 **core mechanisms** the change builds on (pre-existing patterns the reader must understand first). These get their own foundations sections before any diff is shown.
 
@@ -107,6 +124,8 @@ Order the document so each section only needs what came before:
 7. **Reviewer checklist** — invariants, who enforces them, what would break them; questions to ask
 8. **Glossary + appendix** — every domain term; the road-not-taken; full listings of anything condensed earlier
 
+A code explainer keeps this order, with the changes in [Two kinds of explainer](#two-kinds-of-explainer).
+
 ### Phase 4 — Author (fragments + components)
 
 Write every fragment to the [prose rules](#prose-rules). Write the document as fragment files, then concatenate in order. This keeps a 1500-line file editable and lets you fix one section without rewriting all of it. Copy [references/template-shell.html](references/template-shell.html) — it contains the full CSS theme and the JS for every component below, with `<!-- @SLOT -->` markers showing where content goes.
@@ -134,13 +153,14 @@ Write every fragment to the [prose rules](#prose-rules). Write the document as f
 - `add`/`del` colors only for lines that are actually added/removed in the diff; use `hl` for emphasis elsewhere.
 - Put `language-<name>` (a highlight.js name or alias: `python`, `ts`, `tsx`, `go`, `sql`, ...) on every code block's `<code>`. Keep lines plain text — no `+`/`-` prefixes, no spans inside a `.cl` line; a line with markup in it opts its whole block out of highlighting.
 - No hard-coded colours in mermaid source (`style X fill:#…`, coloured `classDef`): they break in one of the two themes. Mark the node the reader should look at with `class NodeId current`.
+- Validate each diagram's source with the `mermaid-cli` skill before it goes into a fragment: `mmdc -i diagram.mmd -o diagram.svg` exits 1 and prints the parse error with its line. In the page, a syntax error shows only as an error graphic.
 - No planning artifacts, ticket IDs, or local scratch paths in the document unless the user asks for them.
 
 ### Phase 5 — Verify in a real browser
 
 1. **Structure**: parse the HTML (any lenient parser) for unbalanced tags; check every `href="#…"` resolves; check tab buttons match panes; count mermaid blocks.
-2. **Render**: serve the file (`python3 -m http.server`) and drive a headless browser (e.g. the Playwright MCP):
-   - every `.mermaid` contains an `svg` (count them)
+2. **Render**: serve the file (`python3 -m http.server`) and drive a headless browser (the Playwright MCP tools, or the `playwright`, `dev-browser`, or `chrome-cdp` skill):
+   - every `.mermaid` contains an `svg` (count them), and no `svg` has `aria-roledescription="error"`. Mermaid draws a syntax error as an SVG that reads "Syntax error in text", so the count alone passes a broken diagram. `mmdc` runs its own mermaid version, and the template loads mermaid 10.9.3, so newer syntax can pass `mmdc` and still fail here.
    - every `code[class*=language-]` block contains `.hljs-*` spans and still has its original number of `.cl` lines
    - walker: click next/prev, assert the active step and highlighted lines change
    - tabs: toggle each group, assert pane visibility flips
@@ -157,7 +177,18 @@ Write every fragment to the [prose rules](#prose-rules). Write the document as f
 
 ### Phase 6 — Deliver
 
-Deliver the single HTML file at the requested path. Keep the fragments directory (mention it — it is how the user iterates). Note the two external dependencies (mermaid and highlight.js, both from the jsDelivr CDN) and that offline the document degrades to plain code and readable diagram source. If the user is currently reading an earlier document, write a NEW file and cross-link; never edit a file the user has open.
+Deliver the single HTML file at the requested path. The deliverable is the local file; publish it as an Artifact only when the user asks for a link. Keep the fragments directory (mention it — it is how the user iterates). Note the two external dependencies (mermaid and highlight.js, both from the jsDelivr CDN) and that offline the document degrades to plain code and readable diagram source. If the user is currently reading an earlier document, write a NEW file and cross-link; never edit a file the user has open.
+
+## Related skills
+
+Load each one at the phase that needs it:
+
+| Skill | Phase | Job |
+|---|---|---|
+| `mermaid-cli` | 4 | Validate each diagram's source with `mmdc` before it goes into a fragment. |
+| Playwright MCP tools, `playwright`, `dev-browser`, or `chrome-cdp` | 5 | Serve the page, run the render checks, and take the light and dark screenshots. |
+| `dataviz`, when it is available | 4 | Draw a chart (numbers over time or across categories) as inline SVG that uses the page's colour variables, so it follows the theme. |
+| `show-me` | — | A quick visual in the chat or one focused page. It sends a request for an explainer file to this skill. |
 
 ## Pitfalls (learned the hard way)
 

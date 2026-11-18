@@ -4,6 +4,20 @@ All notable changes to the code-walkthrough skill in this marketplace will be do
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.3.0] - 2026-11-18
+
+### Added
+- Code explainers: the skill now also teaches how existing code works (a subsystem, feature, mechanism, or flow), not only a change. A table in "Two kinds of explainer" lists what differs: one pinned commit instead of before and after refs, a 30-second version that states what the code does and what a change must keep, units in request order, and a "Before you change it" section in place of the reviewer checklist. A topic outside the repository uses the same pipeline and cites its source
+- "Related skills" section: `mermaid-cli` validates diagram source in Phase 4; the Playwright MCP tools, `playwright`, `dev-browser`, or `chrome-cdp` drive Phase 5; `dataviz` draws charts; `show-me` hands explainer files to this skill
+- Phase 4 fidelity rule: validate each diagram with `mmdc` before it goes into a fragment
+
+### Changed
+- The description triggers on any request for an explainer HTML file, page, or document, and says to use this skill instead of `show-me` or a hand-written page for one
+- Phase 6: the deliverable is the local file; publish it as an Artifact only when the user asks for a link
+
+### Fixed
+- Phase 5 passed a diagram with a syntax error: mermaid draws the error as an SVG ("Syntax error in text"), so "every `.mermaid` contains an `svg`" was true. The check now also requires that no SVG has `aria-roledescription="error"`, and notes that `mmdc` and the template's mermaid 10.9.3 can disagree on newer syntax
+
 ## [1.2.0] - 2026-11-16
 
 ### Added
