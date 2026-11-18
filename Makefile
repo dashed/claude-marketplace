@@ -11,11 +11,12 @@ RED := \033[0;31m
 NC := \033[0m # No Color
 
 UV ?= uv
-# --no-config also skips .python-version, so pass the pin explicitly. Without
-# it, uv takes the first interpreter it finds (3.14 on ubuntu-26.04 runners).
-PYTHON_VERSION ?= $(shell cat .python-version)
-UV_RUN ?= $(UV) run --no-config --locked --python $(PYTHON_VERSION)
-UV_SYNC ?= $(UV) sync --no-config --locked --python $(PYTHON_VERSION)
+# An empty --config-file replaces every discovered uv config (system, user and
+# project), so a machine-wide /etc/uv/uv.toml index cannot rewrite uv.lock.
+# Unlike --no-config, it keeps uv's discovery of .python-version, so the project
+# env uses the pinned Python, not the first interpreter on the machine.
+UV_RUN ?= $(UV) run --config-file /dev/null --locked
+UV_SYNC ?= $(UV) sync --config-file /dev/null --locked
 
 help: ## Show this help message
 	@echo "$(CYAN)Claude Marketplace - Makefile Commands$(NC)"
