@@ -1284,7 +1284,7 @@
     },
     {
       "name": "comment-slop",
-      "version": "1.6.0",
+      "version": "1.7.0",
       "source": "./plugins/comment-slop",
       "description": "Find and remove AI-slop comments — ones that restate the code, describe another layer's behavior, or narrate planning that never shipped — while keeping the comments that carry real reasoning. Comment the why, not the what or how: names carry the what, and delete is the default verdict. Use when a reviewer calls a comment useless or AI-written, when auditing comments and docstrings on a branch or PR, when deciding whether new code needs a comment, or before sending a change for review.",
       "author": {
@@ -1300,6 +1300,30 @@
         "ai-slop",
         "refactoring",
         "documentation"
+      ],
+      "strict": false,
+      "skills": [
+        "./skills"
+      ]
+    },
+    {
+      "name": "delete-comment",
+      "version": "1.0.0",
+      "source": "./plugins/delete-comment",
+      "description": "Purge comments from a codebase: classify each as tautology, stale, excuse, or decision record; delete them, file issues for excuses, and move decisions into ADRs or tests; then ban new comments with a per-file lint ratchet and measure the lines removed. Use when asked to delete, ban, or audit every comment in a codebase or directory, move comment rationale into ADRs, add a no-comments lint rule or ratchet, or estimate the lines saved.",
+      "author": {
+        "name": "Alberto Leal"
+      },
+      "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/delete-comment",
+      "license": "MIT",
+      "keywords": [
+        "comments",
+        "cleanup",
+        "adr",
+        "lint",
+        "ratchet",
+        "technical-debt",
+        "refactoring"
       ],
       "strict": false,
       "skills": [

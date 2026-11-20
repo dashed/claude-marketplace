@@ -1,6 +1,6 @@
 ---
 name: comment-slop
-description: "Find and remove AI-slop comments — ones that restate the code, describe another layer's behavior, or narrate planning that never shipped — while protecting the comments that carry real reasoning. Use when a reviewer calls a comment useless, unclear, or AI-written — including one a previous cleanup pass already rewrote; when auditing or cleaning up comments and docstrings on a branch, diff, or PR; when comments should be reduced, simplified, or restyled to ASD-STE100 / simplified technical English; when writing or reviewing docstrings for completeness — tuple-return meanings, boolean polarity, silent defaults and fallbacks; when deciding whether new code needs a comment and what it should say; or before sending a change for review."
+description: "Find and remove AI-slop comments — ones that restate the code, describe another layer's behavior, narrate planning that never shipped, or excuse a hack — while protecting the comments that carry real reasoning. Use when a reviewer calls a comment useless, unclear, or AI-written — including one a previous cleanup pass already rewrote; when auditing or cleaning up comments and docstrings on a branch, diff, or PR; when comments should be reduced, simplified, or restyled to ASD-STE100 / simplified technical English; when writing or reviewing docstrings for completeness — tuple-return meanings, boolean polarity, silent defaults and fallbacks; when deciding whether new code needs a comment and what it should say; or before sending a change for review. For a repository-wide purge that moves decisions into ADRs, files issues for excuses, and bans new comments with a lint ratchet, use delete-comment."
 license: MIT
 ---
 
@@ -12,7 +12,7 @@ A comment earns its place only if it states a fact that is:
 2. **Not already visible** in the code in front of the reader.
 3. **Not stated better nearby** — in the signature, in the module docstring, in a test name, or on the very next line.
 
-Every slop comment fails one of those three clauses. That is the whole diagnosis. The rest of this skill is how to apply it, and — just as important — how to recognize the comments that pass, so a cleanup pass does not delete the reasoning that was worth keeping.
+Every slop comment fails one of those three clauses. That is the whole diagnosis, with one exception: an excuse for a defect (mode 8) can pass all three, and its fix is in the code, not in the comment. The rest of this skill is how to apply it, and — just as important — how to recognize the comments that pass, so a cleanup pass does not delete the reasoning that was worth keeping.
 
 This is the operational form of the familiar rule: **comment the why, not the what or the how.** Code with descriptive names already tells the reader what it does, and the body is the how — a comment restating either fails clause 2. What the code cannot say is the why: context from outside the file, the business rule being implemented, the design decision that looks wrong until explained (the keep table below). But the folk rule is a compass, not a verdict — a why-shaped sentence still fails when it describes another layer or restates a convention with a documented home (see *Abstracting is not the fix either*). The three clauses decide, and the burden of proof sits on the comment: the default verdict is delete, and a comment that cannot show a pass does not get one.
 
@@ -26,10 +26,13 @@ Slop is not a length problem. It is a content-selection problem, which is why sh
 - Cleaning up comments and docstrings on a branch or PR before sending it for review
 - A comment uses a term the reader has to go look up, or describes machinery that is not in the file
 - Auditing agent-written or generated code for filler prose
+- A comment excuses a hack, a workaround, or a TODO that no tracked issue backs
+
+For a repository-wide purge — every comment classified, decision records moved into ADRs, issues filed for excuses, and a lint rule that bans new comments — use the delete-comment skill. This skill judges comments in a diff or in the files you choose.
 
 ## Failure modes
 
-Each mode below is one clause of the test failing. The examples are real; the reviewer reactions are quotes from an actual review.
+Modes 1–7 are each one clause of the test failing. Their examples are real; the reviewer reactions are quotes from an actual review. Mode 8 is the exception that can pass the test; its example is illustrative.
 
 ### 1. Wrong layer
 
@@ -69,7 +72,7 @@ User parameters go in, a proto comes out. No package crosses this boundary. "Use
 
 The TODO already carries the fact, in the imperative, in the form someone can act on. The sentence above it is the same fact restated as description.
 
-**Fix**: delete the prose, keep the TODO. When two adjacent comments say one thing, keep the one that is actionable.
+**Fix**: delete the prose, keep the TODO. When two adjacent comments say one thing, keep the one that is actionable. A TODO earns its place only with a tracked issue behind it; without one it is an excuse (mode 8).
 
 ### 3. Undefined term at the point of use
 
@@ -128,6 +131,21 @@ retries += 1
 
 The line already says it. Reserve the comment for the fact the line cannot carry — why three retries, which upstream API returns spurious 500s.
 
+### 8. An excuse for a defect
+
+The comment admits that the code is wrong and asks the reader to accept it: "hacky", "workaround", "for now", "temporary", "not ideal", or a TODO that no tracked issue backs.
+
+```python
+# Hacky: sleep until the cache warms up. This should wait for the ready event.
+time.sleep(2)
+```
+
+This comment can pass all three clauses: it is true, it is about this line, and the code does not say it. Keeping it is still wrong, because the comment is a symptom. It licenses the defect, and the next change copies the pattern because a comment already excused it.
+
+**Fix**: fix the defect when it is inside the change's scope, and delete the comment. Otherwise file an issue that quotes the comment and names the location, and keep at most a TODO that cites the issue and names the concrete change to make here.
+
+**The boundary**: a comment that says why the code must stay as it is — a guard, an ordering, an outside constraint — is a keep (see the table below), not an excuse. An excuse says the code should change. A keep says it must not.
+
 ## What to keep
 
 A comment is load-bearing if deleting it leaves a reader with a question the code cannot answer. Keep these, and keep them even when they are wordy:
@@ -156,6 +174,8 @@ Two that pass:
 Both state a fact that is invisible in the code and true at this layer. Neither is short.
 
 **The default is delete.** The burden of proof sits on the comment: a keep must show its pass — name the row of this table it satisfies and the fact the code cannot state. "It might help someone" is not a pass; every slop comment might help someone. Doubt protects exactly one shape of comment: one that asserts a why — a rationale, an ordering constraint, a trade-off — that you cannot cheaply verify from the code in front of you. Deleting a real rationale costs the next person the bug it was preventing, which is worse than any bland comment; a comment of that shape survives being torn over. A restatement of the visible never does.
+
+**Repositories that ban comments.** If the repository bans comments — a `.comment-ratchet.json` file, a no-comments lint rule, or an ADR that says so — a keep cannot stay as a comment. Move its fact instead: into a name, a type, or a test that fails without it, or into an ADR. The delete-comment skill has the procedure. The rest of this skill still decides *which* facts are worth moving.
 
 ## What a docstring must state
 

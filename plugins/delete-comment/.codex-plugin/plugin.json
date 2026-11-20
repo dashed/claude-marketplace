@@ -1,0 +1,33 @@
+{
+  "name": "delete-comment",
+  "version": "1.0.0+codex.baef68d7c961",
+  "description": "Purge comments from a codebase: classify each as tautology, stale, excuse, or decision record; delete them, file issues for excuses, and move decisions into ADRs or tests; then ban new comments with a per-file lint ratchet and measure the lines removed. Use when asked to delete, ban, or audit every comment in a codebase or directory, move comment rationale into ADRs, add a no-comments lint rule or ratchet, or estimate the lines saved.",
+  "author": {
+    "name": "Alberto Leal"
+  },
+  "license": "MIT",
+  "keywords": [
+    "comments",
+    "cleanup",
+    "adr",
+    "lint",
+    "ratchet",
+    "technical-debt",
+    "refactoring"
+  ],
+  "interface": {
+    "displayName": "Delete Comment",
+    "shortDescription": "Purge comments from a codebase: classify each as tautology, stale, excuse, or decision record; delete them, file issues for excuses, and move decisions into ADRs or tests; then...",
+    "longDescription": "Purge comments from a codebase: classify each as tautology, stale, excuse, or decision record; delete them, file issues for excuses, and move decisions into ADRs or tests; then ban new comments with a per-file lint ratchet and measure the lines removed. Use when asked to delete, ban, or audit every comment in a codebase or directory, move comment rationale into ADRs, add a no-comments lint rule or ratchet, or estimate the lines saved.",
+    "developerName": "Alberto Leal",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $delete-comment for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/delete-comment",
+  "skills": "./skills/"
+}

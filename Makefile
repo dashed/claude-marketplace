@@ -112,6 +112,8 @@ TEST_SLOC_CUT_FILES := plugins/test-sloc-cut/skills/test-sloc-cut/scripts/covera
 
 TEST_AUDIT_FILES := plugins/test-audit/skills/test-audit/scripts/scan_smells.py plugins/test-audit/skills/test-audit/scripts/find_seams.py tests/test_test_audit.py
 
+DELETE_COMMENT_FILES := plugins/delete-comment/skills/delete-comment/scripts/comments.py tests/test_delete_comment.py
+
 DOC_QUALITY_FILES := plugins/doc-quality/skills/doc-quality/scripts/doc_links.py plugins/doc-quality/skills/doc-quality/scripts/doc_metrics.py plugins/doc-quality/skills/doc-quality/scripts/doc_quality.py tests/test_doc_links.py tests/test_doc_metrics.py tests/test_doc_quality.py
 
 .PHONY: test-doc-quality lint-doc-quality typecheck-doc-quality format-doc-quality format-doc-quality-check
@@ -181,6 +183,23 @@ format-test-audit: ## Format the test-audit scripts and their tests with Ruff
 
 format-test-audit-check: ## Check test-audit formatting with Ruff
 	@$(UV_RUN) ruff format --check $(TEST_AUDIT_FILES)
+
+.PHONY: test-delete-comment lint-delete-comment typecheck-delete-comment format-delete-comment format-delete-comment-check
+
+test-delete-comment: lint-delete-comment typecheck-delete-comment format-delete-comment-check ## Check the comment scanner, safe delete and ratchet
+	@$(UV_RUN) pytest tests/test_delete_comment.py --no-cov
+
+lint-delete-comment: ## Run Ruff on the delete-comment scanner and its tests
+	@$(UV_RUN) ruff check $(DELETE_COMMENT_FILES)
+
+typecheck-delete-comment: ## Run ty on the delete-comment scanner and its tests
+	@$(UV_RUN) ty check $(DELETE_COMMENT_FILES)
+
+format-delete-comment: ## Format the delete-comment scanner and its tests with Ruff
+	@$(UV_RUN) ruff format $(DELETE_COMMENT_FILES)
+
+format-delete-comment-check: ## Check delete-comment formatting with Ruff
+	@$(UV_RUN) ruff format --check $(DELETE_COMMENT_FILES)
 
 test-codex-skills: lint-codex-skills typecheck-codex-skills format-codex-skills-check check-codex-plugins ## Run Codex skill/plugin checks and unit tests
 	@echo "$(CYAN)Running Codex skills tests...$(NC)"
