@@ -17,7 +17,7 @@ Use the repository's existing ADR directory and its conventions. Look for, in th
 
 If none exists, create `docs/adr/` with:
 
-- `0001-keep-decisions-in-adrs-not-code-comments.md`: the decision to ban comments, which the ratchet's failure message can point to
+- `0001-keep-decisions-in-adrs-not-code-comments.md`: the purge's policy, so later contributors know where decisions live
 - a `README.md` index: one line per ADR with its number, title, status, and the paths it governs
 
 File names are `NNNN-title-in-kebab-case.md`, numbered in sequence. Numbers are never reused.
@@ -72,13 +72,13 @@ git blame -L 40,46 path/to/file.py
 
 ## Keep ADRs findable without comments
 
-With comments banned, the code can no longer point to its ADR. Use all three of these:
+Once its comment is gone, the code can no longer point to its ADR. Use all three of these:
 
 1. **The index lists the governed paths.** A reader who opens `src/upload.py` finds its ADRs with `grep -rl 'src/upload.py' docs/adr`.
 2. **Agent instructions say where to look.** Add one line to `AGENTS.md` or `CLAUDE.md`: "Before changing a file, search `docs/adr/` for its path and follow the ADRs that govern it."
-3. **Tests carry the link.** A test that protects a decision can name the ADR in its module docstring or its name. Docstrings are not comments, so the ratchet allows them.
+3. **Tests carry the link.** A test that protects a decision can name the ADR in its module docstring or its name.
 
-If the team prefers pointers in the code, allow them in the ratchet config with a narrow pattern, for example `"allow": ["^\\W*ADR-\\d{4}$"]`, so that a comment holding only `# ADR-0007` passes and nothing longer does. That is a policy choice; ask the user before you add it.
+If the team prefers pointers in the code, keep a comment that holds only the ADR number (`# ADR-0007`) and give it the verdict `keep`. That is a policy choice; ask the user before you keep them.
 
 ## Example
 

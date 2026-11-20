@@ -3,19 +3,17 @@
 # requires-python = ">=3.10"
 # dependencies = ["pygments>=2.17"]
 # ///
-"""Inventory, measure, delete, and ratchet the code comments of a repository.
+"""Inventory, measure, and delete the code comments of a repository.
 
 Usage:
     comments.py inventory [PATH ...] [--kinds KINDS] [--format jsonl|tsv]
     comments.py estimate [PATH ...] [--verdicts FILE] [--json]
     comments.py delete --verdicts FILE [--dry-run]
-    comments.py ratchet init [PATH ...] [--exclude GLOB ...] [--ban-doc] [--message TEXT]
-    comments.py ratchet check [FILE ...] [--allow-stale] [--base REF]
-    comments.py ratchet update [FILE ...] [--allow-increase] [--base REF]
 
-Every command takes --config FILE (default: .comment-ratchet.json in the current directory,
-when it exists) and --jobs N. Paths in the output and in the config are relative to the
-directory that holds the config, or to the current directory when there is no config.
+Every command takes --exclude GLOB (an fnmatch glob against the relative path, repeatable),
+--allow REGEX (a comment that matches is a directive, repeatable), --language NAME (scan
+only that pygments language, repeatable), and --jobs N. Paths are relative to the current
+directory; run the commands from the repository root.
 
 pygments lexes each file, so a comment marker inside a string or a regex literal is not a
 comment. Each comment gets one kind:
@@ -76,11 +74,6 @@ from pygments.util import ClassNotFound
 KINDS = ("plain", "doc", "directive", "license")
 DELETABLE_KINDS = ("plain", "doc")
 CATEGORIES = ("tautology", "stale", "excuse", "decision", "keep")
-DEFAULT_CONFIG = ".comment-ratchet.json"
-DEFAULT_MESSAGE = (
-    "New code comments are banned. State the fact in a name, a type, an assertion, or a "
-    "test, or record the decision in an ADR. Tool directives and license notices are allowed."
-)
 MAX_BYTES = 2_000_000
 BLANK = " \t\r\n\f\v\ufeff"
 
@@ -336,31 +329,12 @@ class Options:
 @dataclass
 class Config:
     root: Path
-    path: Path | None = None
-    paths: list[str] = field(default_factory=lambda: ["."])
     exclude: list[str] = field(default_factory=list)
-    ban: list[str] = field(default_factory=lambda: ["plain"])
     allow: list[str] = field(default_factory=list)
     languages: list[str] = field(default_factory=list)
-    message: str = DEFAULT_MESSAGE
-    files: dict[str, int] = field(default_factory=dict)
 
     def options(self) -> Options:
         return Options(tuple(self.allow), tuple(name.lower() for name in self.languages))
-
-    def save(self) -> None:
-        assert self.path is not None
-        data = {
-            "version": 1,
-            "paths": self.paths,
-            "exclude": self.exclude,
-            "ban": self.ban,
-            "allow": self.allow,
-            "languages": self.languages,
-            "message": self.message,
-            "files": dict(sorted(self.files.items())),
-        }
-        self.path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
 
 
 class UsageError(Exception):
@@ -662,37 +636,18 @@ def scan_paths(config: Config, paths: list[str], jobs: int) -> list[FileScan]:
         return list(work)
 
 
-def load_config(location: str | None, required: bool = False) -> Config:
-    if location is None:
-        default = Path(DEFAULT_CONFIG)
-        if not default.is_file():
-            if required:
-                raise UsageError(f"no {DEFAULT_CONFIG}: run `ratchet init` first")
-            return Config(root=Path.cwd())
-        location = str(default)
-    path = Path(location)
-    if not path.is_file():
-        raise UsageError(f"config not found: {location}")
-    data = json.loads(path.read_text())
-    unknown = set(data.get("ban", [])) - set(DELETABLE_KINDS)
-    if unknown:
-        raise UsageError(f"ban may list only {', '.join(DELETABLE_KINDS)}: {sorted(unknown)}")
-    return Config(
-        root=path.resolve().parent,
-        path=path,
-        paths=list(data.get("paths", ["."])),
-        exclude=list(data.get("exclude", [])),
-        ban=list(data.get("ban", ["plain"])),
-        allow=list(data.get("allow", [])),
-        languages=list(data.get("languages", [])),
-        message=data.get("message", DEFAULT_MESSAGE),
-        files={str(k): int(v) for k, v in data.get("files", {}).items()},
-    )
+def load_config(args: argparse.Namespace) -> Config:
+    for pattern in args.allow:
+        try:
+            re.compile(pattern)
+        except re.error as error:
+            raise UsageError(f"--allow {pattern!r} is not a regular expression: {error}") from error
+    return Config(Path.cwd(), list(args.exclude), list(args.allow), list(args.language))
 
 
 def scope(config: Config, paths: list[str]) -> list[str]:
     if not paths:
-        return config.paths
+        return ["."]
     return [os.path.relpath(Path(path).resolve(), config.root.resolve()) for path in paths]
 
 
@@ -702,7 +657,7 @@ def first_line(text: str, width: int = 100) -> str:
 
 
 def command_inventory(args: argparse.Namespace) -> int:
-    config = load_config(args.config)
+    config = load_config(args)
     kinds = KINDS if args.kinds == "all" else tuple(args.kinds.split(","))
     if set(kinds) - set(KINDS):
         raise UsageError(f"--kinds takes all or a comma list of {', '.join(KINDS)}")
@@ -843,7 +798,7 @@ def print_estimate(report: dict[str, Any]) -> None:
 
 
 def command_estimate(args: argparse.Namespace) -> int:
-    config = load_config(args.config)
+    config = load_config(args)
     scans = scan_paths(config, scope(config, args.paths), args.jobs)
     verdicts = read_verdicts(args.verdicts) if args.verdicts else []
     report = estimate(scans, verdicts)
@@ -945,7 +900,7 @@ def skip_reason(verdict: dict[str, Any], item: Item, root: Path) -> str:
 
 
 def command_delete(args: argparse.Namespace) -> int:
-    config = load_config(args.config)
+    config = load_config(args)
     verdicts = read_verdicts(args.verdicts)
     by_path: dict[str, list[dict[str, Any]]] = {}
     for verdict in verdicts:
@@ -1008,182 +963,11 @@ def command_delete(args: argparse.Namespace) -> int:
     return 1 if not_found or refused else 0
 
 
-def banned_by_file(config: Config, scans: list[FileScan]) -> dict[str, list[Item]]:
-    result: dict[str, list[Item]] = {}
-    for scan in scans:
-        banned = [item for item in scan.items if item.kind in config.ban]
-        if banned:
-            result[scan.path] = banned
-    return result
-
-
-def ratchet_files(config: Config, files: list[str]) -> list[str]:
-    in_scope = set(list_files(config.root, config.paths, config.exclude))
-    chosen = []
-    for name in files:
-        relative = Path(os.path.relpath(Path(name).resolve(), config.root.resolve())).as_posix()
-        if relative in in_scope:
-            chosen.append(relative)
-    return chosen
-
-
-def command_ratchet_init(args: argparse.Namespace) -> int:
-    location = Path(args.config or DEFAULT_CONFIG)
-    if location.exists():
-        raise UsageError(f"{location} exists: run `ratchet update` to change the baseline")
-    config = Config(root=location.resolve().parent, path=location)
-    config.paths = scope(config, args.paths) if args.paths else ["."]
-    config.exclude = list(args.exclude)
-    config.ban = ["plain", "doc"] if args.ban_doc else ["plain"]
-    config.message = args.message or DEFAULT_MESSAGE
-    scans = scan_paths(config, config.paths, args.jobs)
-    banned = banned_by_file(config, scans)
-    config.files = {path: len(items) for path, items in banned.items()}
-    config.save()
-    count = sum(config.files.values())
-    print(f"wrote {location}: {count} banned comments in {len(config.files)} files")
-    return 0
-
-
-def files_phrase(count: int) -> str:
-    return "1 file has" if count == 1 else f"{count} files have"
-
-
-def changed_lines(root: Path, path: str, base: str) -> set[int]:
-    """Give the lines of path that differ from base, or an empty set when git cannot tell."""
-    command = ["git", "-C", str(root), "diff", "--unified=0", "--no-color", base, "--", path]
-    try:
-        output = subprocess.run(command, capture_output=True, text=True, check=True).stdout
-    except (OSError, subprocess.CalledProcessError):
-        return set()
-    changed: set[int] = set()
-    for match in re.finditer(r"^@@ -\S+ \+(\d+)(?:,(\d+))? @@", output, re.M):
-        start, length = int(match[1]), int(match[2] or 1)
-        changed.update(range(start, start + length))
-    tracked = subprocess.run(
-        ["git", "-C", str(root), "ls-files", "--error-unmatch", "--", path],
-        capture_output=True,
-        check=False,
-    )
-    if tracked.returncode != 0:
-        changed.update(range(1, line_count((root / path).read_text(errors="replace")) + 1))
-    return changed
-
-
-def renamed_paths(root: Path, base: str) -> dict[str, str]:
-    """Map each path that git sees as renamed since base to its old path."""
-    command = ["git", "-C", str(root), "diff", "--relative", "--find-renames", "--name-status"]
-    command += ["-z", base]
-    try:
-        fields = (
-            subprocess.run(command, capture_output=True, check=True).stdout.decode().split("\0")
-        )
-    except (OSError, subprocess.CalledProcessError, UnicodeDecodeError):
-        return {}
-    renamed: dict[str, str] = {}
-    index = 0
-    while index < len(fields) - 1:
-        status = fields[index]
-        if status[:1] in ("R", "C"):
-            if status[:1] == "R":
-                renamed[fields[index + 2]] = fields[index + 1]
-            index += 3
-        else:
-            index += 2 if status else 1
-    return renamed
-
-
-def effective_baseline(config: Config, base: str) -> dict[str, int]:
-    """Give the baseline with each renamed file's count moved to its new path."""
-    baseline = dict(config.files)
-    for new, old in renamed_paths(config.root, base).items():
-        if old in baseline and new not in baseline and not (config.root / old).exists():
-            baseline[new] = baseline.pop(old)
-    return baseline
-
-
-def current_counts(
-    config: Config, files: list[str], jobs: int
-) -> tuple[dict[str, list[Item]], set[str] | None]:
-    """Scan the given files, or the whole scope; give the banned items and the checked set."""
-    if files:
-        chosen = ratchet_files(config, files)
-        scans = [scan_file(str(config.root), path, config.options()) for path in chosen]
-        return banned_by_file(config, scans), set(chosen)
-    return banned_by_file(config, scan_paths(config, config.paths, jobs)), None
-
-
-def report_over(
-    config: Config, over: dict[str, list[Item]], baseline: dict[str, int], base: str
-) -> None:
-    print(f"comment ratchet: {files_phrase(len(over))} more comments than the baseline allows")
-    for path, items in sorted(over.items()):
-        print(f"{path}: {len(items)} comments, baseline allows {baseline.get(path, 0)}")
-        changed = changed_lines(config.root, path, base)
-        for item in items:
-            new = " (new)" if changed & set(range(item.line, item.end_line + 1)) else ""
-            print(f"  {path}:{item.line}:{new} {first_line(item.text)}")
-    print(config.message)
-
-
-def command_ratchet_check(args: argparse.Namespace) -> int:
-    config = load_config(args.config, required=True)
-    baseline = effective_baseline(config, args.base)
-    current, checked = current_counts(config, args.files, args.jobs)
-    over = {path: items for path, items in current.items() if len(items) > baseline.get(path, 0)}
-    stale = {
-        path: allowed
-        for path, allowed in baseline.items()
-        if (checked is None or path in checked) and len(current.get(path, [])) < allowed
-    }
-    tool = Path(sys.argv[0]).as_posix()
-    if over:
-        report_over(config, over, baseline, args.base)
-    if stale:
-        print(f"comment ratchet: {files_phrase(len(stale))} fewer comments than the baseline")
-        for path, allowed in sorted(stale.items()):
-            print(f"  {path}: {len(current.get(path, []))} comments, baseline records {allowed}")
-        print(f"Lower the baseline in this change: {tool} ratchet update")
-    if over or (stale and not args.allow_stale):
-        return 1
-    print(f"comment ratchet: ok ({sum(len(v) for v in current.values())} baseline comments)")
-    return 0
-
-
-def command_ratchet_update(args: argparse.Namespace) -> int:
-    config = load_config(args.config, required=True)
-    baseline = effective_baseline(config, args.base)
-    current, checked = current_counts(config, args.files, args.jobs)
-    over = {path: items for path, items in current.items() if len(items) > baseline.get(path, 0)}
-    if over and not args.allow_increase:
-        report_over(config, over, baseline, args.base)
-        print("The baseline was not changed. Delete the new comments, or rerun with")
-        print("--allow-increase to accept them.")
-        return 1
-    updated = {
-        path: count
-        for path, count in baseline.items()
-        if (config.root / path).is_file() and (checked is not None and path not in checked)
-    }
-    updated.update({path: len(items) for path, items in current.items()})
-    before = sum(config.files.values())
-    removed = sorted(set(config.files) - set(updated))
-    if updated == config.files:
-        print(f"comment ratchet: baseline unchanged ({before} comments)")
-        return 0
-    config.files = updated
-    config.save()
-    after = sum(updated.values())
-    print(
-        f"comment ratchet: baseline {before} -> {after} comments; "
-        f"{len(removed)} paths left the baseline"
-    )
-    return 0
-
-
 def parser() -> argparse.ArgumentParser:
     common = argparse.ArgumentParser(add_help=False)
-    common.add_argument("--config", help=f"ratchet config (default: ./{DEFAULT_CONFIG})")
+    common.add_argument("--exclude", action="append", default=[], help="fnmatch glob to skip")
+    common.add_argument("--allow", action="append", default=[], help="regex for a directive")
+    common.add_argument("--language", action="append", default=[], help="pygments language")
     common.add_argument("--jobs", type=int, default=os.cpu_count() or 1)
     main = argparse.ArgumentParser(description=(__doc__ or "").split("\n\n")[0])
     commands = main.add_subparsers(dest="command", required=True)
@@ -1204,25 +988,6 @@ def parser() -> argparse.ArgumentParser:
     delete.add_argument("--verdicts", required=True)
     delete.add_argument("--dry-run", action="store_true")
     delete.set_defaults(handler=command_delete)
-
-    ratchet = commands.add_parser("ratchet", help="ban new comments with a per-file baseline")
-    steps = ratchet.add_subparsers(dest="step", required=True)
-    init = steps.add_parser("init", parents=[common], help="write the config and baseline")
-    init.add_argument("paths", nargs="*")
-    init.add_argument("--exclude", action="append", default=[], help="fnmatch glob")
-    init.add_argument("--ban-doc", action="store_true", help="also ban doc comments")
-    init.add_argument("--message", help="text printed when the check fails")
-    init.set_defaults(handler=command_ratchet_init)
-    check = steps.add_parser("check", parents=[common], help="fail on comments over baseline")
-    check.add_argument("files", nargs="*", help="check only these files (pre-commit)")
-    check.add_argument("--allow-stale", action="store_true", help="pass when counts dropped")
-    check.add_argument("--base", default="HEAD", help="git ref for marking new comments")
-    check.set_defaults(handler=command_ratchet_check)
-    update = steps.add_parser("update", parents=[common], help="lower the baseline")
-    update.add_argument("files", nargs="*", help="update only these files (pre-commit)")
-    update.add_argument("--allow-increase", action="store_true")
-    update.add_argument("--base", default="HEAD", help="git ref for finding renamed files")
-    update.set_defaults(handler=command_ratchet_update)
     return main
 
 

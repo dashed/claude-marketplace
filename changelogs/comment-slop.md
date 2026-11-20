@@ -8,11 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Failure mode 8, "An excuse for a defect": a comment that admits the code is wrong ("hacky", "workaround", "for now", a TODO that no tracked issue backs). It can pass all three clauses, so the introduction and the failure-mode preamble now name it as the one exception. The fix is in the code: fix the defect, or file an issue and keep at most a TODO that cites it. The boundary with a keep: an excuse says the code should change; a keep says it must not.
-- "Repositories that ban comments": when a `.comment-ratchet.json`, a no-comments lint rule, or an ADR bans comments, a keep moves its fact into a name, a type, a test, or an ADR instead of staying as a comment.
+- "Repositories that ban comments": when a no-comments lint rule or an ADR bans comments, a keep moves its fact into a name, a type, a test, or an ADR instead of staying as a comment.
 
 ### Changed
 - Mode 2 now says a TODO earns its place only with a tracked issue behind it.
-- The description and "When to Use" hand a repository-wide purge with ADRs, issues, and a lint ratchet to the new delete-comment skill.
+- The description and "When to Use" hand a repository-wide purge with issues and ADRs to the new delete-comment skill.
 
 ## [1.6.0] - 2026-10-14
 

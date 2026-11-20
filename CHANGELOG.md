@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- delete-comment skill: a repository-wide comment purge. It classifies every comment as a tautology, stale, an excuse, or a decision record; deletes it, files an issue for it, or moves its fact into code, a test, or an ADR; bans new comments with a per-file ratchet; and measures the lines removed. Ships `scripts/comments.py`, a pygments-based scanner that keeps tool directives and license notices, deletes only behind a code-token check (and an AST check for Python), and runs the ratchet. References cover ADRs recovered from comments and the lint wiring, including a native ESLint rule with bulk suppressions
+- delete-comment skill: a repository-wide comment purge. It classifies every comment as a tautology, stale, an excuse, or a decision record; deletes it, files an issue for it, or moves its fact into code, a test, or an ADR; and measures the lines removed. Ships `scripts/comments.py`, a pygments-based scanner that keeps tool directives and license notices and deletes only behind a code-token check (and an AST check for Python), and a reference for ADRs recovered from comments
 - `make test-delete-comment` (with lint, type-check, and format targets) checks the scanner and its tests
 
 ### Changed

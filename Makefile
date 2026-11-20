@@ -186,7 +186,7 @@ format-test-audit-check: ## Check test-audit formatting with Ruff
 
 .PHONY: test-delete-comment lint-delete-comment typecheck-delete-comment format-delete-comment format-delete-comment-check
 
-test-delete-comment: lint-delete-comment typecheck-delete-comment format-delete-comment-check ## Check the comment scanner, safe delete and ratchet
+test-delete-comment: lint-delete-comment typecheck-delete-comment format-delete-comment-check ## Check the comment scanner and safe delete
 	@$(UV_RUN) pytest tests/test_delete_comment.py --no-cov
 
 lint-delete-comment: ## Run Ruff on the delete-comment scanner and its tests

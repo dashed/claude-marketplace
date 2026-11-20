@@ -1,6 +1,6 @@
 ---
 name: comment-slop
-description: "Find and remove AI-slop comments — ones that restate the code, describe another layer's behavior, narrate planning that never shipped, or excuse a hack — while protecting the comments that carry real reasoning. Use when a reviewer calls a comment useless, unclear, or AI-written — including one a previous cleanup pass already rewrote; when auditing or cleaning up comments and docstrings on a branch, diff, or PR; when comments should be reduced, simplified, or restyled to ASD-STE100 / simplified technical English; when writing or reviewing docstrings for completeness — tuple-return meanings, boolean polarity, silent defaults and fallbacks; when deciding whether new code needs a comment and what it should say; or before sending a change for review. For a repository-wide purge that moves decisions into ADRs, files issues for excuses, and bans new comments with a lint ratchet, use delete-comment."
+description: "Find and remove AI-slop comments — ones that restate the code, describe another layer's behavior, narrate planning that never shipped, or excuse a hack — while protecting the comments that carry real reasoning. Use when a reviewer calls a comment useless, unclear, or AI-written — including one a previous cleanup pass already rewrote; when auditing or cleaning up comments and docstrings on a branch, diff, or PR; when comments should be reduced, simplified, or restyled to ASD-STE100 / simplified technical English; when writing or reviewing docstrings for completeness — tuple-return meanings, boolean polarity, silent defaults and fallbacks; when deciding whether new code needs a comment and what it should say; or before sending a change for review. For a repository-wide purge that files issues for excuses and moves decisions into ADRs or tests, use delete-comment."
 license: MIT
 ---
 
@@ -28,7 +28,7 @@ Slop is not a length problem. It is a content-selection problem, which is why sh
 - Auditing agent-written or generated code for filler prose
 - A comment excuses a hack, a workaround, or a TODO that no tracked issue backs
 
-For a repository-wide purge — every comment classified, decision records moved into ADRs, issues filed for excuses, and a lint rule that bans new comments — use the delete-comment skill. This skill judges comments in a diff or in the files you choose.
+For a repository-wide purge — every comment classified, issues filed for excuses, and decision records moved into ADRs or tests — use the delete-comment skill. This skill judges comments in a diff or in the files you choose.
 
 ## Failure modes
 
@@ -175,7 +175,7 @@ Both state a fact that is invisible in the code and true at this layer. Neither 
 
 **The default is delete.** The burden of proof sits on the comment: a keep must show its pass — name the row of this table it satisfies and the fact the code cannot state. "It might help someone" is not a pass; every slop comment might help someone. Doubt protects exactly one shape of comment: one that asserts a why — a rationale, an ordering constraint, a trade-off — that you cannot cheaply verify from the code in front of you. Deleting a real rationale costs the next person the bug it was preventing, which is worse than any bland comment; a comment of that shape survives being torn over. A restatement of the visible never does.
 
-**Repositories that ban comments.** If the repository bans comments — a `.comment-ratchet.json` file, a no-comments lint rule, or an ADR that says so — a keep cannot stay as a comment. Move its fact instead: into a name, a type, or a test that fails without it, or into an ADR. The delete-comment skill has the procedure. The rest of this skill still decides *which* facts are worth moving.
+**Repositories that ban comments.** If the repository bans comments — a no-comments lint rule, or an ADR that says so — a keep cannot stay as a comment. Move its fact instead: into a name, a type, or a test that fails without it, or into an ADR. The delete-comment skill has the procedure. The rest of this skill still decides *which* facts are worth moving.
 
 ## What a docstring must state
 

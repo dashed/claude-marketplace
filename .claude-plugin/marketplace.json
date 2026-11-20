@@ -1310,7 +1310,7 @@
       "name": "delete-comment",
       "version": "1.0.0",
       "source": "./plugins/delete-comment",
-      "description": "Purge comments from a codebase: classify each as tautology, stale, excuse, or decision record; delete them, file issues for excuses, and move decisions into ADRs or tests; then ban new comments with a per-file lint ratchet and measure the lines removed. Use when asked to delete, ban, or audit every comment in a codebase or directory, move comment rationale into ADRs, add a no-comments lint rule or ratchet, or estimate the lines saved.",
+      "description": "Purge comments from a codebase: classify each as tautology, stale, excuse, or decision record; delete them, file issues for excuses, and move decisions into ADRs or tests; then measure the lines removed. Keeps tool directives and license notices, and deletes only behind a code-token check. Use when asked to delete or audit every comment in a codebase or directory, move comment rationale into ADRs, or estimate the lines saved.",
       "author": {
         "name": "Alberto Leal"
       },
@@ -1320,8 +1320,6 @@
         "comments",
         "cleanup",
         "adr",
-        "lint",
-        "ratchet",
         "technical-debt",
         "refactoring"
       ],

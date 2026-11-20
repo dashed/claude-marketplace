@@ -375,113 +375,29 @@ def test_estimate_counts_lines_per_kind_and_verdict(tmp_path: Path) -> None:
     assert report["lines"] == {"total": 4, "code": 1, "blank": 0, "comment_only": 3}
 
 
-def git(root: Path, *args: str) -> None:
-    subprocess.run(
-        ["git", "-c", "user.name=t", "-c", "user.email=t@example.invalid", *args],
-        cwd=root,
-        check=True,
-        capture_output=True,
-    )
-
-
-@pytest.fixture
-def repo(tmp_path: Path) -> Path:
+def test_flags_exclude_paths_allow_directives_and_pick_languages(tmp_path: Path) -> None:
     write(
         tmp_path,
         {
-            "src/a.py": "# one\n# two\n\n# three\nx = 1\n",
-            "src/b.py": "y = 2  # only\n",
-            "src/c.ts": "/** Doc. */\nexport const c = 1;\n",
-            "src/gen/skip.py": "# excluded\n",
+            "app/a.py": "x = 1  # keep-fmt: ours\n# plain\n",
+            "app/b.ts": "// plain\nexport {};\n",
+            "build/gen.py": "# plain\n",
         },
     )
-    git(tmp_path, "init", "-q")
-    assert run(tmp_path, "ratchet", "init", "src", "--exclude", "src/gen/*").returncode == 0
-    git(tmp_path, "add", "-A")
-    git(tmp_path, "commit", "-qm", "base")
-    return tmp_path
-
-
-def test_ratchet_baseline_counts_plain_items_per_file(repo: Path) -> None:
-    config = json.loads((repo / ".comment-ratchet.json").read_text())
-    assert config["files"] == {"src/a.py": 2, "src/b.py": 1}
-    assert config["ban"] == ["plain"]
-    assert run(repo, "ratchet", "check").returncode == 0
-
-
-def test_ratchet_fails_on_a_new_comment_and_marks_it(repo: Path) -> None:
-    with (repo / "src/a.py").open("a") as handle:
-        handle.write("# a new one\n")
-    write(repo, {"src/new.py": "# also new\n", "src/gen/more.py": "# excluded too\n"})
-    result = run(repo, "ratchet", "check")
-    assert result.returncode == 1
-    assert "2 files have more comments than the baseline allows" in result.stdout
-    assert "src/a.py:6: (new) # a new one" in result.stdout
-    assert "src/a.py:1: # one" in result.stdout
-    assert "src/new.py:1: (new) # also new" in result.stdout
-    assert "gen" not in result.stdout
-    only_b = run(repo, "ratchet", "check", "src/b.py", "src/gen/more.py")
-    assert only_b.returncode == 0, only_b.stdout
-
-
-def test_ratchet_requires_lowering_the_baseline(repo: Path) -> None:
-    (repo / "src/b.py").write_text("y = 2\n")
-    result = run(repo, "ratchet", "check")
-    assert result.returncode == 1
-    assert "src/b.py: 0 comments, baseline records 1" in result.stdout
-    assert run(repo, "ratchet", "check", "--allow-stale").returncode == 0
-    assert run(repo, "ratchet", "update").returncode == 0
-    config = json.loads((repo / ".comment-ratchet.json").read_text())
-    assert config["files"] == {"src/a.py": 2}
-    assert run(repo, "ratchet", "check").returncode == 0
-
-
-def test_ratchet_update_refuses_to_raise_the_baseline(repo: Path) -> None:
-    (repo / "src/b.py").write_text("# new\ny = 2  # only\n")
-    refused = run(repo, "ratchet", "update")
-    assert refused.returncode == 1
-    assert json.loads((repo / ".comment-ratchet.json").read_text())["files"]["src/b.py"] == 1
-    assert run(repo, "ratchet", "update", "--allow-increase").returncode == 0
-    assert json.loads((repo / ".comment-ratchet.json").read_text())["files"]["src/b.py"] == 2
-
-
-def baseline(repo: Path) -> dict[str, int]:
-    return json.loads((repo / ".comment-ratchet.json").read_text())["files"]
-
-
-def test_ratchet_update_on_staged_files_lowers_only_those(repo: Path) -> None:
-    (repo / "src/a.py").write_text("# one\nx = 1\n")
-    (repo / "src/b.py").write_text("y = 2\n")
-    result = run(repo, "ratchet", "update", "src/a.py")
-    assert result.returncode == 0, result.stdout
-    assert baseline(repo) == {"src/a.py": 1, "src/b.py": 1}
-    (repo / "src/a.py").write_text("# one\nx = 1\n# new\n")
-    refused = run(repo, "ratchet", "update", "src/a.py")
-    assert refused.returncode == 1
-    assert "src/a.py:3: (new) # new" in refused.stdout
-    assert baseline(repo) == {"src/a.py": 1, "src/b.py": 1}
-
-
-def test_ratchet_follows_renames_and_drops_deleted_files(repo: Path) -> None:
-    git(repo, "mv", "src/a.py", "src/renamed.py")
-    (repo / "src/b.py").unlink()
-    result = run(repo, "ratchet", "check")
-    assert result.returncode == 1
-    assert "src/b.py: 0 comments, baseline records 1" in result.stdout
-    assert "renamed" not in result.stdout
-    assert run(repo, "ratchet", "update", "src/renamed.py").returncode == 0
-    assert baseline(repo) == {"src/renamed.py": 2}
-    assert run(repo, "ratchet", "check").returncode == 0
-
-
-def test_ratchet_can_ban_doc_comments(tmp_path: Path) -> None:
-    write(tmp_path, {"c.ts": "/** Doc. */\nexport const c = 1;\n"})
-    assert run(tmp_path, "ratchet", "init", "--ban-doc").returncode == 0
-    config = json.loads((tmp_path / ".comment-ratchet.json").read_text())
-    assert config["files"] == {"c.ts": 1}
-
-
-def test_ratchet_init_refuses_to_overwrite(repo: Path) -> None:
-    result = run(repo, "ratchet", "init")
-    assert result.returncode == 2
-    assert "run `ratchet update`" in result.stderr
+    records = run(
+        tmp_path,
+        "inventory",
+        "--kinds",
+        "all",
+        "--exclude",
+        "build/*",
+        "--allow",
+        r"keep-fmt:",
+        "--language",
+        "Python",
+    ).stdout.splitlines()
+    found = [(r["path"], r["line"], r["kind"]) for r in map(json.loads, records)]
+    assert found == [("app/a.py", 1, "directive"), ("app/a.py", 2, "plain")]
+    bad = run(tmp_path, "inventory", "--allow", "(")
+    assert bad.returncode == 2
+    assert "is not a regular expression" in bad.stderr
