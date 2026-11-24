@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `make test-delete-comment` (with lint, type-check, and format targets) checks the scanner and its tests
 
 ### Changed
+- code-walkthrough 1.4.0: line numbers on every quoted block (on by default, with diff numbering from the hunk header), file tours for added files with a line-keyed note list and a test table, and Phase 5 checks for numbering, tour coverage, quoted ranges and stale prose line numbers. Fixes four template layout bugs on phones and in long walkers, and a tab bug that let two groups under one parent switch each other's panes
 - comment-slop 1.7.0: a failure mode for comments that excuse a defect, a rule for repositories that ban comments, and a hand-off to delete-comment for repository-wide purges
 
 ## [0.61.0] - 2026-11-18

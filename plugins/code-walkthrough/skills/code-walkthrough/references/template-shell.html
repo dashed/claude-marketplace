@@ -76,6 +76,9 @@ h4 { font-size: 15.5px; margin: 22px 0 8px; }
 p { margin: 10px 0; }
 a { color: var(--accent-ink); }
 code { font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace; font-size: .88em; background: var(--code-bg); padding: .12em .38em; border-radius: 5px; }
+/* Long identifiers in prose would widen the page on a phone. `anywhere` would
+   also break names mid-word inside tables; `break-word` does not. */
+p code, li code, td code, dd code, dt, .caption code { overflow-wrap: break-word; }
 /* ---------- hero ---------- */
 #hero { background: linear-gradient(135deg, #241d3a, #4a3fa3 55%, #6c5fc7); color: #fff; border: none; }
 #hero h1 { font-size: 30px; margin: 0 0 6px; letter-spacing: -.02em; }
@@ -111,6 +114,22 @@ pre code:has(> .cl) { white-space: normal; }
 .cl.del { background: var(--del-bg); border-left-color: var(--del-bar); }
 .cl.hl  { background: var(--accent-soft); border-left-color: var(--accent); }
 .cl.dim { opacity: .62; }
+/* Line numbers: the JS sets data-n from data-start (or data-old-start and
+   data-new-start for a unified diff) on the <code>. The number is generated
+   content, so it is not copied with the code. A .gap line (an elision marker)
+   gets no number but keeps the gutter, so the code stays aligned. */
+.cl[data-n]::before, pre code:has(> .cl[data-n]) > .cl:not([data-n])::before {
+  display: inline-block; min-width: var(--ln-w, 3ch); margin: 0 12px 0 -6px; text-align: right;
+  color: var(--ink-3); opacity: .75; user-select: none; -webkit-user-select: none;
+}
+.cl[data-n]::before { content: attr(data-n); }
+pre code:has(> .cl[data-n]) > .cl:not([data-n])::before { content: ""; }
+.cl.gap { color: var(--ink-3); font-style: italic; }
+/* Line-keyed notes under a quoted chunk: <ul class="lbl"><li><span class="ln">12-18</span> ...</li></ul> */
+.lbl { list-style: none; padding-left: 0; margin: 8px 0 18px; }
+.lbl li { margin: 6px 0; padding-left: 92px; text-indent: -92px; }
+.lbl li > .ln { display: inline-block; width: 84px; text-indent: 0; margin-right: 8px; font: 600 12.5px ui-monospace, Menlo, monospace; color: var(--accent-ink); }
+@media (max-width: 600px) { .lbl li { padding-left: 0; text-indent: 0; } .lbl li > .ln { display: block; width: auto; } }
 /* ---------- syntax tokens: highlight.js classes and hand-marked .kw/.str/.cmt share one palette ---------- */
 .hljs-keyword, .hljs-selector-tag, .hljs-name, .hljs-variable.language_, .hljs-doctag, .kw { color: var(--tk-kw); }
 .hljs-keyword, .kw { font-weight: 600; }
@@ -149,8 +168,10 @@ table.tbl { border-collapse: collapse; width: 100%; font-size: 13.5px; margin: 1
 .mermaid-fallback { font-size: 12.5px; color: var(--ink-3); text-align: left; }
 /* ---------- walker ---------- */
 .walker { display: grid; grid-template-columns: minmax(0,7fr) minmax(0,5fr); gap: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin: 16px 0; }
-@media (max-width: 900px) { .walker { grid-template-columns: 1fr; } }
-.walker .wcode { background: var(--code-bg); border-right: 1px solid var(--line); overflow-x: auto; }
+/* minmax(0, 1fr), not 1fr: a plain 1fr column grows to the widest code line and clips the step text on a phone. */
+@media (max-width: 900px) { .walker { grid-template-columns: minmax(0, 1fr); } }
+/* A long walker scrolls its own code pane; the JS scrolls the highlighted lines into view at each step. */
+.walker .wcode { background: var(--code-bg); border-right: 1px solid var(--line); overflow: auto; max-height: 72vh; }
 .walker .wcode pre { margin: 0; padding: 12px 0; font-size: 12.5px; line-height: 1.5; overflow-x: auto; }
 .walker .wside { background: var(--panel); padding: 16px 20px; display: flex; flex-direction: column; }
 .walker .wstep { display: none; } .walker .wstep.on { display: block; }
@@ -159,7 +180,7 @@ table.tbl { border-collapse: collapse; width: 100%; font-size: 13.5px; margin: 1
 .walker .wctl button { border: 1px solid var(--accent); background: var(--accent); color: var(--on-accent); border-radius: 8px; padding: 7px 15px; font: 600 13px var(--ui-font); cursor: pointer; }
 .walker .wctl button.sec { background: transparent; color: var(--accent-ink); }
 .walker .wctl button:disabled { opacity: .35; cursor: default; }
-.walker .wdots { display: flex; gap: 5px; }
+.walker .wdots { display: flex; gap: 5px; flex: 1 1 auto; min-width: 0; flex-wrap: wrap; justify-content: center; }
 .walker .wdots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
 .walker .wdots i.on { background: var(--accent); }
 /* ---------- glossary ---------- */
@@ -209,7 +230,8 @@ COMPONENT PATTERNS (all wired by the JS below):
   <div class="meta"><span>chip</span><span>chip</span></div>
 </section>
 
-2) Before/after toggle (group name must prefix every button/pane key):
+2) Before/after toggle. A pane belongs to the group whose button has the same
+key; panes are found under the tabs' parent element, so keep keys unique on the page:
 <div class="batabs" data-tabs="grp">
   <button class="on" data-p="grp-a">Before (base &lt;sha&gt;)</button>
   <button data-p="grp-b">After (tip &lt;sha&gt;)</button>
@@ -217,12 +239,20 @@ COMPONENT PATTERNS (all wired by the JS below):
 <div class="bapane on" data-pane="grp-a">...before code...</div>
 <div class="bapane" data-pane="grp-b">...after code...</div>
 
-3) Code with diff colors and syntax highlighting (escape &lt; as &amp;lt;):
+3) Code with line numbers, diff colors and syntax highlighting (escape &lt; as &amp;lt;).
+Line numbers are on by default: put the file's first quoted line number in
+data-start. A .gap line marks an elision; its data-start is where the count
+restarts. For a unified diff use data-old-start and data-new-start (from the
+hunk header "@@ -a,b +c,d @@"): removed lines show old numbers, other lines new ones.
 <div class="codewrap"><div class="codehead"><span>path/to/file.py</span><span>tip &lt;sha&gt;</span></div>
-<pre><code class="language-python"><span class="cl">context line</span>
-<span class="cl add">added line (real diff only)</span>
+<pre><code class="language-python" data-start="40"><span class="cl">context line</span>
+<span class="cl hl">emphasized line (NOT a diff)</span>
+<span class="cl gap" data-start="57">    # ... lines 42-56 elided ...</span>
+<span class="cl">line 57</span></code></pre></div>
+
+<pre><code class="language-python" data-old-start="12" data-new-start="12"><span class="cl">context line</span>
 <span class="cl del">removed line (real diff only)</span>
-<span class="cl hl">emphasized line (NOT a diff)</span></code></pre></div>
+<span class="cl add">added line (real diff only)</span></code></pre>
 `language-<name>` takes any highlight.js name or alias (python, ts, tsx, go, rust,
 sql, yaml, bash, json, ...); names outside the common bundle load on demand.
 The whole block is highlighted as one text, then split back onto the .cl lines,
@@ -266,6 +296,12 @@ fills (`style X fill:#...`, classDef colours): they break in one theme.
 
 8) Collapsible deep-dive:
 <details><summary>Title</summary><div class="body">...</div></details>
+
+9) Line-keyed notes under a quoted chunk (a file tour). Each note names the
+lines it explains and links to the section that teaches the mechanism:
+<ul class="lbl">
+  <li><span class="ln">40-44</span> The guard returns early when ... (<a href="#anchor-id">details</a>)</li>
+</ul>
 -->
 </main>
 <script>
@@ -303,19 +339,49 @@ fills (`style X fill:#...`, classDef colours): they break in one theme.
     });
   }
   /* ---------- before/after tabs ---------- */
+  // A pane belongs to a tab group when its data-pane equals one of the group's
+  // button keys. Panes are looked up under the tabs' parent element, so two
+  // groups can share a parent as long as their keys differ.
   document.querySelectorAll(".batabs").forEach(function (tabs) {
+    var buttons = Array.prototype.slice.call(tabs.querySelectorAll("button[data-p]"));
+    var keys = buttons.map(function (b) { return b.getAttribute("data-p"); });
     tabs.addEventListener("click", function (ev) {
       var btn = ev.target.closest("button[data-p]");
       if (!btn) return;
       var key = btn.getAttribute("data-p");
-      tabs.querySelectorAll("button").forEach(function (b) { b.classList.toggle("on", b === btn); });
-      var scope = tabs.parentElement;
-      scope.querySelectorAll('.bapane[data-pane]').forEach(function (pane) {
-        if (pane.getAttribute("data-pane").startsWith(key.slice(0, key.lastIndexOf("-")))) {
-          pane.classList.toggle("on", pane.getAttribute("data-pane") === key);
-        }
+      buttons.forEach(function (b) { b.classList.toggle("on", b === btn); });
+      tabs.parentElement.querySelectorAll(".bapane[data-pane]").forEach(function (pane) {
+        var k = pane.getAttribute("data-pane");
+        if (keys.indexOf(k) !== -1) pane.classList.toggle("on", k === key);
       });
     });
+  });
+  /* ---------- line numbers ---------- */
+  // <code data-start="N">: lines are numbered N, N+1, ... A .cl.gap line (an
+  // elision marker) has no number; its own data-start restarts the count after it.
+  // <code data-old-start="A" data-new-start="B">: a unified diff. A .del line shows
+  // the old number, an .add line the new number, and a context line the new number
+  // (it advances both). A .gap line can restart both counts, like a hunk header.
+  // A line with its own data-n keeps it.
+  document.querySelectorAll("pre > code[data-start], pre > code[data-new-start]").forEach(function (code) {
+    var diff = code.hasAttribute("data-new-start");
+    var n = parseInt(code.getAttribute(diff ? "data-new-start" : "data-start"), 10);
+    var o = diff ? parseInt(code.getAttribute("data-old-start"), 10) : NaN;
+    var widest = 1;
+    code.querySelectorAll(":scope > .cl").forEach(function (cl) {
+      if (cl.classList.contains("gap")) {
+        if (cl.hasAttribute(diff ? "data-new-start" : "data-start")) n = parseInt(cl.getAttribute(diff ? "data-new-start" : "data-start"), 10);
+        if (diff && cl.hasAttribute("data-old-start")) o = parseInt(cl.getAttribute("data-old-start"), 10);
+        return;
+      }
+      var shown;
+      if (diff && cl.classList.contains("del")) { shown = o; o += 1; }
+      else if (diff && cl.classList.contains("add")) { shown = n; n += 1; }
+      else { shown = n; n += 1; o += 1; }
+      if (!cl.hasAttribute("data-n")) cl.setAttribute("data-n", String(shown));
+      widest = Math.max(widest, cl.getAttribute("data-n").length);
+    });
+    code.style.setProperty("--ln-w", Math.max(3, widest) + "ch");
   });
   /* ---------- scrollspy ---------- */
   var links = Array.prototype.slice.call(document.querySelectorAll("#sidebar a[href^='#']"));
@@ -355,6 +421,13 @@ fills (`style X fill:#...`, classDef colours): they break in one theme.
       var want = {};
       (steps[idx].getAttribute("data-lines") || "").split(",").forEach(function (x) { if (x) want[x.trim()] = true; });
       lines.forEach(function (cl) { cl.classList.toggle("hl", !!want[cl.getAttribute("data-l")]); });
+      // Scroll the code pane (never the page) so that the first highlighted line is visible.
+      var pane = walker.querySelector(".wcode");
+      var first = walker.querySelector(".cl.hl[data-l]");
+      if (pane && first) {
+        var top = first.getBoundingClientRect().top - pane.getBoundingClientRect().top + pane.scrollTop;
+        if (top < pane.scrollTop || top > pane.scrollTop + pane.clientHeight - 40) pane.scrollTop = Math.max(0, top - 40);
+      }
       prev.disabled = idx === 0;
       next.disabled = idx === steps.length - 1;
     }

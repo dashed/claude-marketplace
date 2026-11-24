@@ -30,7 +30,7 @@ Decide the kind from the request. "An explainer for this PR" is a change explain
 | Subject | a branch, PR, diff, or commit range | existing code: a subsystem, feature, mechanism, or flow |
 | Refs (Phase 0) | before and after | the one commit that you read |
 | 30-second version | what changes, why, and what the reviewer must check | what the code does, why it has this shape, and what a change must keep |
-| Units (Phase 3, step 4) | one for each branch or module, with before/after toggles | one for each component, in the order that a request reaches it; a toggle only compares with an earlier design or an alternative |
+| Units (Phase 3, step 4) | one for each branch or module, with before/after toggles; a file that the change adds also gets a [file tour](#file-tours) | one for each component, in the order that a request reaches it; a toggle only compares with an earlier design or an alternative |
 | Last section before the glossary (Phase 3, step 7) | reviewer checklist | "Before you change it": each invariant, the code that enforces it, and the test that guards it |
 
 If the topic is not code in the repository (a protocol, or the design of a library), use the same pipeline. Take the facts from the source that the user names (a spec, the library's code, its documentation), and cite that source where the document would cite a ref.
@@ -109,7 +109,7 @@ Extraction parallelizes well; use subagents for independent units (one per branc
 
 ### Phase 2 — Verify (the phase that makes the doc trustworthy)
 
-Never bake agent output into the document unverified. Independently re-read every critical block yourself at the exact refs: the star functions, the before/after of the core change, anything surprising. Agent reports are leads, not facts — expect a couple of wrong or stale claims per batch and catch them here. If the doc will state a number (test counts, line counts), count it yourself.
+Never bake agent output into the document unverified. Independently re-read every critical block yourself at the exact refs: the star functions, the before/after of the core change, anything surprising. Agent reports are leads, not facts — expect a couple of wrong or stale claims per batch and catch them here. If the doc will state a number (test counts, line counts, rows that the code selects), count it yourself. When the count comes from a query, check that the query's filter is the same predicate as the code's. A filter with one of the code's two conditions can count four times the rows that the code selects.
 
 ### Phase 3 — Structure (spiral pedagogy)
 
@@ -118,13 +118,24 @@ Order the document so each section only needs what came before:
 1. **Hero** — title, scope chips (refs, sizes, commit counts)
 2. **The 30-second version** — the bottom line: what changes, why, and what the reviewer must check, in plain words, with a map diagram
 3. **Foundations** — domain 101, the wire contracts/interfaces, the core mechanisms (this is where "the X stuff" gets taught when the user asks "teach me X too")
-4. **Per-unit walkthroughs** — one per branch/module: overview → file-by-file before/after → subtleties → tests
+4. **Per-unit walkthroughs** — one per branch/module: overview → file-by-file before/after → subtleties → tests. A file that the change adds has no "before", so give it a [file tour](#file-tours) before the sections that explain its mechanisms.
 5. **End-to-end flows** — sequence diagrams that tie the units together
 6. **Scope boundaries** — what this change deliberately does NOT do, and where that lives
 7. **Reviewer checklist** — invariants, who enforces them, what would break them; questions to ask
 8. **Glossary + appendix** — every domain term; the road-not-taken; full listings of anything condensed earlier
 
 A code explainer keeps this order, with the changes in [Two kinds of explainer](#two-kinds-of-explainer).
+
+#### File tours
+
+Sections that explain a mechanism quote only the slice of code that they need, so no section reads a new file in order. A reviewer needs that read. For each file that the change adds:
+
+- Read the file from its first line to its last line, in file order. Every line appears in exactly one quoted chunk.
+- A chunk is one function or one coherent block, quoted in full, with line numbers. Put imports and a long module or class docstring in a closed `<details>`.
+- Under each chunk, write a line-keyed note list (`.lbl`): each note names the lines it explains and links to the mechanism section that teaches them in depth.
+- For each test file, list every test: one table for each test group, with the test's line range, what it sets up, and what it checks. Generate the names and line ranges from the file with a short script, so that they cannot drift; write only the "sets up" and "checks" text by hand.
+
+Keep the mechanism sections. The tour is the linear read, and it links into them. When the mechanism sections are long, the tour can be its own page in a series (see [Scaling notes](#scaling-notes)).
 
 ### Phase 4 — Author (fragments + components)
 
@@ -137,6 +148,8 @@ Write every fragment to the [prose rules](#prose-rules). Write the document as f
 | Sidebar TOC + scrollspy | navigation in long docs |
 | Before/after tab toggles | every meaningful diff — reader flips between base and tip |
 | Diff-colored lines (`.cl.add/.cl.del/.cl.hl`) | real diffs (add/del) and attention (hl = not a diff!) |
+| Line numbers (on by default) | every quoted block: `data-start` on the `<code>`, a `.cl.gap` line for each elision, `data-old-start`/`data-new-start` for a unified diff |
+| Line-keyed note list (`.lbl`) | the notes under each chunk of a [file tour](#file-tours) |
 | Syntax highlighting (`<code class="language-python">`) | every code block — highlight.js colours the tokens and keeps the per-line diff/walker classes |
 | Collapsible `<details>` deep-dives | side context that would interrupt the spiral |
 | Step-through walker | execution-ordered code (a write path, a state machine) — steps highlight line ranges |
@@ -151,6 +164,8 @@ Write every fragment to the [prose rules](#prose-rules). Write the document as f
 - Quote code **verbatim** at stated refs. If you condense, mark it ("condensed for width", elision comments) — never silently alter.
 - HTML-escape everything (`<=` → `&lt;=`); run the balance check in phase 5 to catch what you missed.
 - `add`/`del` colors only for lines that are actually added/removed in the diff; use `hl` for emphasis elsewhere.
+- Number every quoted block with the file's own line numbers at the stated ref. Number a Before pane from the old file and an After pane from the new file. In a unified diff, a removed line shows its old number and every other line its new number; read both start numbers from the hunk header (`@@ -a,b +c,d @@`). An elision line gets no number.
+- Do not write line numbers in prose ("the check at lines 111-112"). They go stale when the change moves, and nothing remaps them. Name the function, or link to the quoted chunk. The `.lbl` notes are the exception: they sit under the chunk that they number.
 - Put `language-<name>` (a highlight.js name or alias: `python`, `ts`, `tsx`, `go`, `sql`, ...) on every code block's `<code>`. Keep lines plain text — no `+`/`-` prefixes, no spans inside a `.cl` line; a line with markup in it opts its whole block out of highlighting.
 - No hard-coded colours in mermaid source (`style X fill:#…`, coloured `classDef`): they break in one of the two themes. Mark the node the reader should look at with `class NodeId current`.
 - Validate each diagram's source with the `mermaid-cli` skill before it goes into a fragment: `mmdc -i diagram.mmd -o diagram.svg` exits 1 and prints the parse error with its line. In the page, a syntax error shows only as an error graphic.
@@ -159,15 +174,20 @@ Write every fragment to the [prose rules](#prose-rules). Write the document as f
 ### Phase 5 — Verify in a real browser
 
 1. **Structure**: parse the HTML (any lenient parser) for unbalanced tags; check every `href="#…"` resolves; check tab buttons match panes; count mermaid blocks.
-2. **Render**: serve the file (`python3 -m http.server`) and drive a headless browser (the Playwright MCP tools, or the `playwright`, `dev-browser`, or `chrome-cdp` skill):
+   - **Line numbers**: every quoted block has `data-start` (or the diff pair), and every `.cl` line that is not a `.gap` has a `data-n` after load.
+   - **File-tour coverage**: for each added file, the tour's chunks cover lines 1 to the file's last line at the pinned ref, with no gap and no overlap. Compare the first and last `data-n` of each chunk with `git show <ref>:<path> | wc -l`.
+   - **Quoted ranges start where they claim**: print the first line of each quoted function or test. It must be its `def`, its `class`, or its first decorator. A range that starts on another test's decorator is a wrong range.
+   - **Prose line numbers**: search the text outside `pre`, `code` and `.lbl` for `lines? \d+`. Each hit is a number that the next re-pin will leave stale.
+2. **Render**: serve the file on a free port (`python3 -m http.server 0 --bind 127.0.0.1`, then read the port; a fixed port can hit a stale server and check its 404 page) and drive a headless browser (the Playwright MCP tools, or the `playwright`, `dev-browser`, or `chrome-cdp` skill):
    - every `.mermaid` contains an `svg` (count them), and no `svg` has `aria-roledescription="error"`. Mermaid draws a syntax error as an SVG that reads "Syntax error in text", so the count alone passes a broken diagram. `mmdc` runs its own mermaid version, and the template loads mermaid 10.9.3, so newer syntax can pass `mmdc` and still fail here.
    - every `code[class*=language-]` block contains `.hljs-*` spans and still has its original number of `.cl` lines
-   - walker: click next/prev, assert the active step and highlighted lines change
-   - tabs: toggle each group, assert pane visibility flips
+   - walker: click next/prev, assert the active step and highlighted lines change, and that the first highlighted line is inside the code pane. Read the expected lines from the step's `data-lines`, not from a hard-coded number, so that a re-pin does not break the check
+   - tabs: toggle each group, assert pane visibility flips. Skip the groups inside a closed `<details>`: they are not clickable until it opens
+   - phone width (390 px): the page has no horizontal scroll (`scrollWidth` equals `clientWidth`), and each walker's "next" button is inside its card
    - theme: toggle dark, assert the diagram SVGs were replaced (new `svg` ids) and re-check readability of diagrams and code
    - playgrounds: exercise them via `evaluate` (set input, assert verdict output)
    - console: no errors (a favicon 404 is fine; a 404 for `…/languages/<name>.min.js` means a `language-` name highlight.js does not know)
-3. **Screenshots** in light AND dark of the hero, one diagram-heavy section, and each custom widget — look at them yourself; rendering bugs hide in screenshots, not in DOM assertions.
+3. **Screenshots** in light AND dark of the hero, one diagram-heavy section, and each custom widget — look at them yourself; rendering bugs hide in screenshots, not in DOM assertions. Take element screenshots (`locator.screenshot()`): a page screenshot clipped to coordinates fails for an element below the fold.
 4. **Read-through** as the reader, top to bottom, against the [prose rules](#prose-rules):
    - the first paragraph of each section states its point
    - no sentence uses a term before the document defines it
@@ -177,7 +197,7 @@ Write every fragment to the [prose rules](#prose-rules). Write the document as f
 
 ### Phase 6 — Deliver
 
-Deliver the single HTML file at the requested path. The deliverable is the local file; publish it as an Artifact only when the user asks for a link. Keep the fragments directory (mention it — it is how the user iterates). Note the two external dependencies (mermaid and highlight.js, both from the jsDelivr CDN) and that offline the document degrades to plain code and readable diagram source. If the user is currently reading an earlier document, write a NEW file and cross-link; never edit a file the user has open.
+Deliver the single HTML file at the requested path. The deliverable is the local file; publish it as an Artifact only when the user asks for a link. Once the user has asked for a link, publish again to the same URL after each rebuild that passes Phase 5. Keep the fragments directory (mention it — it is how the user iterates). Note the two external dependencies (mermaid and highlight.js, both from the jsDelivr CDN) and that offline the document degrades to plain code and readable diagram source. If the user is currently reading an earlier document, write a NEW file and cross-link; never edit a file the user has open.
 
 ## Related skills
 
@@ -199,9 +219,13 @@ Load each one at the phase that needs it:
 5. **Agent claims ≠ facts**: the two classic failures are plausible-but-wrong mechanism descriptions ("the setting lives in an org option" — actually a model column) and unverified counts ("12 tests" — actually 7). Phase 2 exists for this; do not skip it when the agents sounded confident.
 6. **`order_by` vs in-Python sort** (and similar framework subtleties): when the code comments explain a non-obvious choice, quote the comment — it is usually the reason the reader was confused.
 7. **cwd drift**: assembling fragments or running validation from the wrong working directory produces confusing "file not found" storms. Use absolute paths in assembly commands.
+8. **Re-pinning by line map**: when the PR moves, a `difflib` line map from the old file to the new one is wrong for a range that starts on a line that repeats, such as the decorator above every test: the range moves onto another test. Find each quoted function or test again by its name in the new file, then run the "quoted ranges start where they claim" check.
+9. **Chained replacements**: remapping numbers one pair at a time turns `243 → 245` and then the new `245 → 247`. Remap in one pass with a lookup table.
 
 ## Scaling notes
 
 - Small change (≤3 files): skip agent fan-out; extract directly, still follow phases 2→5.
 - Multi-branch stacks: one document per 1–2 branches, cross-linked in a series — better than one 4000-line document. Give each part a chain-map diagram with the current part highlighted (`class NodeId current`).
 - Keep widgets honest: a playground must implement the same logic as the code it teaches (port the checks, don't fake outcomes), and say so in the document.
+- One owning page for each topic. In a series, other pages summarize a topic in a few lines and link to its page. They do not keep a second copy of its walkthrough: the copy goes stale, and the reader cannot tell which page is right.
+- A change that moves often (fix commits, a rebase, review rounds) makes the re-pin the most expensive step. Keep every SHA (base, head, each commit) in one table, and every number that the prose states in one list of facts named by meaning, and fill them in when the fragments are assembled. Give two quantities two names even when they are equal today: a later commit can change one and not the other. Let a widget read its "decided at" line numbers from the same assembly step, not from constants in its JS.

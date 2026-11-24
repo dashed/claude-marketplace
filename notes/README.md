@@ -28,6 +28,9 @@ notes/
 
 ## Available Plugins
 
+### [code-walkthrough](./code-walkthrough/)
+Interactive HTML explainers of code changes and existing code; feedback from real explainers that drove template and pipeline changes.
+
 ### [git-absorb](./git-absorb/)
 Automatically fold uncommitted changes into appropriate commits on a feature branch.
 

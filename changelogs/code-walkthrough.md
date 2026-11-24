@@ -4,6 +4,28 @@ All notable changes to the code-walkthrough skill in this marketplace will be do
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.4.0] - 2026-11-23
+
+### Added
+- Line numbers on every quoted block, on by default. The template numbers `.cl` lines from `data-start` on the `<code>`; a `.cl.gap` line marks an elision, has no number, and can restart the count. A unified diff takes `data-old-start` and `data-new-start` from its hunk header: a removed line shows its old number, every other line its new one. A line with its own `data-n` keeps it. The gutter widens for four-digit numbers, and the numbers are generated content, so they are not copied with the code
+- File tours (Phase 3): each file that a change adds gets a top-to-bottom read, in which every line appears in exactly one quoted chunk, with a line-keyed note list (`.lbl`, new in the template) under each chunk that links to the mechanism sections. Each test file gets a table of every test, with names and line ranges generated from the file
+- Phase 5 checks: every quoted line is numbered; a file tour covers its file with no gap and no overlap; each quoted function or test range starts at its `def`, `class` or first decorator; prose outside code and notes has no line numbers that a re-pin would leave stale; no horizontal scroll at phone width. The render step serves on a free port, reads walker expectations from `data-lines`, skips tab groups in closed `<details>`, and takes element screenshots
+- Phase 2: when a stated count comes from a query, check that the query's filter is the same predicate as the code's
+- Fidelity rule against line numbers in prose, and pitfalls for re-pinning (a `difflib` line map moves a range that starts on a repeated decorator; remap numbers in one pass, not pair by pair)
+- Scaling notes: one owning page per topic in a series; for a change that moves often, one SHA table and one list of facts named by meaning, filled in at assembly
+
+### Changed
+- Phase 6: after the user asks for a link, publish again to the same URL after each rebuild that passes Phase 5
+
+### Fixed
+- The walker clipped its step text and "next" button on a phone: the one-column layout used `1fr`, which grows to the widest code line. It now uses `minmax(0, 1fr)`
+- With more than about ten steps, the walker's dots pushed "next" off the card. The dots now wrap
+- In a long walker, the highlighted lines could be off screen. The code pane now has a maximum height and scrolls itself (never the page) to the first highlighted line at each step
+- Long inline identifiers in prose, lists, tables and the glossary widened the page on a phone. They now wrap with `overflow-wrap: break-word`
+- Two tab groups under one parent switched each other's panes when one group's name was a prefix of the other's (`fix` and `fix2`). A pane now belongs to the group whose button has its key
+
+Prompted by feedback from a change explainer for a data-repair pull request (`notes/code-walkthrough/2026-11-23-pr-explainer-feedback.md`). The template changes were checked in a headless browser at 1280 px and 390 px, in both themes. The feedback's shipped build script (directives, symbol anchors, a re-pin command) is not part of this release.
+
 ## [1.3.0] - 2026-11-18
 
 ### Added
