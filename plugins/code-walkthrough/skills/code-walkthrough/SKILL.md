@@ -96,6 +96,8 @@ Follow these phases in order. Phases 1–2 protect fidelity; phases 3–4 build 
 ### Phase 0 — Frame
 
 1. Pin the exact refs that define **before** and **after** (branch tips, PR base/head, commit range). For a code explainer, pin the one commit that you read. Write them into the document later — every code claim must trace to a ref.
+   - For a GitHub PR, read its facts with `gh pr view <n> --json number,url,headRefOid,baseRefName,files`. Pin **after** to `headRefOid`; `git fetch <remote> pull/<n>/head` gets it, also for a PR from a fork. Pin **before** to `git merge-base <remote>/<baseRefName> <headRefOid>`. The PR's Files changed view compares with the merge base, so the Before line numbers then match its left side.
+   - Do not pin a local tip that GitHub does not have. The [source links](#phase-4--author-fragments--components) would open different code, or a 404.
 2. Define the audience contract: "no prior knowledge" means no knowledge of *this domain and this codebase* — include a glossary of domain terms, but do not teach the programming language.
 3. Identify the 1–3 **core mechanisms** the change builds on (pre-existing patterns the reader must understand first). These get their own foundations sections before any diff is shown.
 
@@ -115,7 +117,7 @@ Never bake agent output into the document unverified. Independently re-read ever
 
 Order the document so each section only needs what came before:
 
-1. **Hero** — title, scope chips (refs, sizes, commit counts)
+1. **Hero** — title, scope chips (refs, sizes, commit counts); for a PR, the first chip links to the PR
 2. **The 30-second version** — the bottom line: what changes, why, and what the reviewer must check, in plain words, with a map diagram
 3. **Foundations** — domain 101, the wire contracts/interfaces, the core mechanisms (this is where "the X stuff" gets taught when the user asks "teach me X too")
 4. **Per-unit walkthroughs** — one per branch/module: overview → file-by-file before/after → subtleties → tests. A file that the change adds has no "before", so give it a [file tour](#file-tours) before the sections that explain its mechanisms.
@@ -150,6 +152,7 @@ Write every fragment to the [prose rules](#prose-rules). Write the document as f
 | Diff-colored lines (`.cl.add/.cl.del/.cl.hl`) | real diffs (add/del) and attention (hl = not a diff!) |
 | Line numbers (on by default) | every quoted block: `data-start` on the `<code>`, a `.cl.gap` line for each elision, `data-old-start`/`data-new-start` for a unified diff |
 | Line-keyed note list (`.lbl`) | the notes under each chunk of a [file tour](#file-tours) |
+| Source links (when the code is on GitHub) | the `#walkthrough-source` block (repository, PR, base and head SHAs, the PR's files) and `data-path` on each quoted block; the JS links each block's line range at the pinned commit and in the PR's Files changed view, and each `.ln` range |
 | Syntax highlighting (`<code class="language-python">`) | every code block — highlight.js colours the tokens and keeps the per-line diff/walker classes |
 | Collapsible `<details>` deep-dives | side context that would interrupt the spiral |
 | Step-through walker | execution-ordered code (a write path, a state machine) — steps highlight line ranges |
@@ -166,6 +169,8 @@ Write every fragment to the [prose rules](#prose-rules). Write the document as f
 - `add`/`del` colors only for lines that are actually added/removed in the diff; use `hl` for emphasis elsewhere.
 - Number every quoted block with the file's own line numbers at the stated ref. Number a Before pane from the old file and an After pane from the new file. In a unified diff, a removed line shows its old number and every other line its new number; read both start numbers from the hunk header (`@@ -a,b +c,d @@`). An elision line gets no number.
 - Do not write line numbers in prose ("the check at lines 111-112"). They go stale when the change moves, and nothing remaps them. Name the function, or link to the quoted chunk. The `.lbl` notes are the exception: they sit under the chunk that they number.
+- When the subject is a GitHub PR, every quoted block links to its lines on GitHub, and the hero links to the PR. Fill the `#walkthrough-source` block once. Put `data-path` on every quoted block, and `data-ref="base"` on each Before pane. The JS builds each link from the block's line numbers, so the link always covers the lines that the block shows. Do not write these URLs by hand. Use the same block for a code explainer of code on GitHub, without `pr`, `files` and `base`.
+- A block quoted from another repository (a library, a spec) gets no `data-path`. Link its source in the caption.
 - Put `language-<name>` (a highlight.js name or alias: `python`, `ts`, `tsx`, `go`, `sql`, ...) on every code block's `<code>`. Keep lines plain text — no `+`/`-` prefixes, no spans inside a `.cl` line; a line with markup in it opts its whole block out of highlighting.
 - No hard-coded colours in mermaid source (`style X fill:#…`, coloured `classDef`): they break in one of the two themes. Mark the node the reader should look at with `class NodeId current`.
 - Validate each diagram's source with the `mermaid-cli` skill before it goes into a fragment: `mmdc -i diagram.mmd -o diagram.svg` exits 1 and prints the parse error with its line. In the page, a syntax error shows only as an error graphic.
@@ -178,11 +183,16 @@ Write every fragment to the [prose rules](#prose-rules). Write the document as f
    - **File-tour coverage**: for each added file, the tour's chunks cover lines 1 to the file's last line at the pinned ref, with no gap and no overlap. Compare the first and last `data-n` of each chunk with `git show <ref>:<path> | wc -l`.
    - **Quoted ranges start where they claim**: print the first line of each quoted function or test. It must be its `def`, its `class`, or its first decorator. A range that starts on another test's decorator is a wrong range.
    - **Prose line numbers**: search the text outside `pre`, `code` and `.lbl` for `lines? \d+`. Each hit is a number that the next re-pin will leave stale.
+   - **Source links** (when the page has the source block):
+     - The hero links to the PR, and every quoted block from the repository has `data-path`.
+     - `gh pr view <n> --json headRefOid` still equals the pinned head. If the PR moved, re-pin.
+     - Dump each numbered line from the page as (path, commit, number, text), and compare it with `git show <sha>:<path>`. The commit is the base for a `data-ref="base"` block and for a removed line in a unified diff, and the head for all other lines. A link is correct only when the quoted text is on the lines that it opens. Each difference must be a marked condensation.
 2. **Render**: serve the file on a free port (`python3 -m http.server 0 --bind 127.0.0.1`, then read the port; a fixed port can hit a stale server and check its 404 page) and drive a headless browser (the Playwright MCP tools, or the `playwright`, `dev-browser`, or `chrome-cdp` skill):
    - every `.mermaid` contains an `svg` (count them), and no `svg` has `aria-roledescription="error"`. Mermaid draws a syntax error as an SVG that reads "Syntax error in text", so the count alone passes a broken diagram. `mmdc` runs its own mermaid version, and the template loads mermaid 10.9.3, so newer syntax can pass `mmdc` and still fail here.
    - every `code[class*=language-]` block contains `.hljs-*` spans and still has its original number of `.cl` lines
    - walker: click next/prev, assert the active step and highlighted lines change, and that the first highlighted line is inside the code pane. Read the expected lines from the step's `data-lines`, not from a hard-coded number, so that a re-pin does not break the check
    - tabs: toggle each group, assert pane visibility flips. Skip the groups inside a closed `<details>`: they are not clickable until it opens
+   - source links: each block's `L<a>-L<b>` link matches its first and last `data-n`, and a block whose file is in `files` also has a `PR #<n>` link. Open one link of each kind and look at the highlighted lines
    - phone width (390 px): the page has no horizontal scroll (`scrollWidth` equals `clientWidth`), and each walker's "next" button is inside its card
    - theme: toggle dark, assert the diagram SVGs were replaced (new `svg` ids) and re-check readability of diagrams and code
    - playgrounds: exercise them via `evaluate` (set input, assert verdict output)
@@ -228,4 +238,4 @@ Load each one at the phase that needs it:
 - Multi-branch stacks: one document per 1–2 branches, cross-linked in a series — better than one 4000-line document. Give each part a chain-map diagram with the current part highlighted (`class NodeId current`).
 - Keep widgets honest: a playground must implement the same logic as the code it teaches (port the checks, don't fake outcomes), and say so in the document.
 - One owning page for each topic. In a series, other pages summarize a topic in a few lines and link to its page. They do not keep a second copy of its walkthrough: the copy goes stale, and the reader cannot tell which page is right.
-- A change that moves often (fix commits, a rebase, review rounds) makes the re-pin the most expensive step. Keep every SHA (base, head, each commit) in one table, and every number that the prose states in one list of facts named by meaning, and fill them in when the fragments are assembled. Give two quantities two names even when they are equal today: a later commit can change one and not the other. Let a widget read its "decided at" line numbers from the same assembly step, not from constants in its JS.
+- A change that moves often (fix commits, a rebase, review rounds) makes the re-pin the most expensive step. Keep every SHA (base, head, each commit) in one table, which also fills the `#walkthrough-source` block, and every number that the prose states in one list of facts named by meaning, and fill them in when the fragments are assembled. Give two quantities two names even when they are equal today: a later commit can change one and not the other. Let a widget read its "decided at" line numbers from the same assembly step, not from constants in its JS.

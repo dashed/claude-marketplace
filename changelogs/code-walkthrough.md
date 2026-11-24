@@ -4,6 +4,17 @@ All notable changes to the code-walkthrough skill in this marketplace will be do
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.5.0] - 2026-11-24
+
+### Added
+- Source links. One JSON block in the template (`#walkthrough-source`: the repository URL, the PR number, the merge-base and head SHAs, and the PR's changed files) and `data-path` on each quoted block give every block a link to its line range at the pinned commit (`blob/<sha>/<path>?plain=1#L40-L57`). When the PR changes the file, the block also links to the same lines in the PR's Files changed view (`#diff-<SHA-256 of the path>R40-R57`, or `L` for a Before pane or a diff with only removed lines). The JS builds each link from the line numbers, so a link always covers the lines that its block shows. `.ln` ranges in note lists and test tables link the same way, and a walker with `data-path` gets a header row with its path and links
+- The hero links to the PR, and each SHA chip links to its commit
+- Phase 0: for a GitHub PR, pin "after" to the PR's head and "before" to the merge base, which the Files changed view compares with
+- Phase 5 checks: the pinned head still equals the PR's head; every numbered line matches `git show <sha>:<path>` at its number; each link's range matches its block
+
+### Changed
+- `.codehead` styles apply outside `.codewrap`, and the header wraps on a phone
+
 ## [1.4.0] - 2026-11-23
 
 ### Added

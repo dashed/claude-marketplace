@@ -84,7 +84,10 @@ p code, li code, td code, dd code, dt, .caption code { overflow-wrap: break-word
 #hero h1 { font-size: 30px; margin: 0 0 6px; letter-spacing: -.02em; }
 #hero p.sub { color: #d8d2f2; font-size: 16px; margin: 0 0 18px; }
 #hero .meta { display: flex; flex-wrap: wrap; gap: 8px; }
-#hero .meta span { background: rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.22); border-radius: 999px; padding: 4px 12px; font-size: 12.5px; font-family: ui-monospace, Menlo, monospace; }
+#hero .meta span, #hero .meta a { background: rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.22); border-radius: 999px; padding: 4px 12px; font-size: 12.5px; font-family: ui-monospace, Menlo, monospace; }
+#hero .meta a { color: #fff; text-decoration: none; }
+#hero .meta a::after { content: " ↗"; opacity: .75; }
+#hero .meta a:hover { background: rgba(255,255,255,.24); }
 /* ---------- pills, stat bars ---------- */
 .pill { display: inline-block; border-radius: 999px; padding: 2px 10px; font-size: 12px; font-weight: 600; vertical-align: middle; }
 .pill.file { background: var(--accent-soft); color: var(--accent-ink); font-family: ui-monospace, Menlo, monospace; font-weight: 500; }
@@ -102,7 +105,12 @@ p code, li code, td code, dd code, dt, .caption code { overflow-wrap: break-word
 .key  { background: var(--key-bg);  border-color: var(--key-bar); }  .key .t { color: var(--key-bar); }
 /* ---------- code ---------- */
 .codewrap { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 14px 0; background: var(--code-bg); }
-.codewrap .codehead { display: flex; justify-content: space-between; align-items: center; background: var(--accent-soft); padding: 6px 14px; font-size: 12.5px; font-family: ui-monospace, Menlo, monospace; color: var(--accent-ink); }
+/* The path sits left; the ref label and the source links (added by the JS) sit right, and wrap on a phone. */
+.codehead { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 14px; background: var(--accent-soft); padding: 6px 14px; font-size: 12.5px; font-family: ui-monospace, Menlo, monospace; color: var(--accent-ink); }
+.codehead > :first-child { margin-right: auto; overflow-wrap: anywhere; }
+.codehead .srclinks { display: inline-flex; gap: 12px; white-space: nowrap; }
+.codehead a, .ln a { color: inherit; text-underline-offset: 2px; }
+.walker > .codehead { grid-column: 1 / -1; border-bottom: 1px solid var(--line); }
 .codewrap pre { margin: 0; padding: 14px 0; overflow-x: auto; font-size: 13px; line-height: 1.55; }
 .codewrap pre code, .walker .wcode pre code { background: none; padding: 0; font-size: inherit; color: var(--code-ink); display: block; }
 /* .cl lines are blocks, so the source newline between two lines would render
@@ -202,6 +210,16 @@ dfn { font-style: normal; border-bottom: 1.5px dotted var(--accent); cursor: hel
 </head>
 <body>
 <button id="themeBtn" type="button">◐ theme</button>
+<!-- @SLOT:source — when the quoted commits are on GitHub, this JSON block says
+where they live, and the JS builds every source link from it. Keep it the one
+copy of the SHAs that the links use:
+<script type="application/json" id="walkthrough-source">
+{"repo": "https://github.com/OWNER/REPO", "pr": 1234,
+ "base": "<full merge-base SHA>", "head": "<full head SHA>",
+ "files": ["every/path/the/pr/changes.py"]}
+</script>
+"pr" and "files" are only for a PR, and "base" only for a change. Leave the
+block out when a commit is not on GitHub: its links would 404. -->
 <nav id="sidebar">
   <div class="brand"><!-- @SLOT:brand --></div>
   <div class="sub"><!-- @SLOT:brand-sub --></div>
@@ -224,10 +242,11 @@ line up front, ASD-STE100 wording.
 
 COMPONENT PATTERNS (all wired by the JS below):
 
-1) Hero:
+1) Hero. For a PR, the first chip links to the PR and each SHA chip to its commit:
 <section class="card" id="hero">
   <h1>Title</h1><p class="sub">Subtitle</p>
-  <div class="meta"><span>chip</span><span>chip</span></div>
+  <div class="meta"><a href="https://github.com/OWNER/REPO/pull/1234">PR #1234</a>
+    <a href="https://github.com/OWNER/REPO/commit/FULLSHA">head abc1234</a><span>chip</span></div>
 </section>
 
 2) Before/after toggle. A pane belongs to the group whose button has the same
@@ -244,15 +263,22 @@ Line numbers are on by default: put the file's first quoted line number in
 data-start. A .gap line marks an elision; its data-start is where the count
 restarts. For a unified diff use data-old-start and data-new-start (from the
 hunk header "@@ -a,b +c,d @@"): removed lines show old numbers, other lines new ones.
-<div class="codewrap"><div class="codehead"><span>path/to/file.py</span><span>tip &lt;sha&gt;</span></div>
+data-path (the path from the repository root) gives the block its source links,
+when the page has the source block: "L40-L57" opens those lines at the pinned
+commit, and "PR #1234" opens them in the PR's Files changed view when the PR
+changes the file. Put data-ref="base" on a Before pane: its links then use the
+base commit and the diff's left side. A unified diff links its new-side lines,
+or its old-side lines when every line is removed.
+<div class="codewrap" data-path="path/to/file.py"><div class="codehead"><span>path/to/file.py</span><span>tip &lt;sha&gt;</span></div>
 <pre><code class="language-python" data-start="40"><span class="cl">context line</span>
 <span class="cl hl">emphasized line (NOT a diff)</span>
 <span class="cl gap" data-start="57">    # ... lines 42-56 elided ...</span>
 <span class="cl">line 57</span></code></pre></div>
 
+<div class="codewrap" data-path="path/to/file.py"><div class="codehead"><span>path/to/file.py</span><span>diff</span></div>
 <pre><code class="language-python" data-old-start="12" data-new-start="12"><span class="cl">context line</span>
 <span class="cl del">removed line (real diff only)</span>
-<span class="cl add">added line (real diff only)</span></code></pre>
+<span class="cl add">added line (real diff only)</span></code></pre></div>
 `language-<name>` takes any highlight.js name or alias (python, ts, tsx, go, rust,
 sql, yaml, bash, json, ...); names outside the common bundle load on demand.
 The whole block is highlighted as one text, then split back onto the .cl lines,
@@ -265,9 +291,10 @@ works on a .sig signature box.
 4) Callouts:
 <div class="callout key"><span class="t">Title</span><p>...</p></div>   (.key | .note | .warn)
 
-5) Step-through walker (steps own line ranges via data-lines; lines carry data-l):
-<div class="walker" data-walker>
-  <div class="wcode"><pre><code class="language-python">
+5) Step-through walker (steps own line ranges via data-lines; lines carry data-l).
+With data-path, the JS adds a header row with the path and the source links:
+<div class="walker" data-walker data-path="path/to/file.py">
+  <div class="wcode"><pre><code class="language-python" data-start="1">
 <span class="cl" data-l="1">line one</span>
 <span class="cl" data-l="2">line two</span></code></pre></div>
   <div class="wside">
@@ -298,7 +325,10 @@ fills (`style X fill:#...`, classDef colours): they break in one theme.
 <details><summary>Title</summary><div class="body">...</div></details>
 
 9) Line-keyed notes under a quoted chunk (a file tour). Each note names the
-lines it explains and links to the section that teaches the mechanism:
+lines it explains and links to the section that teaches the mechanism. With the
+source block, each .ln range links to its lines on GitHub: the file comes from
+the nearest earlier sibling with data-path, or from an ancestor with data-path
+(put one on a table of test ranges):
 <ul class="lbl">
   <li><span class="ln">40-44</span> The guard returns early when ... (<a href="#anchor-id">details</a>)</li>
 </ul>
@@ -383,6 +413,96 @@ lines it explains and links to the section that teaches the mechanism:
     });
     code.style.setProperty("--ln-w", Math.max(3, widest) + "ch");
   });
+  /* ---------- source links ---------- */
+  // #walkthrough-source names the GitHub repository and the pinned commits,
+  // and for a PR its number and changed files. A block with data-path links
+  // to its numbered lines at the pinned commit, and to the same lines in the
+  // PR's Files changed view when the PR changes the file. A .ln range links
+  // to its lines in the file of its block.
+  var source = null;
+  try { source = JSON.parse(document.getElementById("walkthrough-source").textContent); } catch (e) {}
+  if (source && source.repo && source.head) {
+    var repo = String(source.repo).replace(/\/+$/, "");
+    var changed = {};
+    (source.files || []).forEach(function (p) { changed[p] = true; });
+    var lineRange = function (side, a, b) { return side + a + (b > a ? "-" + side + b : ""); };
+    // ?plain=1: GitHub renders Markdown and similar files, and that view has no line anchors.
+    var blobUrl = function (sha, path, a, b) {
+      return repo + "/blob/" + sha + "/" + path.split("/").map(encodeURIComponent).join("/") +
+        "?plain=1#" + lineRange("L", a, b);
+    };
+    // The Files changed view names each file's anchor by the SHA-256 of its path.
+    var sha256 = function (text) {
+      if (!(window.crypto && crypto.subtle && window.TextEncoder)) return Promise.reject(new Error("no crypto.subtle"));
+      return crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)).then(function (buf) {
+        return Array.prototype.map.call(new Uint8Array(buf), function (x) { return ("0" + x.toString(16)).slice(-2); }).join("");
+      });
+    };
+    var makeLink = function (href, text, title) {
+      var a = document.createElement("a");
+      a.href = href; a.textContent = text; a.title = title; a.target = "_blank"; a.rel = "noopener";
+      return a;
+    };
+    var shaOf = function (host) { return host.getAttribute("data-ref") === "base" ? source.base : source.head; };
+    // The commit, the diff side, and the first and last line that a block shows.
+    var shownLines = function (host) {
+      var code = host.querySelector("pre > code");
+      if (!code) return null;
+      var lines = Array.prototype.slice.call(code.querySelectorAll(":scope > .cl[data-n]"));
+      var diff = code.hasAttribute("data-new-start");
+      var base = !diff && host.getAttribute("data-ref") === "base";
+      var picked = lines.filter(function (cl) { return !diff || !cl.classList.contains("del"); });
+      if (diff && !picked.length) { base = true; picked = lines; }
+      var nums = picked.map(function (cl) { return parseInt(cl.getAttribute("data-n"), 10); })
+        .filter(function (x) { return isFinite(x); });
+      if (!nums.length) return null;
+      return { base: base, a: Math.min.apply(null, nums), b: Math.max.apply(null, nums) };
+    };
+    document.querySelectorAll("[data-path]").forEach(function (host) {
+      var path = host.getAttribute("data-path");
+      var s = shownLines(host);
+      var sha = s && (s.base ? source.base : source.head);
+      if (!sha) return;
+      var head = host.querySelector(":scope > .codehead");
+      if (!head) {
+        head = document.createElement("div");
+        head.className = "codehead";
+        var name = document.createElement("span");
+        name.textContent = path;
+        head.appendChild(name);
+        host.insertBefore(head, host.firstChild);
+      }
+      var box = document.createElement("span");
+      box.className = "srclinks";
+      box.appendChild(makeLink(blobUrl(sha, path, s.a, s.b), lineRange("L", s.a, s.b),
+        "These lines of " + path + " at " + sha.slice(0, 7) + " on GitHub"));
+      head.appendChild(box);
+      if (source.pr && changed[path]) {
+        sha256(path).then(function (hex) {
+          var url = repo + "/pull/" + source.pr + "/files#diff-" + hex + lineRange(s.base ? "L" : "R", s.a, s.b);
+          box.appendChild(makeLink(url, "PR #" + source.pr, "These lines in the Files changed view of PR #" + source.pr));
+        }).catch(function () {});
+      }
+    });
+    document.querySelectorAll(".ln").forEach(function (ln) {
+      var m = /^\s*L?(\d+)(?:\s*[-–]\s*L?(\d+))?\s*$/.exec(ln.textContent);
+      if (!m || ln.querySelector("a")) return;
+      var host = ln.closest("[data-path]");
+      var list = ln.closest(".lbl");
+      // The nearest earlier code block decides; one without data-path gives no link.
+      for (var sib = list && list.previousElementSibling; sib && !host; sib = sib.previousElementSibling) {
+        if (sib.hasAttribute("data-path")) host = sib;
+        else if (sib.querySelector("pre")) break;
+      }
+      var sha = host && shaOf(host);
+      if (!sha) return;
+      var path = host.getAttribute("data-path");
+      var a = parseInt(m[1], 10), b = m[2] ? parseInt(m[2], 10) : a;
+      var text = ln.textContent;
+      ln.textContent = "";
+      ln.appendChild(makeLink(blobUrl(sha, path, a, b), text, "These lines of " + path + " at " + sha.slice(0, 7) + " on GitHub"));
+    });
+  }
   /* ---------- scrollspy ---------- */
   var links = Array.prototype.slice.call(document.querySelectorAll("#sidebar a[href^='#']"));
   var byId = {};
