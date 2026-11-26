@@ -1,6 +1,6 @@
 {
   "name": "statechart",
-  "version": "1.0.0+codex.81434a0e4cd0",
+  "version": "1.0.0+codex.3645a4020899",
   "description": "Check a TLA+ model of a system that moves between states (a product flow, a protocol, a service) with TLC, and draw it as a Mermaid statechart in the reader's words, with the shortest path to each state that breaks a rule. Use when the user runs /statechart, asks to model-check a state machine or protocol with TLA+, or wants a bug shown as a path through states. Python, run with uv; adapted from Lauren Tan's pstack (Cursor).",
   "author": {
     "name": "Lauren Tan"

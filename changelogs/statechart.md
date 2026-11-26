@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - The command (`scripts/statechart.py`) is Python 3.10 or later, standard library only, run with `uv run --script`; the original is TypeScript. `scripts/js.py` keeps the output's JavaScript rules for string order, whitespace, JSON text and object key order. Ported, it wrote byte-identical files to the TypeScript on the original 33-spec corpus (replayed and with real TLC 1.7.4), on 20,000 random charts, and on 30,000 random values, configs and Mermaid labels.
 - `make test-statechart` runs ruff, ty, and `tests/test_statechart.py`: the corpus replayed with no TLC or Java (chart, report, exit code and TLC configs), real TLC on each spec when `TLA2TOOLS` is set, and the command's lifecycle paths.
 - `SKILL.md` says to write a rule that must hold in the end as a PROPERTY with `~>` and weak fairness, not as an INVARIANT, which breaks between the event and the step that answers it.
+- `SKILL.md` also covers splitting oversized models by layer, `SYMMETRY` caveats (unsound symmetry hides bugs; liveness `PROPERTY` checks are unsound under `SYMMETRY`), and checking clean runs for vacuous passes and stated assumptions.
 - `notes/statechart/` holds a TLA+ model of the command's own lifecycle, checked with this skill, and what it found.
 - `references/render.md` renders charts to SVG with the npm package `pele@1.9.0`.
 
