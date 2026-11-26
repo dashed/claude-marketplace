@@ -116,6 +116,27 @@ DELETE_COMMENT_FILES := plugins/delete-comment/skills/delete-comment/scripts/com
 
 DOC_QUALITY_FILES := plugins/doc-quality/skills/doc-quality/scripts/doc_links.py plugins/doc-quality/skills/doc-quality/scripts/doc_metrics.py plugins/doc-quality/skills/doc-quality/scripts/doc_quality.py tests/test_doc_links.py tests/test_doc_metrics.py tests/test_doc_quality.py
 
+STATECHART_SCRIPTS := plugins/statechart/skills/statechart/scripts
+
+STATECHART_FILES := $(STATECHART_SCRIPTS) tests/test_statechart.py
+
+.PHONY: test-statechart lint-statechart typecheck-statechart format-statechart format-statechart-check
+
+test-statechart: lint-statechart typecheck-statechart format-statechart-check ## Check the statechart command against its recorded TLC corpus offline
+	@$(UV_RUN) pytest tests/test_statechart.py --no-cov
+
+lint-statechart: ## Run Ruff on the statechart command and its tests
+	@$(UV_RUN) ruff check $(STATECHART_FILES)
+
+typecheck-statechart: ## Run ty on the statechart command and its tests
+	@$(UV_RUN) ty check --extra-search-path $(STATECHART_SCRIPTS) $(STATECHART_FILES)
+
+format-statechart: ## Format the statechart command and its tests with Ruff
+	@$(UV_RUN) ruff format $(STATECHART_FILES)
+
+format-statechart-check: ## Check statechart formatting with Ruff
+	@$(UV_RUN) ruff format --check $(STATECHART_FILES)
+
 .PHONY: test-doc-quality lint-doc-quality typecheck-doc-quality format-doc-quality format-doc-quality-check
 
 test-doc-quality: lint-doc-quality typecheck-doc-quality format-doc-quality-check ## Verify Markdown review and preservation checks offline

@@ -1,0 +1,9 @@
+## verdict-1
+SPECIFICATION Spec
+VIEW OnlyX
+PROPERTY EndsAtZero
+## ChartRun
+SPECIFICATION Spec
+VIEW OnlyX
+INVARIANT ChartMark
+CONSTRAINT ChartBudget

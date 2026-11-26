@@ -1,0 +1,14 @@
+## verdict-1
+INIT Init
+NEXT Next
+INVARIANT TypeOK NeedsTypeOK
+## verdict-2
+INIT Init
+NEXT Next
+INVARIANT NeedsTypeOK
+CONSTRAINT ChartBound
+## ChartRun
+INIT Init
+NEXT Next
+INVARIANT ChartMark
+CONSTRAINT ChartBudget

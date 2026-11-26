@@ -1,0 +1,54 @@
+---
+title: "statechart.py: one run of the command"
+---
+stateDiagram-v2
+  state "Legend" as legend {
+    lg0: Breaks OutputOnlyOnSuccess in some cases
+    lg1: Path to the FoldersGoAfterCommand or OutputOnlyOnSuccess or TLCStopsAfterCommand bug
+    lg2: Repeats forever, so FoldersGoAfterCommand or TLCStopsAfterCommand breaks
+  }
+  class lg0 mayBreak
+  class lg1 bugPath
+  class lg2 repeats
+  s0: Starting TLC
+  s1: Cleaning up
+  s2: Killed
+  s3: Starting the janitor
+  s4: Ended
+  s5: Waiting for TLC
+  s6: Reading the result
+  s7: Writing the output
+  s8: Printing the report
+  [*] --> s0
+  s0 --> s1: starting TLC fails
+  s0 --> s2: something kills the command
+  s0 --> s0: the reader of stdout goes away or you press Ctrl-C
+  s0 --> s3: the command starts TLC
+  s1 --> s4: the command removes its folders
+  s1 --> s2: something kills the command
+  s3 --> s1: starting the janitor fails
+  s3 --> s2: something kills the command
+  s3 --> s5: the command starts the janitor
+  s3 --> s3: TLC finishes
+  s5 --> s2: something kills the command
+  s5 --> s6: TLC ends or the command stops TLC
+  s6 --> s2: something kills the command
+  s6 --> s1: TLC failed or you pressed Ctrl-C
+  s6 --> s7: TLC passed or found a bug
+  s2 --> s2: TLC finishes
+  s7 --> s2: something kills the command
+  s7 --> s8: the check passed or found a bug
+  s8 --> s1: the report prints or nobody reads stdout any more
+  s8 --> s2: something kills the command
+  classDef mayBreak fill:#fff3e6,stroke:#e8730c,stroke-width:2.5px,color:#b85a06
+  class s0 bugPath
+  class s1 bugPath
+  class s2 bugPath
+  class s2 repeats
+  class s3 bugPath
+  class s4 mayBreak
+  class s4 bugPath
+  class s5 bugPath
+  class s6 bugPath
+  class s7 bugPath
+  class s8 bugPath

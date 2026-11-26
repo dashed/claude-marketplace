@@ -1,0 +1,17 @@
+## verdict-1
+INIT Init
+NEXT Next
+CONSTRAINT Small
+INVARIANT TypeOK Lookup
+## verdict-2
+INIT Init
+NEXT Next
+CONSTRAINT Small
+INVARIANT Lookup
+CONSTRAINT ChartBound
+## ChartRun
+INIT Init
+NEXT Next
+CONSTRAINT Small
+INVARIANT ChartMark
+CONSTRAINT ChartBudget

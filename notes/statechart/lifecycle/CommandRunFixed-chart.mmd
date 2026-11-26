@@ -1,0 +1,38 @@
+---
+title: "statechart.py: one run of the command"
+---
+stateDiagram-v2
+  s0: Starting the janitor
+  s1: Cleaning up
+  s2: Killed
+  s3: Making its folders
+  s4: Ended
+  s5: Starting TLC
+  s6: Telling the janitor about TLC
+  s7: Waiting for TLC
+  s8: Reading the result
+  s9: Writing the output
+  s10: Printing the report
+  [*] --> s0
+  s0 --> s1: starting the janitor fails
+  s0 --> s2: something kills the command
+  s0 --> s3: the command starts the janitor
+  s1 --> s4: the command removes its folders
+  s1 --> s2: something kills the command
+  s3 --> s2: something kills the command
+  s3 --> s5: the command makes its folders
+  s5 --> s1: starting TLC fails
+  s5 --> s2: something kills the command
+  s5 --> s6: the command starts TLC
+  s6 --> s1: the janitor is gone
+  s6 --> s2: something kills the command
+  s6 --> s7: the command tells the janitor
+  s7 --> s2: something kills the command
+  s7 --> s8: TLC ends or the command stops TLC
+  s8 --> s2: something kills the command
+  s8 --> s1: TLC failed or you pressed Ctrl-C
+  s8 --> s9: TLC passed or found a bug
+  s9 --> s2: something kills the command
+  s9 --> s10: the check passed or found a bug
+  s10 --> s1: the report prints
+  s10 --> s2: something kills the command

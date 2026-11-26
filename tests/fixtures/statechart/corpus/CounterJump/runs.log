@@ -1,0 +1,13 @@
+## verdict-1
+SPECIFICATION Spec
+CONSTRAINT NoJumps
+INVARIANT NotThree
+## verdict-2
+SPECIFICATION Spec
+CONSTRAINT NoJumps
+CONSTRAINT ChartBound
+## ChartRun
+SPECIFICATION Spec
+CONSTRAINT NoJumps
+INVARIANT ChartMark
+CONSTRAINT ChartBudget

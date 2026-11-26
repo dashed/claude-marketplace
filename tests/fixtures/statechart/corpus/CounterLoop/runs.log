@@ -1,0 +1,7 @@
+## verdict-1
+SPECIFICATION Spec
+PROPERTY ReachesThree
+## ChartRun
+SPECIFICATION Spec
+INVARIANT ChartMark
+CONSTRAINT ChartBudget

@@ -1,0 +1,23 @@
+## verdict-1
+SPECIFICATION Spec
+CONSTRAINT Small
+INVARIANT NotTwo NotThree AtMostTwo
+## verdict-2
+SPECIFICATION Spec
+CONSTRAINT Small
+INVARIANT NotTwo AtMostTwo
+CONSTRAINT ChartBound
+## verdict-3
+SPECIFICATION Spec
+CONSTRAINT Small
+INVARIANT NotTwo
+CONSTRAINT ChartBound
+## verdict-4
+SPECIFICATION Spec
+CONSTRAINT Small
+CONSTRAINT ChartBound
+## ChartRun
+SPECIFICATION Spec
+CONSTRAINT Small
+INVARIANT ChartMark
+CONSTRAINT ChartBudget

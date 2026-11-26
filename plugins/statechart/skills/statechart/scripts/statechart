@@ -1,0 +1,14 @@
+#!/bin/sh
+self=$0
+while [ -L "$self" ]; do
+  link=$(readlink "$self")
+  case $link in
+    /*) self=$link ;;
+    *) self=$(dirname "$self")/$link ;;
+  esac
+done
+if ! command -v uv >/dev/null; then
+  echo "statechart needs uv: https://docs.astral.sh/uv/getting-started/installation/" >&2
+  exit 127
+fi
+exec uv run --no-config --quiet --script "$(dirname "$self")/statechart.py" "$@"

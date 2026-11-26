@@ -43,6 +43,9 @@ Tool for creating and managing Agent Skills.
 ### [skill-reviewer](./skill-reviewer/)
 Review and ensure Agent Skills maintain high quality standards.
 
+### [statechart](./statechart/)
+The Python command that checks a TLA+ model and draws the chart; its tests, and a TLA+ model of its own process lifecycle that found three bugs.
+
 ### [tmux](./tmux/)
 Remote control tmux sessions for interactive CLIs (Python, gdb, etc.) by sending keystrokes and scraping pane output.
 

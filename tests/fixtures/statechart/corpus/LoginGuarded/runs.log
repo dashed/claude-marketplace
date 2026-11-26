@@ -1,0 +1,7 @@
+## verdict-1
+SPECIFICATION Spec
+INVARIANT TypeOK SignedInWhileLocked
+## ChartRun
+SPECIFICATION Spec
+INVARIANT ChartMark
+CONSTRAINT ChartBudget

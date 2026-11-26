@@ -1,0 +1,13 @@
+## verdict-1
+CONSTANT Workers = { w1 , w2 }
+CONSTANT First = w1
+SPECIFICATION Spec
+SYMMETRY Perms
+PROPERTY PicksFirst
+## ChartRun
+CONSTANT Workers = { w1 , w2 }
+CONSTANT First = w1
+SPECIFICATION Spec
+SYMMETRY Perms
+INVARIANT ChartMark
+CONSTRAINT ChartBudget

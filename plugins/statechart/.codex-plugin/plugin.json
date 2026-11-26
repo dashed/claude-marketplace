@@ -1,0 +1,35 @@
+{
+  "name": "statechart",
+  "version": "1.0.0+codex.b72a7ac307df",
+  "description": "Check a TLA+ model of a system that moves between states (a product flow, a protocol, a service) with TLC, and draw it as a Mermaid statechart in the reader's words, with the shortest path to each state that breaks a rule. Use when the user runs /statechart, asks to model-check a state machine or protocol with TLA+, or wants a bug shown as a path through states. Python, run with uv; adapted from Lauren Tan's pstack (Cursor).",
+  "author": {
+    "name": "Lauren Tan"
+  },
+  "license": "MIT",
+  "keywords": [
+    "tla+",
+    "tlc",
+    "model-checking",
+    "statechart",
+    "state-machine",
+    "mermaid",
+    "formal-methods",
+    "python",
+    "uv"
+  ],
+  "interface": {
+    "displayName": "Statechart",
+    "shortDescription": "Check a TLA+ model of a system that moves between states (a product flow, a protocol, a service) with TLC, and draw it as a Mermaid statechart in the reader's words, with the...",
+    "longDescription": "Check a TLA+ model of a system that moves between states (a product flow, a protocol, a service) with TLC, and draw it as a Mermaid statechart in the reader's words, with the shortest path to each state that breaks a rule. Use when the user runs /statechart, asks to model-check a state machine or protocol with TLA+, or wants a bug shown as a path through states. Python, run with uv; adapted from Lauren Tan's pstack (Cursor).",
+    "developerName": "Lauren Tan",
+    "category": "Productivity",
+    "capabilities": [
+      "Skills"
+    ],
+    "defaultPrompt": [
+      "Use $statechart for this task."
+    ]
+  },
+  "repository": "https://github.com/dashed/claude-marketplace/tree/master/plugins/statechart",
+  "skills": "./skills/"
+}

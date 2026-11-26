@@ -1,0 +1,9 @@
+## verdict-1
+CONSTANT RM = { r1 , r2 }
+SPECIFICATION TPSpec
+INVARIANT TPTypeOK TCConsistent
+## ChartRun
+CONSTANT RM = { r1 , r2 }
+SPECIFICATION TPSpec
+INVARIANT ChartMark
+CONSTRAINT ChartBudget

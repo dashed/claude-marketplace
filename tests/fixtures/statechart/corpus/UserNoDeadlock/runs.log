@@ -1,0 +1,10 @@
+## verdict-1
+SPECIFICATION Spec
+INVARIANT NoDeadlock
+## verdict-2
+SPECIFICATION Spec
+CONSTRAINT ChartBound
+## ChartRun
+SPECIFICATION Spec
+INVARIANT ChartMark
+CONSTRAINT ChartBudget

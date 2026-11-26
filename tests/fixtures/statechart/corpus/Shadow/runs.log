@@ -1,0 +1,9 @@
+## verdict-1
+SPECIFICATION Spec
+CONSTANT Hold = TRUE
+PROPERTY Shadow Shade Hold
+## ChartRun
+SPECIFICATION Spec
+CONSTANT Hold = TRUE
+INVARIANT ChartMark
+CONSTRAINT ChartBudget

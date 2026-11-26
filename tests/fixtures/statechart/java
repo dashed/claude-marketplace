@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+"""Stand in for java: replay what TLC printed when the corpus was recorded.
+
+STATECHART_REPLAY names the folder. Each TLC run reads <config name>.out and exits with
+<config name>.exit (0 if absent); SANY reads sany.out. STATECHART_LOG, when set, gets each
+config that the command writes, so that a test can see which runs the command asked for.
+STATECHART_DELAY, when set, is how many seconds each run takes, so that a test can stop the
+command while a check runs.
+"""
+
+import os
+import re
+import shutil
+import sys
+import time
+
+args = sys.argv[1:]
+config = args[args.index("-config") + 1] if "-config" in args else None
+name = os.path.basename(config).removesuffix(".cfg") if config else "sany"
+dump = f"{args[args.index('-dump') + 2]}.dot" if "-dump" in args else None
+log = os.environ.get("STATECHART_LOG")
+if log and config:
+    with (
+        open(log, "a", encoding="utf-8", newline="") as f,
+        open(config, encoding="utf-8", newline="") as c,
+    ):
+        f.write(f"## {name}\n{c.read()}\n")
+replay = os.environ["STATECHART_REPLAY"]
+time.sleep(float(os.environ.get("STATECHART_DELAY", "0")))
+if dump and os.path.exists(os.path.join(replay, "graph.dot")):
+    shutil.copyfile(os.path.join(replay, "graph.dot"), dump)
+tag = None
+if os.path.exists("ChartRun.tla"):
+    with open("ChartRun.tla", encoding="utf-8") as f:
+        found = re.search(r'"chart-[0-9a-f]{32}"', f.read())
+    tag = found.group(0) if found else None
+with open(os.path.join(replay, f"{name}.out"), "rb") as f:
+    saved = f.read()
+if tag:
+    saved = re.sub(rb'(<<\s*)"chart"(?=,)', lambda m: m.group(1) + tag.encode(), saved)
+sys.stdout.buffer.write(saved)
+exit_file = os.path.join(replay, f"{name}.exit")
+if os.path.exists(exit_file):
+    with open(exit_file, encoding="utf-8") as f:
+        sys.exit(int(f.read()))

@@ -1,0 +1,13 @@
+## verdict-1
+SPECIFICATION Spec
+INVARIANT TypeOK LoudWhenStopped
+PROPERTY EventuallyStops
+## verdict-2
+SPECIFICATION Spec
+INVARIANT TypeOK
+PROPERTY EventuallyStops
+CONSTRAINT ChartBound
+## ChartRun
+SPECIFICATION Spec
+INVARIANT ChartMark
+CONSTRAINT ChartBudget

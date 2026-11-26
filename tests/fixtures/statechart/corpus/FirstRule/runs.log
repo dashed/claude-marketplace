@@ -1,0 +1,23 @@
+## verdict-1
+INIT Init
+NEXT Next
+INVARIANT NotOne NotOneOrThree AlsoNotOne
+## verdict-2
+INIT Init
+NEXT Next
+INVARIANT NotOneOrThree AlsoNotOne
+CONSTRAINT ChartBound
+## verdict-3
+INIT Init
+NEXT Next
+INVARIANT AlsoNotOne
+CONSTRAINT ChartBound
+## verdict-4
+INIT Init
+NEXT Next
+CONSTRAINT ChartBound
+## ChartRun
+INIT Init
+NEXT Next
+INVARIANT ChartMark
+CONSTRAINT ChartBudget
