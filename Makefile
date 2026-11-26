@@ -22,7 +22,7 @@ help: ## Show this help message
 	@echo "$(CYAN)Claude Marketplace - Makefile Commands$(NC)"
 	@echo ""
 	@echo "$(GREEN)Setup:$(NC)"
-	@grep -E '^(sync|sync-codex-plugins|check-codex-plugins|init|manage-codex-skills):.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(CYAN)%-30s$(NC) %s\n", $$1, $$2}'
+	@grep -E '^(sync|sync-codex-plugins|check-codex-plugins|init|manage-codex-skills|install-antigravity-skills|manage-antigravity-skills):.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(CYAN)%-30s$(NC) %s\n", $$1, $$2}'
 	@echo ""
 	@echo "$(GREEN)Validation:$(NC)"
 	@grep -E '^validate.*:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(CYAN)%-30s$(NC) %s\n", $$1, $$2}'
@@ -105,6 +105,8 @@ test-cov: ## Run tests with coverage report
 	fi
 
 CODEX_SKILLS_FILES := scripts/install_codex_skills.py scripts/manage_codex_skills.py scripts/sync_codex_plugins.py tests/test_install_codex_skills.py tests/test_manage_codex_skills.py tests/test_sync_codex_plugins.py
+
+ANTIGRAVITY_SKILLS_FILES := scripts/install_antigravity_skills.py tests/test_install_antigravity_skills.py
 
 JEV_FILES := plugins/jev/skills/jev/scripts/jev.py tests/test_jev.py
 
@@ -254,6 +256,34 @@ format-codex-installer-check: format-codex-skills-check ## Alias for Codex skill
 
 manage-codex-skills: ## Open the interactive Codex skills manager
 	@./scripts/manage_codex_skills.py
+
+.PHONY: install-antigravity-skills manage-antigravity-skills test-antigravity-skills lint-antigravity-skills typecheck-antigravity-skills format-antigravity-skills format-antigravity-skills-check
+
+install-antigravity-skills: ## Install marketplace skills globally into Antigravity (~/.gemini/config/skills)
+	@./scripts/install_antigravity_skills.py $(SKILLS)
+
+manage-antigravity-skills: ## Open the interactive Antigravity skills manager
+	@./scripts/install_antigravity_skills.py --interactive
+
+test-antigravity-skills: lint-antigravity-skills typecheck-antigravity-skills format-antigravity-skills-check ## Run Antigravity skills checks and unit tests
+	@echo "$(CYAN)Running Antigravity skills tests...$(NC)"
+	@$(UV_RUN) pytest tests/test_install_antigravity_skills.py --no-cov -v
+
+lint-antigravity-skills: ## Run Ruff on Antigravity skills script and tests
+	@echo "$(CYAN)Linting Antigravity skills script with Ruff...$(NC)"
+	@$(UV_RUN) ruff check $(ANTIGRAVITY_SKILLS_FILES)
+
+typecheck-antigravity-skills: ## Run ty on Antigravity skills script and tests
+	@echo "$(CYAN)Type checking Antigravity skills script with ty...$(NC)"
+	@$(UV_RUN) ty check $(ANTIGRAVITY_SKILLS_FILES)
+
+format-antigravity-skills: ## Format Antigravity skills script and tests with Ruff
+	@echo "$(CYAN)Formatting Antigravity skills script with Ruff...$(NC)"
+	@$(UV_RUN) ruff format $(ANTIGRAVITY_SKILLS_FILES)
+
+format-antigravity-skills-check: ## Check Antigravity skills script formatting with Ruff
+	@echo "$(CYAN)Checking Antigravity skills script formatting with Ruff...$(NC)"
+	@$(UV_RUN) ruff format --check $(ANTIGRAVITY_SKILLS_FILES)
 
 # Docker configuration for tmux tests
 DOCKER_IMAGE := tmux-tests

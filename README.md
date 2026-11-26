@@ -1,8 +1,8 @@
 # Alberto's Claude Marketplace
 
-> A local marketplace for personal Claude Code skills and Codex repo-local skills.
+> A local marketplace for personal Claude Code, Codex, Antigravity, and opencode skills.
 
-A curated collection of Agent Skills for extending Claude Code and Codex capabilities. This marketplace is configured for local use and makes it easy to install and manage custom skills.
+A curated collection of Agent Skills for extending Claude Code, Codex, Antigravity, and opencode capabilities. This marketplace is configured for local use and makes it easy to install and manage custom skills.
 
 > [!WARNING]
 > **This is Alberto Leal's personal Claude Code plugin marketplace.** It is built solely for my own workflow, and I am the only intended and supported user. The skills and MCP servers here encode my personal conventions and assumptions, and may change, break, or disappear at any time without notice or migration path.
@@ -83,6 +83,70 @@ To check and test the Codex scripts:
 
 ```bash
 make test-codex-skills
+```
+
+## Antigravity Quick Start
+
+[Antigravity](https://antigravity.google) discovers personal skills from `~/.gemini/config/skills/<skill>/SKILL.md` (shared across Antigravity App, Antigravity CLI `agy`, and Antigravity IDE) and project skills from `<workspace>/.agents/skills/<skill>/SKILL.md`. Because plugins here store their skills at `plugins/<plugin>/skills/<skill>/SKILL.md`, the installer creates symlinks directly to each skill directory:
+
+```bash
+# Install all marketplace skills globally into ~/.gemini/config/skills
+./scripts/install_antigravity_skills.py
+# or
+make install-antigravity-skills
+
+# Install only selected skills
+./scripts/install_antigravity_skills.py statechart tmux code-walkthrough
+# or
+SKILLS="statechart tmux" make install-antigravity-skills
+
+# Install into a specific project workspace (<workspace>/.agents/skills)
+./scripts/install_antigravity_skills.py --workspace /path/to/project statechart tmux
+
+# Open the interactive manager (filter, enable, disable, uninstall)
+./scripts/install_antigravity_skills.py --interactive
+# or
+make manage-antigravity-skills
+```
+
+Useful options:
+
+```bash
+# Preview links without modifying files
+./scripts/install_antigravity_skills.py --dry-run
+
+# Replace existing symlinks that point elsewhere
+./scripts/install_antigravity_skills.py --force
+
+# List current Antigravity skill state
+./scripts/install_antigravity_skills.py --list
+
+# Enable, disable, or uninstall individual skills (or "all")
+./scripts/install_antigravity_skills.py --enable statechart tmux
+./scripts/install_antigravity_skills.py --disable tmux
+./scripts/install_antigravity_skills.py --uninstall tmux
+
+# Use a custom skills directory
+./scripts/install_antigravity_skills.py --dest "$HOME/.gemini/config/skills"
+```
+
+Because each installed skill is a symlink back to this repository, `git pull` updates your Antigravity skills immediately. Antigravity rereads skills before each turn; in Antigravity CLI, run `/skills reload` (or start a new conversation) to refresh `/<skill-name>` slash commands. Real files and directories are always reported as conflicts instead of being deleted.
+
+To check and test the Antigravity installer:
+
+```bash
+make test-antigravity-skills
+```
+
+### Antigravity MCP servers (optional)
+
+The 4 MCP-only plugins (`sequential-thinking`, `file-search`, `fuzzy-search`, `sqlite`) can be registered globally in `~/.gemini/config/mcp_config.json` via `agy mcp add` (place `--` before `uv` so Antigravity does not parse `--no-config` or `--script` as its own flags):
+
+```bash
+agy mcp add think -- uv run --no-config --script /absolute/path/to/claude-marketplace/plugins/sequential-thinking/scripts/mcp_sequential_thinking.py
+agy mcp add file-search -- uv run --no-config --script /absolute/path/to/claude-marketplace/plugins/file-search/scripts/mcp_fd_server.py
+agy mcp add fuzzy-search -- uv run --no-config --script /absolute/path/to/claude-marketplace/plugins/fuzzy-search/scripts/mcp_fuzzy_search.py
+agy mcp add sqlite -- uv run --no-config --script /absolute/path/to/claude-marketplace/plugins/sqlite/scripts/mcp_sqlite_server.py
 ```
 
 ## opencode Quick Start
@@ -321,6 +385,19 @@ To enable, disable, or uninstall skills interactively:
 make manage-codex-skills
 ```
 
+### Install skills for Antigravity
+
+```bash
+# Install all skills globally (~/.gemini/config/skills)
+./scripts/install_antigravity_skills.py
+
+# Or install a subset into a project workspace (<workspace>/.agents/skills)
+./scripts/install_antigravity_skills.py --workspace /path/to/project statechart tmux
+
+# Or manage interactively
+./scripts/install_antigravity_skills.py --interactive
+```
+
 ## Adding Skills to This Marketplace
 
 ### Method 1: Add to Marketplace (Recommended)
@@ -366,6 +443,15 @@ cp -r plugins/your-skill .claude/skills/
 
 # Codex interactive manager
 ./scripts/manage_codex_skills.py
+
+# Antigravity personal links (~/.gemini/config/skills)
+./scripts/install_antigravity_skills.py
+
+# Antigravity selective workspace links (<workspace>/.agents/skills)
+./scripts/install_antigravity_skills.py --workspace /path/to/project statechart tmux
+
+# Antigravity interactive manager
+./scripts/install_antigravity_skills.py --interactive
 ```
 
 ## Structure
@@ -388,9 +474,10 @@ claude-marketplace/
 │               ├── scripts/      # Optional scripts
 │               └── references/   # Optional documentation
 ├── scripts/
-│   ├── install_codex_skills.py # Codex symlink installer
-│   ├── manage_codex_skills.py  # Codex interactive manager
-│   └── sync_codex_plugins.py   # Codex plugin metadata sync
+│   ├── install_antigravity_skills.py # Antigravity symlink installer/manager
+│   ├── install_codex_skills.py       # Codex symlink installer
+│   ├── manage_codex_skills.py        # Codex interactive manager
+│   └── sync_codex_plugins.py         # Codex plugin metadata sync
 ├── CHANGELOG.md              # Version history
 └── README.md                 # This file
 ```
@@ -400,6 +487,8 @@ claude-marketplace/
 - [Claude Code Skills Documentation](https://docs.claude.com/en/docs/claude-code/skills)
 - [Plugin Marketplaces Guide](https://docs.claude.com/en/docs/claude-code/plugin-marketplaces)
 - [Anthropic Skills Repository](https://github.com/anthropics/skills)
+- [Antigravity Skills Documentation](https://antigravity.google/docs/skills)
+- [Antigravity Customization Discovery](https://antigravity.google/docs/customization-discovery)
 - [OpenAI Codex Skills Documentation](https://developers.openai.com/codex/skills)
 - [OpenAI Codex Plugins Documentation](https://developers.openai.com/codex/plugins)
 - [OpenAI Skills Catalog](https://github.com/openai/skills)
