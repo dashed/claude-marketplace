@@ -30,6 +30,10 @@
   --tk-kw: #5b3cc4; --tk-str: #0b5e86; --tk-num: #9a4a00; --tk-fn: #9c2a7a;
   --tk-type: #0d6b5a; --tk-cmt: #6b6280; --tk-meta: #7a5a00;
   --diagram-bg: #fbfafc; --diagram-node: #efedfb; --diagram-alt: #f4f2fa; --diagram-current: #d9d2fb;
+  --sc-breaks: #e72e3b; --sc-breaks-bg: #ffecee; --sc-breaks-ink: #b3202c;
+  --sc-may: #e8730c; --sc-may-bg: #fff3e6; --sc-may-ink: #9a4a00; --sc-path: #1680f3; --sc-repeats: #9b35d6;
+  --sc-blue: #c3e0ff; --sc-orange: #f0d3bf; --sc-purple: #e3d5ff; --sc-yellow: #f0dcbf;
+  --sc-teal: #bfe3df; --sc-tan: #e5d9ce; --sc-pink: #ffcbe6;
   --shadow: 0 1px 3px rgba(29,22,39,.08), 0 4px 14px rgba(29,22,39,.05);
 }
 [data-theme="dark"] {
@@ -43,6 +47,10 @@
   --tk-kw: #c4b5ff; --tk-str: #8ccff7; --tk-num: #ffb470; --tk-fn: #f39bd3;
   --tk-type: #6fdac2; --tk-cmt: #a197bb; --tk-meta: #e7c36a;
   --diagram-bg: #1a1529; --diagram-node: #2a2244; --diagram-alt: #241d3a; --diagram-current: #43367a;
+  --sc-breaks: #ef4b55; --sc-breaks-bg: #3a1f24; --sc-breaks-ink: #ff8a88;
+  --sc-may: #e8892e; --sc-may-bg: #3a2a16; --sc-may-ink: #ffb470; --sc-path: #58a6e8; --sc-repeats: #c27cf0;
+  --sc-blue: #1b3857; --sc-orange: #573117; --sc-purple: #3c2e57; --sc-yellow: #573d17;
+  --sc-teal: #174641; --sc-tan: #3d3127; --sc-pink: #57233e;
   --shadow: 0 1px 3px rgba(0,0,0,.35), 0 4px 14px rgba(0,0,0,.25);
 }
 * { box-sizing: border-box; }
@@ -174,6 +182,44 @@ table.tbl { border-collapse: collapse; width: 100%; font-size: 13.5px; margin: 1
 .mermaid .node.current > circle, .mermaid .node.current > path { fill: var(--diagram-current) !important; stroke: var(--accent) !important; stroke-width: 2.5px !important; }
 .mermaid .node.current .nodeLabel { font-weight: 700; }
 .mermaid-fallback { font-size: 12.5px; color: var(--ink-3); text-align: left; }
+/* ---------- statecharts (chart.mmd from the statechart skill, in a .mermaid[data-statechart]) ----------
+   The JS drops the chart's own `classDef breaks/mayBreak` lines (fixed light colours);
+   these rules colour each class in both themes. Group colours first, then the marks. */
+.mermaid .node.blue > rect { fill: var(--sc-blue) !important; }
+.mermaid .node.orange > rect { fill: var(--sc-orange) !important; }
+.mermaid .node.purple > rect { fill: var(--sc-purple) !important; }
+.mermaid .node.yellow > rect { fill: var(--sc-yellow) !important; }
+.mermaid .node.teal > rect { fill: var(--sc-teal) !important; }
+.mermaid .node.tan > rect { fill: var(--sc-tan) !important; }
+.mermaid .node.pink > rect { fill: var(--sc-pink) !important; }
+.mermaid .node.breaks > rect { fill: var(--sc-breaks-bg) !important; stroke: var(--sc-breaks) !important; stroke-width: 2.5px !important; }
+.mermaid .node.breaks .nodeLabel { color: var(--sc-breaks-ink) !important; }
+.mermaid .node.mayBreak > rect { fill: var(--sc-may-bg) !important; stroke: var(--sc-may) !important; stroke-width: 2.5px !important; }
+.mermaid .node.mayBreak .nodeLabel { color: var(--sc-may-ink) !important; }
+.mermaid .node.bugPath > rect { stroke: var(--sc-path) !important; stroke-width: 2.5px !important; }
+.mermaid .node.repeats > rect { stroke: var(--sc-repeats) !important; stroke-width: 2.5px !important; stroke-dasharray: 6 3; }
+/* A chart walker step: the state the run is in now, and the states it has passed.
+   No bold labels here: mermaid sizes each box for its text at normal weight. */
+.mermaid g.cw-seen > rect { stroke: var(--accent) !important; stroke-width: 2.5px !important; }
+.mermaid g.cw-on > rect { fill: var(--diagram-current) !important; stroke: var(--accent) !important; stroke-width: 4px !important; stroke-dasharray: none; }
+/* A chart walker stacks: the chart takes the card's full width, and its pane is
+   the only scroller, so the JS can scroll the current state into view. */
+.walker[data-chartwalk] { grid-template-columns: minmax(0, 1fr); }
+.walker .wchart { background: var(--diagram-bg); border-bottom: 1px solid var(--line); overflow: auto; max-height: 62vh; }
+.walker .wchart .mermaid { border: 0; border-radius: 0; margin: 0; overflow: visible; text-align: left; }
+/* Status chips and rule cards: one card for each rule that the model checks. */
+.chip { display: inline-block; border: 1px solid var(--line); border-left-width: 4px; border-radius: 999px; padding: 1px 10px; font: 600 12px var(--ui-font); color: var(--ink); background: var(--panel); white-space: nowrap; vertical-align: middle; }
+.chip.breaks { border-color: var(--sc-breaks); background: var(--sc-breaks-bg); }
+.chip.may { border-color: var(--sc-may); background: var(--sc-may-bg); }
+.chip.holds { border-color: var(--add-bar); background: var(--add-bg); }
+.chip.repro { border-color: var(--note-bar); background: var(--note-bg); }
+.chip.model { border-color: var(--warn-bar); background: var(--warn-bg); }
+.rulecard { border: 1px solid var(--line); border-left: 5px solid var(--sc-breaks); border-radius: 12px; padding: 16px 20px; margin: 20px 0; background: var(--panel); }
+.rulecard.holds { border-left-color: var(--add-bar); }
+.rulecard .rchead { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.rulecard .rchead h3 { margin: 0 auto 0 0; font-size: 18px; overflow-wrap: anywhere; }
+.rulecard .rcrule { font-size: 16px; margin: 10px 0 4px; }
+.rulecard h4 { margin: 18px 0 6px; }
 /* ---------- walker ---------- */
 .walker { display: grid; grid-template-columns: minmax(0,7fr) minmax(0,5fr); gap: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin: 16px 0; }
 /* minmax(0, 1fr), not 1fr: a plain 1fr column grows to the widest code line and clips the step text on a phone. */
@@ -332,6 +378,49 @@ the nearest earlier sibling with data-path, or from an ancestor with data-path
 <ul class="lbl">
   <li><span class="ln">40-44</span> The guard returns early when ... (<a href="#anchor-id">details</a>)</li>
 </ul>
+
+10) Statechart: paste chart.mmd from the statechart command, unchanged, into a
+.mermaid with data-statechart (escape < as &amp;lt;). The JS drops the chart's
+classDef lines for breaks and mayBreak, and the page colours the classes breaks,
+mayBreak, bugPath, repeats and the group colours in both themes:
+<div class="mermaid" data-statechart>...chart.mmd, verbatim...</div>
+
+11) Chart walker: a statechart beside steps. Each step's data-node is the id of
+a state in chart.mmd (s0, s3); the step highlights that state and marks the
+states of the earlier steps. Walk the happy path, then each bug path in the
+report's numbering:
+<div class="walker" data-chartwalk>
+  <div class="wchart"><div class="mermaid" data-statechart>...chart.mmd...</div></div>
+  <div class="wside">
+    <div class="wstep on" data-node="s0"><h4>0 · Starting TLC</h4><p>...</p></div>
+    <div class="wstep" data-node="s3"><h4>1 · the command starts TLC</h4><p>...</p></div>
+    <div class="wctl">
+      <button class="sec" data-wprev>← prev</button><div class="wdots"></div><button data-wnext>next →</button>
+    </div>
+  </div>
+</div>
+
+12) Rule card: one for each rule that the model checks. The class is breaks or
+holds; the chips say what TLC found and whether the path ran on the real code:
+<div class="rulecard breaks" id="rule-name">
+  <div class="rchead"><h3>RuleName</h3><span class="chip breaks">breaks</span>
+    <span class="chip repro">reproduced</span></div>          (or chip model: model only)
+  <p class="rcrule">The rule, in the reader's words.</p>
+  <div class="codewrap"><div class="codehead"><span>Model.tla</span></div>
+  <pre><code class="language-plaintext">RuleName == ...</code></pre></div>
+  <h4>What breaks it</h4> ...a chart walker over the shortest path...
+  <h4>Why</h4> ...the one step where the rule fails, and the code that takes it...
+  <h4>How likely, and what it costs</h4> ...
+  <h4>Fixes</h4> ...a before/after toggle with one pane for each fix:
+  <div class="batabs" data-tabs="fix-name">
+    <button class="on" data-p="fix-name-a">Proposed: ...</button><button data-p="fix-name-b">Alternative: ...</button></div>
+  <div class="bapane on" data-pane="fix-name-a"><span class="chip holds">TLC: every rule holds</span> ...</div>
+  <div class="bapane" data-pane="fix-name-b"><span class="chip may">TLC: RuleName still breaks</span> ...</div>
+</div>
+
+13) Design comparison: a before/after toggle with one statechart for each design,
+each followed by a table of its numbers from report.md (states, steps, chart
+states, arrows, the rules that hold).
 -->
 </main>
 <script>
@@ -555,6 +644,60 @@ the nearest earlier sibling with data-path, or from an ancestor with data-path
     next.addEventListener("click", function () { show(idx + 1); });
     show(0);
   });
+  /* ---------- chart walkers: each step highlights one state of a statechart ----------
+     A step's data-node is the state's id in chart.mmd (s3, lg0). Mermaid draws that
+     state as <g id="state-s3-N">. The diagram re-renders on a theme change, so the
+     walker paints again on the "walkthrough:diagrams" event. */
+  document.querySelectorAll("[data-chartwalk]").forEach(function (walker) {
+    var steps = Array.prototype.slice.call(walker.querySelectorAll(".wstep"));
+    var prev = walker.querySelector("[data-wprev]");
+    var next = walker.querySelector("[data-wnext]");
+    var dotsBox = walker.querySelector(".wdots");
+    var idx = 0;
+    steps.forEach(function () { dotsBox.appendChild(document.createElement("i")); });
+    var dots = Array.prototype.slice.call(dotsBox.children);
+    function nodeOf(svg, id) {
+      return id ? svg.querySelector('g[id^="state-' + CSS.escape(id) + '-"]') : null;
+    }
+    function paint() {
+      var svg = walker.querySelector(".mermaid svg");
+      if (!svg) return;
+      // Mermaid shrinks a diagram to fit its box, which makes a statechart in a
+      // narrow pane unreadable. Keep its natural width; the pane scrolls instead.
+      var natural = parseFloat(svg.style.maxWidth);
+      if (natural) { svg.style.width = natural + "px"; svg.style.maxWidth = "none"; }
+      svg.querySelectorAll(".cw-on, .cw-seen").forEach(function (g) { g.classList.remove("cw-on", "cw-seen"); });
+      steps.slice(0, idx).forEach(function (s) {
+        var g = nodeOf(svg, s.getAttribute("data-node"));
+        if (g) g.classList.add("cw-seen");
+      });
+      var on = nodeOf(svg, steps[idx].getAttribute("data-node"));
+      if (!on) return;
+      on.classList.remove("cw-seen");
+      on.classList.add("cw-on");
+      // Scroll the chart pane (never the page) so that the state is visible.
+      var pane = walker.querySelector(".wchart");
+      if (pane) {
+        var r = on.getBoundingClientRect(), b = pane.getBoundingClientRect();
+        if (r.top < b.top || r.bottom > b.bottom) pane.scrollTop += r.top - b.top - (pane.clientHeight - r.height) / 2;
+        if (r.left < b.left || r.right > b.right) pane.scrollLeft += r.left - b.left - (pane.clientWidth - r.width) / 2;
+      }
+    }
+    function show(n) {
+      idx = Math.max(0, Math.min(steps.length - 1, n));
+      steps.forEach(function (s, i) { s.classList.toggle("on", i === idx); });
+      dots.forEach(function (d, i) { d.classList.toggle("on", i === idx); });
+      prev.disabled = idx === 0;
+      next.disabled = idx === steps.length - 1;
+      paint();
+    }
+    prev.addEventListener("click", function () { show(idx - 1); });
+    next.addEventListener("click", function () { show(idx + 1); });
+    document.addEventListener("walkthrough:diagrams", paint);
+    var resized;
+    window.addEventListener("resize", function () { clearTimeout(resized); resized = setTimeout(paint, 150); });
+    show(0);
+  });
   /* ---------- glossary jump on dfn click ---------- */
   var dts = Array.prototype.slice.call(document.querySelectorAll(".glos dt"));
   document.querySelectorAll("dfn").forEach(function (d) {
@@ -644,7 +787,12 @@ the nearest earlier sibling with data-path, or from an ancestor with data-path
 
   /* ---------- mermaid ---------- */
   var diagrams = Array.prototype.slice.call(document.querySelectorAll(".mermaid"));
-  var sources = diagrams.map(function (el) { return el.innerHTML; });
+  // A statechart's own classDef lines hard-code light colours with !important;
+  // the page's CSS colours those classes in both themes instead.
+  var MARK_STYLES = /^[ \t]*classDef[ \t]+(breaks|mayBreak)[ \t].*$\n?/gm;
+  var sources = diagrams.map(function (el) {
+    return el.hasAttribute("data-statechart") ? el.innerHTML.replace(MARK_STYLES, "") : el.innerHTML;
+  });
   function cssVar(name) { return getComputedStyle(root).getPropertyValue(name).trim(); }
   // The "base" theme is the only mermaid theme that takes themeVariables, and
   // it needs real colours, not var() references: read them from the page.
@@ -704,6 +852,7 @@ the nearest earlier sibling with data-path, or from an ancestor with data-path
     } finally {
       stage.remove();
     }
+    document.dispatchEvent(new Event("walkthrough:diagrams"));
   }
   function fallback() {
     diagrams.forEach(function (el) {

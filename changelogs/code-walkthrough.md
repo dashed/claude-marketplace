@@ -4,6 +4,14 @@ All notable changes to the code-walkthrough skill in this marketplace will be do
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.6.0] - 2026-11-26
+
+### Added
+- State models: when the subject has states (a lifecycle, a protocol, a status that the code changes, work that a signal or a second actor can interrupt), or the user asks for a statechart or a flowchart, the explainer adds a flowchart of one run and a statechart that TLC checks through the `statechart` skill. New Phase 2b models the code (before and after for a change), replays each bug path against the real code (reproduced or model only), and models each fix, alternative and simpler design with the same rules, so that each verdict on the page has a report behind it.
+- New "Flow and states" section in Phase 3: the two charts and their two jobs, how to read the statechart (states, steps, conditions, parts, regions, and each mark), a walk through one normal run, a rule card for each rule that breaks (the rule, a story, the shortest path, why, how likely, and a toggle of fixes and alternatives, each with its TLC verdict), and simpler designs compared chart to chart. The 30-second version names each broken rule.
+- `references/state-models.md`: the procedure, the questions that find a simpler design (two variables that must agree, states the reader cannot tell apart, two owners, a window between two steps), and the Phase 5 checks for these sections.
+- Template components: `.mermaid[data-statechart]` (pastes `chart.mmd` unchanged; the JS drops its `classDef` lines, which hard-code light colours with `!important`, and the page colours `breaks`, `mayBreak`, `bugPath`, `repeats` and the group colours in both themes), a chart walker (`data-chartwalk`: each step highlights a state by its id in `chart.mmd`, marks the states before it, keeps the chart at its natural width, and scrolls the state into view after a theme change or a resize), rule cards, and status chips (`breaks`, `may`, `holds`, `reproduced`, `model`).
+
 ## [1.5.0] - 2026-11-24
 
 ### Added
