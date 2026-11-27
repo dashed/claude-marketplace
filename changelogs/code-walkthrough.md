@@ -4,6 +4,11 @@ All notable changes to the code-walkthrough skill in this marketplace will be do
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.6.2] - 2026-11-27
+
+### Changed
+- `references/state-models.md` adds guard provenance, per-variable writer lists, refusal probes for `Assume_*` guards, and post-fix variable re-audits to align with `statechart` 1.2.0.
+
 ## [1.6.1] - 2026-11-26
 
 ### Changed

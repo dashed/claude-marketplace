@@ -52,4 +52,20 @@ The window for the two SIGKILL paths was about 4 ms of startup (3.3 to 6.7 ms ov
 
 `tests/test_statechart.py` replays each path: SIGKILL before and after the worker starts (`tests/fixtures/statechart/die_at.py` injects it), SIGKILL and Ctrl-C while TLC runs, a janitor that fails to start or dies, and a reader that goes away. Before the fix, the three tests for the paths that broke failed; the two for SIGKILL and Ctrl-C while TLC runs passed already.
 
-To check the models again: `uv run --no-config --quiet --script plugins/statechart/skills/statechart/scripts/statechart.py notes/statechart/lifecycle/CommandRunFixed.tla --view notes/statechart/lifecycle/view.py --out /tmp/chart`, with `TLA2TOOLS` or mise for TLC.
+## The audited lifecycle model
+
+After adding guard provenance, variable writer lists, refusal probes, and `Assume_*` sensitivity checks (issue #6), `lifecycle/CommandRunAudited.tla` re-audited `statechart.py`, `worker.py`, and `janitor.py` from code rather than trusting `CommandRunFixed.tla` alone:
+
+- **Guard provenance & missing transitions**: adds `MakeFoldersFails` (stage/tmp `mkdir` error), `JanitorDies` (external janitor termination), `CheckKilled` (external signal killing the worker while `SeeCheckEnd` handles `verdict < 0`), `ReadReport` / `ReadReportFails`, and `RenameFails`. Drops `reader` after verifying `_print` catches `OSError` and never alters the exit code.
+- **TOCTOU bug fixed in `statechart.py`**: the audit caught that `_run()` previously called `_rename(done, dest)` *before* `open(os.path.join(dest, "report.md"))`, and `_print()` called `os.open`/`os.dup2` unguarded and leaked the `devnull` fd. Any `OSError` there would exit `2` after `dest` was already published, breaking `OutputOnlyOnSuccess`. `_run()` now reads `report.md` from the private `stage/done` directory *before* `_rename()`, and `_print()` closes `devnull` and guards the fallback (`test_report_is_read_before_dest_is_published`).
+- **`Assume_*` sensitivity**: `CommandRunAudited.tla` isolates two environmental assumptions — `Assume_NotBothKilled == janitor # "gone"` on `CommandKilled` and `Assume_WorkerPipeOnlyClosesOnCommandDeath == cmd = "killed"` on `WorkerSeesCommandGone`. TLC reaches 199 states and 427 steps (`CommandRunAudited-chart.mmd`, 12 states / 18 arrows; `CommandRunAudited-report.md`): every base rule holds, `FoldersGoAfterCommand` depends on `Assume_NotBothKilled` (while `TLCStopsAfterCommand` and `OutputOnlyOnSuccess` hold even if both are killed), and all holding rules hold even if the worker pipe closes early (`Assume_WorkerPipeOnlyClosesOnCommandDeath`).
+
+## The `Assume_*` check model
+
+`assumptions/AssumeCheck.tla` models `run.py`'s `eliminate()` and `check_assumptions()` loop across two rules (`r1`, `r2`) and two `Assume_*` operators (`a1`, `a2`), including base exit codes `0`/`1`/`2` and `complete`/`cut`/`stop` assumption-run outcomes. TLC reaches 131 states and 404 steps (`assumptions/AssumeCheck-chart.mmd`, 5 states / 6 arrows; `assumptions/AssumeCheck-report.md`), confirming `ExitMatchesBase`, `NoAssumptionsOnBaseError`, `NoAssumptionsWhenNoneHeld`, `NoRedundantCombinedCheck`, `NoDeadlock`, and `AlwaysFinishes`.
+
+To check the models again (with `TLA2TOOLS` or mise for TLC):
+
+- `uv run --no-config --quiet --script plugins/statechart/skills/statechart/scripts/statechart.py notes/statechart/lifecycle/CommandRunFixed.tla --view notes/statechart/lifecycle/view.py --out /tmp/chart-fixed`
+- `uv run --no-config --quiet --script plugins/statechart/skills/statechart/scripts/statechart.py notes/statechart/lifecycle/CommandRunAudited.tla --view notes/statechart/lifecycle/view.py --out /tmp/chart-audited`
+- `uv run --no-config --quiet --script plugins/statechart/skills/statechart/scripts/statechart.py notes/statechart/assumptions/AssumeCheck.tla --view notes/statechart/assumptions/view.py --out /tmp/chart-assumptions`

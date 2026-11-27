@@ -174,6 +174,8 @@ def _run(flags: dict[str, str], spec_file: str, stopped: list[signal.Signals]) -
             _say(f"{signal.Signals(-verdict).name} killed the check, so the command wrote nothing.")
             return 2
         if verdict in (0, 1) and os.path.exists(done):
+            with open(os.path.join(done, "report.md"), "rb") as f:
+                report = f.read()
             os.makedirs(os.path.dirname(dest), exist_ok=True)
             try:
                 _rename(done, dest)
@@ -185,8 +187,6 @@ def _run(flags: dict[str, str], spec_file: str, stopped: list[signal.Signals]) -
                     f"{os.path.join(out, first)} appeared while the check ran, so the command "
                     "wrote nothing. Pass --out with a new folder."
                 ) from error
-            with open(os.path.join(dest, "report.md"), "rb") as f:
-                report = f.read()
             _print(report + f"\nWrote {out}\n".encode())
             return verdict
         return 2
@@ -219,8 +219,14 @@ def _print(data: bytes) -> None:
         sys.stdout.buffer.write(data)
         sys.stdout.flush()
     except OSError:
-        devnull = os.open(os.devnull, os.O_WRONLY)
-        os.dup2(devnull, sys.stdout.fileno())
+        try:
+            devnull = os.open(os.devnull, os.O_WRONLY)
+            try:
+                os.dup2(devnull, sys.stdout.fileno())
+            finally:
+                os.close(devnull)
+        except OSError:
+            pass
 
 
 def _say(text: str) -> None:

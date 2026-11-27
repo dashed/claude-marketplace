@@ -24,6 +24,24 @@ def bound_run(module: str) -> str:
     )
 
 
+def assume_run(module: str, arities: set[int]) -> str:
+    lines = [
+        "---- MODULE ChartAssume ----",
+        f"EXTENDS {module}",
+        "ChartTLC == INSTANCE TLC",
+        "ChartNaturals == INSTANCE Naturals",
+        f'ChartBound == ChartNaturals!<(ChartTLC!TLCGet("distinct"), {RERUN_STATES})',
+    ]
+    for arity in sorted(arities):
+        if arity == 0:
+            lines.append("ChartTrue0 == TRUE")
+        else:
+            params = ", ".join(f"ChartArg{i}" for i in range(1, arity + 1))
+            lines.append(f"ChartTrue{arity}({params}) == TRUE")
+    lines.append("====")
+    return "\n".join(lines)
+
+
 def chart_run(spec: Spec, tag: str) -> str:
     every = "".join(f'(IF ~{name} THEN {{"{name}"}} ELSE {{}}) \\cup ' for name in spec.invariants)
     return "\n".join(

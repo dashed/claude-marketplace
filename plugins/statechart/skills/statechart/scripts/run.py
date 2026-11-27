@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from typing import BinaryIO
 
 import js
-from backends.cfg import bound_run, chart_run, config_text
+from backends.cfg import assume_run, bound_run, chart_run, config_text
 from backends.plain_text import plain_text
 from frontends.config import read_config
 from frontends.dot import parse_dot
@@ -29,6 +29,8 @@ from ir import (
     LEVEL,
     PART,
     RERUN_STATES,
+    Assumption,
+    AssumptionCheck,
     Bug,
     CheckResult,
     ConfigSection,
@@ -314,6 +316,7 @@ class _Judged:
     first: FileResult
     stop: Stop | None
     states: States
+    verdicts: dict[str, Verdict]
 
 
 def check(spec_file: str, config_file: str) -> CheckResult:
@@ -388,15 +391,24 @@ def check(spec_file: str, config_file: str) -> CheckResult:
         spec.folder = folder
         rules = state_rules(spec)
         all_rules = [*rules, *(Rule("property", name) for name in spec.properties)]
-        verdicts: dict[str, Verdict] = {}
 
-        def decide(rule: Rule, outcome: str, r: FileResult | None = None) -> None:
-            verdicts[rule_key(rule)] = Verdict(
-                rule, outcome, None if r is None else Messages(r.output)
-            )
+        def eliminate(
+            target_rules: list[Rule],
+            *,
+            prefix: str,
+            bound_module: str,
+            extra_lines: list[str],
+            always_bounded: bool,
+            fail_on_unknown_exit: bool,
+        ) -> _Judged:
+            verdicts: dict[str, Verdict] = {}
 
-        def judge() -> _Judged:
-            groups = [all_rules]
+            def decide(rule: Rule, outcome: str, r: FileResult | None = None) -> None:
+                verdicts[rule_key(rule)] = Verdict(
+                    rule, outcome, None if r is None else Messages(r.output)
+                )
+
+            groups = [target_rules]
             first: FileResult | None = None
             stop: Stop | None = None
             states = States()
@@ -406,16 +418,16 @@ def check(spec_file: str, config_file: str) -> CheckResult:
                 if first is not None and not group:
                     groups.pop(0)
                     continue
-                name = f"verdict-{k}"
+                name = f"{prefix}-{k}"
                 k += 1
-                extra: list[str] = []
+                extra = list(extra_lines)
                 invariants = _names(group, "invariant")
                 properties = _names(group, "property")
                 if invariants:
                     extra.append(f"INVARIANT {' '.join(invariants)}")
                 if properties:
                     extra.append(f"PROPERTY {' '.join(properties)}")
-                bounded = first is not None and not states.complete
+                bounded = always_bounded or (first is not None and not states.complete)
                 if bounded:
                     extra.append("CONSTRAINT ChartBound")
                 r = run_java(
@@ -426,7 +438,7 @@ def check(spec_file: str, config_file: str) -> CheckResult:
                         *PINNED_FLAGS,
                         *([] if _names(group, "deadlock") else ["-deadlock"]),
                         *config(name, spec.written, extra),
-                        "ChartBound" if bounded else spec.module,
+                        bound_module if bounded else spec.module,
                     ],
                 )
                 if first is None:
@@ -467,19 +479,30 @@ def check(spec_file: str, config_file: str) -> CheckResult:
                         decide(pending[0][0], "broken", r)
                     else:
                         groups[0:1] = [rest, *pending]
-                else:
+                elif fail_on_unknown_exit:
                     raise StatechartError(
                         f"TLC exited {js.string(r.status)} on {spec_file}, but its output names no "
                         f"rule that broke:\n{_tail(r)}"
                     )
-            for rule in all_rules:
+                else:
+                    stop = Stop(r.status, _tail(r))
+                    break
+            for rule in target_rules:
                 if rule_key(rule) not in verdicts:
                     decide(rule, "not checked")
             assert first is not None
-            return _Judged(first, stop, states)
+            return _Judged(first, stop, states, verdicts)
 
         _write(os.path.join(dir_, "ChartBound.tla"), bound_run(spec.module))
-        judged = judge()
+        judged = eliminate(
+            all_rules,
+            prefix="verdict",
+            bound_module="ChartBound",
+            extra_lines=[],
+            always_bounded=False,
+            fail_on_unknown_exit=True,
+        )
+        verdicts = judged.verdicts
         exit_ = _exit_class(judged.first.status)
 
         def failed(r: FileResult) -> StatechartError:
@@ -508,6 +531,58 @@ def check(spec_file: str, config_file: str) -> CheckResult:
             raise failed(judged.first)
         checked = [must(verdicts, rule_key(rule)) for rule in rules]
 
+        def check_assumptions() -> list[AssumptionCheck]:
+            held_rules = [
+                rule for rule in all_rules if must(verdicts, rule_key(rule)).outcome == "holds"
+            ]
+            if not spec.assumptions or not held_rules:
+                return []
+            _write(
+                os.path.join(dir_, "ChartAssume.tla"),
+                assume_run(spec.module, {a.arity for a in spec.assumptions}),
+            )
+
+            def check_relaxed(
+                relaxed: list[Assumption], label: str, target_rules: list[Rule]
+            ) -> AssumptionCheck:
+                sub = eliminate(
+                    target_rules,
+                    prefix=f"assume-{label}",
+                    bound_module="ChartAssume",
+                    extra_lines=[f"CONSTANT {a.name} <- ChartTrue{a.arity}" for a in relaxed],
+                    always_bounded=True,
+                    fail_on_unknown_exit=False,
+                )
+                broken = [
+                    r.name
+                    for r in target_rules
+                    if must(sub.verdicts, rule_key(r)).outcome == "broken"
+                ]
+                not_checked = [
+                    r.name
+                    for r in target_rules
+                    if must(sub.verdicts, rule_key(r)).outcome == "not checked"
+                ]
+                return AssumptionCheck(
+                    [a.name for a in relaxed],
+                    broken,
+                    not_checked,
+                    cut=sub.states.cut,
+                    stop=sub.stop,
+                )
+
+            out = [check_relaxed([a], a.name, held_rules) for a in spec.assumptions]
+            if len(spec.assumptions) >= 2:
+                broken_single = {name for ac in out for name in ac.broken}
+                remaining = [r for r in held_rules if r.name not in broken_single]
+                if remaining:
+                    combined = check_relaxed(spec.assumptions, "all", remaining)
+                    if combined.broken or combined.not_checked or combined.stop:
+                        out.append(combined)
+            return out
+
+        assumption_checks = check_assumptions()
+
         def result(
             graph: Graph,
             paths: list[Bug] | None,
@@ -525,6 +600,7 @@ def check(spec_file: str, config_file: str) -> CheckResult:
                 drawing=drawing,
                 states=judged.states,
                 messages=Messages(judged.first.output),
+                assumptions=assumption_checks,
             )
 
         if judged.states.distinct <= CHART_STATES:

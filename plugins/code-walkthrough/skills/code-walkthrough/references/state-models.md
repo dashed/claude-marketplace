@@ -38,14 +38,14 @@ Say this difference in one paragraph before the two charts.
 Load the `statechart` skill and follow its `SKILL.md` for the spec, the config, the view, and the report. Then:
 
 1. **Extract**, with the file and function for each item:
-   - variables: what the code stores or what the reader can see (a status column, a phase, a flag, a file that exists)
-   - actions: each code path that changes a variable, and each event from outside
+   - variables: what the code stores or what the reader can see (a status column, a phase, a flag, a file that exists), plus a writer list naming every code path that writes each variable (mapped to an action or explained as omitted)
+   - actions: each code path that changes a variable, and each event from outside; for each restricting guard conjunct, cite the enforcing check or early return across every entry point, leave the action permissive if unverified, or isolate it as an `Assume_*` operator
    - rules: what must always be true, or must happen in the end, in the reader's words. Take them from the PR description, the tests, the docs, the code comments, and the reviewer checklist. When a rule is your inference, the page says so.
 2. **Map each action to its code** in a table (action, file, function). The walker steps and the rule cards link each step to its code from this table.
 3. **Model only what the rules need.** Use small values: one request, two workers, a counter that stops at 3. Keep the model under the chart budget of 500 states, and the chart near 20 arrows.
-4. **For a change explainer, model before and after** with the same rules and the same view. The two reports show what the change fixes and what it breaks.
+4. **For a change explainer, model before and after** with the same rules and the same view. Read the changed code directly rather than patching only the before-spec, and re-audit every guard on and every writer of any variable that the change newly reads. The two reports show what the change fixes and what it breaks.
 5. **Run the statechart command** in a scratch folder outside the repository. Keep the spec, the config, `view.py`, `report.md`, `chart.mmd`, and each `tlc-RULE.out` in the fragments folder under `model/`.
-6. **Replay each bug path against the real code**, as the statechart skill says: a test or a live repro, one step for each action. Work in a scratch copy or a throwaway worktree. Do not run the repository's own test suite, or touch a shared service, without the user's approval (the Phase 1 rule). Keep the command and its output.
+6. **Replay each bug path and probe assumptions against the real code**, as the statechart skill says: a test or a live repro, one step for each action. Also run a refusal probe for every `Assume_*` guard that `report.md` lists under `## Assumptions` as relied on by a holding rule; if the code allows the excluded action, drop the guard and rerun. Work in a scratch copy or a throwaway worktree. Do not run the repository's own test suite, or touch a shared service, without the user's approval (the Phase 1 rule). Keep the command and its output.
    - **reproduced**: the path ran on the real code and the rule broke. The page names the test or the command.
    - **model only**: the path did not run, or it did not break the rule. Until a replay shows otherwise, think that the model is wrong. Fix the model, or say in the page why the path did not run.
 7. **The page is the hand-off.** Do not post findings to the PR.
@@ -56,7 +56,7 @@ For each rule that breaks:
 
 - **Proposed fix**: the smallest change that makes the rule hold and breaks no other rule.
 - **One or two alternatives** that differ in kind: a different owner, a different order, a different mechanism. Two variants of one idea are one alternative. Describe the alternative that you reject as fully as the fix that you propose.
-- **Model each one.** Copy the spec, change only the actions that the fix changes, and run the command with the same rules. Record the verdict for each fix: "every rule holds", or the rule that still breaks. Never write that a fix works without the report of its run.
+- **Model each one.** Read the proposed change and re-audit every guard on and every writer of any variable the fix newly reads before running the check with the same rules. Record the verdict for each fix: "every rule holds", or the rule that still breaks. Never write that a fix works without the report of its run.
 - **For each one, say**: the code that changes (a sketch, marked as a proposal, never shown as quoted code), what it costs (lines, a new process or thread, behavior that changes, a window that it leaves open), and the other breaks that it also fixes.
 - **Recommend one**, and say why.
 
@@ -80,7 +80,7 @@ Place these after "End-to-end flows" and before "Scope boundaries":
 1. **Flow and states**: the flowchart, then the statechart, with the paragraph on their two jobs.
 2. **How to read the statechart**: one short list that uses this chart's own states and legend. A box is a state, named in the reader's words. An arrow is a step, named by what happens; text in brackets is the condition for the step. `[*]` marks where a run starts. A box inside a box is a state with parts. "At the same time" holds regions that change on their own. Then each mark: red (`breaks`), the state always breaks a rule; orange (`mayBreak`), only some model states behind it break it; blue border (`bugPath`), the state is on a shortest path to a bug; dashed purple border (`repeats`), a run can stay here forever, which breaks a rule about what must happen in the end. Also say what the chart does not draw: steps that stay in one state, and the steps that the view hides (name them).
 3. **A walk through one normal run**: a chart walker over a run that keeps every rule, from the start to an end state.
-4. **Rules**: a table with one row for each rule (the rule in the reader's words, TLC's verdict, reproduced or model only). Then one rule card for each rule that breaks, in order of impact.
+4. **Rules**: a table with one row for each rule (the rule in the reader's words, TLC's verdict, reproduced or model only — plus any unprobed `Assume_*` guards or omitted writers beside `holds` verdicts). Then one rule card for each rule that breaks, in order of impact.
 5. **Simpler designs**: a design comparison, with the recommendation.
 
 The 30-second version names each broken rule in one sentence, with its impact (bottom line up front). The reviewer checklist, or "Before you change it" in a code explainer, lists each rule and the code that keeps it.

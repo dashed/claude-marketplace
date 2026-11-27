@@ -8,6 +8,7 @@ import js
 from ir import (
     CHART_STATES,
     RERUN_STATES,
+    AssumptionCheck,
     Bug,
     Chart,
     CheckResult,
@@ -50,6 +51,21 @@ def _fenced(text: str) -> str:
 
 def _states(n: int) -> str:
     return f"{n:,}"
+
+
+def _unchecked_tail(ac: AssumptionCheck, target: str) -> str:
+    names = list_text(ac.not_checked)
+    if ac.cut:
+        return (
+            f"Without {target}, TLC reached the {_states(RERUN_STATES)}-state bound "
+            f"before checking {names}."
+        )
+    if ac.stop:
+        return (
+            f"Without {target}, TLC stopped with exit {js.string(ac.stop.status)} "
+            f"before checking {names}."
+        )
+    return f"Without {target}, {names} could not be checked."
 
 
 def report(
@@ -214,4 +230,20 @@ def report(
                 f"TLC checked {p.rule.name} only in the initial states, because it has no [], "
                 "<>, or ~>. List it as an INVARIANT to check every state."
             )
+    if result.assumptions:
+        out.extend(["", "## Assumptions"])
+        for ac in result.assumptions:
+            target = ac.names[0] if len(ac.names) == 1 else f"{list_text(ac.names)} together"
+            if ac.broken:
+                verb = "holds" if len(ac.broken) == 1 else "hold"
+                line = f"- {list_text(ac.broken)} {verb} only under {target}."
+                if ac.not_checked:
+                    line += f" {_unchecked_tail(ac, target)}"
+                out.append(line)
+            elif ac.not_checked:
+                out.append(f"- {_unchecked_tail(ac, target)}")
+            else:
+                out.append(f"- Every holding rule still holds without {target}.")
+            if ac.stop:
+                out.append(_fenced(ac.stop.message))
     return "\n".join(out)

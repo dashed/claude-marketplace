@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import math
 import re
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 
 import js
 from frontends.config import NAME
-from ir import Config, ConfigSection, Spec, StatechartError
+from ir import Assumption, Config, ConfigSection, Spec, StatechartError
 
 
 @dataclass(eq=False)
@@ -110,9 +112,37 @@ def _text_of(node: XmlNode | None, tag: str) -> str:
 class Sany:
     variables: list[str]
     definitions: dict[str, XmlNode]
+    assumptions: list[Assumption] = field(default_factory=list)
 
 
 _VARIABLE_KIND = "3"
+_ASSUME_PREFIX = "Assume_"
+
+
+def _formal_param_refs(node: XmlNode) -> Iterator[XmlNode]:
+    for child in node.children:
+        if child.tag == "FormalParamNodeRef":
+            yield child
+        else:
+            yield from _formal_param_refs(child)
+
+
+def _assumption_arity(node: XmlNode, symbols: dict[str, XmlNode]) -> int | None:
+    arity_num = _number(_text_of(node, "arity"))
+    if not math.isfinite(arity_num) or arity_num < 0 or not float(arity_num).is_integer():
+        return None
+    arity = int(arity_num)
+    if arity == 0:
+        return 0
+    params = _child(node, "params")
+    refs = list(_formal_param_refs(params)) if params else []
+    if len(refs) != arity:
+        return None
+    for ref in refs:
+        param_node = symbols.get(_text_of(ref, "UID"))
+        if param_node is None or _text_of(param_node, "arity") != "0":
+            return None
+    return arity
 
 
 def read_sany(xml: str) -> Sany:
@@ -129,6 +159,8 @@ def read_sany(xml: str) -> Sany:
             module = node
     definitions: dict[str, XmlNode] = {}
     variables: list[tuple[int, str]] = []
+    assumptions: list[Assumption] = []
+    seen_assumptions: set[str] = set()
     for ref in module.children if module else []:
         if ref.tag not in ("OpDeclNodeRef", "UserDefinedOpKindRef"):
             continue
@@ -140,11 +172,82 @@ def read_sany(xml: str) -> Sany:
         definitions[name] = node
         if node.tag == "OpDeclNode" and _text_of(node, "kind") == _VARIABLE_KIND:
             variables.append((int(uid), name))
+        elif (
+            node.tag == "UserDefinedOpKind"
+            and name.startswith(_ASSUME_PREFIX)
+            and len(name) > len(_ASSUME_PREFIX)
+            and name not in seen_assumptions
+        ):
+            arity = _assumption_arity(node, symbols)
+            if arity is not None:
+                seen_assumptions.add(name)
+                assumptions.append(Assumption(name, arity))
     variables.sort(key=lambda v: v[0])
-    return Sany([name for _, name in variables], definitions)
+    return Sany([name for _, name in variables], definitions, assumptions)
+
+
+def _skip_value(tokens: list[str], i: int) -> int:
+    if i >= len(tokens):
+        return i
+    if tokens[i] != "{":
+        return i + 1
+    depth = 1
+    i += 1
+    while i < len(tokens) and depth > 0:
+        if tokens[i] == "{":
+            depth += 1
+        elif tokens[i] == "}":
+            depth -= 1
+        i += 1
+    return i
+
+
+def overridden_constants(written: list[ConfigSection]) -> set[str]:
+    names: set[str] = set()
+    for section in written:
+        if section.key != "CONSTANT":
+            continue
+        tokens = section.tokens
+        i = 0
+        n = len(tokens)
+        while i < n:
+            target = tokens[i]
+            i += 1
+            qualified = False
+            while i < n and tokens[i] == "!":
+                qualified = True
+                i += 1
+                if i < n:
+                    i += 1
+            if not qualified:
+                names.add(target)
+            if i < n and tokens[i] == "<-":
+                i += 1
+                if i < n and tokens[i] == "[":
+                    i += 3
+                if i < n:
+                    i += 1
+                continue
+            if i < n and tokens[i] == "(":
+                i += 1
+                while i < n and tokens[i] != ")":
+                    if tokens[i] == ",":
+                        i += 1
+                        continue
+                    i = _skip_value(tokens, i)
+                if i < n and tokens[i] == ")":
+                    i += 1
+            if i < n and tokens[i] == "=":
+                i += 1
+                if i < n and tokens[i] == "[":
+                    i += 3
+                i = _skip_value(tokens, i)
+    return names
 
 
 def read_spec(module: str, sany: Sany, checks: Checks) -> Spec:
+    overridden = overridden_constants(checks.written)
+    assumptions = [a for a in sany.assumptions if a.name not in overridden]
     return Spec(
         module=module,
         variables=sany.variables,
@@ -152,6 +255,7 @@ def read_spec(module: str, sany: Sany, checks: Checks) -> Spec:
         properties=checks.properties,
         deadlock=checks.deadlock,
         written=checks.written,
+        assumptions=assumptions,
     )
 
 

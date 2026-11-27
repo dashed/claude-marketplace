@@ -4,6 +4,16 @@ All notable changes to the statechart skill in this marketplace will be document
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.2.0] - 2026-11-27
+
+### Added
+- `SKILL.md` adds guard provenance, per-variable writer lists, refusal probes for assumption guards, and re-auditing variables newly read by a fix.
+- `Assume_*` sensitivity reruns: for every first-order `Assume_*` operator in the spec not already overridden in the config, the command generates `ChartAssume`, reruns TLC on base-holding rules with that operator overridden to `TRUE` (plus a combined rerun when two or more exist) behind the 100,000-state bound, and reports dependencies under `## Assumptions` in `report.md` without changing the exit code.
+- Dogfooded on `statechart` itself in `notes/statechart/lifecycle/CommandRunAudited.tla` and `notes/statechart/assumptions/AssumeCheck.tla`.
+
+### Fixed
+- `scripts/statechart.py`: read `report.md` from `stage/done` before `_rename(done, dest)` and close/guard `devnull` in `_print()`, fixing a TOCTOU bug where a post-rename `OSError` could exit `2` after `--out` was already published (`test_report_is_read_before_dest_is_published`).
+
 ## [1.1.0] - 2026-11-26
 
 ### Changed

@@ -1,0 +1,16 @@
+---
+title: "run.py: base check and assumption sensitivity pass"
+---
+stateDiagram-v2
+  s0: The command runs the base TLC check
+  s1: The command rechecks holding rules without the first assumption
+  s2: The command writes the report and exits
+  s3: The command rechecks holding rules without the second assumption
+  s4: The command rechecks surviving rules without either assumption
+  [*] --> s0
+  s0 --> s1: every rule holds in the base check (exit 0) or some rules hold and others break (exit 1)
+  s0 --> s2: every rule breaks in the base check (exit 1) or the base check fails (exit 2)
+  s1 --> s3: the first assumption check finishes
+  s3 --> s2: every base-holding rule already broke under one relaxation
+  s3 --> s4: some base-holding rules survived both single checks
+  s4 --> s2: the combined assumption check finishes

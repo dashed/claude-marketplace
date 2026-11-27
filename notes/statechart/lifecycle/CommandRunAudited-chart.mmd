@@ -1,0 +1,38 @@
+---
+title: "statechart.py: one run of the command"
+---
+stateDiagram-v2
+  state "The command is alive" as s0 {
+    s1: The command starts the janitor process
+    s2: The command removes its folders
+    s3: The command makes the stage and temp folders
+    s4: The command starts the worker, which runs TLC
+    s5: The command sends the worker's pid to the janitor
+    s6: The command waits for TLC to finish
+    s7: The command reads TLC's exit code
+    s8: The command reads the report before publishing --out
+    s9: The command moves the chart and report into --out
+    s10: The command prints the report to stdout
+    [*] --> s1
+  }
+  s11: The command is dead, and the janitor and TLC may still run
+  s12: The command has removed its folders and exited
+  [*] --> s0
+  s1 --> s2: the janitor process fails to start
+  s1 --> s3: the janitor process starts
+  s2 --> s12: the folders are gone and the command exits
+  s3 --> s2: creating the stage or temp folder fails
+  s3 --> s4: both folders exist
+  s4 --> s2: the worker fails to start
+  s4 --> s5: the worker starts and runs TLC
+  s5 --> s6: the janitor gets the worker's pid
+  s5 --> s2: the janitor is gone and cannot get the pid
+  s6 --> s7: TLC exits or the command kills TLC after Ctrl-C
+  s7 --> s2: TLC failed (exit 2) or you pressed Ctrl-C (exit 130)
+  s7 --> s8: TLC passed or found a bug (exit 0 or 1)
+  s8 --> s2: reading the report fails
+  s8 --> s9: the command finishes reading the report
+  s9 --> s2: moving the files into --out fails
+  s9 --> s10: the files are in --out
+  s10 --> s2: the report is on stdout
+  s0 --> s11: SIGKILL or a crash ends the command

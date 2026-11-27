@@ -153,6 +153,21 @@ class Config:
 
 
 @dataclass(eq=False)
+class Assumption:
+    name: str
+    arity: int
+
+
+@dataclass(eq=False)
+class AssumptionCheck:
+    names: list[str]
+    broken: list[str]
+    not_checked: list[str]
+    cut: bool = False
+    stop: Stop | None = None
+
+
+@dataclass(eq=False)
 class Spec:
     module: str
     variables: list[str]
@@ -161,6 +176,7 @@ class Spec:
     deadlock: bool
     written: list[ConfigSection]
     folder: str | None = None
+    assumptions: list[Assumption] = field(default_factory=list)
 
 
 @dataclass(eq=False)
@@ -246,6 +262,7 @@ class CheckResult:
     drawing: Drawing | None
     states: States
     messages: Iterable[Part]
+    assumptions: list[AssumptionCheck] = field(default_factory=list)
 
 
 RERUN_STATES = 100_000
