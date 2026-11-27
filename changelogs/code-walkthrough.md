@@ -4,6 +4,11 @@ All notable changes to the code-walkthrough skill in this marketplace will be do
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.6.1] - 2026-11-26
+
+### Changed
+- Statecharts with full labels stay readable: mermaid 10.9.3 keeps each label on one line, so a chart with labels of 4 to 12 words got wide and shrank to fit. The template now breaks each state and arrow label of a `.mermaid[data-statechart]` into lines of at most 26 characters, at spaces, before it renders, as it already drops the chart's `classDef` lines. The page still holds `chart.mmd` unchanged, and other diagrams are not affected. Mermaid 11 wraps labels itself, but it also changes the layout of every flowchart and ER diagram, so the template stays on 10.9.3.
+
 ## [1.6.0] - 2026-11-26
 
 ### Added

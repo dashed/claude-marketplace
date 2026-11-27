@@ -33,13 +33,13 @@ You do the work that needs judgment: the words on each state and arrow, the phas
 
 To show the reader's words, the view defines `state(vars)`. The value that `state()` returns picks the form:
 
-- A string gives a flat chart: `def state(v): return "Paid" if v["paid"] else "Paying"`
+- A string gives a flat chart: `def state(v): return "The card is charged" if v["paid"] else "You are paying, and the card is not charged yet"`
 - A list gives parent states: `def state(v): return v["main"].split(".")`
 - A dict gives one parallel region for each key: `def state(v): return {"Playback": v["playback"], "Volume": v["volume"]}`
 
-Label each state with what the reader can see or cares about, such as "Paying" or "Lease held, write pending". Keep variable names out of labels. `vars` is the state as JSON: a record, a sequence, or a function is a dict with string keys, so `v["pc"]["1"]` is `pc[1]`, and a set is a list.
+`vars` is the state as JSON: a record, a sequence, or a function is a dict with string keys, so `v["pc"]["1"]` is `pc[1]`, and a set is a list. Write each label as "Write the labels" says.
 
-The view can also define `step(action, from_, to)`. It gets the TLC action name and the values before and after the step, and it returns the label of the arrow. Write each step label as the user sees it happen, such as "you press play" or "the connect fails". Do not name the code or the TLA+ action. Two actions that end the same in the chart get the same label, so that they share one arrow.
+The view can also define `step(action, from_, to)`. It gets the TLC action name and the values before and after the step, and it returns the label of the arrow. The steps between the same two chart states, with the same condition, share one arrow, and the command joins their labels with "or". Give two actions the same label when the reader does not need to tell them apart.
 
 When a step can occur only in some conditions, end its label with the condition in brackets, in the reader's words, such as `you press play [while the file loads]`. In a regions chart, the command writes the condition on the other regions on the arrow, in the words of their labels, such as `[when Offline]`. Your brackets replace it, and two arrows from one state can then look the same. So in a regions chart, do not write brackets for a condition on another region. When a value that no label shows decides where a step goes, name the result in the label, such as "the roster read fails".
 
@@ -55,12 +55,24 @@ The command calls `state()` and `group()` at most once for each model state, and
 
 The chart does not draw a step that stays in one label. Split a label when the reader must see such a step.
 
-Aim for about 20 arrows or fewer, because a busier chart is hard to read. First return coarser labels from `state()`. Give one label to values that act the same, and leave out a detail that the reader does not need, such as a call in flight whose return changes nothing. Keep each state of a bug path, and keep each mark. When a merge changes a `breaks` state to `mayBreak`, it hides where a rule breaks. Do not merge two states that break different rules, because the reader then cannot see which rule breaks where. If the chart is still too busy, return `None` from `step()` for the steps that the reader does not need, such as a reset that every state has, or a step whose arrow repeats what other arrows show. Obey these rules when you hide steps:
+Aim for about 20 arrows or fewer, because a busier chart is hard to read. First return fewer states from `state()`. Give one label to values that act the same, and leave out a detail that the reader does not need, such as a call in flight whose return changes nothing. Keep each state of a bug path, and keep each mark. When a merge changes a `breaks` state to `mayBreak`, it hides where a rule breaks. Do not merge two states that break different rules, because the reader then cannot see which rule breaks where. When one step goes from many states to the same state, such as a crash that can happen at any time, put those states under one parent: `state()` returns a list such as `["The command is alive", "The command waits for TLC to finish"]`, and when each state under the parent takes the step, the command draws it once, from the parent. Do not shorten labels to make a chart less busy: a short label removes no state and no arrow. If the chart is still too busy, return `None` from `step()` for the steps that the reader does not need, such as a reset that every state has, or a step whose arrow repeats what other arrows show. Obey these rules when you hide steps:
 
 - Keep each chart state reachable by arrows from a start state.
 - Keep at least one arrow out of each chart state that has a step out in the model.
 - Hide all the steps of an arrow, or none of them. When you hide only some, its condition gets narrower.
 - In the hand-off, say which steps the chart hides.
+
+## Write the labels
+
+The reader reads the chart, and the paths in the report, without the spec or the code. A label of one or two words, such as "Killed" or "Cleaning up", makes the reader guess what was killed and what is cleaned up. Write each label as a clause of about 4 to 12 words:
+
+- A state label says who does what, or what is true, in that state: "The command waits for TLC to finish", "You are paying, and the card is not charged yet", or "The lease is held, and the write is pending". Name each actor and each thing, such as the command, the janitor, or the card.
+- A step label says who does what: "you press play", "the connect fails", or "SIGKILL or a crash ends the command". When the reader needs the result of a step, such as an exit code or a count, add it in parentheses: "TLC failed (exit 2)". Brackets are for conditions.
+- Write each step label as one clause with no comma, so that the labels on one arrow still read as one sentence when the command joins them with "or": "TLC exits or the command kills TLC after Ctrl-C".
+- Write in a label only what is true in each model state behind it. The marks show where a rule breaks, so do not write a rule as a fact: write "The command is dead, and TLC may still run", not "The command is dead, and TLC has stopped".
+- Keep variable names, action names, and code out of labels.
+
+Pele and Mermaid 11 wrap a label at about 200 pixels, so a full label makes a taller box, not a wider chart. Mermaid 10 does not wrap: render with Pele or Mermaid 11, or break the lines before you render, as the code-walkthrough template does. The chart text writes a semicolon as `#59;`, so use a comma.
 
 ## Read the report
 
@@ -90,4 +102,4 @@ A clean run has the opposite trap: every rule holding in the model does not prov
 
 ## Credits
 
-Adapted from the [statechart](https://github.com/cursor/plugins/tree/main/pstack/skills/statechart) skill in Lauren Tan's pstack plugin for Cursor, licensed under MIT (`LICENSE` at the plugin root), at commit `b7b93c36be`. This repository maintains its own version. Its command is Python rather than TypeScript, its views are Python modules, and `step()` hides a step by returning `None`. Its process lifecycle was changed after checking a model of it with this skill ([notes](https://github.com/dashed/claude-marketplace/tree/master/notes/statechart)): the janitor starts before the command makes its folders, the worker stops its own check when the command dies, and a reader of stdout that goes away no longer changes the exit code. It also has "Use when" triggers in place of `disable-model-invocation: true`, and the guidance on rules that must hold in the end, layered models and SYMMETRY, and false negatives / vacuous passes.
+Adapted from the [statechart](https://github.com/cursor/plugins/tree/main/pstack/skills/statechart) skill in Lauren Tan's pstack plugin for Cursor, licensed under MIT (`LICENSE` at the plugin root), at commit `b7b93c36be`. This repository maintains its own version. Its command is Python rather than TypeScript, its views are Python modules, and `step()` hides a step by returning `None`. Its process lifecycle was changed after checking a model of it with this skill ([notes](https://github.com/dashed/claude-marketplace/tree/master/notes/statechart)): the janitor starts before the command makes its folders, the worker stops its own check when the command dies, and a reader of stdout that goes away no longer changes the exit code. It also has "Use when" triggers in place of `disable-model-invocation: true`, and the guidance on rules that must hold in the end, layered models and SYMMETRY, false negatives / vacuous passes, and full labels.

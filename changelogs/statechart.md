@@ -4,6 +4,13 @@ All notable changes to the statechart skill in this marketplace will be document
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.1.0] - 2026-11-26
+
+### Changed
+- `SKILL.md` has a "Write the labels" section: each state and step label is a clause of about 4 to 12 words that says who does what or what is true, names each actor and thing, and gives a result that the reader needs in parentheses ("TLC failed (exit 2)"). A step label has no comma, because the command joins the labels on one arrow with "or". A label states only what is true in every model state behind it, never a rule. The examples are full labels ("You are paying, and the card is not charged yet"), not one word ("Paying").
+- To make a chart less busy, `SKILL.md` says to merge states or move a step that many states share to a parent state, never to shorten labels. Pele and Mermaid 11 wrap long labels; Mermaid 10 does not.
+- `notes/statechart/lifecycle/view.py` uses full labels and puts the live states under "The command is alive", so a SIGKILL is one arrow: 14 arrows instead of 22 in the fixed model.
+
 ## [1.0.0] - 2026-11-26
 
 ### Added

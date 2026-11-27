@@ -2,37 +2,32 @@
 title: "statechart.py: one run of the command"
 ---
 stateDiagram-v2
-  s0: Starting the janitor
-  s1: Cleaning up
-  s2: Killed
-  s3: Making its folders
-  s4: Ended
-  s5: Starting TLC
-  s6: Telling the janitor about TLC
-  s7: Waiting for TLC
-  s8: Reading the result
-  s9: Writing the output
-  s10: Printing the report
+  state "The command is alive" as s0 {
+    s1: The command starts the janitor process
+    s2: The command removes its folders
+    s3: The command makes the stage and temp folders
+    s4: The command starts the worker, which runs TLC
+    s5: The command sends the worker's pid to the janitor
+    s6: The command waits for TLC to finish
+    s7: The command reads TLC's exit code
+    s8: The command moves the chart and report into --out
+    s9: The command prints the report to stdout
+    [*] --> s1
+  }
+  s10: The command is dead, and the janitor and TLC may still run
+  s11: The command has removed its folders and exited
   [*] --> s0
-  s0 --> s1: starting the janitor fails
-  s0 --> s2: something kills the command
-  s0 --> s3: the command starts the janitor
-  s1 --> s4: the command removes its folders
-  s1 --> s2: something kills the command
-  s3 --> s2: something kills the command
-  s3 --> s5: the command makes its folders
-  s5 --> s1: starting TLC fails
-  s5 --> s2: something kills the command
-  s5 --> s6: the command starts TLC
-  s6 --> s1: the janitor is gone
-  s6 --> s2: something kills the command
-  s6 --> s7: the command tells the janitor
-  s7 --> s2: something kills the command
-  s7 --> s8: TLC ends or the command stops TLC
-  s8 --> s2: something kills the command
-  s8 --> s1: TLC failed or you pressed Ctrl-C
-  s8 --> s9: TLC passed or found a bug
-  s9 --> s2: something kills the command
-  s9 --> s10: the check passed or found a bug
-  s10 --> s1: the report prints
-  s10 --> s2: something kills the command
+  s1 --> s2: the janitor process fails to start
+  s1 --> s3: the janitor process starts
+  s2 --> s11: the folders are gone and the command exits
+  s3 --> s4: both folders exist
+  s4 --> s2: the worker fails to start
+  s4 --> s5: the worker starts and runs TLC
+  s5 --> s2: the janitor is gone and cannot get the pid
+  s5 --> s6: the janitor gets the worker's pid
+  s6 --> s7: TLC exits or the command kills TLC after Ctrl-C
+  s7 --> s2: TLC failed (exit 2) or you pressed Ctrl-C (exit 130)
+  s7 --> s8: TLC passed or found a bug (exit 0 or 1)
+  s8 --> s9: the files are in --out
+  s9 --> s2: the report is on stdout
+  s0 --> s10: SIGKILL or a crash ends the command

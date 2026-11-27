@@ -1,6 +1,6 @@
 {
   "name": "code-walkthrough",
-  "version": "1.6.0+codex.b2b78bbc12f0",
+  "version": "1.6.1+codex.398fb1c60e1d",
   "description": "Create a self-contained interactive HTML explainer of code for a reader with no prior knowledge: a change (branch, PR, diff) or how existing code works (subsystem, feature, flow), with before/after toggles, mermaid diagrams, step-through code walkers, and playground widgets. Use when the user asks for an explainer HTML file or page, a walkthrough or teaching document of a branch or PR, before/after visuals, or to learn a codebase area from zero.",
   "author": {
     "name": "Alberto Leal"

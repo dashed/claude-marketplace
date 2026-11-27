@@ -1260,7 +1260,7 @@
     },
     {
       "name": "code-walkthrough",
-      "version": "1.6.0",
+      "version": "1.6.1",
       "source": "./plugins/code-walkthrough",
       "description": "Create a self-contained interactive HTML explainer of code for a reader with no prior knowledge: a change (branch, PR, diff) or how existing code works (subsystem, feature, flow), with before/after toggles, mermaid diagrams, step-through code walkers, and playground widgets. Use when the user asks for an explainer HTML file or page, a walkthrough or teaching document of a branch or PR, before/after visuals, or to learn a codebase area from zero.",
       "author": {
@@ -1600,7 +1600,7 @@
     },
     {
       "name": "statechart",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "source": "./plugins/statechart",
       "description": "Check a TLA+ model of a system that moves between states (a product flow, a protocol, a service) with TLC, and draw it as a Mermaid statechart in the reader's words, with the shortest path to each state that breaks a rule. Use when the user runs /statechart, asks to model-check a state machine or protocol with TLA+, or wants a bug shown as a path through states. Python, run with uv; adapted from Lauren Tan's pstack (Cursor).",
       "author": {

@@ -10,45 +10,42 @@ stateDiagram-v2
   class lg0 mayBreak
   class lg1 bugPath
   class lg2 repeats
-  s0: Starting TLC
-  s1: Cleaning up
-  s2: Killed
-  s3: Starting the janitor
-  s4: Ended
-  s5: Waiting for TLC
-  s6: Reading the result
-  s7: Writing the output
-  s8: Printing the report
+  state "The command is alive" as s0 {
+    s1: The command starts the worker, which runs TLC
+    s2: The command removes its folders
+    s3: The command starts the janitor process
+    s4: The command waits for TLC to finish
+    s5: The command reads TLC's exit code
+    s6: The command moves the chart and report into --out
+    s7: The command prints the report to stdout
+    [*] --> s1
+  }
+  s8: The command is dead, and the janitor and TLC may still run
+  s9: The command has removed its folders and exited
   [*] --> s0
-  s0 --> s1: starting TLC fails
-  s0 --> s2: something kills the command
-  s0 --> s0: the reader of stdout goes away or you press Ctrl-C
-  s0 --> s3: the command starts TLC
-  s1 --> s4: the command removes its folders
-  s1 --> s2: something kills the command
-  s3 --> s1: starting the janitor fails
-  s3 --> s2: something kills the command
-  s3 --> s5: the command starts the janitor
-  s3 --> s3: TLC finishes
-  s5 --> s2: something kills the command
-  s5 --> s6: TLC ends or the command stops TLC
-  s6 --> s2: something kills the command
-  s6 --> s1: TLC failed or you pressed Ctrl-C
-  s6 --> s7: TLC passed or found a bug
-  s2 --> s2: TLC finishes
-  s7 --> s2: something kills the command
-  s7 --> s8: the check passed or found a bug
-  s8 --> s1: the report prints or nobody reads stdout any more
-  s8 --> s2: something kills the command
+  s1 --> s2: the worker fails to start
+  s1 --> s1: the program that reads stdout exits (as with | head) or you press Ctrl-C
+  s1 --> s3: the worker starts and runs TLC
+  s2 --> s9: the folders are gone and the command exits
+  s3 --> s2: the janitor process fails to start
+  s3 --> s4: the janitor process starts
+  s3 --> s3: TLC finishes its check
+  s4 --> s5: TLC exits or the command kills TLC after Ctrl-C
+  s5 --> s2: TLC failed (exit 2) or you pressed Ctrl-C (exit 130)
+  s5 --> s6: TLC passed or found a bug (exit 0 or 1)
+  s8 --> s8: TLC finishes its check
+  s6 --> s7: the files are in --out
+  s7 --> s2: the report is on stdout or printing fails because nobody reads stdout (exit 2)
+  s0 --> s8: SIGKILL or a crash ends the command
   classDef mayBreak fill:#fff3e6,stroke:#e8730c,stroke-width:2.5px,color:#b85a06
-  class s0 bugPath
   class s1 bugPath
   class s2 bugPath
-  class s2 repeats
   class s3 bugPath
-  class s4 mayBreak
   class s4 bugPath
   class s5 bugPath
   class s6 bugPath
   class s7 bugPath
   class s8 bugPath
+  class s8 repeats
+  class s9 mayBreak
+  class s9 bugPath

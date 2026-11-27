@@ -382,7 +382,9 @@ the nearest earlier sibling with data-path, or from an ancestor with data-path
 10) Statechart: paste chart.mmd from the statechart command, unchanged, into a
 .mermaid with data-statechart (escape < as &amp;lt;). The JS drops the chart's
 classDef lines for breaks and mayBreak, and the page colours the classes breaks,
-mayBreak, bugPath, repeats and the group colours in both themes:
+mayBreak, bugPath, repeats and the group colours in both themes. Mermaid 10 does not
+wrap labels, so the JS also breaks each state and arrow label into lines of at most
+26 characters:
 <div class="mermaid" data-statechart>...chart.mmd, verbatim...</div>
 
 11) Chart walker: a statechart beside steps. Each step's data-node is the id of
@@ -790,8 +792,29 @@ states, arrows, the rules that hold).
   // A statechart's own classDef lines hard-code light colours with !important;
   // the page's CSS colours those classes in both themes instead.
   var MARK_STYLES = /^[ \t]*classDef[ \t]+(breaks|mayBreak)[ \t].*$\n?/gm;
+  // Mermaid 10 keeps a label on one line, so a statechart with full labels gets
+  // wide and shrinks to fit. Break each state and arrow label into lines of at
+  // most WRAP characters, at spaces. The front matter (the title) stays as it is.
+  var WRAP = 26;
+  var FRONT_MATTER = /^\s*---\n[\s\S]*?\n---\n/;
+  // innerHTML gives "-->" as "--&gt;".
+  var LABEL = /^([ \t]*(?:\w+|(?:\[\*\]|\w+) --(?:>|&gt;) \w+): )(.+)$/gm;
+  function wrapLabel(text) {
+    var lines = [], line = "";
+    text.split(" ").forEach(function (word) {
+      if (line && (line + " " + word).length > WRAP) { lines.push(line); line = word; }
+      else line = line ? line + " " + word : word;
+    });
+    lines.push(line);
+    return lines.join("<br/>");
+  }
+  function statechartSource(src) {
+    var text = src.replace(MARK_STYLES, "");
+    var head = (text.match(FRONT_MATTER) || [""])[0];
+    return head + text.slice(head.length).replace(LABEL, function (_, start, label) { return start + wrapLabel(label); });
+  }
   var sources = diagrams.map(function (el) {
-    return el.hasAttribute("data-statechart") ? el.innerHTML.replace(MARK_STYLES, "") : el.innerHTML;
+    return el.hasAttribute("data-statechart") ? statechartSource(el.innerHTML) : el.innerHTML;
   });
   function cssVar(name) { return getComputedStyle(root).getPropertyValue(name).trim(); }
   // The "base" theme is the only mermaid theme that takes themeVariables, and
